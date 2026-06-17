@@ -1,0 +1,6 @@
+pandas
+streamlit
+python-dotenv
+azure-ai-vision-imageanalysis
+openai
+scikit-learn

@@ -1,0 +1,10 @@
+data/sample/*
+!data/sample/.gitkeep
+logs/*.log
+logs/*.txt
+!logs/.gitkeep
+database/*.db
+*.pyc
+__pycache__/
+.env
+.venv/
