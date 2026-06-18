@@ -73,8 +73,8 @@ score, not a deception detector.
 ### Claim-benchmark intersections
 **Status:** Implemented (for products with pack-image claim data)
 **What it measures:** Specific instances where an extracted claim co-occurs
-with a nutrition value above its reference threshold for the same attribute
-— for example, a protein claim alongside saturated fat above the reference
+with a relevant nutrition, ingredient, or processing benchmark signal —
+for example, a protein claim alongside saturated fat above the reference
 threshold.
 **What it does not measure:** Intent. The presence of an intersection does
 not imply the claim is false; both the claim and the composition data point
@@ -83,14 +83,18 @@ can be simultaneously accurate.
 ### Nutrition benchmark flags
 **Status:** Implemented
 **What it measures:** Whether a nutrient value (sugar, saturated fat, fat,
-salt) sits above a reference threshold, applied per 100g or 100ml. These
-thresholds follow the UK Food Standards Agency's front-of-pack labelling
-guidance. The EU's mandatory nutrition declaration (Regulation 1169/2011)
-requires these nutrient values to be stated on pack in a standard format, but
-the regulation itself does not define high/low thresholds — that was
-deliberately left to individual Member States and food businesses to develop
-voluntarily, which is why this tool credits the UK FSA scheme specifically
-rather than EU law for the threshold values themselves.
+salt) sits above a reference threshold, applied per 100g or 100ml. Thresholds
+follow the UK Food Standards Agency's front-of-pack labelling guidance and are
+used here as a single reference scheme for cross-product comparison. The EU's
+mandatory nutrition declaration (Regulation 1169/2011) requires these nutrient
+values to be stated on pack in a standard format, but the regulation itself
+does not define high/low thresholds — that was deliberately left to individual
+Member States and food businesses to develop voluntarily, which is why this
+tool credits the UK FSA scheme specifically rather than EU law for the
+threshold values themselves. In the MVP, liquid vs solid is approximated using
+an energy-density proxy (under 100 kcal/100ml treated as liquid). This may
+misclassify some categories and should be reviewed if benchmark flags become
+a central reporting layer.
 **What it does not measure:** Legal compliance, health risk, or suitability
 for any individual. The same per-100g thresholds are applied to all products
 in the dataset, including US-market products, for comparability, since FDA
@@ -139,10 +143,10 @@ reflects missing source data, not a deficiency in the product itself.
 Brand strings in the source data are normalized and mapped to parent
 companies for company-level filtering and aggregation. See
 `docs/BRAND_COMPANY_MAPPING.md` for the mapping methodology and coverage.
-All pattern analysis (claim taxonomy distributions, positioning-to-composition
-gap, nutrition benchmark flags) is computed at brand level, not company
-level, since company portfolios are typically too heterogeneous for
-company-level findings to be meaningful (see `docs/ADR.md`).
+Pattern metrics are computed at product level and aggregated primarily at
+brand/category level. Company-level views may be used as roll-ups, but
+should be interpreted cautiously because company portfolios are
+heterogeneous (see `docs/ADR.md`).
 
 ## Known limitations of current methodology
 
