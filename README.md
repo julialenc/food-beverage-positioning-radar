@@ -33,6 +33,21 @@ analytical lenses; interpretation remains with the user.
 
 ---
 
+## Where this fits
+
+Food & Beverage Positioning Radar sits between new product databases,
+product-attribute intelligence, and trend-foresight tools. Commercial
+platforms such as Mintel GNPD, Innova, NIQ Label Insight, SPINS, and
+Euromonitor Via offer broader enterprise-grade product and market
+intelligence. This project is a focused, transparent, open-data
+implementation designed to explore packaged food positioning through
+claims, ingredients, nutrition, processing, and product design. It is
+especially relevant for smaller companies, startups, consultants, and
+analysts who need a lightweight market-intelligence layer rather than a
+full enterprise subscription or retail audit system.
+
+---
+
 ## Who this is for
 
 **Primary — CPG professionals, insight managers, market analysts,
