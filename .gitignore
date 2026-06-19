@@ -8,3 +8,5 @@ database/*.db
 __pycache__/
 .env
 .venv/
+data/raw/*
+!data/raw/.gitkeep

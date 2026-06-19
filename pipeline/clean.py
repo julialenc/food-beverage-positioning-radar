@@ -38,24 +38,24 @@ Input:
 Output:
     data/sample/clean_<timestamp>.csv
 """
- 
+
 import pandas as pd
 import os
 import re
 import html
 from datetime import datetime
- 
+
 # -- Paths --------------------------------------------------------------------
- 
+
 ROOT       = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
- 
+
 # -- Language detection -------------------------------------------------------
 # Keyword-based detection - no external dependencies.
 # Covers EN/FR which is ~90% of our data (confirmed by check_languages.py).
 # OTHER covers Bulgarian, German, Spanish, Arabic etc. - valid nutritional
 # data, excluded from ingredient-marker analysis in v1 but retained in dataset.
- 
+
 FRENCH_MARKERS = [
     "farine", "sucre", "huile", "beurre", "lait", "eau", "sel",
     "arome", "emulsifiant", "colorant",
@@ -64,7 +64,7 @@ FRENCH_MARKERS = [
     "contient", "peut contenir", "ingredients", "farine de ble",
     "huile de palme", "lecithine", "amidon",
 ]
- 
+
 ENGLISH_MARKERS = [
     "flour", "sugar", "oil", "butter", "milk", "water", "salt",
     "flavour", "flavor", "emulsifier", "colouring", "coloring",
@@ -72,8 +72,8 @@ ENGLISH_MARKERS = [
     "natural", "contains", "may contain", "wheat flour",
     "palm oil", "lecithin", "starch",
 ]
- 
- 
+
+
 def detect_language(text):
     """
     Returns 'FR', 'EN', 'BOTH', 'OTHER', or 'UNKNOWN'.
@@ -83,11 +83,11 @@ def detect_language(text):
     """
     if not isinstance(text, str) or len(text.strip()) < 10:
         return "UNKNOWN"
- 
+
     text_lower = text.lower()
     fr = any(kw in text_lower for kw in FRENCH_MARKERS)
     en = any(kw in text_lower for kw in ENGLISH_MARKERS)
- 
+
     if fr and en:
         return "BOTH"
     if fr:
@@ -95,10 +95,10 @@ def detect_language(text):
     if en:
         return "EN"
     return "OTHER"
- 
- 
+
+
 # -- Nutritional columns ------------------------------------------------------
- 
+
 NUTRIMENT_COLS = [
     "energy_kcal",
     "fat_100g",
@@ -109,7 +109,7 @@ NUTRIMENT_COLS = [
     "protein_100g",
     "salt_100g",
 ]
- 
+
 # Physically impossible values per 100g
 # energy_kcal max was 3833 in our sample (pure fat = ~900 kcal max)
 NUTRIMENT_CAPS = {
@@ -122,7 +122,7 @@ NUTRIMENT_CAPS = {
     "protein_100g":       100,
     "salt_100g":          100,
 }
- 
+
 # Fields used to calculate completeness_score — see docs/METHODOLOGY.md
 # for the full metric definition and scope statement.
 COMPLETENESS_COLS = [
@@ -138,10 +138,10 @@ COMPLETENESS_COLS = [
     "nutriscore_grade",
     "nova_group",
 ]
- 
- 
+
+
 # -- Helpers ------------------------------------------------------------------
- 
+
 def find_latest_sample(sample_dir):
     """Auto-detect the most recently created sample_all_*.csv file."""
     files = [
@@ -155,8 +155,8 @@ def find_latest_sample(sample_dir):
         )
     files.sort(reverse=True)
     return os.path.join(sample_dir, files[0])
- 
- 
+
+
 def clean_text(text):
     """
     1. Decode HTML entities  (&quot; -> "  &lt; -> <  etc.)
@@ -170,8 +170,8 @@ def clean_text(text):
     text = text.replace("\r\n", " ").replace("\r", " ").replace("\n", " ")
     text = re.sub(r"\s+", " ", text).strip()
     return text
- 
- 
+
+
 def cap_outliers(df):
     """Set physically impossible nutritional values to NaN and report them."""
     total_capped = 0
@@ -187,8 +187,8 @@ def cap_outliers(df):
     if total_capped == 0:
         print(f"    No outliers found")
     return df
- 
- 
+
+
 def add_missing_flags(df):
     """
     Add boolean flag columns for missing nutritional values.
@@ -200,8 +200,8 @@ def add_missing_flags(df):
         if col in df.columns:
             df[f"{col}_missing"] = df[col].isnull()
     return df
- 
- 
+
+
 def completeness_score(row):
     """
     Score a product 0-100 based on key structured field population.
@@ -216,28 +216,28 @@ def completeness_score(row):
         and str(row[col]).strip() not in ("", "nan", "NaN", "none", "None")
     )
     return round((filled / len(COMPLETENESS_COLS)) * 100)
- 
- 
+
+
 # -- Main cleaning pipeline ---------------------------------------------------
- 
+
 def clean(input_path):
- 
+
     print(f"\n  Input file: {os.path.basename(input_path)}")
     df = pd.read_csv(input_path, encoding="utf-8-sig")
     print(f"  Rows on load: {len(df)}")
- 
+
     # Step 1: Drop exact duplicate barcodes
     before = len(df)
     df = df.drop_duplicates(subset=["barcode"])
     dropped = before - len(df)
     print(f"\n  Step 1  - Duplicates: dropped {dropped} duplicate barcode(s)")
- 
+
     # Step 2: Drop rows with no product name AND no ingredients
     before = len(df)
     df = df[~(df["product_name"].isnull() & df["ingredients_text"].isnull())]
     print(f"  Step 2  - Empty rows: dropped {before - len(df)} "
           f"(no name + no ingredients)")
- 
+
     # Step 3: Clean HTML entities and whitespace artifacts
     for col in ["product_name", "brands", "ingredients_text",
                 "off_categories", "packaging"]:
@@ -252,7 +252,6 @@ def clean(input_path):
             r"(\d),(\d)", r"\1.\2", regex=True
         )
 
- 
     # Step 4: Normalise brands
     df["brands"] = (
         df["brands"]
@@ -274,11 +273,131 @@ def clean(input_path):
         .str.decode("ascii")
     print(f"  Step 4  - Brands normalised, primary_brand extracted, accents stripped")
 
- 
     # Step 5: Detect ingredient language
     df["ingredients_lang"] = df["ingredients_text"].apply(detect_language)
     lang_counts = df["ingredients_lang"].value_counts().to_dict()
     print(f"  Step 5  - Language detection: {lang_counts}")
- 
+
     # Step 6: Coerce nutritional columns to numeric
     for col in NUTRIMENT_COLS:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+    print(f"  Step 6  - Nutritional columns coerced to numeric")
+
+    # Step 7: Cap outliers
+    print(f"  Step 7  - Capping outliers:")
+    df = cap_outliers(df)
+
+    # Step 8: Add missing value flags
+    df = add_missing_flags(df)
+    print(f"  Step 8  - Missing value flags added "
+          f"({len(NUTRIMENT_COLS)} flag columns)")
+
+    # Step 9: Normalise nutriscore to uppercase
+    df["nutriscore_grade"] = (
+        df["nutriscore_grade"]
+        .astype(str)
+        .str.upper()
+        .str.strip()
+        .replace("NAN", None)
+    )
+    print(f"  Step 9  - Nutriscore normalised to uppercase")
+
+    # Step 10: Convert Unix timestamps to readable dates
+    for col in ["created_t", "last_modified_t"]:
+        if col in df.columns:
+            df[col] = pd.to_datetime(df[col], unit="s", errors="coerce")
+    print(f"  Step 10 - Timestamps converted to datetime")
+
+    # Step 11: Add completeness score
+    df["completeness_score"] = df.apply(completeness_score, axis=1)
+    avg = df["completeness_score"].mean()
+    print(f"  Step 11 - Completeness score added (avg: {avg:.1f}/100)")
+
+    # Step 11b: Extract primary country from pipe-separated countries field
+    df["primary_country"] = df["countries"].apply(
+        lambda x: str(x).split("|")[0]
+                         .replace("en:", "")
+                         .replace("-", " ")
+                         .title()
+                  if isinstance(x, str) and x.strip() not in ("", "nan")
+                  else "Unknown"
+    )
+    print(f"  Step 11b- Primary country extracted")
+    print(f"            Top countries: "
+          f"{df['primary_country'].value_counts().head(5).to_dict()}")
+
+    # Step 12: Flag rows eligible for ingredient-marker analysis (EN and FR only)
+    # OTHER/UNKNOWN rows retained for nutritional analysis but excluded
+    # from Option A ingredient marker analysis.
+    # BOTH = bilingual packaging, treated as eligible.
+    # Coverage: ~84% of rows based on 18 May 2026 sample.
+    # See docs/OBSERVATIONS.md OBS-001 and OBS-008.
+    df["ingredient_analysis_eligible"] = df["ingredients_lang"].isin(["EN", "FR", "BOTH"])
+    eligible = df["ingredient_analysis_eligible"].sum()
+    print(f"  Step 12 - Ingredient analysis eligible: {eligible} of {len(df)} rows "
+          f"({eligible/len(df)*100:.0f}%)")
+
+    # Step 13: Add nullable product_segment_label (v2 stub)
+    # Intentionally empty in v1. K-Means (Option B) will populate this.
+    # Column exists now so SQLite schema and Power BI model don't break.
+    # See docs/ADR.md ADR-005.
+    if "product_segment_label" not in df.columns:
+        df["product_segment_label"] = None
+    print(f"  Step 13 - product_segment_label column added (null, v2 stub)")
+
+    return df
+
+
+# -- Run ----------------------------------------------------------------------
+
+def main():
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    print(f"\nFood & Beverage Positioning Radar - clean.py")
+    print(f"Run timestamp: {timestamp}")
+
+    input_path = find_latest_sample(SAMPLE_DIR)
+    df = clean(input_path)
+
+    # Summary
+    print(f"\n  -- Summary --------------------------------------------------")
+    print(f"  Rows:    {len(df)}")
+    print(f"  Columns: {len(df.columns)}")
+
+    print(f"\n  Nulls in nutritional columns (after capping):")
+    for col in NUTRIMENT_COLS:
+        n   = df[col].isnull().sum()
+        pct = (n / len(df)) * 100
+        print(f"    {col:<25} {n:>3} missing ({pct:.0f}%)")
+
+    print(f"\n  Language distribution:")
+    print("  " + df["ingredients_lang"].value_counts().to_string()
+          .replace("\n", "\n  "))
+
+    print(f"\n  Nutriscore distribution:")
+    print("  " + df["nutriscore_grade"].value_counts().to_string()
+          .replace("\n", "\n  "))
+
+    print(f"\n  Completeness score:")
+    print("  " + df["completeness_score"].describe().round(1).to_string()
+          .replace("\n", "\n  "))
+
+    print(f"\n  Product records with low data completeness (score < 50):")
+    low = df[df["completeness_score"] < 50][
+        ["product_name", "brands", "completeness_score"]
+    ]
+    if len(low):
+        print("  " + low.to_string().replace("\n", "\n  "))
+    else:
+        print("  None - all records score >= 50")
+
+    # Save
+    output_filename = f"clean_{timestamp}.csv"
+    output_path     = os.path.join(SAMPLE_DIR, output_filename)
+    df.to_csv(output_path, index=False, encoding="utf-8-sig")
+    print(f"\n  Saved -> {output_filename}")
+    print(f"  ({len(df)} rows, {len(df.columns)} columns)\n")
+
+
+if __name__ == "__main__":
+    main()
