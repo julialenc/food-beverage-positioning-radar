@@ -41,7 +41,7 @@ One row per product (identified by barcode), sourced from Open Food Facts.
 | `nova_group` | REAL (1–4) | NOVA processing classification as recorded in Open Food Facts. 1 = unprocessed/minimally processed, 4 = ultra-processed. A reference classification, not a standalone verdict. |
 | `completeness_score` | INTEGER (0–100) | Data-quality indicator: the percentage of eleven key fields (product name, brands, ingredients text, six nutrition values, Nutri-Score, NOVA group) that are populated for this product. Calculated as `round(filled_fields / 11 * 100)`. Reflects completeness of the source record, not the quality of the product itself. |
 | `ingredients_lang` | TEXT (enum) | Detected language of `ingredients_text`: `EN`, `FR`, `BOTH` (bilingual packaging), `OTHER` (a different language, still retained), or `UNKNOWN` (text too short to classify). Keyword-based detection, not a language-ID model. |
-| `nlp_eligible` | INTEGER (1/0) | Whether this product's ingredient text is eligible for ingredient-based analysis (true for `EN`, `FR`, `BOTH`). Products in `OTHER`/`UNKNOWN` retain full nutrition data but are excluded from ingredient-marker analysis to avoid silent false negatives from an English/French-only dictionary. |
+| `ingredient_analysis_eligible` | INTEGER (1/0) | Whether this product's ingredient text is eligible for ingredient-based analysis (true for `EN`, `FR`, `BOTH`). Products in `OTHER`/`UNKNOWN` retain full nutrition data but are excluded from ingredient-marker analysis to avoid silent false negatives from an English/French-only dictionary. |
 | `created_t` | TEXT | Product creation timestamp in Open Food Facts, converted from Unix time. |
 | `last_modified_t` | TEXT | Last modification timestamp in Open Food Facts, converted from Unix time. Used to identify products to re-pull on incremental updates. |
 | `ingested_at` | TEXT | When this row was loaded into this database. |
@@ -54,6 +54,17 @@ ingredient-based, claim, and benchmark analysis. This table was previously
 named `nlp_results`; the new name better reflects that it now holds both
 text-based and image-based analysis, not only NLP output. A row may exist
 with mostly empty fields if a product has not yet been through analysis.
+
+**Null-interpretation note:** `product_analysis` declares its full schema
+upfront, but fields are populated in stages. Ingredient-stage fields are
+populated by `analyze.py`; pack-image metadata and `positioning_composition_gap`
+fields are populated by `merge_scores.py`; claim taxonomy and benchmark
+fields are populated by `tag_claims.py`. A null value in a later-stage
+field may mean that pipeline step hasn't run yet, or that the product
+wasn't selected for that stage of analysis — not necessarily that the
+product has no such signal. Pair `pack_analysis_attempted` with
+`pack_claims_found` when checking coverage, for example, since a null or
+empty `pack_claims_found` is ambiguous on its own (see below).
 
 ### Identification
 
@@ -69,10 +80,10 @@ independent of any pack claim or marketing language.
 
 | Column | Type | Description |
 |---|---|---|
-| `upf_marker_count` | INTEGER | Count of distinct ingredient-processing marker categories detected in `ingredients_text` (one count per category, even if multiple keyword variants for that category appear). |
-| `upf_markers_found` | TEXT | Pipe-separated list of the specific marker categories detected (e.g. `emulsifier`, `glucose_syrup`, `artificial_sweetener`). |
-| `upf_max_severity` | INTEGER (0–3) | The highest severity weight among detected markers for this product. |
-| `has_ultra_processed` | INTEGER (1/0) | Whether at least one processing-related marker was detected. |
+| `processing_marker_count` | INTEGER | Count of distinct ingredient-processing marker categories detected in `ingredients_text` (one count per category, even if multiple keyword variants for that category appear). |
+| `processing_markers_found` | TEXT | Pipe-separated list of the specific marker categories detected (e.g. `emulsifier`, `glucose_syrup`, `artificial_sweetener`). |
+| `processing_marker_max_severity` | INTEGER (0–3) | The highest severity weight among detected markers for this product. |
+| `has_processing_markers` | INTEGER (1/0) | Whether at least one processing-related marker was detected. |
 | `e_number_count` | INTEGER | Count of distinct flagged E-numbers detected in `additives_tags`. |
 | `e_numbers_found` | TEXT | Pipe-separated list of the specific E-numbers detected. |
 | `has_artificial_sweetener` | INTEGER (1/0) | Whether an artificial sweetener was detected, via either `additives_tags` or ingredient-text keywords. |
@@ -99,27 +110,34 @@ from claims printed on the front of pack.
 These fields are populated only for products that have undergone image-based
 claim extraction — a subset of the full product table. Coverage to date is
 roughly 4,700 products, selected via a tiered sampling strategy (see
-`docs/METHODOLOGY.md`).
+`docs/METHODOLOGY.md`). All fields in this section are declared in the
+schema upfront but populated by `merge_scores.py`, not by `analyze.py`.
 
 | Column | Type | Description |
 |---|---|---|
-| `pack_analysis_attempted` | INTEGER (1/0) | **Recommended new column.** Whether this product was actually submitted for image-based claim extraction, regardless of outcome. Needed because a product that was analyzed and found to have no claims is otherwise indistinguishable from a product never analyzed at all — both currently leave `pack_claims_found` empty. Source: the OCR/LLM success status already computed in the claim-merging step; requires writing one additional field to the database. |
+| `pack_analysis_attempted` | INTEGER (1/0) | Whether this product was actually submitted for image-based claim extraction, regardless of outcome. Distinguishes a product analyzed and found to have no claims from a product never analyzed at all — both otherwise leave `pack_claims_found` empty. |
+| `ocr_text` | TEXT | Raw text extracted from the front-of-pack image by OCR. Used for auditability, prompt evaluation, and error analysis. Null for products without a usable image or where OCR failed. |
+| `ocr_status` | TEXT | Status of the OCR step (e.g. success, no usable image, OCR failure, insufficient readable text). Exact values follow the vision pipeline implementation in `vision_extract.py`. |
+| `llm_status` | TEXT | Status of the LLM claim-extraction step (e.g. success, parsing failure, empty output, skipped because OCR was unavailable). Exact values follow the vision pipeline implementation. |
+| `vision_model` | TEXT | Model or deployment used for pack-image claim extraction (e.g. `gpt-4.1-nano`). Recorded for reproducibility, cost comparison, and model benchmarking — see `docs/METHODOLOGY.md` and the planned v3.5 model comparison in `docs/ADR.md`. |
+| `prompt_version` | TEXT | Version identifier for the prompt/extraction schema used during LLM claim extraction. Avoids mixing outputs from incompatible extraction logic when prompts are revised. |
+| `pack_analysis_timestamp` | TEXT | When pack-image analysis was performed or merged into the database. Distinct from `analyzed_at`, which reflects the most recent write to the row from any pipeline stage. |
 | `pack_claims_found` | TEXT | Pipe-separated list of claims identified directly from the front-of-pack image via OCR and structured extraction (e.g. `protein_claim`, `no_added_sugar`, `vegan_claim`, `heritage_claim`). The primary source for claim taxonomy when available. |
 
 ### Claim taxonomy (two-cut classification)
 
 | Column | Type | Description |
 |---|---|---|
-| `claim_category_1` | TEXT (enum) | Broad claim category: `FUNCTIONAL` (claims of having or doing something — protein, fibre, vitamins, gut health, immune support, energy); `FREE_OF` (claims of not having something, or having reduced amounts — no added sugar, gluten-free, dairy-free, vegan, plant-based, no artificial ingredients); `NATURAL_ORGANIC` (organic, natural, clean-label, minimal-ingredient, or origin/naturalness claims); `OTHER` (heritage, comparative, sustainability, artisan); `NO_CLAIM` (no claim identified). Vegan and plant-based claims are classified under `FREE_OF` since they typically function as absence/substitution claims (free from animal-derived ingredients); this can be revisited if a dedicated lifestyle-claim category is needed later. |
-| `claim_category_2` | TEXT (enum) | A more specific sub-category within `claim_category_1` (e.g. `protein`, `gut_health`, `no_added_x`, `free_from`, `natural`, `organic`, `heritage`, `comparative`). |
-| `claim_source` | TEXT (enum) | **Recommended new column** (currently computed in memory only, not persisted). `vision` if `pack_claims_found` is non-empty, `nlp_only` otherwise. Note this does not by itself distinguish "never analyzed" from "analyzed, no claims found" — pair with `pack_analysis_attempted` for accurate coverage reporting. |
+| `claim_category_1` | TEXT (enum) | Broad claim category: `FUNCTIONAL` (claims of having or doing something — protein, fibre, vitamins, gut health, immune support, energy); `FREE_OF` (claims of not having something, or having reduced amounts — no added sugar, gluten-free, dairy-free, vegan, plant-based, no artificial ingredients); `NATURAL_ORGANIC` (organic, natural, clean-label, minimal-ingredient, or origin/naturalness claims); `OTHER` (heritage, comparative, sustainability, artisan); `NO_CLAIM` (no claim identified). Vegan and plant-based claims are classified under `FREE_OF` since they typically function as absence/substitution claims (free from animal-derived ingredients); this can be revisited if a dedicated lifestyle-claim category is needed later. Populated by `tag_claims.py`. |
+| `claim_category_2` | TEXT (enum) | A more specific sub-category within `claim_category_1` (e.g. `protein`, `gut_health`, `no_added_x`, `free_from`, `natural`, `organic`, `heritage`, `comparative`). Populated by `tag_claims.py`. |
+| `claim_source` | TEXT (enum) | Indicates the evidence layer used for claim taxonomy classification. Values: `vision` when front-of-pack claim extraction is available; `ingredient_text_only` when classification relies on product name, labels, or ingredient/name-derived signals only. Helps users interpret coverage and avoid treating all claim classifications as equally evidence-rich. Pair with `pack_analysis_attempted` to distinguish "never analyzed" from "analyzed, no claims found." Populated by `tag_claims.py`. |
 
 ### Benchmark flags and intersections
 
 | Column | Type | Description |
 |---|---|---|
-| `nutrition_benchmark_flags` | TEXT | Pipe-separated list of nutrients whose declared per-100g/100ml value exceeds a reference threshold for sugar, saturated fat, fat, or salt. Thresholds follow the UK Food Standards Agency's front-of-pack labelling guidance and are used here as a single reference scheme for cross-product comparison. The EU's mandatory nutrition declaration, Regulation 1169/2011, requires these nutrient values to be stated on pack but does not itself define high/low thresholds — that was deliberately left to individual schemes. In the MVP, liquid vs solid is approximated using an energy-density proxy (under 100 kcal/100ml treated as liquid); this may misclassify some categories and should be reviewed if benchmark flags become a central reporting layer. Computed independently of any claim; not a health verdict or legal assessment. |
-| `claim_benchmark_intersections` | TEXT | Pipe-separated list of specific instances where an extracted claim co-occurs with a relevant nutrition, ingredient, or processing benchmark signal (e.g. a protein claim alongside high saturated fat, or a no-added-sugar claim alongside high total sugar). Describes co-occurrence only; does not indicate that a claim is false, illegal, or misleading. |
+| `nutrition_benchmark_flags` | TEXT | Pipe-separated list of nutrients whose declared per-100g/100ml value exceeds a reference threshold for sugar, saturated fat, fat, or salt. Thresholds follow the UK Food Standards Agency's front-of-pack labelling guidance and are used here as a single reference scheme for cross-product comparison. The EU's mandatory nutrition declaration, Regulation 1169/2011, requires these nutrient values to be stated on pack but does not itself define high/low thresholds — that was deliberately left to individual schemes. In the MVP, liquid vs solid is approximated using an energy-density proxy (under 100 kcal/100ml treated as liquid); this may misclassify some categories and should be reviewed if benchmark flags become a central reporting layer. Computed independently of any claim; not a health verdict or legal assessment. Populated by `tag_claims.py`. |
+| `claim_benchmark_intersections` | TEXT | Pipe-separated list of specific instances where an extracted claim co-occurs with a relevant nutrition, ingredient, or processing benchmark signal (e.g. a protein claim alongside high saturated fat, or a no-added-sugar claim alongside high total sugar). Describes co-occurrence only; does not indicate that a claim is false, illegal, or misleading. Populated by `tag_claims.py`. |
 
 ### Named intersection patterns
 
@@ -155,6 +173,22 @@ rather than carried forward as permanently empty columns.
 Pre-aggregated brand/category statistics, computed so that downstream
 reporting tools never need to query raw product rows for trend views.
 
+**Scope: this table is ingredient-stage only, not the final market-
+intelligence summary.** It is computed inside `load.py`, which runs
+before `merge_scores.py` and `tag_claims.py` enrich the database — so it
+necessarily reflects ingredient-analysis-stage signals only (composition
+markers, NOVA, ingredient-based claim signals). It does not include pack
+claim distribution, claim taxonomy shares, benchmark intersection rates,
+or `positioning_composition_gap`. A separate aggregation step, run after
+the full pipeline completes and querying `product_analysis` directly, is
+needed for the richer market-intelligence summary described in the brief.
+This table is useful for early pipeline QA, not as the final Power BI
+deck source. `load.py` deletes existing rows for the current day's
+`week_ending` before inserting, so rerunning on the same day does not
+create duplicate trend rows — for production weekly reporting, this
+should instead reflect the full database snapshot, not a same-day-only
+guard. See `docs/ADR.md`.
+
 **Two changes from the prior schema, flagged for awareness:** the prior
 version grouped by the raw `brands` field rather than the normalized
 `primary_brand` used everywhere else in the pipeline, fragmenting brand
@@ -177,7 +211,7 @@ underlying bug.
 | `pct_nova4` | REAL | Percentage of products in this grouping classified as NOVA group 4. |
 | `pct_with_ingredient_based_claim_signals` | REAL | Percentage of products with at least one detected ingredient-based claim signal. |
 | `pct_with_artificial_sweetener` | REAL | Percentage of products containing an artificial sweetener. |
-| `top_claim_type` | TEXT | The most frequently detected claim signal in this grouping. |
+| `top_ingredient_based_claim_signal` | TEXT | The most frequently detected ingredient/name-derived claim signal within this grouping, based on `ingredient_based_claim_signals_found`. Not necessarily the top front-of-pack claim — reflects the ingredient-analysis stage only and should not be used as a final claim taxonomy measure once `claim_category_1`/`claim_category_2` are available. (Renamed from `top_claim_type` for clarity.) |
 | `run_timestamp` | TEXT | When this aggregation row was computed. |
 
 ## Table: `ingestion_log`
@@ -214,11 +248,27 @@ ingredient profile can still score up to 40 — the name "gap" is accurate for
 roughly 60 of the 100 points and only loosely descriptive of the rest. No
 formula change is proposed here; the description above states this plainly so
 the methodology document doesn't overclaim what the number means.
-2. **`pack_analysis_attempted` and `claim_source` are new, not yet implemented**
-columns requiring a small addition to the claim-merging step, not just a
-rename. Confirm before they're treated as part of the schema.
-3. **`composition_marker_band` and `positioning_composition_gap_band` band
-labels** (`Extensive/Moderate/Limited/Minimal markers`; presumably similar
-neutral labels for the gap score, not yet finalized) are proposed defaults —
-these are stored as literal text in the database, so confirm wording before
-the rename is applied in code.
+2. **`pack_analysis_attempted` and `claim_source` are now part of the declared
+schema** in `load.py`'s `DDL_PRODUCT_ANALYSIS`, along with six AI-engineering
+readiness fields (`ocr_text`, `ocr_status`, `llm_status`, `vision_model`,
+`prompt_version`, `pack_analysis_timestamp`). All twelve are nullable and
+populated later by `merge_scores.py`/`tag_claims.py` via `UPDATE` — not yet
+implemented in those scripts, but the schema is ready for them.
+3. **`composition_marker_band` labels are now finalized and implemented**
+(`Extensive/Moderate/Limited/Minimal markers`, applied in `analyze.py`).
+**`positioning_composition_gap_band`'s labels are still open** — to be
+decided when `merge_scores.py` is updated.
+4. **`upf_*` columns and `has_ultra_processed` renamed to the `processing_*`
+family** (`processing_marker_count`, `processing_markers_found`,
+`processing_marker_max_severity`, `has_processing_markers`) — applied
+throughout this document and in `analyze.py`. `ULTRA_PROCESSED_MARKERS`
+remains as an internal Python constant name in `analyze.py` (not a
+database column, so not in scope for this rename).
+5. **A final market-intelligence aggregation layer is planned but not yet
+built.** `weekly_brand_summary` is ingredient-stage only (see its scope
+note above). A richer summary — claim taxonomy shares, pack claim
+distribution, benchmark intersection rates, average
+`positioning_composition_gap` — needs a dedicated script run after
+`merge_scores.py` and `tag_claims.py`, querying `product_analysis`
+directly. This document will be updated with new table(s) once that
+script is written.

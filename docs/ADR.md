@@ -35,8 +35,12 @@ Streamlit and Power BI consumption.
 
 **Core analytical question:** How do packaged foods and beverages position
 themselves through claims, ingredients, nutrition, processing, and product
-design — and where does front-of-pack positioning diverge from composition
-indicators?
+design?
+
+One analytical lens compares front-of-pack positioning with composition
+indicators, but the broader system is designed for market intelligence:
+product segments, claim territories, ingredient systems, category
+patterns, benchmark intersections, and product-level evidence.
 
 ---
 
@@ -131,8 +135,8 @@ EN=11%, BOTH=3%, OTHER=14%, UNKNOWN=3%. The ingredient marker dictionary
 covers EN and FR — applying it to Arabic, Bulgarian, or German ingredient
 text produces silent false negatives (no markers detected where markers
 are present). This is worse than transparently flagging as ineligible.
-The `nlp_eligible` boolean column makes this visible in every downstream
-table.
+The `ingredient_analysis_eligible` boolean column makes this visible in
+every downstream table.
 
 **German as v1.5 candidate (OBS-009):** German ingredient vocabulary
 shares significant overlap with EN/FR (maltodextrin, lecithin,
@@ -492,14 +496,14 @@ ingest.py         →  data/raw/*.json
 
 clean.py          →  data/sample/clean_*.csv
                      [contract: same columns + cleaned text, language
-                      flags, completeness_score, nlp_eligible,
+                      flags, completeness_score, ingredient_analysis_eligible,
                       primary_brand, primary_country,
                       product_segment_label (null)]
 
 analyze.py        →  data/sample/analyzed_*.csv
                      [contract: all clean columns + ingredient analysis
                       output: composition_marker_score,
-                      composition_marker_band, upf_markers_found,
+                      composition_marker_band, processing_markers_found,
                       ingredient_based_claim_signals_found,
                       absence_reduction_claims_found]
 
