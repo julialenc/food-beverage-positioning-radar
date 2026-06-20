@@ -57,6 +57,9 @@ the use case.
 
 Required attribution: **Open Food Facts** — [https://world.openfoodfacts.org](https://world.openfoodfacts.org)
 
+This document is not legal advice; users planning to redistribute derived
+datasets should review the ODbL terms for their specific use case.
+
 ## Methodology limitations
 
 **Language coverage.** Ingredient-based analysis (composition marker score,
@@ -68,12 +71,16 @@ negatives from an English/French-only dictionary. This affects approximately
 16% of products in the current dataset.
 
 **Image-based claim coverage.** Pack-image claim extraction covers
-approximately 4,700 products — a tiered sample prioritising brands and
-categories most likely to carry front-of-pack positioning claims. Products
-outside this sample have ingredient-text and product-name signals only.
-Claim taxonomy and claim-benchmark intersections should not be interpreted
-as comprehensive for any brand or category unless that brand/category is
-well-represented in the vision-analyzed subset.
+approximately 4,700 products — a purposive tiered sample prioritising
+brands and categories most likely to carry front-of-pack positioning
+claims, not a market-representative one (see `docs/METHODOLOGY.md`).
+Products outside this sample rely on ingredient/name-derived signals only. Claim taxonomy and claim-benchmark intersections should not
+be interpreted as comprehensive for any brand or category unless that
+brand/category is well-represented in the vision-analyzed subset. Check
+`pack_analysis_attempted` and `claim_source` (see
+`docs/COLUMN_DESCRIPTIONS.md`) on a per-product basis before treating any
+claim-taxonomy result as pack-image-confirmed rather than ingredient-text
+fallback.
 
 **Nutrition benchmark thresholds.** The reference thresholds used for
 nutrition benchmark flags (sugar, saturated fat, fat, salt) follow the UK
@@ -99,14 +106,43 @@ present). A product with no detected claims can still receive a non-zero
 score from the ingredient-marker component alone. See `docs/METHODOLOGY.md`
 for the full breakdown.
 
+**Weekly summary tables describe an observed snapshot, not the market.**
+`weekly_brand_positioning_summary` (see `docs/METHODOLOGY.md` for the
+distinction between this table and the ingredient-stage-only
+`weekly_brand_summary`) reflects the Open Food Facts product universe as
+represented in the current database snapshot at the time it was computed.
+It does not measure retail distribution, market share, sales velocity, or
+consumer penetration — the same "no sales data" limitation above applies
+to every aggregate derived from this table, including any brand- or
+category-level trend shown in the Power BI deck.
+
+**Serving-size and usage context.** Most nutrition comparisons in this
+tool are made per 100g or 100ml to allow consistent cross-product
+comparison. They do not account for typical serving size, consumption
+frequency, preparation method, or usage occasion. A product intended to
+be consumed in small portions may look different under a per-100g
+comparison than under a serving-based view. This is especially relevant
+for spreads, sauces, confectionery, powders, cereals, sports gels, and
+concentrated drinks. Serving-size analysis may be added in a future
+version if source-data completeness is sufficient.
+
 ## Extraction and detection limitations
 
+**Model and prompt dependency.** Pack-claim extraction depends on the OCR
+engine, LLM deployment, prompt version, and model behavior at the time of
+the run. Results may change if the model, prompt, OCR service, or
+extraction rules are updated. The pipeline records `vision_model`,
+`prompt_version`, `ocr_status`, `llm_status`, and `pack_analysis_timestamp`
+(see `docs/COLUMN_DESCRIPTIONS.md`) so extraction results can be audited
+and compared across runs.
+
 **Sports nutrition and performance products.** Products designed for
-endurance or performance use may show nutrition benchmark flags, such as
-high sugar or high energy, that reflect intended product use rather than
-an unexpected product profile. The pipeline does not currently detect
-distribution channel or intended use context, so sports nutrition products
-are treated identically to general packaged foods.
+endurance or performance use may show benchmark or composition signals,
+such as sugar above reference thresholds or high energy density, that
+reflect intended product use rather than an unexpected product profile.
+The pipeline does not currently detect distribution channel, target user,
+or intended use occasion, so sports nutrition products are treated
+identically to general packaged foods.
 
 **Promotional pack elements.** Claims such as "+10% free", "new size", or
 "now with 20% more" can be misclassified as comparative positioning claims
@@ -128,8 +164,9 @@ products) can trigger fortification or functional claim signals from
 ingredient text alone. A parenthetical-stripping step is applied before
 ingredient-based claim detection to reduce this, but edge cases may remain.
 
-**"Nature" as a brand element.** In French, Belgian, and Swiss markets, the
-word "nature" used as a flavour descriptor (e.g. "yaourt nature" = plain
-yogurt) may be detected as a naturalness/clean-label signal by
-ingredient-text analysis. This is a known false-positive pattern for plain
-dairy products in these markets.
+**"Nature" as a flavour descriptor.** In French, Belgian, and Swiss
+markets, the word "nature" is often used as a flavour descriptor (e.g.
+"yaourt nature" = plain yogurt). It can be mistaken for a naturalness or
+clean-label signal in ingredient-text or product-name analysis. This is a
+known false-positive pattern for plain dairy and bakery products in these
+markets.

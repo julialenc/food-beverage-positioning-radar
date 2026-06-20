@@ -59,10 +59,12 @@ and the OFF bulk CSV export for production-scale analysis.
 
 **Rationale:** OFF is the only open, crowdsourced, global food product
 database with structured nutritional data, ingredient lists, NOVA group
-classifications, and Nutri-Score grades at scale. Commercial alternatives
-(Nielsen, Mintel, Innova Market Insights) cost tens of thousands per year
-and do not permit redistribution. OFF data is licensed under ODbL — open
-for analysis, attribution required, share-alike for derivative databases.
+classifications, and Nutri-Score grades at scale. Commercial
+product-intelligence databases (Nielsen, Mintel, Innova Market Insights)
+are enterprise subscription products and are not reproducible or
+redistributable in the same way as an open-data pipeline. OFF data is
+licensed under ODbL — open for analysis, attribution required,
+share-alike for derivative databases.
 
 **Alternatives considered:**
 
@@ -226,11 +228,11 @@ The SQLite schema includes `product_segment_label TEXT` in the
 
 **Rationale:** Front-of-pack claim extraction has higher analytical value
 for the core positioning question — it captures pack communication signals
-that cannot be inferred from ingredient text alone. The gap between what
-`analyze.py` finds in the ingredient list and what the vision pipeline
-finds on the front of pack is the positioning-to-composition gap. Without
-pack-image claims, the metric is ingredient-only and cannot represent
-front-of-pack positioning.
+that cannot be inferred from ingredient text alone. The vision pipeline
+supplies the front-of-pack evidence layer needed to compute the
+positioning-to-composition composite signal in `merge_scores.py`.
+Without pack-image claims, the metric is ingredient-only and cannot
+represent front-of-pack positioning.
 
 **Smart sampling strategy:** Do not analyze all products. Prioritize
 brands and categories where positioning claims are most likely to be
@@ -251,18 +253,30 @@ were evaluated but gpt-4.1-nano was selected on cost/quality grounds.
 ### ADR-007 — Storage: SQLite + CSV dual output
 
 **Date:** 20 May 2026
-**Status:** Active
+**Status:** Active — schema extended by ADR-012
 
 **Decision:** Store all pipeline output in SQLite with concurrent CSV
 export for Power BI and notebooks.
 
-**Schema (four tables):**
+**Schema (six tables, two groups):**
 
+Core/load tables (owned by `load.py`):
 - `products` — identity and nutrition, UPSERT on barcode
 - `product_analysis` — ingredient markers, extracted claims, benchmark
   flags, and positioning metrics, UPSERT on barcode
-- `weekly_brand_summary` — pre-aggregated for Power BI trend charts
+- `weekly_brand_summary` — ingredient-stage QA / early summary only,
+  computed at `load.py` time before pack-image claims or claim taxonomy
+  exist. NOT the final Power BI market-intelligence table — see
+  `weekly_brand_positioning_summary` below and ADR-012.
 - `ingestion_log` — one row per pipeline run, full audit trail
+
+Final reporting tables (owned by `db_summary.py`, see ADR-012):
+- `weekly_brand_positioning_summary` — the actual pre-aggregated
+  market-intelligence summary for Power BI trend charts, computed from
+  the full database snapshot after `merge_scores.py` and `tag_claims.py`
+  have run
+- `positioning_example_products` — curated product-level examples for
+  Streamlit/Power BI overview pages
 
 **Why SQLite not PostgreSQL:** Single-developer research project. SQLite
 is zero-infrastructure, file-based, version-controllable (schema.sql),
@@ -270,9 +284,9 @@ and sufficient for hundreds of thousands of rows. Migration to PostgreSQL
 requires changing one connection string and no other code.
 
 **Why pre-aggregate for Power BI:** DAX calculations on 100,000+ raw
-rows are slow. `weekly_brand_summary` pre-computes brand-level metrics
-in Python so Power BI does only rendering. This pattern scales to any
-dataset size.
+rows are slow. `weekly_brand_positioning_summary` pre-computes
+brand-level metrics in Python so Power BI does only rendering. This
+pattern scales to any dataset size.
 
 **UPSERT logic:** INSERT OR REPLACE on barcode primary key. Safe to run
 multiple times. Handles Open Food Facts contributor corrections to
@@ -351,8 +365,9 @@ claim-territory analysis.
 **Status:** Active — implemented from v3 onward
 
 **Decision:** The `positioning_composition_gap` Components B (claim
-weight) and C (context penalty) are fed exclusively by Azure Vision
-front-of-pack extraction output, not by ingredient text analysis.
+weight) and C (processing/nutrition context weight) are fed exclusively
+by Azure Vision front-of-pack extraction output, not by ingredient text
+analysis.
 
 **Rationale:** Component B in the original v1 design used ingredient text
 as a proxy for front-of-pack claims. This produced systematic false
@@ -440,9 +455,11 @@ architecture varies across category and sub-brand.
 
 Dimension 1 — Communication approach (HOW brands make claims):
 
-1. Regulatory language: jurisdiction-specific approved wording applied
-   to specific nutrient-delivery formats. Example: Actimel uses EU
-   Regulation 432/2012 language for vitamins B6 and D.
+1. Authorized health-claim style language: jurisdiction-specific
+   approved wording applied to specific nutrient-delivery formats.
+   Example: Actimel uses EU Regulation 432/2012 language for vitamins
+   B6 and D. Describes the communication style observed, not a
+   compliance assessment by this tool.
 2. Numeric precision: hard numbers as primary differentiators. Example:
    Kellogg's Special K "12g protein", "HIGH FIBRE", "VITAMINS B6 B12 D".
 3. Transparency positioning: ingredient simplicity used as a positioning
@@ -459,26 +476,72 @@ Dimension 2 — Benefit territory (WHAT is claimed):
 - Fortification: vitamins and minerals; often via proprietary marks
 - Natural / clean label: transparency + origin + no artificial
 - Plant-based: product-identity and substitution positioning
-- Immune support: regulatory-language claim territory
+- Immune support: authorized health-claim style language territory
 - Energy / performance: duration and endurance claims
 - Free-from: gluten-free, lactose-free, dairy-free
 
 The intersection of both dimensions identifies specific product
 positioning patterns, for example: Protein × Numeric (Special K
-"12g PROTEIN MEAL BARS"), Immune × Regulatory (Actimel vitamins B6+D),
-Natural × Transparency (Kind), Fortification × Proprietary (Nestlé
-OPTI-GROW).
+"12g PROTEIN MEAL BARS"), Immune × Authorized health-claim style
+(Actimel vitamins B6+D), Natural × Transparency (Kind), Fortification ×
+Proprietary (Nestlé OPTI-GROW).
 
 **Implications for analysis:**
 
-- Filter brand rankings to n ≥ 20 products per brand to surface
-  Type 3 portfolio-scale patterns
+- Filter brand-level summary views to n ≥ 20 products per brand to
+  surface Type 3 portfolio-scale patterns
 - Type 1 brands dominate raw metric rankings but are less analytically
   informative for positioning-to-composition gap analysis
 - Type 2 brands are the most illustrative case studies for the gap
   between ingredient composition and front-of-pack communication
 - Vegan and plant-based claims are classified as product-identity and
   substitution positioning rather than a nutritional benefit claim
+
+---
+
+### ADR-012 — Final reporting aggregation layer separated from claim tagging
+
+**Date:** June 2026
+**Status:** Active
+
+**Decision:** `db_summary.py` is a dedicated final reporting aggregation
+layer, run after `merge_scores.py` and `tag_claims.py`, kept separate
+from `tag_claims.py` itself.
+
+**Rationale:** `tag_claims.py`'s job is product-level classification —
+claim taxonomy, benchmark flags, claim-benchmark intersections. This is
+analysis: it operates on one product at a time. `db_summary.py`'s job is
+reporting: brand/category summaries, claim territory distributions,
+benchmark intersection rates, and a curated set of product-level
+examples for Streamlit and Power BI overview pages. These are different
+responsibilities, and keeping them in separate scripts keeps each one
+focused and independently testable.
+
+**Full snapshot, not weekly diff:** `db_summary.py` always recomputes
+its summary from the full current database snapshot, regardless of
+whether that snapshot was built via a one-time bulk export or updated
+incrementally via a weekly API diff. This avoids ever reporting
+"products changed this week" as if it were "the observed market this
+week" — a load-bearing rule for any future production/incremental run.
+
+**Two new tables, two different lifecycles:**
+- `weekly_brand_positioning_summary` — a time series (one row per
+  `week_ending` per brand/category), enabling trend queries such as
+  "% of products with a protein claim over time." Existing rows for the
+  same `week_ending` are replaced on rerun; rows from prior periods are
+  preserved.
+- `positioning_example_products` — NOT a time series. A small, neutral
+  showcase of curated product examples, fully replaced (truncate +
+  reinsert) on every run, with no historical accumulation.
+
+**Why these tables aren't declared upfront by `load.py`:** `load.py`'s
+"declare the full schema upfront" pattern (ADR-010 update) applies to
+`product_analysis`, a table multiple pipeline stages enrich over a
+single product row's lifetime. These two reporting tables have a
+different lifecycle entirely — periodic snapshots and full-replace
+showcases, not progressively-enriched rows — so `db_summary.py` owns
+its own DDL directly, the same way `load.py` owns the DDL for the
+tables it's responsible for.
 
 ---
 
@@ -507,28 +570,65 @@ analyze.py        →  data/sample/analyzed_*.csv
                       ingredient_based_claim_signals_found,
                       absence_reduction_claims_found]
 
-vision_extract.py →  data/reference/vision_results_*.csv
-                     [contract: barcode, ocr_text, ocr_status,
-                      llm_status, pack_claims_found, v3_* claim fields]
-
-merge_scores.py   →  database/positioning_radar.db (v3 scores updated)
-                     data/sample/merged_results_*.csv
-                     [contract: barcode join of analyzed + vision results,
-                      positioning_composition_gap,
-                      positioning_composition_gap_band]
-
-tag_claims.py     →  database/positioning_radar.db (claim taxonomy added)
-                     data/sample/powerbi_tagged_*.csv
-                     [contract: claim_category_1, claim_category_2,
-                      nutrition_benchmark_flags,
-                      claim_benchmark_intersections,
-                      intersection pattern flags]
-
 load.py           →  database/positioning_radar.db
                      data/sample/powerbi_products_*.csv
                      data/sample/powerbi_analysis_*.csv
-                     [contract: SQLite schema as defined in DDL_* constants]
+                     [contract: full product_analysis schema declared
+                      upfront via DDL_* constants — see ADR-010 update
+                      below — including fields not yet populated by
+                      analyze.py]
+
+smart_sample.py   →  data/sample/smart_sample_*.csv
+                     [contract: barcode, image_url, tier, sampling_reason
+                      — a purposive priority sample, not a market-
+                      representative one, selected for pack-image
+                      extraction]
+
+vision_extract.py →  data/reference/vision_results_*.csv
+                     [contract: barcode, ocr_text, ocr_status,
+                      llm_status, vision_model, prompt_version,
+                      pack_analysis_timestamp, claims_json, v3_* raw
+                      claim fields. Does NOT output pack_claims_found —
+                      that is computed in merge_scores.py from the v3_*
+                      fields via an explicit allowlist.]
+
+merge_scores.py   →  database/positioning_radar.db (pack-image results
+                     and positioning_composition_gap written)
+                     data/sample/merged_results_*.csv
+                     [contract: barcode join of analyzed + vision results;
+                      writes attempt metadata for every product attempted
+                      this run, result fields only where extraction
+                      succeeded — never overwrites a prior successful
+                      result with NULL on a failed rerun]
+
+tag_claims.py     →  database/positioning_radar.db (claim taxonomy added)
+                     data/sample/powerbi_tagged_*.csv
+                     [contract: claim_source, claim_category_1,
+                      claim_category_2, nutrition_benchmark_flags,
+                      claim_benchmark_intersections — UPDATE only, no
+                      ALTER TABLE, since load.py already declares these
+                      columns]
+
+db_summary.py     →  database/positioning_radar.db (weekly_brand_positioning_summary
+                     and positioning_example_products written)
+                     data/sample/powerbi_final_*.csv
+                     [contract: queries the full current database
+                      snapshot, not intermediate CSVs — recomputed from
+                      scratch every run regardless of whether the
+                      snapshot was built via bulk export or weekly API
+                      diff, so a weekly reporting summary never gets
+                      mistaken for "products changed this week" instead
+                      of "the observed market this week". See ADR-012.]
 ```
+
+**Supporting utilities** (not part of the core data-transformation chain,
+run separately for QA/maintenance): `validate_tags.py` is a manual QA
+sampler for spot-checking claim taxonomy output; `export_schema.py`
+exports the live database's actual tables and indexes to
+`database/schema.sql` for reference; `verify_schema.py` checks the live
+database against the current code's DDL constants across all six
+tables, to catch schema drift if `positioning_radar.db` was created
+under an older version of the pipeline.
 
 **v2 upgrade (segmentation):** Replace the stub in `analyze.py`. No
 other files change. `product_segment_label` column populates
@@ -549,13 +649,19 @@ pipeline steps.
 | No sales volume data | Cannot measure market share | Documented in `docs/LIMITATIONS.md` |
 | Brand fragmentation | Conglomerate aggregations need care | Company mapping in `data/reference/`; category filters recommended |
 | OFF category folksonomy | Some category misclassification | Refined using `off_categories` full hierarchy field |
-| Image-based analysis covers a subset | Claim taxonomy incomplete for non-sampled products | ~4,700 products analyzed; `pack_analysis_attempted` flag indicates coverage |
+| Image-based analysis covers a subset | Front-of-pack claim coverage is incomplete for non-sampled products; fallback taxonomy may rely on product name, labels, and ingredient/name-derived signals | ~4,700 products analyzed; `pack_analysis_attempted` flag indicates coverage |
 | Sports nutrition context | Benchmark flags may reflect intended use, not unexpected profile | Documented in `docs/LIMITATIONS.md` |
 | Liquid/solid classification is a proxy | Energy-density heuristic may misclassify some formats | MVP approximation; flagged for review if benchmark flags become central |
 
 ---
 
 ## Versioning summary
+
+Version numbers refer to capability layers developed during the
+project, not a strictly linear product-release sequence — this is why
+v1 can show "rebuilding" status while v3 shows "complete": each
+version tracks a distinct capability (ingredient analysis, vision
+extraction, segmentation), not a sequential release train.
 
 | Version | Status | Core deliverable |
 |---|---|---|
@@ -569,4 +675,6 @@ pipeline steps.
 ---
 
 *This document is updated as new decisions are made.*
-*Last updated: June 2026*
+*Last updated: June 2026 (ADR-012 added; modular contract corrected to
+actual execution order and extended to db_summary.py and supporting
+utilities)*

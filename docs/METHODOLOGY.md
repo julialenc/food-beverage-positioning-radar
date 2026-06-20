@@ -23,9 +23,10 @@ database licensed under the Open Database License (ODbL). See
 
 ## Pack-image claim extraction process
 
-A subset of products (currently around 4,700, selected via a tiered sampling
-strategy favouring brands and categories where positioning claims are most
-likely to be present) have undergone front-of-pack image analysis: Azure AI
+A subset of products (currently around 4,700, selected via a purposive
+tiered sampling strategy favouring brands and categories where positioning
+claims are most likely to be present) have undergone front-of-pack image
+analysis: Azure AI
 Vision's Read API performs OCR on the product image, and the extracted text
 is passed to Azure OpenAI's `gpt-4.1-nano` deployment for structured claim
 extraction. Total cost for the full run to date was approximately 8 CHF.
@@ -40,19 +41,32 @@ measure.
 ### Claim taxonomy
 **Status:** Implemented
 **What it measures:** Groups pack claims into five categories — functional,
-free-from/reduced, organic/natural, other positioning, or no detected claim —
-and a secondary sub-category (e.g. protein, gut health, no added sugar,
-heritage). Sourced from pack-image extraction where available, falling back
-to ingredient-text and product-name signals otherwise.
+free-from / reduced-content, natural/organic, other positioning, or no claim
+identified — and a secondary sub-category (e.g. protein, gut health, no
+added sugar, heritage). Sourced from pack-image extraction where
+available (`claim_source` = `vision`), falling back to combined
+ingredient-text and product-name signals otherwise (`claim_source` =
+`ingredient_text_only`). Stored category codes (`FUNCTIONAL`, `FREE_OF`,
+etc.) are not display-ready — see `docs/UI_LABELS.md` for the
+canonical code-to-label mapping used by the Streamlit app and Power BI
+deck.
 **What it does not measure:** Whether a claim is legally valid, substantiated,
-or compliant with food labelling regulation in any jurisdiction.
+or compliant with food labelling regulation in any jurisdiction. It also
+reflects only the single highest-priority category present on a
+product, not a complete count of every claim territory found — for
+that, the underlying `pack_claims_found` field lists every individual
+claim detected.
 
 ### Ingredient markers
 **Status:** Implemented
 **What it measures:** Identifies ingredient-processing markers in the
 ingredient list (e.g. emulsifiers, artificial sweeteners, glucose syrups,
-modified starches) and summarizes them into a severity-weighted score. This
-is a composition-only signal, computed independently of any pack claim.
+modified starches) and summarizes them into a weighted score
+(`composition_marker_score`, 0–40, using pre-assigned marker weights —
+see `docs/COLUMN_DESCRIPTIONS.md` for the exact formula), with a
+categorical reference band
+(`Extensive`/`Moderate`/`Limited`/`Minimal markers`). This is a
+composition-only signal, computed independently of any pack claim.
 **What it does not measure:** Whether a product is good or bad, or whether
 any individual marker is harmful in the amount present.
 
@@ -62,7 +76,11 @@ any individual marker is harmful in the amount present.
 score with the weight of front-of-pack claims present and, when claims are
 present, additional context from processing level and Nutri-Score. A higher
 value generally reflects a combination of more pronounced ingredient markers
-and more emphatic front-of-pack positioning.
+and more emphatic front-of-pack positioning. The score (`positioning_composition_gap`,
+0–100) has a categorical reference band (`High`/`Moderate`/`Low`/`Minimal
+positioning-composition signal`) — labelled "signal" rather than "gap" at
+the band level specifically because of the composite-not-pure-gap caveat
+below.
 **What it does not measure:** Whether a product is misleading, deceptive, or
 violates any advertising standard. It is also not purely a measure of
 "claim versus reality" in every case: the ingredient-marker component applies
@@ -71,19 +89,25 @@ claims can still receive a non-zero value. This is a composite analytical
 score, not a deception detector.
 
 ### Claim-benchmark intersections
-**Status:** Implemented (for products with pack-image claim data)
-**What it measures:** Specific instances where an extracted claim co-occurs
-with a relevant nutrition, ingredient, or processing benchmark signal —
-for example, a protein claim alongside saturated fat above the reference
-threshold.
+**Status:** Implemented
+**What it measures:** Specific instances where a detected positioning (a
+pack claim where available, otherwise combined ingredient-text and
+absence/reduction signals) co-occurs with a relevant nutrition,
+ingredient, or processing benchmark signal — for example, "Protein
+positioning with saturated fat above reference threshold." Computed for
+every product, using whichever evidence layer fed that product's claim
+taxonomy (see `claim_source` above).
 **What it does not measure:** Intent. The presence of an intersection does
-not imply the claim is false; both the claim and the composition data point
-can be simultaneously accurate.
+not imply the claim is false; both the positioning and the composition data
+point can be simultaneously accurate.
 
 ### Nutrition benchmark flags
 **Status:** Implemented
 **What it measures:** Whether a nutrient value (sugar, saturated fat, fat,
-salt) sits above a reference threshold, applied per 100g or 100ml. Thresholds
+salt) sits above a reference threshold, applied per 100g or 100ml. Stored as
+neutral codes (e.g. `sugar_above_reference`), not display text — see
+`docs/UI_LABELS.md` for the code-to-label mapping used by the Streamlit
+app and Power BI deck. Thresholds
 follow the UK Food Standards Agency's front-of-pack labelling guidance and are
 used here as a single reference scheme for cross-product comparison. The EU's
 mandatory nutrition declaration (Regulation 1169/2011) requires these nutrient
@@ -137,6 +161,48 @@ product record. Calculated as the percentage of those eleven fields that are
 populated, rounded to the nearest integer.
 **What it does not measure:** Product quality. A low completeness score
 reflects missing source data, not a deficiency in the product itself.
+
+## Reporting layers: ingredient-stage vs final market-intelligence summary
+
+Two different aggregation tables exist in the database, computed at
+different points in the pipeline and serving different purposes — this
+distinction matters for interpreting any brand- or category-level
+summary correctly.
+
+**`weekly_brand_summary`** is computed by `load.py`, before pack-image
+claim extraction or claim taxonomy exist for any product. It reflects
+ingredient-analysis-stage signals only (composition markers, NOVA,
+ingredient-based claim signals) and is intended for early pipeline QA —
+not as a source for claim territory shares, benchmark intersection
+rates, or the positioning-to-composition gap, since none of that data
+exists yet at the point this table is computed.
+
+**`weekly_brand_positioning_summary`** is computed by `db_summary.py`,
+the final reporting aggregation layer, run after `merge_scores.py` and
+`tag_claims.py` have fully enriched the database. This is the actual
+market-intelligence summary intended for the Power BI deck: claim
+taxonomy shares, pack-claim coverage, benchmark intersection rates, and
+average positioning-to-composition gap, all computed from the full
+current database snapshot — not only the products changed in a given
+weekly update, so a trend chart never confuses "what changed this week"
+with "the observed market this week." Each reporting snapshot is
+identified by `week_ending` (the reporting period) and `run_timestamp`
+(the precise execution time), enabling time-series queries (e.g. "% of
+products with a protein claim over time") without losing prior periods'
+data.
+
+A third table, **`positioning_example_products`**, is not a time
+series at all — it is a small, curated set of neutral product examples
+for Streamlit/Power BI overview pages, fully replaced on every
+`db_summary.py` run. See `docs/ADR.md` ADR-012 for the full
+architectural rationale for this separation.
+
+Final Power BI exports (`powerbi_final_*.csv`) are generated by
+`db_summary.py`, not by the earlier `load.py`, `merge_scores.py`, or
+`tag_claims.py` exports. Those earlier exports remain useful for QA and
+product-level inspection at each pipeline stage; `db_summary.py`'s
+exports are the final, reporting-stage outputs intended for the Power
+BI deck itself.
 
 ## Brand and company mapping
 
