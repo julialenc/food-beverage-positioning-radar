@@ -124,11 +124,18 @@ schema upfront but populated by `merge_scores.py`, not by `analyze.py`.
 | `pack_analysis_timestamp` | TEXT | When pack-image analysis was performed or merged into the database. Distinct from `analyzed_at`, which reflects the most recent write to the row from any pipeline stage. |
 | `pack_claims_found` | TEXT | Pipe-separated list of claims identified directly from the front-of-pack image via OCR and structured extraction (e.g. `protein_claim`, `no_added_sugar`, `vegan_claim`, `heritage_claim`). The primary source for claim taxonomy when available. |
 
+### Positioning-to-composition metrics
+
+| Column | Type | Description |
+|---|---|---|
+| `positioning_composition_gap` | REAL (0–100) | Composite score combining `composition_marker_score` (Component A, 0–40, applies regardless of whether any claim is present) with a claim-weight component (Component B, 0–30, zero if no claims) and a processing/Nutri-Score context component (Component C, 0–30, only triggered if Component B is above zero). Despite the name, this is not a pure "claim vs composition" gap: a product with zero pack claims but a severe ingredient profile can still score up to 40. See `docs/METHODOLOGY.md` for the full formula and this known limitation. Null until pack-image analysis succeeds for this product. Populated by `merge_scores.py`. |
+| `positioning_composition_gap_band` | TEXT (enum) | Categorical band for `positioning_composition_gap`: `High positioning-composition signal` (≥70), `Moderate positioning-composition signal` (≥45), `Low positioning-composition signal` (≥20), `Minimal positioning-composition signal` (<20). Labels describe composite-signal strength, not a claim-vs-composition comparison. Stored as text in the database. Populated by `merge_scores.py`. |
+
 ### Claim taxonomy (two-cut classification)
 
 | Column | Type | Description |
 |---|---|---|
-| `claim_category_1` | TEXT (enum) | Broad claim category: `FUNCTIONAL` (claims of having or doing something — protein, fibre, vitamins, gut health, immune support, energy); `FREE_OF` (claims of not having something, or having reduced amounts — no added sugar, gluten-free, dairy-free, vegan, plant-based, no artificial ingredients); `NATURAL_ORGANIC` (organic, natural, clean-label, minimal-ingredient, or origin/naturalness claims); `OTHER` (heritage, comparative, sustainability, artisan); `NO_CLAIM` (no claim identified). Vegan and plant-based claims are classified under `FREE_OF` since they typically function as absence/substitution claims (free from animal-derived ingredients); this can be revisited if a dedicated lifestyle-claim category is needed later. Populated by `tag_claims.py`. |
+| `claim_category_1` | TEXT (enum) | Broad claim category: `FUNCTIONAL` (claims of having or doing something — protein, fibre, vitamins, gut health, immune support, energy); `FREE_OF` (claims of not having something, or having reduced amounts — no added sugar, gluten-free, dairy-free, vegan, plant-based, no artificial ingredients, no palm oil); `NATURAL_ORGANIC` (organic, natural, clean-label, minimal-ingredient, or origin/naturalness claims); `OTHER` (heritage, comparative, sustainability, artisan, weight-management positioning); `NO_CLAIM` (no claim identified). Vegan and plant-based claims are classified under `FREE_OF` since they typically function as absence/substitution claims (free from animal-derived ingredients); this can be revisited if a dedicated lifestyle-claim category is needed later. Stores the enum code only — see `docs/UI_LABELS.md` for display labels used in `app.py` and the Power BI deck. Reflects the single highest-priority category present, not a complete count of every claim territory on pack — use `pack_claims_found` for that. Populated by `tag_claims.py`. |
 | `claim_category_2` | TEXT (enum) | A more specific sub-category within `claim_category_1` (e.g. `protein`, `gut_health`, `no_added_x`, `free_from`, `natural`, `organic`, `heritage`, `comparative`). Populated by `tag_claims.py`. |
 | `claim_source` | TEXT (enum) | Indicates the evidence layer used for claim taxonomy classification. Values: `vision` when front-of-pack claim extraction is available; `ingredient_text_only` when classification relies on product name, labels, or ingredient/name-derived signals only. Helps users interpret coverage and avoid treating all claim classifications as equally evidence-rich. Pair with `pack_analysis_attempted` to distinguish "never analyzed" from "analyzed, no claims found." Populated by `tag_claims.py`. |
 
@@ -136,8 +143,8 @@ schema upfront but populated by `merge_scores.py`, not by `analyze.py`.
 
 | Column | Type | Description |
 |---|---|---|
-| `nutrition_benchmark_flags` | TEXT | Pipe-separated list of nutrients whose declared per-100g/100ml value exceeds a reference threshold for sugar, saturated fat, fat, or salt. Thresholds follow the UK Food Standards Agency's front-of-pack labelling guidance and are used here as a single reference scheme for cross-product comparison. The EU's mandatory nutrition declaration, Regulation 1169/2011, requires these nutrient values to be stated on pack but does not itself define high/low thresholds — that was deliberately left to individual schemes. In the MVP, liquid vs solid is approximated using an energy-density proxy (under 100 kcal/100ml treated as liquid); this may misclassify some categories and should be reviewed if benchmark flags become a central reporting layer. Computed independently of any claim; not a health verdict or legal assessment. Populated by `tag_claims.py`. |
-| `claim_benchmark_intersections` | TEXT | Pipe-separated list of specific instances where an extracted claim co-occurs with a relevant nutrition, ingredient, or processing benchmark signal (e.g. a protein claim alongside high saturated fat, or a no-added-sugar claim alongside high total sugar). Describes co-occurrence only; does not indicate that a claim is false, illegal, or misleading. Populated by `tag_claims.py`. |
+| `nutrition_benchmark_flags` | TEXT | Pipe-separated list of neutral codes (`sugar_above_reference`, `saturated_fat_above_reference`, `fat_above_reference`, `salt_above_reference`) for nutrients whose declared per-100g/100ml value exceeds a reference threshold. Stores codes, not display text — see `docs/UI_LABELS.md` for the code-to-label mapping used by `app.py` and the Power BI deck. Thresholds follow the UK Food Standards Agency's front-of-pack labelling guidance and are used here as a single reference scheme for cross-product comparison. The EU's mandatory nutrition declaration, Regulation 1169/2011, requires these nutrient values to be stated on pack but does not itself define high/low thresholds — that was deliberately left to individual schemes. In the MVP, liquid vs solid is approximated using an energy-density proxy (under 100 kcal/100ml treated as liquid); this may misclassify some categories and should be reviewed if benchmark flags become a central reporting layer. Computed independently of any claim; not a health verdict or legal assessment. Populated by `tag_claims.py`. |
+| `claim_benchmark_intersections` | TEXT | Pipe-separated list of specific instances where an extracted claim co-occurs with a relevant nutrition, ingredient, or processing benchmark signal (e.g. "Protein positioning with saturated fat above reference threshold", "Sugar-reduction positioning with sugar above reference threshold"). When pack claims aren't available, falls back to combined ingredient-based evidence (`ingredient_based_claim_signals_found` + `absence_reduction_claims_found`). Describes co-occurrence only; does not indicate that a claim is false, illegal, or misleading. Populated by `tag_claims.py`. |
 
 ### Named intersection patterns
 
@@ -248,16 +255,15 @@ ingredient profile can still score up to 40 — the name "gap" is accurate for
 roughly 60 of the 100 points and only loosely descriptive of the rest. No
 formula change is proposed here; the description above states this plainly so
 the methodology document doesn't overclaim what the number means.
-2. **`pack_analysis_attempted` and `claim_source` are now part of the declared
-schema** in `load.py`'s `DDL_PRODUCT_ANALYSIS`, along with six AI-engineering
-readiness fields (`ocr_text`, `ocr_status`, `llm_status`, `vision_model`,
-`prompt_version`, `pack_analysis_timestamp`). All twelve are nullable and
-populated later by `merge_scores.py`/`tag_claims.py` via `UPDATE` — not yet
-implemented in those scripts, but the schema is ready for them.
-3. **`composition_marker_band` labels are now finalized and implemented**
-(`Extensive/Moderate/Limited/Minimal markers`, applied in `analyze.py`).
-**`positioning_composition_gap_band`'s labels are still open** — to be
-decided when `merge_scores.py` is updated.
+2. **`pack_analysis_attempted` and `claim_source` are implemented and
+populated.** All twelve schema fields declared in `load.py`'s
+`DDL_PRODUCT_ANALYSIS` (`pack_analysis_attempted`, `claim_source`, the
+six AI-engineering readiness fields, and the result/taxonomy fields) are
+now written by `merge_scores.py` and `tag_claims.py` via `UPDATE`.
+3. **Both band labels are now finalized and implemented:**
+`composition_marker_band` (`Extensive/Moderate/Limited/Minimal markers`,
+`analyze.py`) and `positioning_composition_gap_band` (`High/Moderate/
+Low/Minimal positioning-composition signal`, `merge_scores.py`).
 4. **`upf_*` columns and `has_ultra_processed` renamed to the `processing_*`
 family** (`processing_marker_count`, `processing_markers_found`,
 `processing_marker_max_severity`, `has_processing_markers`) — applied
