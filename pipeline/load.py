@@ -86,6 +86,7 @@ CREATE TABLE IF NOT EXISTS products (
     off_categories                 TEXT,
     countries                    TEXT,
     primary_country                TEXT,
+    observed_market_region_codes   TEXT,      -- pipe-separated region codes, see country_region_mapping.csv
     labels                       TEXT,
     ingredients_text               TEXT,
     additives_tags                 TEXT,
@@ -276,6 +277,7 @@ def safe_val(val):
 PRODUCT_COLS = [
     "barcode", "product_name", "brands", "primary_brand", "quantity", "packaging",
     "query_category", "off_categories", "countries", "primary_country",
+    "observed_market_region_codes",
     "labels", "ingredients_text", "additives_tags",
     "energy_kcal", "fat_100g", "saturated_fat_100g", "carbs_100g",
     "sugars_100g", "fiber_100g", "protein_100g", "salt_100g",

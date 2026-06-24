@@ -1,0 +1,20 @@
+region_code,region_filter_label,region_short_label,ui_order,country_tag,country_name
+FRANCE,France,France,10,en:france,France
+UK_IE,UK & Ireland,UK & Ireland,20,en:united-kingdom,United Kingdom
+UK_IE,UK & Ireland,UK & Ireland,20,en:ireland,Ireland
+DACH,"DACH (Germany, Austria, Switzerland)",DACH,30,en:germany,Germany
+DACH,"DACH (Germany, Austria, Switzerland)",DACH,30,en:austria,Austria
+DACH,"DACH (Germany, Austria, Switzerland)",DACH,30,en:switzerland,Switzerland
+BENELUX,"Benelux (Belgium, Netherlands, Luxembourg)",Benelux,40,en:belgium,Belgium
+BENELUX,"Benelux (Belgium, Netherlands, Luxembourg)",Benelux,40,en:netherlands,Netherlands
+BENELUX,"Benelux (Belgium, Netherlands, Luxembourg)",Benelux,40,en:luxembourg,Luxembourg
+US_CANADA,US & Canada,US & Canada,50,en:united-states,United States
+US_CANADA,US & Canada,US & Canada,50,en:canada,Canada
+NORDICS,"Nordics (Denmark, Finland, Norway, Sweden)",Nordics,60,en:denmark,Denmark
+NORDICS,"Nordics (Denmark, Finland, Norway, Sweden)",Nordics,60,en:finland,Finland
+NORDICS,"Nordics (Denmark, Finland, Norway, Sweden)",Nordics,60,en:norway,Norway
+NORDICS,"Nordics (Denmark, Finland, Norway, Sweden)",Nordics,60,en:sweden,Sweden
+SOUTHERN_EUROPE,"Southern Europe (Italy, Spain, Portugal)",Southern Europe,70,en:italy,Italy
+SOUTHERN_EUROPE,"Southern Europe (Italy, Spain, Portugal)",Southern Europe,70,en:spain,Spain
+SOUTHERN_EUROPE,"Southern Europe (Italy, Spain, Portugal)",Southern Europe,70,en:portugal,Portugal
+OTHER_MIXED,Other / mixed,Other / mixed,999,,

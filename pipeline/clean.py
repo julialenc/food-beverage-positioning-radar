@@ -49,6 +49,7 @@ from datetime import datetime
 
 ROOT       = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
+REGION_MAPPING_PATH = os.path.join(ROOT, "data", "country_region_mapping.csv")
 
 # -- Language detection -------------------------------------------------------
 # Keyword-based detection - no external dependencies.
@@ -220,6 +221,59 @@ def completeness_score(row):
 
 # -- Main cleaning pipeline ---------------------------------------------------
 
+def load_region_mapping(path=REGION_MAPPING_PATH):
+    """Load data/country_region_mapping.csv into a dict mapping each OFF
+    country_tag (e.g. 'en:france') to its region_code (e.g. 'FRANCE').
+
+    Returns ({} , None) if the file is missing, so the pipeline can run
+    without it (the region column is then left as OTHER_MIXED everywhere
+    and the app's region filter simply has one bucket). The CSV is the
+    single source of truth — region groupings are never hardcoded here.
+
+    Rows with an empty country_tag (the OTHER_MIXED sentinel row) are
+    skipped: OTHER_MIXED is assigned by absence of any mapped tag, not by
+    an explicit tag, so it must not enter the lookup table.
+    """
+    if not os.path.exists(path):
+        print(f"  [region] mapping file not found at {path} — "
+              f"all products will be tagged OTHER_MIXED")
+        return {}
+
+    mapping_df = pd.read_csv(path, encoding="utf-8-sig", dtype=str).fillna("")
+    tag_to_region = {}
+    for _, row in mapping_df.iterrows():
+        tag = row.get("country_tag", "").strip().lower()
+        region = row.get("region_code", "").strip()
+        if tag and region:
+            tag_to_region[tag] = region
+    return tag_to_region
+
+
+def derive_region_codes(countries_value, tag_to_region):
+    """Map a product's pipe-separated OFF countries field (e.g.
+    'en:france|en:belgium') to a pipe-separated, de-duplicated string of
+    region codes (e.g. 'FRANCE|BENELUX'), preserving first-seen order.
+
+    Rules (from the product brief, Market / region section):
+    - A product can belong to multiple regions.
+    - If at least one country tag maps to a region, use the mapped
+      region(s) and do NOT add OTHER_MIXED.
+    - Use OTHER_MIXED only when no country tag maps to any region
+      (including when the countries field is empty/missing).
+    """
+    if not isinstance(countries_value, str) or countries_value.strip().lower() in ("", "nan"):
+        return "OTHER_MIXED"
+
+    seen = []
+    for tag in countries_value.split("|"):
+        tag = tag.strip().lower()
+        region = tag_to_region.get(tag)
+        if region and region not in seen:
+            seen.append(region)
+
+    return "|".join(seen) if seen else "OTHER_MIXED"
+
+
 def clean(input_path):
 
     print(f"\n  Input file: {os.path.basename(input_path)}")
@@ -326,6 +380,22 @@ def clean(input_path):
     print(f"  Step 11b- Primary country extracted")
     print(f"            Top countries: "
           f"{df['primary_country'].value_counts().head(5).to_dict()}")
+
+    # Step 11c: Derive observed_market_region_codes from the full
+    # countries field (NOT primary_country — a product can map to
+    # multiple regions). Grouping is defined entirely by
+    # data/country_region_mapping.csv; see derive_region_codes() and
+    # the brief's Market / region section. Used by the app's
+    # Market / region filter.
+    tag_to_region = load_region_mapping()
+    df["observed_market_region_codes"] = df["countries"].apply(
+        lambda x: derive_region_codes(x, tag_to_region)
+    )
+    region_preview = (
+        df["observed_market_region_codes"].value_counts().head(5).to_dict()
+    )
+    print(f"  Step 11c- Market region codes derived")
+    print(f"            Top region combinations: {region_preview}")
 
     # Step 12: Flag rows eligible for ingredient-marker analysis (EN and FR only)
     # OTHER/UNKNOWN rows retained for nutritional analysis but excluded
