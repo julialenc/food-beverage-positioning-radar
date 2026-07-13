@@ -680,13 +680,16 @@ def compute_market_trend_weekly(df: "pd.DataFrame", week_ending: str,
         pct_nat   = claim_pct("NATURAL_ORGANIC")
         pct_none  = claim_pct("NO_CLAIM")
 
-        # Composition markers
-        score = _col("composition_marker_score")
-        avg_score = float(score.mean()) if score.notna().sum() > 0 else None
-        band = cat.get("composition_marker_band", pd.Series())
-        pct_ext_mod = float(
-            band.isin(["Extensive markers", "Moderate markers"]).sum() / n * 100
-        ) if len(band) > 0 else None
+        # Additives — from OFF's own additives_tags field (not our formula).
+        # Measures E-number presence directly from the label, computed by OFF.
+        additives_raw = cat.get("additives_tags", pd.Series()).fillna("")
+        additive_counts = additives_raw.apply(
+            lambda x: len([a for a in str(x).split("|") if a.strip()])
+        )
+        avg_additive_count = float(additive_counts.mean()) if len(additive_counts) > 0 else None
+        pct_with_additives = float(
+            (additive_counts > 0).sum() / n * 100
+        ) if n > 0 else None
 
         rows.append({
             "week_ending":                  week_ending,
@@ -710,8 +713,8 @@ def compute_market_trend_weekly(df: "pd.DataFrame", week_ending: str,
             "pct_free_of_claims":           round(pct_free, 2),
             "pct_natural_organic_claims":   round(pct_nat, 2),
             "pct_no_claim":                 round(pct_none, 2),
-            "avg_composition_marker_score": round(avg_score, 2) if avg_score is not None else None,
-            "pct_extensive_or_moderate":    round(pct_ext_mod, 2) if pct_ext_mod is not None else None,
+            "avg_additives_count":           round(avg_additive_count, 2) if avg_additive_count is not None else None,
+            "pct_with_additives":            round(pct_with_additives, 2) if pct_with_additives is not None else None,
         })
 
     return rows

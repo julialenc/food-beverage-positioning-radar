@@ -129,7 +129,8 @@ def download_if_needed() -> None:
     print(f"  URL: {OFF_CSV_URL}")
     print(f"  Destination: {GZ_PATH}\n")
 
-    with requests.get(OFF_CSV_URL, stream=True, timeout=600) as r:
+    headers = {"User-Agent": "FoodBeveragePositioningRadar/1.0 (github.com/julialenc/food-beverage-positioning-radar)"}
+    with requests.get(OFF_CSV_URL, stream=True, timeout=600, headers=headers) as r:
         r.raise_for_status()
         total = int(r.headers.get("content-length", 0))
         downloaded = 0

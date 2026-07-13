@@ -247,8 +247,9 @@ CREATE TABLE IF NOT EXISTS market_trend_weekly (
     pct_no_claim                 REAL,
 
     -- Ingredient processing
-    avg_composition_marker_score REAL,
-    pct_extensive_or_moderate    REAL,      -- Extensive + Moderate marker share
+    -- Additives — E-number presence from OFF's own additives_tags (not a proprietary formula)
+    avg_additives_count          REAL,      -- avg number of E-numbers per product in category
+    pct_with_additives           REAL,      -- % products with at least one additive
 
     UNIQUE(week_ending, query_category)
 );
