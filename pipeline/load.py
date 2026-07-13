@@ -207,6 +207,54 @@ CREATE TABLE IF NOT EXISTS ingestion_log (
 );
 """
 
+DDL_MARKET_TREND_WEEKLY = """
+CREATE TABLE IF NOT EXISTS market_trend_weekly (
+    id                           INTEGER PRIMARY KEY AUTOINCREMENT,
+    week_ending                  TEXT NOT NULL,
+    run_timestamp                TEXT NOT NULL,
+    query_category               TEXT NOT NULL,
+
+    -- Coverage
+    product_count                INTEGER,   -- products in DB for this category
+    new_product_count            INTEGER,   -- created_t in last 90 days (market launches)
+    pack_analyzed_count          INTEGER,   -- products with pack_analysis_attempted=1
+    pct_pack_analyzed            REAL,
+
+    -- Protein pivot signals (GLP-1 compatibility reformulation)
+    avg_protein_per_kcal         REAL,      -- protein_100g / energy_kcal * 100
+    pct_high_protein             REAL,      -- % products with protein_100g >= 20g
+
+    -- Fibre signals
+    avg_fiber_per_carb           REAL,      -- fiber_100g / carbs_100g
+
+    -- UPF / NOVA distribution
+    pct_nova1                    REAL,
+    pct_nova2                    REAL,
+    pct_nova3                    REAL,
+    pct_nova4                    REAL,      -- ultra-processed share — key signal
+    nova4_to_nova1_ratio         REAL,
+
+    -- Ozempic tongue: sweetness/intensity
+    avg_sugar_per_carb           REAL,      -- sugars_100g / carbs_100g
+
+    -- Pack size (portion-control architecture)
+    median_pack_size_g           REAL,      -- parsed from quantity field, grams only
+
+    -- Positioning claim distribution
+    pct_functional_claims        REAL,
+    pct_free_of_claims           REAL,
+    pct_natural_organic_claims   REAL,
+    pct_no_claim                 REAL,
+
+    -- Ingredient processing
+    avg_composition_marker_score REAL,
+    pct_extensive_or_moderate    REAL,      -- Extensive + Moderate marker share
+
+    UNIQUE(week_ending, query_category)
+);
+"""
+
+
 DDL_INDEXES = [
     "CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brands);",
     "CREATE INDEX IF NOT EXISTS idx_products_primary_brand ON products(primary_brand);",
@@ -249,6 +297,7 @@ def init_db(conn):
     cursor.execute(DDL_PRODUCT_ANALYSIS)
     cursor.execute(DDL_WEEKLY_BRAND_SUMMARY)
     cursor.execute(DDL_INGESTION_LOG)
+    cursor.execute(DDL_MARKET_TREND_WEEKLY)
     for idx_sql in DDL_INDEXES:
         cursor.execute(idx_sql)
     conn.commit()

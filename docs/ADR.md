@@ -675,6 +675,102 @@ extraction, segmentation), not a sequential release train.
 ---
 
 *This document is updated as new decisions are made.*
-*Last updated: June 2026 (ADR-012 added; modular contract corrected to
-actual execution order and extended to db_summary.py and supporting
-utilities)*
+*Last updated: July 2026 (ADR-013 added: production data strategy —
+bulk export bootstrap vs weekly incremental API; ADR-014 added:
+intentional curated sampling rationale before full-scale LLM
+extraction)*
+
+### ADR-013 — Production data strategy: bulk export bootstrap + weekly incremental API
+
+**Date:** 12 July 2026
+**Status:** Active — planned for production launch
+
+**Decision:** The production pipeline uses two distinct data ingestion
+paths that serve different purposes and must not be conflated:
+
+1. **Bulk export bootstrap** — one-time initial population of the
+   database from the OFF monthly CSV dump
+   (`world.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz`,
+   ~10-15 GB compressed, ~3 million products). To be implemented as a
+   separate `bootstrap.py` pipeline stage before production launch.
+
+2. **Weekly incremental update** — `ingest.py` queries the OFF search
+   API for new and recently-modified products in the target categories,
+   updating the database with products that have appeared or changed
+   since the last run. Small batches only (hundreds of products per
+   week, not thousands).
+
+**Rationale:** The OFF search API (`/cgi/search.pl`) is designed for
+interactive product lookup, not bulk extraction. OFF's CDN rate-limits
+request patterns that look like bulk scraping — typically manifesting
+as 401 responses after sustained sequential page requests, regardless
+of delay between pages. OFF explicitly provides the bulk CSV dump for
+exactly this use case and encourages its use over API scraping.
+`ingest.py` is the right tool for incremental updates; it is the wrong
+tool for initial database population.
+
+**Current state (MVP):** `ingest.py` is being used for initial
+population of the development database during the MVP phase because
+`bootstrap.py` does not yet exist. This is a known deviation from the
+intended production architecture, documented here so it is not
+replicated in production.
+
+**Implication for `ingest.py`:** Weekly incremental updates via the
+API should target new/modified products only (filtered by
+`last_modified_t` since the last run), keeping batch sizes small and
+polite. The four-category scope (snacks, beverages, cereals, dairies)
+and 10,000-per-category cap in the current script are appropriate for
+MVP development but not for production weekly cadence, where the cap
+should be much lower (hundreds, not thousands).
+
+---
+
+### ADR-014 — Intentional curated sampling before full-scale LLM extraction
+
+**Date:** 12 July 2026
+**Status:** Active — governs v3 and v3.5 vision extraction strategy
+
+**Decision:** The vision extraction pipeline (`vision_extract.py`) runs
+on a curated smart sample rather than the full product database.
+`smart_sample.py` selects products using a four-tier priority scheme:
+named priority brands (15 products each), NOVA 4 + Nutri-Score D/E
+products with detectable claim signals, high composition-marker brands,
+and intersection pattern quota sampling.
+
+**Rationale:** This is a deliberate analytical and economic choice, not
+a technical limitation.
+
+*Analytical rationale:* Running vision extraction on a random draw from
+the full OFF database would allocate LLM budget predominantly to
+products with no front-of-pack claims — mineral water, plain staples,
+private-label basics. These products have nothing to validate in the
+claim taxonomy. The smart sample concentrates extraction on products
+most likely to carry positioning claims, where the LLM's output can
+actually be evaluated for accuracy and taxonomy coverage. This gives
+meaningful signal on whether the claim extraction model and prompt are
+working before committing to a full production run.
+
+*Economic rationale:* Vision extraction costs real money per product
+(~0.0017 CHF per product at gpt-4.1-nano rates). A random draw from
+3 million OFF products would cost thousands of CHF to achieve
+meaningful claim coverage. The curated sample achieves representative
+coverage of the claim territory space at a fraction of the cost.
+
+*Sequencing rationale:* The correct production sequence is therefore:
+(1) validate claim taxonomy and extraction quality on the curated
+sample; (2) run the model benchmark (v3.5 — gpt-4.1-nano vs gpt-4o-mini
+vs Claude Haiku) on a small comparison set; (3) only then commit to
+full-scale extraction using the confirmed model and prompt version.
+Scaling before validation would bake any taxonomy gaps or extraction
+errors into the full production dataset.
+
+**Known implication:** Products outside the smart sample have no
+vision-extracted claims. Their claim taxonomy is derived from
+ingredient lists and product names only (`claim_source =
+ingredient_text_only`). This is correctly surfaced in the app via the
+evidence caption in the product card and the `pack_analysis_attempted`
+flag. It is not a data quality failure — it is the intended state until
+full-scale extraction runs.
+
+---
+

@@ -26,9 +26,12 @@ CATEGORIES = [
     "snacks",
     "beverages",
     "cereals",
+    "dairies",     # added: Emmi, Arla, Danone dairy, FrieslandCampina, etc.
 ]
 
-PRODUCTS_PER_CATEGORY = 3000  # increase later for production runs
+PRODUCTS_PER_CATEGORY = 10_000  # 4 categories × 10,000 = 40,000 total
+                                 # fits in one overnight at ~5-6 hours
+                                 # increase to 50,000 for a deeper production run
 
 BASE_URL = "https://world.openfoodfacts.org/cgi/search.pl"
 
@@ -55,21 +58,38 @@ FIELDS = ",".join([
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT       = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW_DIR    = os.path.join(ROOT, "data", "raw")
 SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 
 # ── Fetch ─────────────────────────────────────────────────────────────────────
 
-PAGE_SIZE = 100          # OFF API hard cap per page
-PAGE_DELAY = 8           # seconds between pages — polite to OFF servers
-MAX_RETRIES = 3          # attempts per page before giving up
+PAGE_SIZE   = 100   # OFF API hard cap per page
+PAGE_DELAY  = 15    # seconds between successful pages — 8s triggered 401 rate-limiting
+MAX_RETRIES = 5     # attempts per page before skipping it
+
+# Progressive backoff for 503s: 30s, 60s, 120s, 240s, 300s.
+# Longer waits let the OFF server recover from burst load rather than hammering
+# it with rapid retries (which worsens the 503 rate).
+RETRY_BACKOFFS = [30, 60, 120, 240, 300]
+
+# Number of consecutive failed pages before abandoning a whole category.
+# A single failed page now triggers a skip (not a full stop), so this
+# guard only fires when multiple consecutive pages are unrecoverable.
+MAX_CONSECUTIVE_SKIPS = 3
+
+# Pause between categories so we don't re-trigger server-side rate limiting
+# immediately after a busy category fetch.
+INTER_CATEGORY_PAUSE = 30  # seconds
 
 
-def fetch_page(category: str, page: int, headers: dict) -> list[dict]:
+def fetch_page(category: str, page: int, headers: dict):
     """
     Fetch a single page of products for a category.
-    Returns list of product dicts, or empty list on failure.
+
+    Returns:
+        list[dict]  — products on this page (may be empty if genuinely exhausted)
+        None        — server gave up after MAX_RETRIES; caller should skip this page
     """
     import time
 
@@ -90,9 +110,10 @@ def fetch_page(category: str, page: int, headers: dict) -> list[dict]:
                 BASE_URL, params=params,
                 headers=headers, timeout=30
             )
-            if response.status_code == 503:
-                wait = 30 * (attempt + 1)
-                print(f"    503 on page {page}, "
+            if response.status_code in (401, 503):
+                wait = RETRY_BACKOFFS[min(attempt, len(RETRY_BACKOFFS) - 1)]
+                label = "503 (server busy)" if response.status_code == 503 else "401 (rate-limited)"
+                print(f"    {label} on page {page}, "
                       f"retrying in {wait}s "
                       f"(attempt {attempt + 1}/{MAX_RETRIES})...")
                 time.sleep(wait)
@@ -102,7 +123,7 @@ def fetch_page(category: str, page: int, headers: dict) -> list[dict]:
 
             if not response.text.strip():
                 print(f"    Empty response on page {page}, skipping")
-                return []
+                return None
 
             data = response.json()
             return data.get("products", [])
@@ -112,58 +133,73 @@ def fetch_page(category: str, page: int, headers: dict) -> list[dict]:
             if attempt < MAX_RETRIES - 1:
                 time.sleep(20)
 
-    print(f"    Giving up on page {page} after {MAX_RETRIES} attempts")
-    return []
+    print(f"    Giving up on page {page} after {MAX_RETRIES} attempts — will skip")
+    return None          # ← None signals "skip this page", not "stop the category"
 
 
 def fetch_category(category: str,
                    target: int = PRODUCTS_PER_CATEGORY) -> list[dict]:
     """
     Fetch up to `target` products for a category using pagination.
-    Requests pages sequentially until target is reached or
-    OFF returns no more products.
-    Returns deduplicated list of product dicts.
+
+    Key behaviour:
+    - fetch_page returning None  → server error on that page; skip and continue
+    - fetch_page returning []    → OFF returned no products; category is genuinely
+                                   exhausted; stop
+    - MAX_CONSECUTIVE_SKIPS consecutive None returns → give up on the category
+      (guards against a permanently broken endpoint)
     """
     import time
 
-    headers  = {"User-Agent": USER_AGENT}
-    all_products = []
-    seen_codes   = set()
-    page         = 1
+    headers          = {"User-Agent": USER_AGENT}
+    all_products     = []
+    seen_codes       = set()
+    page             = 1
+    consecutive_skip = 0
 
-    print(f"  Fetching '{category}' (target: {target} products, "
+    print(f"  Fetching '{category}' (target: {target:,} products, "
           f"{PAGE_SIZE}/page)...")
 
     while len(all_products) < target:
         page_products = fetch_page(category, page, headers)
 
+        # ── Server error: skip this page, keep going ──────────────────────
+        if page_products is None:
+            consecutive_skip += 1
+            print(f"    Page {page} skipped "
+                  f"({consecutive_skip}/{MAX_CONSECUTIVE_SKIPS} consecutive skips)")
+            if consecutive_skip >= MAX_CONSECUTIVE_SKIPS:
+                print(f"    {MAX_CONSECUTIVE_SKIPS} consecutive page failures — "
+                      f"stopping '{category}'")
+                break
+            page += 1
+            continue
+
+        # ── Genuine exhaustion: OFF says there are no more products ────────
         if not page_products:
-            print(f"    No products on page {page} — "
-                  f"category exhausted or server error")
+            print(f"    No products on page {page} — category exhausted")
             break
 
-        # Deduplicate within this category fetch
-        new = [p for p in page_products
-               if p.get("code") not in seen_codes]
+        # ── Successful page ───────────────────────────────────────────────
+        consecutive_skip = 0   # reset skip counter on any success
+        new = [p for p in page_products if p.get("code") not in seen_codes]
         for p in new:
             seen_codes.add(p.get("code"))
         all_products.extend(new)
 
         print(f"    Page {page}: {len(new)} new products "
-              f"(total so far: {len(all_products)})")
+              f"(total so far: {len(all_products):,})")
 
-        # Stop if OFF returned fewer than PAGE_SIZE — means no more pages
         if len(page_products) < PAGE_SIZE:
             print(f"    Reached end of category at page {page}")
             break
 
         page += 1
 
-        # Polite delay between pages
         if len(all_products) < target:
             time.sleep(PAGE_DELAY)
 
-    print(f"  -> {len(all_products)} total products for '{category}'")
+    print(f"  -> {len(all_products):,} total products for '{category}'")
     return all_products[:target]
 
 
@@ -235,8 +271,9 @@ def save_sample(df: pd.DataFrame, timestamp: str) -> None:
     """Save combined flat CSV to data/sample/."""
     filename = f"sample_all_{timestamp}.csv"
     path = os.path.join(SAMPLE_DIR, filename)
-    df.to_csv(path, index=False, encoding="utf-8-sig")  # utf-8-sig for Excel compatibility
-    print(f"  Sample CSV saved -> {filename}  ({len(df)} rows, {len(df.columns)} columns)")
+    df.to_csv(path, index=False, encoding="utf-8-sig")
+    print(f"  Sample CSV saved -> {filename}  "
+          f"({len(df):,} rows, {len(df.columns)} columns)")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -246,15 +283,14 @@ def main():
     print(f"\nFood & Beverage Positioning Radar — ingest.py")
     print(f"Run timestamp: {timestamp}")
     print(f"Categories: {CATEGORIES}")
-    print(f"Products per category: {PRODUCTS_PER_CATEGORY}\n")
+    print(f"Products per category: {PRODUCTS_PER_CATEGORY:,}\n")
 
     all_rows = []
 
     for i, category in enumerate(CATEGORIES):
         if i > 0:
-            wait = 15 if category == "beverages" else 5
-            print(f"  Pausing {wait}s before '{category}'...")
-            import time; time.sleep(wait)
+            print(f"  Pausing {INTER_CATEGORY_PAUSE}s before '{category}'...")
+            import time; time.sleep(INTER_CATEGORY_PAUSE)
         products = fetch_category(category)
         save_raw(products, category, timestamp)
 
@@ -265,18 +301,22 @@ def main():
     df = pd.DataFrame(all_rows)
     save_sample(df, timestamp)
 
-    print(f"\nDone. {len(df)} total products across {len(CATEGORIES)} categories.")
+    print(f"\nDone. {len(df):,} total products across {len(CATEGORIES)} categories.")
     print(f"Nulls per column:\n{df.isnull().sum().to_string()}\n")
 
     # Run summary — useful for unattended overnight runs
+    partial_threshold = PRODUCTS_PER_CATEGORY * 0.5
     print(f"{'='*50}")
     print(f"RUN SUMMARY")
     print(f"{'='*50}")
     for category in CATEGORIES:
         cat_count = len(df[df['query_category'] == category])
-        status = "OK" if cat_count >= 400 else "PARTIAL" if cat_count > 0 else "FAILED"
-        print(f"  {category:<15} {cat_count:>5} products  {status}")
-    print(f"  {'TOTAL':<15} {len(df):>5} products")
+        status = ("OK"      if cat_count >= PRODUCTS_PER_CATEGORY * 0.9
+                  else "PARTIAL" if cat_count >= partial_threshold
+                  else "FAILED"  if cat_count == 0
+                  else "LOW")
+        print(f"  {category:<15} {cat_count:>7,} products  {status}")
+    print(f"  {'TOTAL':<15} {len(df):>7,} products")
     print(f"{'='*50}")
 
 

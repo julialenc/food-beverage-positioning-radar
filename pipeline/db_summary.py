@@ -561,6 +561,184 @@ def export_powerbi_csvs(df, summary_rows, examples, timestamp):
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
+
+# ── Ozempic / market trend tracker ────────────────────────────────────────────
+
+import re as _re
+
+def _parse_pack_size_g(quantity_val) -> float | None:
+    """
+    Extract numeric pack size in grams from the quantity field.
+    Handles common formats: "400 g", "400g", "1.5 kg", "500 ml", etc.
+    Returns None for unrecognised formats or non-gram units.
+    Only grams are returned (kg converted); ml/cl/l excluded — volume
+    and weight are not comparable across product types.
+    """
+    if not isinstance(quantity_val, str) or not quantity_val.strip():
+        return None
+    s = quantity_val.strip().lower()
+    # Match number followed by g or kg
+    m = _re.search(r"([\d.,]+)\s*(kg|g)\b", s)
+    if not m:
+        return None
+    try:
+        val = float(m.group(1).replace(",", "."))
+        return val * 1000 if m.group(2) == "kg" else val
+    except ValueError:
+        return None
+
+
+def compute_market_trend_weekly(df: "pd.DataFrame", week_ending: str,
+                                 run_timestamp: str) -> list[dict]:
+    """
+    Compute one row per query_category for market_trend_weekly.
+
+    All metrics are computed on the FULL current DB snapshot (not just
+    products ingested in this run). This means each weekly row represents
+    a cross-sectional view of the entire database at the time of the run,
+    not an incremental delta. Longitudinal trend is visible by comparing
+    rows across weeks using the 3-month rolling window at read time.
+
+    Products with missing nutrient values are excluded per-metric
+    (not excluded from the whole row) so that coverage differences
+    between metrics are transparent.
+    """
+    import numpy as np
+    from datetime import datetime, timedelta
+
+    cutoff_90d = (datetime.now() - timedelta(days=90)).timestamp()
+    rows = []
+
+    for category in df["query_category"].dropna().unique():
+        cat = df[df["query_category"] == category].copy()
+        n = len(cat)
+        if n == 0:
+            continue
+
+        # ── Coverage ──────────────────────────────────────────────────────────
+        # New products: created_t is a UNIX timestamp in the DB
+        try:
+            created_numeric = pd.to_numeric(cat["created_t"], errors="coerce")
+            new_count = int((created_numeric > cutoff_90d).sum())
+        except Exception:
+            new_count = 0
+
+        pack_analyzed = int(
+            (pd.to_numeric(cat.get("pack_analysis_attempted", pd.Series()),
+                           errors="coerce") == 1).sum()
+        )
+
+        # ── Nutrient helpers ──────────────────────────────────────────────────
+        def _col(name):
+            return pd.to_numeric(cat.get(name, pd.Series()), errors="coerce")
+
+        protein  = _col("protein_100g")
+        energy   = _col("energy_kcal")
+        fiber    = _col("fiber_100g")
+        carbs    = _col("carbs_100g")
+        sugars   = _col("sugars_100g")
+        nova     = _col("nova_group")
+
+        # Protein pivot
+        valid_pe  = protein.notna() & energy.notna() & (energy > 0)
+        avg_prot_kcal = float((protein[valid_pe] / energy[valid_pe] * 100).mean())             if valid_pe.sum() > 0 else None
+        pct_high_protein = float(
+            (protein.notna() & (protein >= 20)).sum() / n * 100
+        )
+
+        # Fibre/carb
+        valid_fc  = fiber.notna() & carbs.notna() & (carbs > 0)
+        avg_fib_carb = float((fiber[valid_fc] / carbs[valid_fc]).mean())             if valid_fc.sum() > 0 else None
+
+        # NOVA
+        total_nova = nova.notna().sum()
+        def nova_pct(g):
+            return float((nova == g).sum() / n * 100) if n > 0 else None
+        pct_n1, pct_n2, pct_n3, pct_n4 = (
+            nova_pct(1.0), nova_pct(2.0), nova_pct(3.0), nova_pct(4.0)
+        )
+        n1_count = (nova == 1.0).sum()
+        n4_count = (nova == 4.0).sum()
+        nova4_ratio = float(n4_count / n1_count) if n1_count > 0 else None
+
+        # Sugar/carb (Ozempic tongue)
+        valid_sc  = sugars.notna() & carbs.notna() & (carbs > 0)
+        avg_sug_carb = float((sugars[valid_sc] / carbs[valid_sc]).mean())             if valid_sc.sum() > 0 else None
+
+        # Pack size
+        pack_sizes = cat.get("quantity", pd.Series()).apply(_parse_pack_size_g)
+        pack_sizes = pack_sizes.dropna()
+        median_pack = float(pack_sizes.median()) if len(pack_sizes) > 0 else None
+
+        # Claims
+        def claim_pct(code):
+            return float(
+                (cat.get("claim_category_1", pd.Series()) == code).sum() / n * 100
+            )
+        pct_func  = claim_pct("FUNCTIONAL")
+        pct_free  = claim_pct("FREE_OF")
+        pct_nat   = claim_pct("NATURAL_ORGANIC")
+        pct_none  = claim_pct("NO_CLAIM")
+
+        # Composition markers
+        score = _col("composition_marker_score")
+        avg_score = float(score.mean()) if score.notna().sum() > 0 else None
+        band = cat.get("composition_marker_band", pd.Series())
+        pct_ext_mod = float(
+            band.isin(["Extensive markers", "Moderate markers"]).sum() / n * 100
+        ) if len(band) > 0 else None
+
+        rows.append({
+            "week_ending":                  week_ending,
+            "run_timestamp":                run_timestamp,
+            "query_category":               category,
+            "product_count":                n,
+            "new_product_count":            new_count,
+            "pack_analyzed_count":          pack_analyzed,
+            "pct_pack_analyzed":            round(pack_analyzed / n * 100, 2) if n else None,
+            "avg_protein_per_kcal":         round(avg_prot_kcal, 4) if avg_prot_kcal is not None else None,
+            "pct_high_protein":             round(pct_high_protein, 2),
+            "avg_fiber_per_carb":           round(avg_fib_carb, 4) if avg_fib_carb is not None else None,
+            "pct_nova1":                    round(pct_n1, 2) if pct_n1 is not None else None,
+            "pct_nova2":                    round(pct_n2, 2) if pct_n2 is not None else None,
+            "pct_nova3":                    round(pct_n3, 2) if pct_n3 is not None else None,
+            "pct_nova4":                    round(pct_n4, 2) if pct_n4 is not None else None,
+            "nova4_to_nova1_ratio":         round(nova4_ratio, 3) if nova4_ratio is not None else None,
+            "avg_sugar_per_carb":           round(avg_sug_carb, 4) if avg_sug_carb is not None else None,
+            "median_pack_size_g":           round(median_pack, 1) if median_pack is not None else None,
+            "pct_functional_claims":        round(pct_func, 2),
+            "pct_free_of_claims":           round(pct_free, 2),
+            "pct_natural_organic_claims":   round(pct_nat, 2),
+            "pct_no_claim":                 round(pct_none, 2),
+            "avg_composition_marker_score": round(avg_score, 2) if avg_score is not None else None,
+            "pct_extensive_or_moderate":    round(pct_ext_mod, 2) if pct_ext_mod is not None else None,
+        })
+
+    return rows
+
+
+def write_market_trend_weekly(conn, rows: list[dict], week_ending: str) -> int:
+    """
+    Insert market trend rows, replacing any existing rows for this week_ending.
+    Uses INSERT OR REPLACE so re-running db_summary.py is idempotent.
+    """
+    if not rows:
+        return 0
+    conn.execute(
+        "DELETE FROM market_trend_weekly WHERE week_ending = ?", (week_ending,)
+    )
+    cols = list(rows[0].keys())
+    placeholders = ", ".join("?" for _ in cols)
+    col_str = ", ".join(cols)
+    for row in rows:
+        conn.execute(
+            f"INSERT INTO market_trend_weekly ({col_str}) VALUES ({placeholders})",
+            [row[c] for c in cols],
+        )
+    conn.commit()
+    return len(rows)
+
+
 def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     # week_ending is the snapshot date this run was executed, used as
@@ -603,6 +781,17 @@ def main():
         by_reason[reason] = by_reason.get(reason, 0) + 1
     for reason, n in by_reason.items():
         print(f"    {reason:<50} {n}")
+
+
+    # ── Market trend weekly (Ozempic / longitudinal tracker) ─────────────────
+    # Runs silently every time db_summary.py executes. Each row is a
+    # timestamped cross-sectional snapshot of all key metrics per category.
+    # Compare rows across weeks to build the longitudinal signal.
+    # See docs/ADR.md ADR-014 and the project brief's Phase 3F section.
+    trend_rows = compute_market_trend_weekly(df, week_ending, timestamp)
+    n_trend = write_market_trend_weekly(conn, trend_rows, week_ending)
+    print(f"  Market trend snapshot: {n_trend} category rows written "
+          f"to market_trend_weekly (week_ending={week_ending})")
 
     conn.close()
 
