@@ -327,6 +327,25 @@ def clean(input_path):
         .str.decode("ascii")
     print(f"  Step 4  - Brands normalised, primary_brand extracted, accents stripped")
 
+    # Step 4b: Apply brand alias mapping
+    alias_path = os.path.join(ROOT, "data", "reference", "brand_alias_mapping.csv")
+    if os.path.exists(alias_path):
+        alias_df = pd.read_csv(alias_path, encoding="utf-8-sig", dtype=str).fillna("")
+        confirmed = alias_df[
+            alias_df["action"].str.strip().str.lower() == "confirm"
+        ]
+        alias_map = dict(zip(
+            confirmed["variant_brand"].str.strip(),
+            confirmed["canonical_brand"].str.strip(),
+        ))
+        if alias_map:
+            df["primary_brand"] = df["primary_brand"].replace(alias_map)
+            print(f"  Step 4b - Brand alias: {len(alias_map)} rules applied")
+        else:
+            print(f"  Step 4b - Brand alias: file found but no confirmed rows")
+    else:
+        print(f"  Step 4b - Brand alias: no mapping file found (skipped)")
+
     # Step 5: Detect ingredient language
     df["ingredients_lang"] = df["ingredients_text"].apply(detect_language)
     lang_counts = df["ingredients_lang"].value_counts().to_dict()
@@ -452,21 +471,25 @@ def main():
     print("  " + df["completeness_score"].describe().round(1).to_string()
           .replace("\n", "\n  "))
 
-    print(f"\n  Product records with low data completeness (score < 50):")
-    low = df[df["completeness_score"] < 50][
-        ["product_name", "brands", "completeness_score"]
-    ]
-    if len(low):
-        print("  " + low.to_string().replace("\n", "\n  "))
-    else:
-        print("  None - all records score >= 50")
-
-    # Save
+    # Save FIRST — previously the MemoryError on the low-completeness print
+    # crashed clean.py before the file was ever written, so aliases were lost.
     output_filename = f"clean_{timestamp}.csv"
     output_path     = os.path.join(SAMPLE_DIR, output_filename)
     df.to_csv(output_path, index=False, encoding="utf-8-sig")
     print(f"\n  Saved -> {output_filename}")
     print(f"  ({len(df)} rows, {len(df.columns)} columns)\n")
+
+    print(f"\n  Product records with low data completeness (score < 50):")
+    low = df[df["completeness_score"] < 50][
+        ["product_name", "brands", "completeness_score"]
+    ]
+    if len(low):
+        # Cap at 20 rows — printing thousands of rows causes MemoryError
+        print("  " + low.head(20).to_string().replace("\n", "\n  "))
+        if len(low) > 20:
+            print(f"  ... and {len(low) - 20:,} more (showing first 20 only)")
+    else:
+        print("  None - all records score >= 50")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-parent_company,brand,primary_brand_db,category,hq_country,notes
+﻿parent_company,brand,primary_brand_db,category,hq_country,notes
 Nestlé,nesquik,nesquik,powder_drinks,CH,Chocolate powder and RTD dairy variants; also used as cereal brand via CPW
 Nestlé,milo,milo,powder_drinks,CH,Malted chocolate powder; energy/nutrition positioning varies by market
 Nestlé,nido,nido,powder_drinks,CH,Milk powder brand; strong in emerging markets
@@ -275,3 +275,11 @@ Saputo,devondale murray goulburn,devondale murray goulburn,dairy,CA,Australian d
 Coca-Cola,fairlife,fairlife,dairy_drinks,US,Filtered milk/protein dairy drinks; non-soda Coca-Cola-owned brand
 Kraft Heinz,notco joint products,notco joint products,plant_based,US,Kraft Heinz NotCo co-branded plant-based products; product availability varies
 Kraft Heinz,kraft singles,kraft singles,dairy,US,Processed cheese slices; include only if cheese/dairy foods are in scope
+Carrefour,carrefour,carrefour,snacks,FR,
+Auchan,auchan,auchan,snacks,FR,
+U,u,u,snacks,FR,
+Casino,casino,casino,snacks,FR,
+Lidl,lidl,lidl,snacks,FR,
+Cora,cora,cora,snacks,FR,
+Leader Price,leader price,leader price,snacks,FR,
+Marque Rep re,marque rep re,marque rep re,snacks,FR,
