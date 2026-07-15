@@ -2815,3 +2815,20 @@ the london essence co,the london essence,geo_suffix,2,1,medium,,suffix removed: 
 trickling springs creamery llc,trickling springs creamery,geo_suffix,2,1,medium,,suffix removed: 'llc'
 vedic mix inc,vedic mix,geo_suffix,2,1,medium,,suffix removed: 'inc'
 wild oats foods llc,wild oats foods,geo_suffix,2,1,medium,,suffix removed: 'llc'
+coca cola,coca-cola,punctuation,18,843,high,confirm,
+coca-cola company,coca-cola,geo_suffix,29,843,high,confirm,suffix: company
+coca cola company,coca-cola,punctuation,7,843,high,confirm,
+coca-cola-light,coca-cola,prefix,9,843,high,confirm,sub-brand
+coca cola zero,coca-cola,prefix,10,843,high,confirm,sub-brand
+cocacola,coca-cola,punctuation,5,843,high,confirm,
+kelloggs,kellogg's,punctuation,71,1367,high,confirm,
+kellogs,kellogg's,punctuation,37,1367,high,confirm,typo
+kellogg,kellogg's,punctuation,20,1367,high,confirm,
+kellog's,kellogg's,punctuation,16,1367,high,confirm,typo
+kellog company,kellogg's,geo_suffix,3,1367,high,confirm,suffix: company
+kellog,kellogg's,punctuation,2,1367,high,confirm,typo
+kellog sales cokellog's,kellogg's,punctuation,1,1367,high,confirm,garbled entry
+kellog\'s,kellogg's,punctuation,1,1367,high,confirm,escaped apostrophe
+kellogg s,kellogg's,punctuation,1,1367,high,confirm,missing apostrophe
+kellogg sales co,kellogg's,geo_suffix,1,1367,high,confirm,suffix: sales co
+kellogg uk,kellogg's,geo_suffix,1,1367,high,confirm,suffix: uk

@@ -633,3 +633,31 @@ branded products.
 **Implication for category analysis:** Claim presence at private label level
 indicates that a claim type has become a category-level expectation rather
 than a brand differentiator.
+
+---
+
+### OBS-027 — Incorrect energy value in OFF: Hipro Saveur Coco
+**Date:** 15 July 2026
+**Status:** Deferred — candidate for future data quality sweep
+**Brand:** hipro (Danone)
+
+**Finding:** OFF reports 238 kcal per 100g for Hipro Saveur Coco. Comparable
+Hipro products (Hipro Banana, Hipro Vanille, Hipro à Boire) all report
+approximately 55–65 kcal per 100g, consistent with a high-protein low-fat
+dairy drink format. Pack verification confirms the actual value is
+approximately 60 kcal per 100g. The 238 kcal figure appears to be a
+contributor data entry error.
+
+**Impact in the tool:** Hipro Saveur Coco shows 🔴 red on Energy in the IS
+table and appears as an outlier within the hipro brand view. The clean.py
+outlier cap (900 kcal) does not catch this value as it is below the
+physical maximum.
+
+**Heuristic for systematic detection:** Flag products where energy_kcal
+differs by more than 3× from the brand-category median. Hipro Saveur Coco
+(238 kcal) vs hipro/dairies median (~60 kcal) = ~4× — would be caught by
+this rule. Implementation deferred to the data quality flagging pass.
+
+**Recommended action:** Report correction to Open Food Facts. In the app,
+consider a per-product data quality warning when energy deviates more than
+3× from the brand median, surfaced in the product card.
