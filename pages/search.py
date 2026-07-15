@@ -1,15 +1,12 @@
 """
-Product Explorer — the main product per the brief.
+Product Explorer — main product page.
 
-Two halves: a filterable product table with CSV export, and a detail
-card for whichever row is selected. All claim/flag display text is
-resolved through shared/labels.py (UI_LABELS.md) — no stored code
-should ever reach st.write/st.markdown directly. See docs/UI_LABELS.md
-and the project's no-blame principle (docs/ADR.md, docs/METHODOLOGY.md).
-
-Phase 2 filters implemented: Company / owner, Market / region.
-Both use CSV reference files and the pipeline-derived
-observed_market_region_codes column (see docs/ADR.md).
+IS/TELLS architecture:
+- IS columns: per-kcal nutritional metrics indexed vs country-category average
+- TELLS column: on-pack claims detected by OCR/LLM (vision products only)
+- Claim area / Claim focus removed — ingredient-derived taxonomy was
+  unreliable (ferments lactiques in cheese → gut health false positive).
+  Replaced by vision-only Positioning filter and TELLS column.
 """
 
 from __future__ import annotations
@@ -26,10 +23,66 @@ NOVA_DESCRIPTIONS = {
     4: "Ultra-processed foods",
 }
 
-# Completeness threshold below which a per-product warning is shown.
-# Above this level the progress bar is suppressed — users don't need
-# to see "100% complete" on every product (see feedback IV-C).
 COMPLETENESS_WARNING_THRESHOLD = 80
+
+# Claim codes → friendly display names (TELLS column + card + Positioning filter)
+_CLAIM_NAMES: dict[str, str] = {
+    "protein_claim": "Protein", "protein": "Protein",
+    "fibre_claim": "Fibre", "fiber_claim": "Fibre",
+    "fiber": "Fibre", "fibre": "Fibre",
+    "prebiotic_claim": "Prebiotic", "probiotic_claim": "Probiotic",
+    "immune_claim": "Immune support",
+    "fortification_claim": "Vitamins & minerals",
+    "vitalite_concept": "Vitamins & minerals",
+    "vitamin_claim": "Vitamins & minerals", "vitamins": "Vitamins & minerals",
+    "energy_claim": "Energy", "energy": "Energy",
+    "no_added_sugar_claim": "No added sugar", "no_added_sugar": "No added sugar",
+    "sugar_reduction_claim": "Reduced sugar",
+    "low_fat_claim": "Low fat", "fat_free_claim": "Fat free",
+    "natural_claim": "Natural", "natural": "Natural",
+    "organic_claim": "Organic", "organic": "Organic",
+    "plant_based_claim": "Plant-based",
+    "vegan_claim": "Vegan", "gluten_free_claim": "Gluten free",
+    "lactose_free_claim": "Lactose free",
+    "high_protein_claim": "High protein",
+    "heritage_claim": "Heritage", "heritage": "Heritage",
+    "origin_quality_claim": "Origin / provenance",
+    "reformulation_claim": "New recipe / reformulation",
+    "comparative_claim": "Comparative claim",
+    "no_palm_oil": "No palm oil", "no_artificial": "No artificial ingredients",
+    "clean_label_claim": "Clean label",
+    "minimal_ingredients_claim": "Minimal ingredients",
+    "sustainability_halo": "Sustainability",
+    "glp1_positioning": "Satiety / GLP-1",
+    "gender_targeting_claim": "Gender-targeted",
+}
+
+# All table columns: display_name → (source_col_or_None, is_default)
+_ALL_COLS: dict[str, tuple] = {
+    "Category":              ("query_category",     True),
+    "Brand":                 ("primary_brand",      True),
+    "Product":               ("product_name",       True),
+    "Energy, kcal/100g":     ("_energy",            True),
+    "Protein, g/100 kcal":   ("_protein_is",        True),
+    "Fibre, g/100 kcal":     ("_fiber_is",           True),
+    "Saturated fat, g/100 kcal": ("_satfat_is",       True),
+    "NOVA":                  ("_nova_str",           True),
+    "Positioning":           ("_positioning",        True),
+    # Optional
+    "Nutri-Score":           ("_nutriscore_str",     False),
+    "Protein, g/100g":       ("protein_100g",        False),
+    "Fat, g/100g":           ("fat_100g",            False),
+    "Saturated fat, g/100g": ("saturated_fat_100g",  False),
+    "Carbohydrate, g/100g":  ("carbs_100g",          False),
+    "Total sugars, g/100g":  ("sugars_100g",         False),
+    "Added sugar, g/100g":   (None,                  False),
+    "Fibre, g/100g":         ("fiber_100g",          False),
+    "Salt, g/100g":          ("salt_100g",           False),
+}
+_DEFAULT_COLS = [k for k, (_, d) in _ALL_COLS.items() if d]
+
+# Status filter options
+_STATUS_OPTS = ["All", "🟢 Above average", "🟡 Parity", "🔴 Below average"]
 
 
 def _missing(value) -> bool:
@@ -39,28 +92,13 @@ def _missing(value) -> bool:
         if pd.isna(value):
             return True
     except (TypeError, ValueError):
-        # pd.isna() raises on array-likes rather than returning a bool —
-        # not expected here (callers always pass a scalar from a row
-        # dict), but guarded defensively rather than letting it propagate.
         pass
     if isinstance(value, str) and value.strip().lower() in ("", "nan", "none"):
         return True
     return False
 
 
-def _fmt_num(value, unit: str = "", decimals: int = 1) -> str:
-    if _missing(value):
-        return "Not reported"
-    try:
-        num = float(value)
-    except (TypeError, ValueError):
-        return "Not reported"
-    return f"{num:.{decimals}f}{unit}"
-
-
 def _to_float(value) -> float | None:
-    """Safe float conversion for values from SQLite/pandas that may arrive
-    as strings ('18.0', '100.0') even when the column is typed numeric."""
     if _missing(value):
         return None
     try:
@@ -74,484 +112,33 @@ def _to_int(value) -> int | None:
     return int(num) if num is not None else None
 
 
-def _fmt_nova(value) -> str:
-    """Human-readable NOVA label for the product table.
-    Shows '4 — Ultra-processed foods' rather than bare '4' so junior
-    users don't need to remember the NOVA scale."""
+def _fmt_num(value, unit: str = "", decimals: int = 1) -> str:
     if _missing(value):
-        return "Not tested"
+        return "Not reported"
     try:
-        nova_int = int(float(value))
+        return f"{float(value):.{decimals}f}{unit}"
+    except (TypeError, ValueError):
+        return "Not reported"
+
+
+def _fmt_nova(value) -> str:
+    if _missing(value):
+        return "—"
+    try:
+        n = int(float(value))
     except (TypeError, ValueError):
         return "—"
-    return f"{nova_int} — {NOVA_DESCRIPTIONS.get(nova_int, 'Unclassified')}"
+    return f"{n} — {NOVA_DESCRIPTIONS.get(n, 'Unclassified')}"
 
-
-def claim_evidence_caption(product: dict) -> str:
-    """Four distinct states — see merge_scores.py for the pipeline logic:
-    get_pack_claims_found() returns '' (not None) when vision succeeded
-    but found zero claims, and tag_claims.py sets claim_source='vision'
-    for any non-null pack_claims_found, including that empty string. So
-    claim_source=='vision' does NOT by itself mean claims were found.
-    Separately, a product can have pack_analysis_attempted=1 and
-    claim_source=='ingredient_text_only' because OCR/LLM failed outright
-    — that is a different state from "vision succeeded, zero claims"."""
-    attempted = product.get("pack_analysis_attempted")
-    source = product.get("claim_source")
-    pack_claims = product.get("pack_claims_found")
-
-    if _missing(attempted) or not bool(attempted):
-        return (
-            "Pack-image claim extraction is not available for this product; "
-            "signals are derived from product name and ingredient-list information."
-        )
-    if source == "vision":
-        if _missing(pack_claims) or str(pack_claims).strip() == "":
-            return "Pack image analyzed; no front-of-pack claim was identified."
-        return "Based on front-of-pack image analysis."
-
-    return (
-        "Pack-image claim extraction is not available for this product; "
-        "signals are derived from product name and ingredient-list information."
-    )
-
-
-def render_product_card(product: dict) -> None:
-    st.divider()
-
-    # ── 1. Header: image + metadata ─────────────────────────────────
-    img_col, info_col = st.columns([1, 2.4])
-
-    with img_col:
-        image_url = components.product_image_url(product.get("image_url"))
-        components.render_product_pack_image(
-            image_url,
-            product_name=product.get("product_name") or "",
-        )
-        if image_url:
-            st.link_button("Open full image ↗", image_url)
-
-    with info_col:
-        st.markdown(f"### {product.get('product_name') or 'Unnamed product'}")
-
-        brand = product.get("primary_brand")
-        category = product.get("query_category")
-        meta_parts = []
-        if brand and not _missing(brand):
-            meta_parts.append(f"**Brand:** {brand}")
-        if category and not _missing(category):
-            meta_parts.append(f"**Category:** {category}")
-        if meta_parts:
-            st.markdown(" · ".join(meta_parts))
-
-        if not _missing(product.get("quantity")):
-            st.markdown(f"**Pack size:** {product['quantity']}")
-
-        completeness = product.get("completeness_score")
-        completeness_int = _to_int(completeness)
-        if completeness_int is not None and completeness_int < COMPLETENESS_WARNING_THRESHOLD:
-            st.warning(
-                f"Some source fields are missing for this product "
-                f"(completeness: {completeness_int}%), so interpretation may be incomplete.",
-                icon="⚠️",
-            )
-
-    # ── 2. Nutri-Score + NOVA badges ────────────────────────────────
-    badge_html = ""
-    if not _missing(product.get("nutriscore_grade")):
-        badge_html += components.render_badge(
-            f"Nutri-Score&nbsp;<b>{str(product['nutriscore_grade']).upper()}</b>"
-        )
-    nova = product.get("nova_group")
-    if not _missing(nova):
-        nova_int = _to_int(nova)
-        if nova_int is not None:
-            badge_html += components.render_badge(
-                f"NOVA {nova_int} — {NOVA_DESCRIPTIONS.get(nova_int, 'Unclassified')}"
-            )
-    if badge_html:
-        st.markdown(badge_html, unsafe_allow_html=True)
-        components.caption(
-            "Nutri-Score and NOVA come from Open Food Facts. They are external reference "
-            "classifications, not this tool's own assessment. See the Methodology tab for details."
-        )
-
-    # ── 3. Nutrition grid ───────────────────────────────────────────
-    components.section_label("Nutrition (per 100g / 100ml)")
-    nutrition_cols = st.columns(4)
-    nutrition_fields = [
-        # Row 1: high-interest values first
-        ("Energy",        product.get("energy_kcal"),       " kcal", 0),
-        ("Protein",       product.get("protein_100g"),       " g",    1),
-        ("Fat",           product.get("fat_100g"),           " g",    1),
-        ("Carbohydrates", product.get("carbs_100g"),         " g",    1),
-        # Row 2: fat/sugar detail + salt
-        ("Salt",          product.get("salt_100g"),          " g",    2),
-        ("Fibre",         product.get("fiber_100g"),         " g",    1),
-        ("Saturated fat", product.get("saturated_fat_100g"), " g",    1),
-        ("Sugars",        product.get("sugars_100g"),        " g",    1),
-    ]
-    for i, (label_text, value, unit, decimals) in enumerate(nutrition_fields):
-        with nutrition_cols[i % 4]:
-            st.metric(label_text, _fmt_num(value, unit, decimals))
-
-    # ── 4. Ingredient-processing markers ────────────────────────────
-    components.section_label("Ingredient-processing markers")
-    band = product.get("composition_marker_band")
-    score = product.get("composition_marker_score")
-    if _missing(band) or _missing(score):
-        st.markdown(
-            '<div class="fbpr-empty-note">Not available for this product.</div>',
-            unsafe_allow_html=True,
-        )
-    else:
-        score_num = _to_float(score)
-        if score_num is not None:
-            st.markdown(
-                f'<span class="fbpr-mono">{band} ({score_num:.0f}/40)</span>',
-                unsafe_allow_html=True,
-            )
-            components.caption(
-            "Based only on the ingredient list. Higher marker levels mean more detected "
-            "ingredient-processing signals, such as emulsifiers, sweeteners, syrups, or "
-            "modified starches. This is not a health verdict."
-        )
-
-    # ── 5. Claim & positioning signals ──────────────────────────────
-    components.section_label("Claim & positioning signals")
-    claim_cat_1 = product.get("claim_category_1")
-    claim_cat_2 = product.get("claim_category_2")
-    claim_chip_labels = []
-    if not _missing(claim_cat_1):
-        chip = labels.safe_label_for("claim_category_1", claim_cat_1)
-        if chip != "—":
-            claim_chip_labels.append(chip)
-    if not _missing(claim_cat_2) and str(claim_cat_2).strip().lower() not in ("none", "nan", ""):
-        chip = labels.safe_label_for("claim_category_2", claim_cat_2)
-        if chip != "—":
-            claim_chip_labels.append(chip)
-    components.render_chips(
-        claim_chip_labels, kind="claim", empty_text="No positioning signal identified"
-    )
-    components.caption(
-        "Shows the broad claim area and more specific claim focus detected for this product. "
-        "Where pack-image analysis is not available, this may rely on product-name or "
-        "ingredient-list signals."
-    )
-    components.caption(claim_evidence_caption(product))
-
-    pack_claims = product.get("pack_claims_found")
-    if not _missing(pack_claims) and str(pack_claims).strip():
-        claim_count = len([c for c in str(pack_claims).split("|") if c.strip()])
-        st.caption(
-            f"{claim_count} individual claim{'s' if claim_count != 1 else ''} detected on pack."
-        )
-
-    # ── 6. Nutrition reference flags ────────────────────────────────
-    components.section_label("Nutrition reference flags")
-    flag_labels = labels.safe_labels_for_pipe_list(
-        "nutrition_benchmark_flags", product.get("nutrition_benchmark_flags")
-    )
-    components.render_chips(
-        flag_labels,
-        kind="benchmark",
-        empty_text="No sugar, fat, saturated fat, or salt value above the selected reference threshold.",
-    )
-    components.caption(
-        "Uses UK front-of-pack nutrition thresholds as a comparison reference across products. "
-        "These flags are not a legal assessment, health-risk assessment, or product recommendation."
-    )
-
-    # ── 7. Claim–reference intersections (only when present) ────────
-    intersections_raw = product.get("claim_benchmark_intersections")
-    if not _missing(intersections_raw) and str(intersections_raw).strip():
-        components.section_label("Claim–reference intersections")
-        intersection_list = [s.strip() for s in str(intersections_raw).split("|") if s.strip()]
-        components.render_chips(intersection_list, kind="neutral")
-        components.caption(
-            "Shows where a detected claim or positioning signal co-occurs with a nutrition, "
-            "ingredient, or processing reference point. Co-occurrence only; it does not mean "
-            "the claim is false or misleading."
-        )
-
-    # ── 8. Positioning signal score ─────────────────────────────────
-    components.section_label("Positioning signal score")
-    gap = product.get("positioning_composition_gap")
-    gap_band = product.get("positioning_composition_gap_band")
-    if _missing(gap) or _missing(gap_band):
-        st.markdown(
-            '<div class="fbpr-empty-note">Not available for this product because pack-image '
-            "claim extraction is not available or did not produce a usable result.</div>",
-            unsafe_allow_html=True,
-        )
-    else:
-        gap_num = _to_float(gap)
-        if gap_num is not None:
-            st.markdown(
-                f'<span class="fbpr-mono">{gap_band} ({gap_num:.0f}/100)</span>',
-                unsafe_allow_html=True,
-            )
-        with st.expander("How to read this score"):
-            st.markdown(
-                "This score combines three components:\n\n"
-                "1. **Ingredient-processing markers** — computed from the ingredient list "
-                "regardless of any claim on pack. A product with a high-marker ingredient "
-                "list contributes to this score even if it makes no front-of-pack claims.\n\n"
-                "2. **Positioning weight** — the strength of detected front-of-pack claims, "
-                "where available. No claims found means this component is zero.\n\n"
-                "3. **Composition context** — only active when claims are present; combines "
-                "Nutri-Score tier and processing-level signals to assess whether the claimed "
-                "positioning aligns with the broader nutritional and processing profile.\n\n"
-                "**What this score is not:** It is not a claim-verification tool, a health "
-                "verdict, a misleadingness score, or a legal compliance indicator. A high "
-                "score means the product has strong ingredient-processing signals and/or "
-                "significant front-of-pack positioning — not that it is misleading. "
-                "Interpretation requires reading all three components separately. "
-                "See the Methodology tab for the full formula and known limitations."
-            )
-
-
-# ─────────────────────────────────────────────────────────────────────
-# Page body
-# ─────────────────────────────────────────────────────────────────────
-
-components.inject_base_css()
-components.render_header(
-    "Product Explorer",
-    "Search products, filter by positioning signals, and inspect the evidence behind each product.",
-)
-
-if not db.database_exists():
-    st.info(
-        "No local database found yet at `database/positioning_radar.db`. Run the "
-        "core pipeline first — see the README's \"How to run\" section "
-        "(`ingest.py` → `clean.py` → `analyze.py` → `load.py`, then `tag_claims.py` "
-        "for the claim taxonomy this page uses)."
-    )
-    st.stop()
-
-# ── Sidebar filters ──────────────────────────────────────────────────
-# Order follows CPG professional mental model:
-# Category → Market → Company → Brand → Claim signals → Nutrition
-with st.sidebar:
-    st.subheader("Filters")
-
-    text = st.text_input("Search product or brand")
-    options = db.get_filter_options()
-    company_brand_map = db.get_company_brand_map()
-
-    # ── 1. Category ───────────────────────────────────────────────────
-    categories = st.multiselect("Category", options["query_category"])
-
-    # ── 2. Market / region ────────────────────────────────────────────
-    # Only shows markets for which we have full-coverage downloads.
-    # Adding a new market = add its region code to DOWNLOAD_SCOPE_REGIONS
-    # in shared/db.py and re-run bootstrap.py for that market.
-    region_options = db.get_region_options()
-    region_label_to_code = {label: code for code, label in region_options}
-    selected_region_labels = st.multiselect(
-        "Market / region",
-        [label for _, label in region_options],
-        help=(
-            "Filters to products sold in this market, based on Open Food Facts "
-            "country tags. Only markets with full-coverage downloads are shown. "
-            "Current scope: France, UK & Ireland, US & Canada."
-        ),
-    )
-    selected_region_codes = [
-        region_label_to_code[label] for label in selected_region_labels
-    ]
-
-    # ── 3. Company / owner ────────────────────────────────────────────
-    # Selecting a company narrows the Brand dropdown to that company's
-    # known brands. "Other" shows brands not mapped to any company.
-    # Brand can always be used independently without selecting a company.
-    all_companies = sorted(company_brand_map.keys())
-    selected_companies = st.multiselect(
-        "Company / owner",
-        all_companies + [db.COMPANY_OTHER_LABEL],
-        help=(
-            "Filter by parent company. Selecting a company pre-fills the "
-            "Brand dropdown with that company's known brands. "
-            "'Other / not mapped' shows brands without a company match. "
-            "Based on data/reference/company_brand_mapping.csv."
-        ),
-    )
-
-    other_selected = db.COMPANY_OTHER_LABEL in selected_companies
-    real_companies  = [c for c in selected_companies if c != db.COMPANY_OTHER_LABEL]
-
-    # ── 4. Brand ──────────────────────────────────────────────────────
-    # Options depend on both Category and Company selection:
-    # - Company selected  → show only that company's mapped brands
-    # - "Other" selected  → show all brands (user picks from unmapped ones)
-    # - No company        → show all brands filtered by selected categories
-    if real_companies and not other_selected:
-        company_pool = sorted({
-            b for c in real_companies for b in company_brand_map.get(c, [])
-        })
-        brand_selection = st.multiselect(
-            "Brand",
-            company_pool,
-            help="Brands belonging to the selected company. Select to refine further.",
-        )
-        # Use refinement if made; otherwise the company filter covers all company brands
-        selected_company_brands: list[str] = brand_selection if brand_selection else company_pool
-        exclude_company_brands: list[str] = []
-        direct_brands: list[str] = []
-
-    elif other_selected:
-        all_mapped = [b for bl in company_brand_map.values() for b in bl]
-        selected_company_brands = []
-        exclude_company_brands  = all_mapped
-        # Show all brands under selected categories — user picks from the unmapped ones
-        available_brands = db.get_brand_options(tuple(categories))
-        direct_brands = st.multiselect(
-            "Brand",
-            available_brands,
-            help="Select specific brands from the 'Other' (unmapped) pool.",
-        )
-
-    else:
-        # No company context — show all brands filtered by selected categories
-        selected_company_brands = []
-        exclude_company_brands  = []
-        available_brands = db.get_brand_options(tuple(categories))
-        direct_brands = st.multiselect("Brand", available_brands)
-
-    # ── 5. Claim area ─────────────────────────────────────────────────
-    claim_code_to_label = labels.all_options("claim_category_1")
-    label_to_claim_code = {v: k for k, v in claim_code_to_label.items()}
-    available_claim_labels = [
-        claim_code_to_label[c]
-        for c in options["claim_category_1"]
-        if c in claim_code_to_label
-    ]
-    selected_claim_labels = st.multiselect(
-        "Claim area",
-        available_claim_labels,
-        help=(
-            "Broad claim or positioning territory detected for the product. "
-            "Based on pack-image analysis where available, otherwise "
-            "ingredient/name-derived signals."
-        ),
-    )
-    selected_claim_codes = [label_to_claim_code[l] for l in selected_claim_labels]
-
-    # ── 6. Claim focus ────────────────────────────────────────────────
-    focus_code_to_label = labels.all_options("claim_category_2")
-    label_to_focus_code = {v: k for k, v in focus_code_to_label.items()}
-    available_focus_labels = [
-        focus_code_to_label[c]
-        for c in options.get("claim_category_2", [])
-        if c in focus_code_to_label
-    ]
-    selected_focus_labels = st.multiselect(
-        "Claim focus",
-        available_focus_labels,
-        help=(
-            "More specific claim topic, such as protein, fibre, vitamins, "
-            "no added sugar, organic, sustainability, or heritage."
-        ),
-    )
-    selected_focus_codes = [label_to_focus_code[l] for l in selected_focus_labels]
-
-    # ── 7. Nutri-Score ────────────────────────────────────────────────
-    _NUTRISCORE_LABELS = {
-        "a": "A — Most favourable profile",
-        "b": "B",
-        "c": "C",
-        "d": "D",
-        "e": "E — Least favourable profile",
-        "unknown": "UNKNOWN",
-        "not-applicable": "NOT APPLICABLE",
-        "not_applicable": "NOT APPLICABLE",
-    }
-    selected_nutriscore = st.multiselect(
-        "Nutri-Score",
-        options.get("nutriscore_grade", []),
-        format_func=lambda g: _NUTRISCORE_LABELS.get(
-            str(g).lower(), str(g).upper()
-        ),
-        help=(
-            "External nutrition-profile classification from Open Food Facts. "
-            "A is the most favourable profile; E is the least favourable. "
-            "Not this tool's recommendation."
-        ),
-    )
-
-    # ── 8. NOVA group ─────────────────────────────────────────────────
-    nova_choices = st.multiselect(
-        "NOVA group",
-        [1, 2, 3, 4],
-        format_func=lambda n: f"{n} — {NOVA_DESCRIPTIONS[n]}",
-        help=(
-            "External processing-level classification from Open Food Facts. "
-            "NOVA 1 means unprocessed or minimally processed; "
-            "NOVA 4 means ultra-processed. Not this tool's assessment."
-        ),
-    )
-
-# ── Query ────────────────────────────────────────────────────────────
-total = db.count_products(
-    text, categories, direct_brands,
-    selected_company_brands, exclude_company_brands,
-    selected_region_codes,
-    selected_claim_codes, selected_focus_codes,
-    nova_choices, selected_nutriscore,
-)
-
-if total == 0:
-    st.warning("No products match these filters.")
-    st.stop()
-
-results = db.search_products(
-    text, categories, direct_brands,
-    selected_company_brands, exclude_company_brands,
-    selected_region_codes,
-    selected_claim_codes, selected_focus_codes,
-    nova_choices, selected_nutriscore,
-    limit=200,
-)
-shown = len(results)
-
-# ── Result count + instruction ───────────────────────────────────────
-if total > shown:
-    st.caption(
-        f"{total:,} products match — showing the first {shown} rows. "
-        "Narrow your filters to inspect a smaller set."
-    )
-else:
-    st.caption(f"{total:,} product{'s' if total != 1 else ''} match.")
-
-st.markdown(
-    "Tick one row in the table to view full product details below. "
-    "Click column headers to sort."
-)
-
-# ── IS table helpers ─────────────────────────────────────────────────
-# Averages precomputed once per session from the full products table.
-# {(category, region_or_ALL): {metric_key: float}}
-_AVG = db.get_category_region_averages()
-
-_COUNTRY_REGION = {
-    'France': 'FRANCE',
-    'United Kingdom': 'UK_IE', 'Great Britain': 'UK_IE',
-    'Ireland': 'UK_IE', 'England': 'UK_IE', 'Scotland': 'UK_IE',
-    'United States': 'US_CANADA', 'Canada': 'US_CANADA',
-}
 
 def _fmt_is(value, category: str, region: str, metric: str,
             higher_is_good: bool, decimals: int = 1) -> str:
-    """Format IS metric: colour circle + absolute value.
-    Circle is vs country-category average (🟢 >110%, 🟡 90-110%, 🔴 <90%).
-    Direction: higher_is_good=True → high index is green, low is red.
-    Energy shown without circle (no clear good/bad direction)."""
+    """Format IS metric: colour circle + absolute value, indexed vs avg."""
     if _missing(value):
         return "—"
     try:
-        num_val = float(value)
-        num_str = f"{num_val:.{decimals}f}"
+        num = float(value)
+        num_str = f"{num:.{decimals}f}"
     except (TypeError, ValueError):
         return "—"
     avg = (
@@ -561,7 +148,7 @@ def _fmt_is(value, category: str, region: str, metric: str,
     if avg is None or avg == 0:
         return num_str
     try:
-        idx = num_val / avg * 100
+        idx = num / avg * 100
     except (TypeError, ZeroDivisionError):
         return num_str
     if idx > 110:
@@ -573,32 +160,32 @@ def _fmt_is(value, category: str, region: str, metric: str,
     return f"{circle} {num_str}"
 
 
-# TELLS: pack claim codes → friendly display names.
-# Source: pack_claims_found field, written by vision_extract.py.
-# Only shown for vision-analyzed products (claim_source = 'vision').
-_CLAIM_NAMES: dict[str, str] = {
-    "protein_claim": "Protein", "protein": "Protein",
-    "fibre_claim": "Fibre", "fiber_claim": "Fibre",
-    "fiber": "Fibre", "fibre": "Fibre",
-    "prebiotic_claim": "Prebiotic", "probiotic_claim": "Probiotic",
-    "immune_claim": "Immune support",
-    "fortification_claim": "Vitamins", "vitalite_concept": "Vitamins",
-    "vitamin_claim": "Vitamins", "vitamins": "Vitamins",
-    "energy_claim": "Energy", "energy": "Energy",
-    "no_added_sugar_claim": "No added sugar", "no_added_sugar": "No added sugar",
-    "sugar_reduction_claim": "Reduced sugar",
-    "low_fat_claim": "Low fat", "fat_free_claim": "Fat free",
-    "natural_claim": "Natural", "natural": "Natural",
-    "organic_claim": "Organic", "organic": "Organic",
-    "plant_based_claim": "Plant-based",
-    "vegan_claim": "Vegan", "gluten_free_claim": "Gluten free",
-    "lactose_free_claim": "Lactose free",
-    "high_protein_claim": "High protein",
-    "heritage_claim": "Heritage", "heritage": "Heritage",
-}
+def _metric_index(value, category: str, region: str, metric: str) -> float | None:
+    """Raw index (0-∞) for a metric vs country-category average."""
+    avg = (
+        _AVG.get((category, region), {}).get(metric)
+        or _AVG.get((category, "ALL"), {}).get(metric)
+    )
+    if _missing(value) or avg is None or avg == 0:
+        return None
+    try:
+        return float(value) / avg * 100
+    except (TypeError, ZeroDivisionError):
+        return None
+
+
+def _build_is_col(df: pd.DataFrame, val_col: str, metric_key: str,
+                  higher_is_good: bool, decimals: int = 1) -> list[str]:
+    out = []
+    for _, row in df.iterrows():
+        cat    = str(row.get("query_category") or "")
+        region = str(row.get("_region") or "OTHER")
+        out.append(_fmt_is(row.get(val_col), cat, region,
+                            metric_key, higher_is_good, decimals))
+    return out
+
 
 def _fmt_positioning(pack_claims_val, claim_source: str) -> str:
-    """TELLS column: what the product communicates on pack, vision-only."""
     if claim_source != "vision":
         return "Not tested"
     if _missing(pack_claims_val) or not str(pack_claims_val).strip():
@@ -615,118 +202,444 @@ def _fmt_positioning(pack_claims_val, claim_source: str) -> str:
     return " · ".join(seen) if seen else "No claims on pack"
 
 
-# Optional selectable columns: display_name → (db_col_or_None, decimals)
-# None db_col means the field is not yet ingested; shows "Not declared".
-_OPTIONAL_COLS: dict[str, tuple] = {
-    "Protein, g/100g":       ("protein_100g",       1),
-    "Fat, g/100g":           ("fat_100g",            1),
-    "Saturated fat, g/100g": ("saturated_fat_100g",  1),
-    "Carbohydrate, g/100g":  ("carbs_100g",          1),
-    "Total sugars, g/100g":  ("sugars_100g",         1),
-    "Added sugar, g/100g":   (None,                  1),   # not in DB yet — declared separately in US, rare in EU
-    "Fibre, g/100g":         ("fiber_100g",          1),
-    "Salt, g/100g":          ("salt_100g",           2),
+def _apply_status_filter(df: pd.DataFrame, col: str, metric: str,
+                         status: str) -> pd.DataFrame:
+    """Post-query filter: keep rows matching the selected status tier."""
+    if status == "All" or df.empty:
+        return df
+    indices = []
+    for _, row in df.iterrows():
+        cat    = str(row.get("query_category") or "")
+        region = str(row.get("_region") or "OTHER")
+        idx    = _metric_index(row.get(col), cat, region, metric)
+        if idx is None:
+            continue
+        if status == "🟢 Above average" and idx > 110:
+            indices.append(row.name)
+        elif status == "🟡 Parity" and 90 <= idx <= 110:
+            indices.append(row.name)
+        elif status == "🔴 Below average" and idx < 90:
+            indices.append(row.name)
+    return df.loc[indices] if indices else df.iloc[0:0]
+
+
+# ── Product card ──────────────────────────────────────────────────────────────
+
+def render_product_card(product: dict) -> None:
+    st.divider()
+
+    # 1. Header
+    img_col, info_col = st.columns([1, 2.4])
+    with img_col:
+        image_url = components.product_image_url(product.get("image_url"))
+        components.render_product_pack_image(
+            image_url, product_name=product.get("product_name") or ""
+        )
+        if image_url:
+            st.link_button("Open full image ↗", image_url)
+
+    with info_col:
+        st.markdown(f"### {product.get('product_name') or 'Unnamed product'}")
+        meta_parts = []
+        if not _missing(product.get("primary_brand")):
+            meta_parts.append(f"**Brand:** {product['primary_brand']}")
+        if not _missing(product.get("query_category")):
+            meta_parts.append(f"**Category:** {product['query_category']}")
+        if meta_parts:
+            st.markdown(" · ".join(meta_parts))
+        if not _missing(product.get("quantity")):
+            st.markdown(f"**Pack size:** {product['quantity']}")
+        completeness_int = _to_int(product.get("completeness_score"))
+        if completeness_int is not None and completeness_int < COMPLETENESS_WARNING_THRESHOLD:
+            st.warning(
+                f"Some source fields are missing for this product "
+                f"(completeness: {completeness_int}%), so interpretation may be incomplete.",
+                icon="⚠️",
+            )
+
+    # 2. Badges
+    badge_html = ""
+    if not _missing(product.get("nutriscore_grade")):
+        badge_html += components.render_badge(
+            f"Nutri-Score&nbsp;<b>{str(product['nutriscore_grade']).upper()}</b>"
+        )
+    nova = product.get("nova_group")
+    if not _missing(nova):
+        nova_int = _to_int(nova)
+        if nova_int is not None:
+            badge_html += components.render_badge(
+                f"NOVA {nova_int} — {NOVA_DESCRIPTIONS.get(nova_int, 'Unclassified')}"
+            )
+    if badge_html:
+        st.markdown(badge_html, unsafe_allow_html=True)
+        components.caption(
+            "Nutri-Score and NOVA come from Open Food Facts. External reference "
+            "classifications, not this tool's own assessment."
+        )
+
+    # 3. Nutrition grid
+    components.section_label("Nutrition (per 100g / 100ml)")
+    nutrition_cols = st.columns(4)
+    nutrition_fields = [
+        ("Energy",        product.get("energy_kcal"),       " kcal", 0),
+        ("Protein",       product.get("protein_100g"),       " g",    1),
+        ("Fat",           product.get("fat_100g"),           " g",    1),
+        ("Carbohydrates", product.get("carbs_100g"),         " g",    1),
+        ("Salt",          product.get("salt_100g"),          " g",    2),
+        ("Fibre",         product.get("fiber_100g"),         " g",    1),
+        ("Saturated fat", product.get("saturated_fat_100g"), " g",    1),
+        ("Sugars",        product.get("sugars_100g"),        " g",    1),
+    ]
+    for i, (label_text, value, unit, decimals) in enumerate(nutrition_fields):
+        with nutrition_cols[i % 4]:
+            st.metric(label_text, _fmt_num(value, unit, decimals))
+
+    # 4. Claim & positioning signals — vision only; "Not tested" otherwise
+    components.section_label("Claim & positioning signals")
+    claim_source = product.get("claim_source", "")
+    pack_claims  = product.get("pack_claims_found")
+
+    if claim_source != "vision":
+        st.markdown(
+            '<div class="fbpr-empty-note">Not tested — pack image not analyzed '
+            "by OCR/LLM for this product.</div>",
+            unsafe_allow_html=True,
+        )
+    else:
+        if not _missing(pack_claims) and str(pack_claims).strip():
+            claim_codes   = [c.strip() for c in str(pack_claims).split("|") if c.strip()]
+            friendly_list = []
+            for c in claim_codes:
+                label = _CLAIM_NAMES.get(
+                    c.lower(), c.replace("_claim", "").replace("_", " ").title()
+                )
+                if label not in friendly_list:
+                    friendly_list.append(label)
+            components.render_chips(friendly_list, kind="claim")
+            components.caption(
+                f"{len(claim_codes)} claim{'s' if len(claim_codes) != 1 else ''} detected "
+                "on front-of-pack image (OCR + LLM extraction)."
+            )
+        else:
+            st.markdown(
+                '<div class="fbpr-empty-note">No claims identified on pack image.</div>',
+                unsafe_allow_html=True,
+            )
+            components.caption("Pack image analyzed; no front-of-pack claims were identified.")
+
+    # 5. Full ingredient list
+    ingredients = product.get("ingredients_text")
+    if not _missing(ingredients) and str(ingredients).strip():
+        with st.expander("Full ingredient list"):
+            st.write(str(ingredients))
+    else:
+        with st.expander("Full ingredient list"):
+            st.write("Not available for this product.")
+
+
+# ── Page body ─────────────────────────────────────────────────────────────────
+
+components.inject_base_css()
+components.render_header(
+    "Product Explorer",
+    "Search products, filter by positioning signals, and inspect the evidence behind each product.",
+)
+
+if not db.database_exists():
+    st.info(
+        "No local database found yet at `database/positioning_radar.db`. "
+        "Run the pipeline first — see the README."
+    )
+    st.stop()
+
+# Load averages once (cached)
+_AVG     = db.get_category_region_averages()
+_COUNTRY_REGION = {
+    'France': 'FRANCE', 'United Kingdom': 'UK_IE', 'Great Britain': 'UK_IE',
+    'Ireland': 'UK_IE', 'England': 'UK_IE', 'Scotland': 'UK_IE',
+    'United States': 'US_CANADA', 'Canada': 'US_CANADA',
 }
 
-# ── Column selector ────────────────────────────────────────────────────
-extra_col_names: list[str] = st.multiselect(
-    "Add columns",
-    list(_OPTIONAL_COLS.keys()),
+# ── Sidebar ───────────────────────────────────────────────────────────────────
+with st.sidebar:
+    st.subheader("Filters")
+    text = st.text_input("Search product or brand")
+    options          = db.get_filter_options()
+    company_brand_map = db.get_company_brand_map()
+
+    # 1. Category
+    categories = st.multiselect("Category", options["query_category"])
+
+    # 2. Market / region
+    region_options      = db.get_region_options()
+    region_label_to_code = {label: code for code, label in region_options}
+    selected_region_labels = st.multiselect(
+        "Market / region",
+        [label for _, label in region_options],
+        help=(
+            "Filters to products sold in this market. Only markets with "
+            "full-coverage downloads are shown. Current scope: France, "
+            "UK & Ireland, US & Canada."
+        ),
+    )
+    selected_region_codes = [region_label_to_code[l] for l in selected_region_labels]
+
+    # 3. Company / owner
+    all_companies     = sorted(company_brand_map.keys())
+    selected_companies = st.multiselect(
+        "Company / owner",
+        all_companies + [db.COMPANY_OTHER_LABEL],
+        help=(
+            "Filter by parent company. Selecting a company pre-fills the "
+            "Brand dropdown. 'Other / not mapped' shows unmatched brands."
+        ),
+    )
+    other_selected = db.COMPANY_OTHER_LABEL in selected_companies
+    real_companies  = [c for c in selected_companies if c != db.COMPANY_OTHER_LABEL]
+
+    # 4. Brand (dependent on Company + Category)
+    if real_companies and not other_selected:
+        company_pool = sorted({b for c in real_companies for b in company_brand_map.get(c, [])})
+        brand_selection = st.multiselect(
+            "Brand", company_pool,
+            help="Brands belonging to the selected company.",
+        )
+        selected_company_brands: list[str] = brand_selection if brand_selection else company_pool
+        exclude_company_brands: list[str]  = []
+        direct_brands: list[str]           = []
+    elif other_selected:
+        all_mapped = [b for bl in company_brand_map.values() for b in bl]
+        selected_company_brands = []
+        exclude_company_brands  = all_mapped
+        direct_brands = st.multiselect(
+            "Brand", db.get_brand_options(tuple(categories)),
+            help="Select from brands not mapped to any company.",
+        )
+    else:
+        selected_company_brands = []
+        exclude_company_brands  = []
+        direct_brands = st.multiselect("Brand", db.get_brand_options(tuple(categories)))
+
+    # 5. Positioning (vision-analyzed products only)
+    pos_codes_raw   = db.get_positioning_options()
+    pos_code_to_label = {
+        code: _CLAIM_NAMES.get(code.lower(),
+               code.replace("_claim", "").replace("_", " ").title())
+        for code in pos_codes_raw
+    }
+    pos_label_to_code = {v: k for k, v in pos_code_to_label.items()}
+    pos_labels_unique = sorted(set(pos_code_to_label.values()))
+    selected_pos_labels = st.multiselect(
+        "Positioning",
+        pos_labels_unique,
+        help=(
+            "Filter by claims detected on pack by OCR/LLM. Only applies to "
+            "vision-analyzed products (~5,200 in this dataset). "
+            "Selecting multiple claims shows products with ANY of them."
+        ),
+    )
+    # Reverse-map: a friendly name may map to multiple raw codes
+    selected_pos_codes: list[str] = []
+    for label in selected_pos_labels:
+        for code, lbl in pos_code_to_label.items():
+            if lbl == label and code not in selected_pos_codes:
+                selected_pos_codes.append(code)
+
+    # 6. Status vs country-category average
+    st.markdown(
+        "**Status vs country-category average**  "
+        "<span title='Compares each product to the average for its own "
+        "category and market (e.g. France Dairies). Averages are "
+        "pre-computed from the full dataset and do not change with filters. "
+        "Applies to the visible results — use category and market filters "
+        "first for the most meaningful comparison.' "
+        "style='cursor:help; color:#8A8F8A;'>ℹ️</span>",
+        unsafe_allow_html=True,
+    )
+    protein_status = st.selectbox("Protein, g/100 kcal", _STATUS_OPTS)
+    fibre_status   = st.selectbox("Fibre, g/100 kcal",   _STATUS_OPTS)
+    satfat_status  = st.selectbox("Saturated fat, g/100 kcal", _STATUS_OPTS)
+    sugars_status  = st.selectbox("Sugars, g/100 kcal",  _STATUS_OPTS)
+
+    # 7. Nutri-Score
+    _NUTRISCORE_LABELS = {
+        "a": "A — Most favourable profile", "b": "B", "c": "C", "d": "D",
+        "e": "E — Least favourable profile",
+        "unknown": "UNKNOWN", "not-applicable": "NOT APPLICABLE",
+        "not_applicable": "NOT APPLICABLE",
+    }
+    selected_nutriscore = st.multiselect(
+        "Nutri-Score",
+        options.get("nutriscore_grade", []),
+        format_func=lambda g: _NUTRISCORE_LABELS.get(str(g).lower(), str(g).upper()),
+        help="A = most favourable; E = least favourable. From Open Food Facts.",
+    )
+
+    # 8. NOVA group
+    nova_choices = st.multiselect(
+        "NOVA group", [1, 2, 3, 4],
+        format_func=lambda n: f"{n} — {NOVA_DESCRIPTIONS[n]}",
+        help="Processing level from Open Food Facts. Not this tool's assessment.",
+    )
+
+    # column selector moved to main area above table
+
+# ── Query ─────────────────────────────────────────────────────────────────────
+total = db.count_products(
+    text, categories, direct_brands,
+    selected_company_brands, exclude_company_brands,
+    selected_region_codes, selected_pos_codes,
+    nova_choices, selected_nutriscore,
+)
+
+if total == 0:
+    st.warning("No products match these filters.")
+    st.stop()
+
+results = db.search_products(
+    text, categories, direct_brands,
+    selected_company_brands, exclude_company_brands,
+    selected_region_codes, selected_pos_codes,
+    nova_choices, selected_nutriscore,
+    limit=1000,
+)
+shown = len(results)
+
+# ── Match count + instruction ──────────────────────────────────────────────────
+if total > shown:
+    st.caption(
+        f"{total:,} products match — showing the first {shown} rows. "
+        "Narrow your filters to inspect a smaller set."
+    )
+else:
+    st.caption(f"{total:,} product{'s' if total != 1 else ''} match.")
+st.markdown(
+    "Tick one row in the table to view full product details below. "
+    "Click column headers to sort. "
+    "Hover column headers marked **ℹ️** to see what the colours mean."
+)
+
+# ── Column selector — above table so users see it immediately ────────────────
+selected_col_names: list[str] = st.multiselect(
+    "Table columns",
+    list(_ALL_COLS.keys()),
+    default=_DEFAULT_COLS,
     help=(
-        "Add per-100g nutritional columns. All values from Open Food Facts — "
-        "no calculated scores. Columns with 🟢🟡🔴 are indexed vs the "
-        "country-category average; additional columns show absolute values."
+        "Add or remove columns. Columns with 🟢🟡🔴 are indexed vs the "
+        "country-category average — hover any column header for the direction. "
+        "Additional columns show absolute values per 100g."
     ),
 )
 
-# ── Build display columns (IS + TELLS) ────────────────────────────────
+# ── Build computed columns ────────────────────────────────────────────────────
 display_df = results.copy()
 display_df["_region"] = (
     display_df["primary_country"].map(_COUNTRY_REGION).fillna("OTHER")
 )
 
-# Per-kcal ratios (computed from raw fields, used for IS columns)
+# Per-kcal ratios
 _kcal   = display_df["energy_kcal"].apply(_to_float)
 _prot   = display_df["protein_100g"].apply(_to_float)
 _fib    = display_df["fiber_100g"].apply(_to_float)
 _satfat = display_df["saturated_fat_100g"].apply(_to_float)
+_sugars = display_df["sugars_100g"].apply(_to_float)
 
 display_df["_protein_per_kcal"] = _prot   / _kcal.where(_kcal > 0) * 100
 display_df["_fiber_per_kcal"]   = _fib    / _kcal.where(_kcal > 0) * 100
 display_df["_satfat_per_kcal"]  = _satfat / _kcal.where(_kcal > 0) * 100
+display_df["_sugars_per_kcal"]  = _sugars / _kcal.where(_kcal > 0) * 100
 
-def _build_is_col(df: "pd.DataFrame", val_col: str, metric_key: str,
-                  higher_is_good: bool, decimals: int) -> list[str]:
-    """Build one IS column as a list of circle + value strings."""
-    out = []
-    for _, row in df.iterrows():
-        cat    = str(row.get("query_category") or "")
-        region = str(row.get("_region") or "OTHER")
-        out.append(
-            _fmt_is(row.get(val_col), cat, region, metric_key,
-                    higher_is_good, decimals)
-        )
-    return out
+# ── Apply post-query status filters ──────────────────────────────────────────
+display_df = _apply_status_filter(display_df, "_protein_per_kcal", "protein_per_kcal", protein_status)
+display_df = _apply_status_filter(display_df, "_fiber_per_kcal",   "fiber_per_kcal",   fibre_status)
+display_df = _apply_status_filter(display_df, "_satfat_per_kcal",  "satfat_per_kcal",  satfat_status)
+display_df = _apply_status_filter(display_df, "_sugars_per_kcal",  "sugars_per_kcal",  sugars_status)
 
-# Energy: absolute only — establishes density, no evaluative direction
-display_df["Energy, kcal/100g"]     = _kcal.apply(
-    lambda v: f"{v:.0f}" if v is not None else "—"
-)
-# IS metrics with colour circle
-display_df["Protein, g/100 kcal"]  = _build_is_col(
+if display_df.empty:
+    st.info("No products match the selected status filters.")
+    st.stop()
+
+# ── IS display columns ────────────────────────────────────────────────────────
+# Energy: high energy = red (higher_is_good=False — calorie density context)
+display_df["_energy"] = _build_is_col(
+    display_df, "energy_kcal",       "energy_kcal",      False, 0)
+display_df["_protein_is"] = _build_is_col(
     display_df, "_protein_per_kcal", "protein_per_kcal", True,  1)
-display_df["Fibre, g/100 kcal"]    = _build_is_col(
+display_df["_fiber_is"]   = _build_is_col(
     display_df, "_fiber_per_kcal",   "fiber_per_kcal",   True,  1)
-display_df["Sat. fat, g/100 kcal"] = _build_is_col(
+display_df["_satfat_is"]  = _build_is_col(
     display_df, "_satfat_per_kcal",  "satfat_per_kcal",  False, 1)
-display_df["NOVA"] = display_df["nova_group"].apply(_fmt_nova)
-
-# TELLS: what the product says on pack (vision-analyzed products only)
-display_df["Positioning"] = display_df.apply(
+display_df["_nova_str"]        = display_df["nova_group"].apply(_fmt_nova)
+display_df["_nutriscore_str"]  = display_df["nutriscore_grade"].apply(
+    lambda g: str(g).upper() if not _missing(g) else "—"
+)
+display_df["_positioning"] = display_df.apply(
     lambda row: _fmt_positioning(
         row.get("pack_claims_found"), row.get("claim_source", "")
-    ),
-    axis=1,
+    ), axis=1,
 )
 
-# Additional selectable columns (absolute values, no circle)
-for col_name in extra_col_names:
-    db_col, decimals = _OPTIONAL_COLS[col_name]
-    if db_col is None:
-        display_df[col_name] = "Not declared"
-    elif db_col in display_df.columns:
-        display_df[col_name] = display_df[db_col].apply(
-            lambda v, d=decimals: (
-                f"{float(v):.{d}f}" if not _missing(v) else "—"
-            )
-        )
-    else:
-        display_df[col_name] = "—"
-
-# ── Export CSV (numeric, no emoji — clean for Excel / Python) ─────────
-export_core = {
-    "query_category":      "Category",
-    "primary_brand":       "Brand",
-    "product_name":        "Product",
-    "energy_kcal":         "Energy, kcal/100g",
-    "_protein_per_kcal":   "Protein, g/100 kcal",
-    "_fiber_per_kcal":     "Fibre, g/100 kcal",
-    "_satfat_per_kcal":    "Sat. fat, g/100 kcal",
-    "nova_group":          "NOVA group",
-    "nutriscore_grade":    "Nutri-Score",
-    "Positioning":         "Positioning (pack claims)",
+# Optional absolute columns
+_ABS_COLS = {
+    "Protein, g/100g":       ("protein_100g",       1),
+    "Fat, g/100g":           ("fat_100g",            1),
+    "Saturated fat, g/100g": ("saturated_fat_100g",  1),
+    "Carbohydrate, g/100g":  ("carbs_100g",          1),
+    "Total sugars, g/100g":  ("sugars_100g",         1),
+    "Added sugar, g/100g":   (None,                  1),
+    "Fibre, g/100g":         ("fiber_100g",          1),
+    "Salt, g/100g":          ("salt_100g",           1),
+    "Nutri-Score":           ("_nutriscore_str",     0),
 }
-export_extra = {n: n for n in extra_col_names if n in display_df.columns}
-all_export_cols = {**export_core, **export_extra}
+# Metrics with colour coding when shown as optional columns
+# (higher = bad direction: sugar and salt)
+_COLOR_OPT = {
+    "Total sugars, g/100g": ("sugars_100g", "sugars_100g", False, 1),
+    "Salt, g/100g":         ("salt_100g",   "salt_100g",   False, 1),
+}
+
+for col_name in selected_col_names:
+    if col_name not in _DEFAULT_COLS and col_name in _ABS_COLS:
+        if col_name in _COLOR_OPT:
+            # Color-coded optional column
+            df_col, avg_metric, higher_is_good, decimals = _COLOR_OPT[col_name]
+            display_df[col_name] = _build_is_col(
+                display_df, df_col, avg_metric, higher_is_good, decimals
+            )
+        else:
+            db_col, decimals = _ABS_COLS[col_name]
+            if db_col is None:
+                display_df[col_name] = "Not declared"
+            elif db_col.startswith("_"):
+                pass  # already computed above (_nutriscore_str)
+            elif db_col in display_df.columns:
+                display_df[col_name] = display_df[db_col].apply(
+                    lambda v, d=decimals: f"{float(v):.{d}f}" if not _missing(v) else "—"
+                )
+            else:
+                display_df[col_name] = "—"
+
+# ── Export CSV (numeric, no emoji) ────────────────────────────────────────────
+export_cols = {
+    "query_category":     "Category",
+    "primary_brand":      "Brand",
+    "product_name":       "Product",
+    "energy_kcal":        "Energy, kcal/100g",
+    "_protein_per_kcal":  "Protein, g/100 kcal",
+    "_fiber_per_kcal":    "Fibre, g/100 kcal",
+    "_satfat_per_kcal":   "Saturated fat, g/100 kcal",
+    "_sugars_per_kcal":   "Sugars, g/100 kcal",
+    "nova_group":         "NOVA group",
+    "nutriscore_grade":   "Nutri-Score",
+    "_positioning":       "Positioning (pack claims)",
+}
 export_df = (
-    display_df[[c for c in all_export_cols if c in display_df.columns]]
-    .rename(columns=all_export_cols)
+    display_df[[c for c in export_cols if c in display_df.columns]]
+    .rename(columns=export_cols)
 )
 csv_bytes = export_df.to_csv(index=False).encode("utf-8-sig")
-
 st.download_button(
-    label="Download visible rows as CSV",
-    data=csv_bytes,
+    "Download visible rows as CSV", csv_bytes,
     file_name="food_positioning_radar_filtered_products.csv",
     mime="text/csv",
     help="Exports numeric values (no emoji) for analysis in Excel or Python.",
@@ -735,37 +648,71 @@ st.caption(
     "Source data: Open Food Facts (ODbL). Export for analysis — please attribute."
 )
 
-# ── Table ─────────────────────────────────────────────────────────────
-default_table_cols = [
-    ("query_category",       "Category"),
-    ("primary_brand",        "Brand"),
-    ("product_name",         "Product"),
-    ("Energy, kcal/100g",    "Energy, kcal/100g"),
-    ("Protein, g/100 kcal",  "Protein, g/100 kcal"),
-    ("Fibre, g/100 kcal",    "Fibre, g/100 kcal"),
-    ("Sat. fat, g/100 kcal", "Sat. fat, g/100 kcal"),
-    ("NOVA",                 "NOVA"),
-    ("Positioning",          "Positioning"),
-]
-extra_table_cols = [(n, n) for n in extra_col_names if n in display_df.columns]
-all_table_cols   = default_table_cols + extra_table_cols
+# ── Table ─────────────────────────────────────────────────────────────────────
+col_rename = {
+    "query_category":     "Category",
+    "primary_brand":      "Brand",
+    "product_name":       "Product",
+    "_energy":            "Energy, kcal/100g",
+    "_nova_str":          "NOVA",
+    "_positioning":       "Positioning",
+    "_nutriscore_str":    "Nutri-Score",
+}
 
-src_cols  = [s for s, _ in all_table_cols if s in display_df.columns]
-disp_cols = [d for s, d in all_table_cols if s in display_df.columns]
-table_view = display_df[src_cols].copy()
-table_view.columns = disp_cols
+table_src_cols = []
+table_disp_cols = []
+for col_name in selected_col_names:
+    if col_name in _ALL_COLS:
+        src, _ = _ALL_COLS[col_name]
+        if src is None:
+            display_df[col_name] = display_df.get(col_name, "Not declared")
+            src = col_name
+        # For optional columns, the formatted (emoji+number) string is stored
+        # under col_name. For default IS columns, it's stored under the internal
+        # src key (e.g. "_energy", "_protein_is"). Prefer col_name if it exists.
+        effective_src = col_name if col_name in display_df.columns else src
+        if effective_src in display_df.columns:
+            table_src_cols.append(effective_src)
+            table_disp_cols.append(col_name)
+    elif col_name in display_df.columns:
+        table_src_cols.append(col_name)
+        table_disp_cols.append(col_name)
 
+if not table_src_cols:
+    st.info("Select at least one column to display.")
+    st.stop()
+
+table_view = display_df[table_src_cols].copy()
+table_view.columns = table_disp_cols
+
+# Column help text: explain colour direction for each IS metric
+_COL_HELP = {
+    "Energy, kcal/100g":         "🔴 above average  🟡 parity  🟢 below average\nHigh calorie density = red (less favourable).",
+    "Protein, g/100 kcal":       "🟢 above average  🟡 parity  🔴 below average\nHigh protein density = green (more favourable).",
+    "Fibre, g/100 kcal":         "🟢 above average  🟡 parity  🔴 below average\nHigh fibre density = green (more favourable).",
+    "Saturated fat, g/100 kcal": "🔴 above average  🟡 parity  🟢 below average\nHigh saturated fat density = red (less favourable).",
+    "Total sugars, g/100g":       "🔴 above average  🟡 parity  🟢 below average\nHigh sugar content = red (less favourable).",
+    "Salt, g/100g":               "🔴 above average  🟡 parity  🟢 below average\nHigh salt content = red (less favourable).",
+}
+col_cfg = {
+    col: st.column_config.TextColumn(col, help=help_text)
+    for col, help_text in _COL_HELP.items()
+    if col in table_disp_cols
+}
 event = st.dataframe(
     table_view,
     hide_index=True,
     width="stretch",
     on_select="rerun",
     selection_mode="single-row",
+    column_config=col_cfg if col_cfg else None,
 )
 selected_rows = event.selection["rows"]
 
 if not selected_rows:
     st.info("Tick one row above to view full product details.")
 else:
-    selected_product = results.iloc[selected_rows[0]].to_dict()
+    # Map back to original results index
+    original_idx = display_df.index[selected_rows[0]]
+    selected_product = results.loc[original_idx].to_dict()
     render_product_card(selected_product)

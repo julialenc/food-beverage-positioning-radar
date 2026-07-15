@@ -1,10 +1,5 @@
 """
 Read-only SQLite access for the Streamlit app.
-
-Connects to database/positioning_radar.db — gitignored, built locally
-by running the pipeline (see README "How to run"). This app never
-writes to the database; the connection is opened read-only (mode=ro)
-so a bug here can't accidentally corrupt pipeline output.
 """
 
 from __future__ import annotations
@@ -21,14 +16,8 @@ DB_PATH          = REPO_ROOT / "database" / "positioning_radar.db"
 COMPANY_MAP_PATH = REPO_ROOT / "data" / "reference" / "company_brand_mapping.csv"
 REGION_MAP_PATH  = REPO_ROOT / "data" / "country_region_mapping.csv"
 
-# Regions for which we have full-coverage data (bootstrapped from OFF bulk export
-# filtered to these markets). Only these appear in the Market / region filter.
-# When adding a new market (e.g. DACH after a German bootstrap run), add the
-# region code here — nothing else in the UI needs to change.
 DOWNLOAD_SCOPE_REGIONS = {"FRANCE", "UK_IE", "US_CANADA"}
-
-# Sentinel label for brands not mapped to any parent company.
-COMPANY_OTHER_LABEL = "Other / not mapped to a company"
+COMPANY_OTHER_LABEL    = "Other / not mapped to a company"
 
 
 def database_exists() -> bool:
@@ -44,12 +33,10 @@ def get_connection() -> sqlite3.Connection:
 
 @st.cache_data(show_spinner=False)
 def get_company_brand_map() -> dict[str, list[str]]:
-    """Load company_brand_mapping.csv → {parent_company: [primary_brand_db, ...]}."""
     import csv
     from collections import defaultdict
     mapping: dict[str, list[str]] = defaultdict(list)
     if not COMPANY_MAP_PATH.exists():
-        print(f"[get_company_brand_map] file not found: {COMPANY_MAP_PATH}")
         return {}
     with open(COMPANY_MAP_PATH, encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
@@ -62,14 +49,9 @@ def get_company_brand_map() -> dict[str, list[str]]:
 
 @st.cache_data(show_spinner=False)
 def get_region_options() -> list[tuple[str, str]]:
-    """Return (region_code, label) tuples ordered by ui_order,
-    restricted to DOWNLOAD_SCOPE_REGIONS so the UI only offers markets
-    for which we have full coverage. Products sold in other markets still
-    exist in the DB — they just aren't filterable by region."""
     import csv
     seen: dict[str, tuple[str, int]] = {}
     if not REGION_MAP_PATH.exists():
-        print(f"[get_region_options] file not found: {REGION_MAP_PATH}")
         return []
     with open(REGION_MAP_PATH, encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
@@ -87,27 +69,15 @@ def get_region_options() -> list[tuple[str, str]]:
 
 @st.cache_data(show_spinner=False, ttl=600)
 def get_filter_options() -> dict[str, list]:
-    """Distinct values for claim area, claim focus, and Nutri-Score filters.
-    Brand and Category are handled by get_brand_options() since brand
-    options are now category-dependent.
+    """Distinct values for Category and Nutri-Score filters.
+    Claim area and Claim focus removed — ingredient-derived taxonomy
+    was unreliable; Positioning filter replaces them for vision products.
     """
     conn = get_connection()
     queries = {
         "query_category": """
             SELECT DISTINCT query_category FROM products
             WHERE query_category IS NOT NULL AND TRIM(query_category) != ''
-            ORDER BY 1
-        """,
-        "claim_category_1": """
-            SELECT DISTINCT claim_category_1 FROM product_analysis
-            WHERE claim_category_1 IS NOT NULL AND TRIM(claim_category_1) != ''
-            ORDER BY 1
-        """,
-        "claim_category_2": """
-            SELECT DISTINCT claim_category_2 FROM product_analysis
-            WHERE claim_category_2 IS NOT NULL
-              AND TRIM(claim_category_2) != ''
-              AND TRIM(LOWER(claim_category_2)) NOT IN ('none', 'nan')
             ORDER BY 1
         """,
         "nutriscore_grade": """
@@ -128,10 +98,8 @@ def get_filter_options() -> dict[str, list]:
 
 @st.cache_data(show_spinner=False, ttl=600)
 def get_brand_options(categories: tuple[str, ...] = ()) -> list[str]:
-    """Brands present in the DB, optionally filtered to selected categories.
-    Uses tuple (not list) so Streamlit can hash it as a cache key.
-    Called with the current category selection so the Brand dropdown only
-    shows brands that exist in the chosen categories."""
+    """Brands filtered by category. Excludes brands with no alphabetic
+    characters (numeric codes, symbols) that add noise to the dropdown."""
     conn = get_connection()
     try:
         if categories:
@@ -148,10 +116,34 @@ def get_brand_options(categories: tuple[str, ...] = ()) -> list[str]:
                 WHERE primary_brand IS NOT NULL AND TRIM(primary_brand) != ''
                 ORDER BY 1
             """).fetchall()
-        return [row[0] for row in rows]
+        # Filter out brands with no letter — handles Unicode (é, ñ, etc.)
+        return [row[0] for row in rows if any(c.isalpha() for c in (row[0] or ""))]
     except Exception as exc:
         print(f"[get_brand_options] query failed: {exc}")
         return []
+
+
+@st.cache_data(show_spinner=False, ttl=600)
+def get_positioning_options() -> list[str]:
+    """Distinct raw claim codes present in vision-analyzed products.
+    Callers map codes to friendly names using _CLAIM_NAMES in search.py."""
+    conn = get_connection()
+    try:
+        rows = conn.execute("""
+            SELECT DISTINCT pack_claims_found FROM product_analysis
+            WHERE pack_claims_found IS NOT NULL
+              AND TRIM(pack_claims_found) != ''
+              AND claim_source = 'vision'
+        """).fetchall()
+    except Exception:
+        return []
+    codes: set[str] = set()
+    for (val,) in rows:
+        for code in str(val).split("|"):
+            code = code.strip()
+            if code:
+                codes.add(code)
+    return sorted(codes)
 
 
 def _qmarks(values: list) -> str:
@@ -159,7 +151,6 @@ def _qmarks(values: list) -> str:
 
 
 def _normalize_brand(b: str) -> str:
-    """Canonical form for brand comparison: lowercase, hyphens → spaces."""
     return b.lower().replace("-", " ")
 
 
@@ -170,21 +161,14 @@ def _build_where(
     company_brands: Optional[list[str]],
     exclude_company_brands: Optional[list[str]],
     region_codes: Optional[list[str]],
-    claim_areas: Optional[list[str]],
-    claim_focuses: Optional[list[str]],
+    positioning_codes: Optional[list[str]],
     nova_groups: Optional[list[int]],
     nutriscore_grades: Optional[list[str]],
 ) -> tuple[str, list]:
     clauses: list[str] = []
     params: list = []
 
-    # Always exclude products with no usable brand — these are typically
-    # unbranded, private-label-unlabelled, or contributor-entry artefacts
-    # where primary_brand is NULL or the literal string 'unknown' (written
-    # by clean.py when the OFF brands field was empty). They have no
-    # analytical value in the Product Explorer but are retained in the DB
-    # for Ozempic tracker and other aggregate computations that read the
-    # full products table directly.
+    # Permanent: exclude no-brand and unknown-brand products
     clauses.append(
         "p.primary_brand IS NOT NULL"
         " AND TRIM(LOWER(p.primary_brand)) NOT IN ('unknown', '', 'nan')"
@@ -198,18 +182,15 @@ def _build_where(
         clauses.append(f"p.query_category IN ({_qmarks(categories)})")
         params.extend(categories)
     if brands:
-        # Direct brand filter (used when no company context, or under "Other")
         clauses.append(f"p.primary_brand IN ({_qmarks(brands)})")
         params.extend(brands)
     if company_brands:
-        # Company-expanded brand filter — normalized to handle hyphen variants
         normalized = [_normalize_brand(b) for b in company_brands]
         clauses.append(
             f"LOWER(REPLACE(p.primary_brand, '-', ' ')) IN ({_qmarks(normalized)})"
         )
         params.extend(normalized)
     if exclude_company_brands:
-        # "Other" bucket: products whose brand is NOT mapped to any company
         normalized = [_normalize_brand(b) for b in exclude_company_brands]
         clauses.append(
             f"LOWER(REPLACE(p.primary_brand, '-', ' ')) NOT IN ({_qmarks(normalized)})"
@@ -221,12 +202,13 @@ def _build_where(
         )
         clauses.append(f"({region_clause})")
         params.extend(f"%{code}%" for code in region_codes)
-    if claim_areas:
-        clauses.append(f"a.claim_category_1 IN ({_qmarks(claim_areas)})")
-        params.extend(claim_areas)
-    if claim_focuses:
-        clauses.append(f"a.claim_category_2 IN ({_qmarks(claim_focuses)})")
-        params.extend(claim_focuses)
+    if positioning_codes:
+        # OR logic: product must have at least one of the selected claim codes
+        pos_clause = " OR ".join(
+            "a.pack_claims_found LIKE ?" for _ in positioning_codes
+        )
+        clauses.append(f"(a.claim_source = 'vision' AND ({pos_clause}))")
+        params.extend(f"%{code}%" for code in positioning_codes)
     if nova_groups:
         clauses.append(f"p.nova_group IN ({_qmarks(nova_groups)})")
         params.extend(nova_groups)
@@ -245,15 +227,14 @@ def count_products(
     company_brands: Optional[list[str]] = None,
     exclude_company_brands: Optional[list[str]] = None,
     region_codes: Optional[list[str]] = None,
-    claim_areas: Optional[list[str]] = None,
-    claim_focuses: Optional[list[str]] = None,
+    positioning_codes: Optional[list[str]] = None,
     nova_groups: Optional[list[int]] = None,
     nutriscore_grades: Optional[list[str]] = None,
 ) -> int:
     conn = get_connection()
     where_sql, params = _build_where(
         text, categories, brands, company_brands, exclude_company_brands,
-        region_codes, claim_areas, claim_focuses, nova_groups, nutriscore_grades
+        region_codes, positioning_codes, nova_groups, nutriscore_grades
     )
     return conn.execute(f"""
         SELECT COUNT(*)
@@ -270,18 +251,15 @@ def search_products(
     company_brands: Optional[list[str]] = None,
     exclude_company_brands: Optional[list[str]] = None,
     region_codes: Optional[list[str]] = None,
-    claim_areas: Optional[list[str]] = None,
-    claim_focuses: Optional[list[str]] = None,
+    positioning_codes: Optional[list[str]] = None,
     nova_groups: Optional[list[int]] = None,
     nutriscore_grades: Optional[list[str]] = None,
-    limit: int = 200,
+    limit: int = 1000,
 ) -> pd.DataFrame:
-    """Products matching all filters, left-joined with their analysis row.
-    Capped at `limit` rows — pair with count_products() to show totals."""
     conn = get_connection()
     where_sql, params = _build_where(
         text, categories, brands, company_brands, exclude_company_brands,
-        region_codes, claim_areas, claim_focuses, nova_groups, nutriscore_grades
+        region_codes, positioning_codes, nova_groups, nutriscore_grades
     )
     df = pd.read_sql_query(f"""
         SELECT p.*, a.*
@@ -294,21 +272,18 @@ def search_products(
     df = df.loc[:, ~df.columns.duplicated()]
     return df
 
+
 @st.cache_data(show_spinner=False, ttl=600)
 def get_category_region_averages() -> dict:
-    """
-    Precompute IS-table nutritional averages by (query_category, region)
-    and (query_category, 'ALL') as fallback. Called once per session,
-    cached for 10 minutes. Excludes unknown/null-brand products so averages
-    reflect the same universe shown in the table.
-
-    Returns {(category, region_or_ALL): {metric_key: float_avg}}.
-    metric keys: energy_kcal, protein_per_kcal, fiber_per_kcal, satfat_per_kcal
+    """Precompute IS-table nutritional averages by (query_category, region).
+    metric keys: energy_kcal, protein_per_kcal, fiber_per_kcal,
+                 satfat_per_kcal, sugars_per_kcal
     """
     conn = get_connection()
     df = pd.read_sql_query("""
         SELECT query_category, primary_country,
-               energy_kcal, protein_100g, fiber_100g, saturated_fat_100g
+               energy_kcal, protein_100g, fiber_100g,
+               saturated_fat_100g, sugars_100g, salt_100g
         FROM products
         WHERE primary_brand IS NOT NULL
           AND TRIM(LOWER(primary_brand)) NOT IN ('unknown', '', 'nan')
@@ -324,15 +299,19 @@ def get_category_region_averages() -> dict:
     }
     df['region'] = df['primary_country'].map(_COUNTRY_REGION).fillna('OTHER')
 
-    for col in ['energy_kcal', 'protein_100g', 'fiber_100g', 'saturated_fat_100g']:
+    for col in ['energy_kcal', 'protein_100g', 'fiber_100g',
+                'saturated_fat_100g', 'sugars_100g', 'salt_100g']:
         df[col] = pd.to_numeric(df[col], errors='coerce')
 
     kcal = df['energy_kcal']
-    df['protein_per_kcal'] = df['protein_100g'] / kcal * 100
-    df['fiber_per_kcal']   = df['fiber_100g']   / kcal * 100
+    df['protein_per_kcal'] = df['protein_100g']       / kcal * 100
+    df['fiber_per_kcal']   = df['fiber_100g']         / kcal * 100
     df['satfat_per_kcal']  = df['saturated_fat_100g'] / kcal * 100
+    df['sugars_per_kcal']  = df['sugars_100g']        / kcal * 100
 
-    metrics = ['energy_kcal', 'protein_per_kcal', 'fiber_per_kcal', 'satfat_per_kcal']
+    metrics = ['energy_kcal', 'protein_per_kcal', 'fiber_per_kcal',
+               'satfat_per_kcal', 'sugars_per_kcal',
+               'sugars_100g', 'salt_100g']
     result: dict = {}
 
     for (cat, region), grp in df.groupby(['query_category', 'region']):
@@ -352,4 +331,3 @@ def get_category_region_averages() -> dict:
         result[(str(cat), 'ALL')] = avgs
 
     return result
-
