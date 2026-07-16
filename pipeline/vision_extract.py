@@ -95,7 +95,7 @@ COST_ALERT_CHF    = float(os.getenv("AZURE_COST_ALERT_CHF", "45"))
 # Increment when SYSTEM_PROMPT changes. This is the original, locked
 # extraction prompt used for the v3 run (see docs/ADR.md ADR-006) —
 # do not change the prompt text itself without also bumping this.
-PROMPT_VERSION = "v1"
+PROMPT_VERSION = "v2"
 
 # Cost per 1000 operations (CHF estimates).
 # OCR_COST_PER_1K is Azure AI Vision Read API's published per-image rate.
@@ -192,7 +192,42 @@ Rules:
   (e.g. "Yaourt Nature", "Briochettes Nature") — this is NOT a natural_claim. 
   Only flag natural_claim for explicit naturalness language: "100% natural", 
   "naturel", "ingrédients naturels", "natural flavors", "arôme naturel"
-- If OCR quality is poor due to stylized/artistic typography, still attempt to identify any readable claim words even if full sentences unreadable; set ocr_quality="stylized" when large artistic typography fragments the text"""
+- If OCR quality is poor due to stylized/artistic typography, still attempt to identify any readable claim words even if full sentences unreadable; set ocr_quality="stylized" when large artistic typography fragments the text
+
+FORTIFICATION CLAIMS — explicit nutrient highlights (not background nutrition table values):
+- "CALCIUM", "+CALCIUM", "CALCIUM +", "RICHE EN CALCIUM", "SOURCE DE CALCIUM", "HIGH IN CALCIUM" = fortification_claim=true, add "Calcium" to fortification_nutrients
+- "RICHE EN VITAMINES", "SOURCE DE VITAMINES", "VITAMINES A, C, D", any highlighted vitamin letter or group = fortification_claim=true
+- "MAGNÉSIUM", "FER", "ZINC", "SÉLÉNIUM", "OMÉGA-3", "OMEGA-3" when highlighted as a benefit = fortification_claim=true
+- "CALCIUM + CÉRÉALES", "CALCIUM + VITAMINES" = fortification_claim=true, capture both in fortification_nutrients
+- Rule: if a nutrient name appears prominently on pack outside of a nutrition facts table context, it is a fortification claim
+
+FREE-FROM / CLEAN LABEL:
+- "SANS CONSERVATEURS", "RECETTE SANS CONSERVATEURS", "NO PRESERVATIVES", "SENZA CONSERVANTI" = no_artificial=true
+- "SANS COLORANTS", "NO ARTIFICIAL COLOURS", "SANS COLORANTS ARTIFICIELS" = no_artificial=true
+- "SANS ARÔMES ARTIFICIELS", "NO ARTIFICIAL FLAVOURS" = no_artificial=true
+- "SANS ADDITIFS", "NO ADDITIVES" = no_artificial=true AND clean_label_claim=true
+
+FRENCH & EUROPEAN ORIGIN CLAIMS:
+- "100% FRANÇAIS", "100% FRANCE", "PRODUIT EN FRANCE", "FABRIQUÉ EN FRANCE" = origin_quality_claim=true
+- "LAIT FRANÇAIS", "LAIT DE VACHE FRANÇAISE", "CRÈME FRAÎCHE FRANÇAISE", "VACHES FRANÇAISES" = origin_quality_claim=true
+- "LAIT FRAIS", "LAIT FRAIS & CRÈME" = origin_quality_claim=true (fresh milk claim)
+- "ORIGINE FRANCE", "FILIÈRE FRANÇAISE", "AGRICULTEURS FRANÇAIS" = origin_quality_claim=true
+- "100% BELGE", "100% SWISS", "SCHWEIZER MILCH", "LAIT SUISSE" = origin_quality_claim=true
+
+REFORMULATION / NEW RECIPE:
+- "NOUVELLE RECETTE", "NEW RECIPE", "NEUE REZEPTUR", "NUEVA RECETA" = reformulation_claim=true
+- "NOUVEAU", "NOUVEAUTÉ", "NEW", "NEU" on a product = reformulation_claim=true
+- "ENCORE MEILLEUR", "EVEN BETTER", "IMPROVED RECIPE" = reformulation_claim=true AND comparative_claim=true
+
+CHILDREN / KIDS TARGETING:
+- "POUR LE GOÛTER", "GOÛTER", "KIDS", "POUR LES ENFANTS", "CROISSANCE", "ENFANTS" when used as a positioning/occasion claim = add to other_claims as "kids_occasion"
+- "POUR TA CROISSANCE" = add to other_claims as "kids_growth"
+
+IMAGE CONTEXT — assess first, before extracting claims:
+- If the OCR text consists mainly of nutrition table rows (Energie/kJ/kcal, Graisses/Fat, Glucides/Carbohydrates, Protéines/Proteins, Sel/Salt with numeric values per 100g), this is a NUTRITION LABEL, not front-of-pack claims. Set no_claims_detected=true and ocr_quality="nutrition_label"
+- If the OCR text consists mainly of ingredient lists (long comma/semicolon-separated lists of ingredients), set no_claims_detected=true and ocr_quality="ingredient_list"  
+- If the OCR text is a price sticker or retailer label (price in DH, £, $, €, shelf label codes), set no_claims_detected=true and ocr_quality="price_sticker"
+- Only extract claims when the OCR reflects genuine front-of-pack marketing content"""
 
 
 # ── Azure Vision OCR ──────────────────────────────────────────────────────────
