@@ -150,13 +150,46 @@ def download_if_needed() -> None:
 
 # ── Filter helpers ─────────────────────────────────────────────────────────────
 
+# Tags that confirm a product is a genuine snack chip
+# — checked first, before any exclusion rules
+_PROTECT_AS_SNACKS = {
+    "en:tortilla-chips", "en:corn-chips", "en:crisps",
+    "en:chips-and-crackers",
+}
+
+# Tags that exclude a product from snacks even when en:snacks is present.
+# Covers pasta, plain tortillas/wraps, and identifiable pizza products.
+_EXCLUDE_FROM_SNACKS = {
+    # Pasta
+    "en:gnocchi", "en:potato-gnocchi", "en:cooked-gnocchis",
+    "en:tortellini", "en:tortellini-ricotta-spinach",
+    "en:ravioli", "en:cheese-ravioli", "en:fresh-ravioli",
+    "en:ravioli-with-vegetables",
+    "en:pastas", "en:fresh-pasta",
+    # Tortillas (not chips — protected above)
+    "en:tortillas", "en:flour-tortillas", "en:corn-tortillas",
+    # Pizza
+    "en:pizzas", "en:frozen-pizzas", "en:frozen-pizzas-and-pies",
+    "en:mini-appetizer-pizzas", "en:pizza-with-ham-and-cheese",
+    "en:vegetable-pizza",
+}
+
+
 def assign_category(cats_val) -> str | None:
-    """Return the first matching query_category, or None to exclude."""
+    """Return the first matching query_category, or None to exclude.
+    For snacks: tortilla chips are explicitly protected; pasta, plain
+    tortillas, and pizza products are excluded even when en:snacks is
+    present in their OFF category tags."""
     if not isinstance(cats_val, str) or not cats_val:
         return None
     tags = cats_val.lower()
     for label, match_tags in CATEGORY_MAP:
         if any(t in tags for t in match_tags):
+            if label == "snacks":
+                if any(p in tags for p in _PROTECT_AS_SNACKS):
+                    return "snacks"
+                if any(ex in tags for ex in _EXCLUDE_FROM_SNACKS):
+                    return None
             return label
     return None
 
