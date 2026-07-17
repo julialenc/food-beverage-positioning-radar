@@ -82,7 +82,7 @@ _ALL_COLS: dict[str, tuple] = {
 _DEFAULT_COLS = [k for k, (_, d) in _ALL_COLS.items() if d]
 
 # Status filter options
-_STATUS_OPTS = ["All", "🟢 Above average", "🟡 Parity", "🔴 Below average"]
+_STATUS_OPTS = ["All", "↑ Above average", "≈ Parity", "↓ Below average"]
 
 
 def _missing(value) -> bool:
@@ -132,15 +132,22 @@ def _fmt_nova(value) -> str:
 
 
 def _fmt_is(value, category: str, region: str, metric: str,
-            higher_is_good: bool, decimals: int = 1) -> str:
-    """Format IS metric: colour circle + absolute value, indexed vs avg."""
+            decimals: int = 1) -> str:
+    """Format IS metric: <number> <arrow>, indexed vs country-category average.
+
+    Arrow shows position vs average only (↑ above / ≈ parity / ↓ below) —
+    no colour, no favourability judgment. The number is right-justified to
+    a fixed width so that plain text sort (as used by st.dataframe's
+    column-header click) matches numeric sort order.
+    """
     if _missing(value):
         return "—"
     try:
         num = float(value)
-        num_str = f"{num:.{decimals}f}"
     except (TypeError, ValueError):
         return "—"
+    width = 4 if decimals == 0 else 5
+    num_str = f"{num:>{width}.{decimals}f}"
     avg = (
         _AVG.get((category, region), {}).get(metric)
         or _AVG.get((category, "ALL"), {}).get(metric)
@@ -152,12 +159,12 @@ def _fmt_is(value, category: str, region: str, metric: str,
     except (TypeError, ZeroDivisionError):
         return num_str
     if idx > 110:
-        circle = "🟢" if higher_is_good else "🔴"
+        arrow = "↑"
     elif idx >= 90:
-        circle = "🟡"
+        arrow = "≈"
     else:
-        circle = "🔴" if higher_is_good else "🟢"
-    return f"{circle} {num_str}"
+        arrow = "↓"
+    return f"{num_str} {arrow}"
 
 
 def _metric_index(value, category: str, region: str, metric: str) -> float | None:
@@ -175,13 +182,13 @@ def _metric_index(value, category: str, region: str, metric: str) -> float | Non
 
 
 def _build_is_col(df: pd.DataFrame, val_col: str, metric_key: str,
-                  higher_is_good: bool, decimals: int = 1) -> list[str]:
+                  decimals: int = 1) -> list[str]:
     out = []
     for _, row in df.iterrows():
         cat    = str(row.get("query_category") or "")
         region = str(row.get("_region") or "OTHER")
         out.append(_fmt_is(row.get(val_col), cat, region,
-                            metric_key, higher_is_good, decimals))
+                            metric_key, decimals))
     return out
 
 
@@ -214,11 +221,11 @@ def _apply_status_filter(df: pd.DataFrame, col: str, metric: str,
         idx    = _metric_index(row.get(col), cat, region, metric)
         if idx is None:
             continue
-        if status == "🟢 Above average" and idx > 110:
+        if status == "↑ Above average" and idx > 110:
             indices.append(row.name)
-        elif status == "🟡 Parity" and 90 <= idx <= 110:
+        elif status == "≈ Parity" and 90 <= idx <= 110:
             indices.append(row.name)
-        elif status == "🔴 Below average" and idx < 90:
+        elif status == "↓ Below average" and idx < 90:
             indices.append(row.name)
     return df.loc[indices] if indices else df.iloc[0:0]
 
@@ -525,8 +532,8 @@ selected_col_names: list[str] = st.multiselect(
     list(_ALL_COLS.keys()),
     default=_DEFAULT_COLS,
     help=(
-        "Add or remove columns. Columns with 🟢🟡🔴 are indexed vs the "
-        "country-category average — hover any column header for the direction. "
+        "Add or remove columns. Columns with ↑ ≈ ↓ are indexed vs the "
+        "country-category average — hover any column header for details. "
         "Additional columns show absolute values per 100g."
     ),
 )
@@ -560,15 +567,16 @@ if display_df.empty:
     st.stop()
 
 # ── IS display columns ────────────────────────────────────────────────────────
-# Energy: high energy = red (higher_is_good=False — calorie density context)
+# Energy, Protein, Fibre, Sat fat — arrow shows position vs country-category average
+# only (↑/≈/↓); no favourability judgment is encoded in formatting.
 display_df["_energy"] = _build_is_col(
-    display_df, "energy_kcal",       "energy_kcal",      False, 0)
+    display_df, "energy_kcal",       "energy_kcal",      0)
 display_df["_protein_is"] = _build_is_col(
-    display_df, "_protein_per_kcal", "protein_per_kcal", True,  1)
+    display_df, "_protein_per_kcal", "protein_per_kcal", 1)
 display_df["_fiber_is"]   = _build_is_col(
-    display_df, "_fiber_per_kcal",   "fiber_per_kcal",   True,  1)
+    display_df, "_fiber_per_kcal",   "fiber_per_kcal",   1)
 display_df["_satfat_is"]  = _build_is_col(
-    display_df, "_satfat_per_kcal",  "satfat_per_kcal",  False, 1)
+    display_df, "_satfat_per_kcal",  "satfat_per_kcal",  1)
 display_df["_nova_str"]        = display_df["nova_group"].apply(_fmt_nova)
 display_df["_nutriscore_str"]  = display_df["nutriscore_grade"].apply(
     lambda g: str(g).upper() if not _missing(g) else "—"
@@ -591,20 +599,19 @@ _ABS_COLS = {
     "Salt, g/100g":          ("salt_100g",           1),
     "Nutri-Score":           ("_nutriscore_str",     0),
 }
-# Metrics with colour coding when shown as optional columns
-# (higher = bad direction: sugar and salt)
-_COLOR_OPT = {
-    "Total sugars, g/100g": ("sugars_100g", "sugars_100g", False, 1),
-    "Salt, g/100g":         ("salt_100g",   "salt_100g",   False, 1),
+# Optional columns shown indexed vs country-category average (↑/≈/↓ arrow, no colour)
+_INDEXED_OPT = {
+    "Total sugars, g/100g": ("sugars_100g", "sugars_100g", 1),
+    "Salt, g/100g":         ("salt_100g",   "salt_100g",   1),
 }
 
 for col_name in selected_col_names:
     if col_name not in _DEFAULT_COLS and col_name in _ABS_COLS:
-        if col_name in _COLOR_OPT:
-            # Color-coded optional column
-            df_col, avg_metric, higher_is_good, decimals = _COLOR_OPT[col_name]
+        if col_name in _INDEXED_OPT:
+            # Indexed optional column (arrow vs country-category average)
+            df_col, avg_metric, decimals = _INDEXED_OPT[col_name]
             display_df[col_name] = _build_is_col(
-                display_df, df_col, avg_metric, higher_is_good, decimals
+                display_df, df_col, avg_metric, decimals
             )
         else:
             db_col, decimals = _ABS_COLS[col_name]
@@ -685,14 +692,19 @@ if not table_src_cols:
 table_view = display_df[table_src_cols].copy()
 table_view.columns = table_disp_cols
 
-# Column help text: explain colour direction for each IS metric
+# Column help text: explain the arrow — same neutral meaning for every
+# indexed metric, no favourability judgment.
+_ARROW_HELP = (
+    "↑ above country-category average    ≈ within ±10% of country-category average    "
+    "↓ below country-category average"
+)
 _COL_HELP = {
-    "Energy, kcal/100g":         "🔴 above average  🟡 parity  🟢 below average\nHigh calorie density = red (less favourable).",
-    "Protein, g/100 kcal":       "🟢 above average  🟡 parity  🔴 below average\nHigh protein density = green (more favourable).",
-    "Fibre, g/100 kcal":         "🟢 above average  🟡 parity  🔴 below average\nHigh fibre density = green (more favourable).",
-    "Saturated fat, g/100 kcal": "🔴 above average  🟡 parity  🟢 below average\nHigh saturated fat density = red (less favourable).",
-    "Total sugars, g/100g":       "🔴 above average  🟡 parity  🟢 below average\nHigh sugar content = red (less favourable).",
-    "Salt, g/100g":               "🔴 above average  🟡 parity  🟢 below average\nHigh salt content = red (less favourable).",
+    "Energy, kcal/100g":         _ARROW_HELP,
+    "Protein, g/100 kcal":       _ARROW_HELP,
+    "Fibre, g/100 kcal":         _ARROW_HELP,
+    "Saturated fat, g/100 kcal": _ARROW_HELP,
+    "Total sugars, g/100g":      _ARROW_HELP,
+    "Salt, g/100g":              _ARROW_HELP,
 }
 col_cfg = {
     col: st.column_config.TextColumn(col, help=help_text)
