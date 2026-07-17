@@ -174,12 +174,53 @@ _EXCLUDE_FROM_SNACKS = {
     "en:vegetable-pizza",
 }
 
+# Tags that exclude a product from cereals even when
+# en:cereals-and-their-products is present. That OFF tag is a broad parent
+# category covering far more than breakfast cereal: OFF's categories_tags
+# field carries a product's full ancestor chain, so e.g. Barilla Spaghetti
+# inherits en:cereals-and-their-products the same way a box of cornflakes
+# does (verified directly against the raw OFF export — see
+# docs/OBSERVATIONS.md OBS-028).
+#
+# Scope: "cereal" = what a CPG manufacturer (Nestlé, Kellogg's, General
+# Mills) would put in a cereal aisle — muesli, granola, cooking oats, corn
+# flakes, sugary breakfast cereals, etc. Cereal bars are excluded from this
+# definition too (they belong in snacks) but that overlap isn't addressed
+# by this rule.
+#
+# en:cereal-based-drinks conceptually belongs in beverages (with other
+# plant-based "milks"), but moving it there is a reclassification, not a
+# simple exclusion — deferred to a future pass. For now it's excluded here
+# like everything else in this set. See docs/OBSERVATIONS.md OBS-028.
+_EXCLUDE_FROM_CEREALS = {
+    # Bread
+    "en:breads",
+    # Pasta and semolina (pasta-making wheat product, not breakfast cereal)
+    "en:cereal-pastas", "en:cereal-semolinas",
+    # Rice
+    "en:rices", "en:precooked-rices",
+    # Dough / pastry
+    "en:pie-dough", "en:puff-pastry-molds-for-vol-au-vent", "en:brick-sheets",
+    # Batter mixes
+    "en:dosa-batter-mixes", "en:idly-batter-mixes", "en:pancake-mixes",
+    # Canned goods (canned corn and similar)
+    "en:canned-cereals",
+    # Belongs in beverages — deferred reclassification, excluded for now
+    "en:cereal-based-drinks",
+    # Other grain-derived, non-breakfast-cereal products
+    "en:seitan", "en:rice-paper", "en:groats",
+}
+
 
 def assign_category(cats_val) -> str | None:
     """Return the first matching query_category, or None to exclude.
     For snacks: tortilla chips are explicitly protected; pasta, plain
     tortillas, and pizza products are excluded even when en:snacks is
-    present in their OFF category tags."""
+    present in their OFF category tags.
+    For cereals: bread, pasta, rice, dough/pastry, batter mixes, canned
+    goods, cereal-based drinks, seitan, rice paper, and groats are
+    excluded even when en:cereals-and-their-products is present — see
+    _EXCLUDE_FROM_CEREALS above and docs/OBSERVATIONS.md OBS-028."""
     if not isinstance(cats_val, str) or not cats_val:
         return None
     tags = cats_val.lower()
@@ -189,6 +230,9 @@ def assign_category(cats_val) -> str | None:
                 if any(p in tags for p in _PROTECT_AS_SNACKS):
                     return "snacks"
                 if any(ex in tags for ex in _EXCLUDE_FROM_SNACKS):
+                    return None
+            if label == "cereals":
+                if any(ex in tags for ex in _EXCLUDE_FROM_CEREALS):
                     return None
             return label
     return None

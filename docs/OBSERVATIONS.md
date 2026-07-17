@@ -661,3 +661,73 @@ this rule. Implementation deferred to the data quality flagging pass.
 **Recommended action:** Report correction to Open Food Facts. In the app,
 consider a per-product data quality warning when energy deviates more than
 3× from the brand median, surfaced in the product card.
+
+---
+
+### OBS-029 — Cereals category cleansing: bread, pasta, rice, and other non-breakfast-cereal products removed
+
+**Date:** 17 July 2026
+**Status:** Implemented in bootstrap.py; pending next full re-bootstrap
+
+**Finding:** OFF's `en:cereals-and-their-products` tag is a broad taxonomy
+parent that legitimately covers breakfast cereal, but also bread, pasta (all
+shapes), rice, semolina, dough/pastry, batter mixes, canned corn, cereal-based
+drinks, seitan, rice paper, and groats. This is because OFF's
+`categories_tags` field carries a product's full ancestor chain, so e.g. a
+Barilla Spaghetti product inherits `en:cereals-and-their-products` the same
+way a box of cornflakes does. Verified directly against the raw OFF bulk
+export (not just the taxonomy definition) for several products before
+implementing the fix.
+
+**Scope definition adopted:** "cereal" = what a CPG manufacturer (Nestlé,
+Kellogg's, General Mills) would put in a cereal aisle — muesli, granola,
+cooking oats, corn flakes, sugary breakfast cereals, etc. Cereal bars are
+excluded from this definition too (they belong in snacks, not cereals), but
+that overlap is not addressed by this rule — out of scope for this pass.
+
+**Products excluded from `cereals`** (`_EXCLUDE_FROM_CEREALS` in
+`bootstrap.py`, matched against `categories_tags` — see data quality note
+below on why `off_categories` was not used for this):
+- `en:breads` — bread, rolls, buns, baguettes, sourdough, etc.
+- `en:cereal-pastas` — pasta shapes (rigatoni, penne, spaghetti, fusilli, etc.)
+- `en:cereal-semolinas` — semolina/semoule
+- `en:rices`, `en:precooked-rices` — rice, including instant/cooked rice
+- `en:pie-dough`, `en:puff-pastry-molds-for-vol-au-vent`, `en:brick-sheets` —
+  dough and pastry
+- `en:dosa-batter-mixes`, `en:idly-batter-mixes`, `en:pancake-mixes` — batter
+  mixes
+- `en:canned-cereals` — canned corn and similar canned grain products
+- `en:cereal-based-drinks` — see deferred item below
+- `en:seitan`, `en:rice-paper`, `en:groats`
+
+**Deferred, not addressed in this pass:** `en:cereal-based-drinks` (oat
+drinks, cereal milks) conceptually belongs in `beverages`, alongside other
+plant-based "milks" — that's a reclassification (moving a product between
+categories), not a simple exclusion, and more involved data engineering than
+this pass covers. For now these products are simply excluded from `cereals`,
+same as everything else in this list, not reassigned to `beverages`.
+
+**Data quality note — off_categories is not reliable for pattern matching:**
+`off_categories` (the DB column, populated from OFF's raw free-text
+`categories` field) mixes English, French, Romanian, Russian, and other
+languages depending on the contributor, with no consistent tag prefix. An
+initial diagnostic pass matching against `off_categories` found only 23
+pasta products, which looked far too low given the volume of visibly
+pasta-named products in the category. Re-checking against the raw OFF
+export confirmed the same products' `categories_tags` field (English,
+language-independent, used by `assign_category()`) reliably carries
+`en:cereal-pastas` regardless of the contributor's language. All exclusion
+matching is done against `categories_tags`, not `off_categories`.
+
+**Known limitation (same pattern as pizza-in-snacks):** community tagging on
+OFF is inconsistent regardless of taxonomy design — a spot-check found at
+least one product (a Kazidomi "penne" variant) with no cereals-ancestor tag
+at all despite an apparently identical-looking sibling product having one.
+Some residual mistagged products will not be caught by this rule. Accepted
+as noise, same treatment as the pizza products not caught by the snacks
+exclusion (see section 10 of the onboarding doc).
+
+**Impact:** Requires a full re-bootstrap to take effect. Bread, pasta, rice,
+etc. currently in the database predate this fix — same situation as the
+earlier snacks pasta/tortilla/pizza correction (OBS-precedent, see
+onboarding doc section 10).
