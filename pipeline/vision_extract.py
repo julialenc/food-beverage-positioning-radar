@@ -31,7 +31,7 @@ Output:
     - ocr_status, llm_status
 
 Usage:
-    # Test on 10 products first
+    # Test on a stratified 100-product sample first (50 per region)
     python pipeline/vision_extract.py --test
 
     # Full run
@@ -95,7 +95,7 @@ COST_ALERT_CHF    = float(os.getenv("AZURE_COST_ALERT_CHF", "45"))
 # Increment when SYSTEM_PROMPT changes. This is the original, locked
 # extraction prompt used for the v3 run (see docs/ADR.md ADR-006) —
 # do not change the prompt text itself without also bumping this.
-PROMPT_VERSION = "v2"
+PROMPT_VERSION = "v4"
 
 # Cost per 1000 operations (CHF estimates).
 # OCR_COST_PER_1K is Azure AI Vision Read API's published per-image rate.
@@ -113,14 +113,16 @@ LLM_COST_PER_1K   = 0.20
 # glp1_positioning, vitalite_concept) are extraction-schema keys, not
 # final product language; see the note above the flattening block below.
 
-SYSTEM_PROMPT = """You are a food labelling analyst. You receive OCR text extracted 
-from a packaged food product's front of pack. Extract ALL health and marketing claims.
+SYSTEM_PROMPT = """You are a food labelling analyst. You receive OCR text extracted
+from a packaged food product. Extract health and marketing claims.
 
 Return ONLY valid JSON with this exact structure:
 {
+  "image_context": "front_of_pack | mixed_pack_text | ingredient_or_legal_panel | nutrition_label | price_sticker | uncertain",
+  "claim_extraction_status": "completed | not_applicable_non_front | unreadable",
   "protein_claim": true/false,
   "protein_amount_g": null or number (grams per 100g or per serving if stated),
-  "no_added_sugar": true/false,
+  "sugar_free_claim": true/false,
   "reduced_sugar": true/false,
   "sugar_reduction_pct": null or number (e.g. 32 for "-32%"),
   "no_palm_oil": true/false,
@@ -129,9 +131,13 @@ Return ONLY valid JSON with this exact structure:
   "fortification_claim": true/false,
   "fortification_nutrients": [] or list of nutrient names,
   "fibre_claim": true/false,
+  "gut_health_claim": true/false,
   "probiotic_claim": true/false,
+  "prebiotic_claim": true/false,
   "immune_claim": true/false,
   "energy_claim": true/false,
+  "sleep_claim": true/false,
+  "brain_health_claim": true/false,
   "vitalite_concept": true/false,
   "sustainability_halo": true/false,
   "sustainability_certs": [] or list,
@@ -142,6 +148,7 @@ Return ONLY valid JSON with this exact structure:
   "vegan_claim": true/false,
   "organic_claim": true/false,
   "dairy_free_claim": true/false,
+  "lactose_free_claim": true/false,
   "plant_based_claim": true/false,
   "heritage_claim": true/false,
   "gluten_free_claim": true/false,
@@ -150,84 +157,237 @@ Return ONLY valid JSON with this exact structure:
   "origin_quality_claim": true/false,
   "clean_label_claim": true/false,
   "artisan_claim": true/false,
-  "other_claims": [] or list of short strings for claims that do not fit
-    any field above (e.g. promotional volume claims like "+10% free"),
-  "no_claims_detected": true/false,
+  "detected_claim_phrases": [],
+  "reduced_fat_claim": true/false,
+  "fat_reduction_pct": null or number (e.g. 30 for "-30% fat vs reference"),
+  "whole_grain_claim": true/false,
+  "other_claims": [] or list of short strings for claims that do not fit any field above,
+  "no_claims_detected": true/false/null,
   "ocr_quality": "good"/"partial"/"poor"
 }
 
-Rules:
-- Set no_claims_detected=true if you find NO health/wellness claims at all
-- Set ocr_quality=poor if the text is mostly garbled or unreadable
-- Do NOT infer claims — only extract what is explicitly stated
-- Capture origin/artisan claims: "hand-roasted", "single origin", "100% natural", "artisan"
-- Capture clean label claims: "only X ingredients", "nothing artificial", "simple ingredients"
-- Capture comparative nutrition claims: "-X% sugar vs reference", "lighter than"
-- Capture vegan/plant-based: "100% vegan", "totally vegan", "plant-based", "no dairy", "dairy-free"
-- Capture organic/bio: "bio", "organic", "biologique", "biologisch", "100% bio"
-- Capture heritage: "the original", "since 19xx", "established"
-- If OCR quality is poor due to stylized/artistic typography, still attempt 
-  to identify any readable words that indicate claims (vegan, organic, bio,
-  natural, protein, etc.) even if full sentences are not readable
-- Set ocr_quality="stylized" when large artistic typography is present
-- Return ONLY the JSON object, no explanation, no markdown fences
-- "VITALITÉ", "VITALITE" = vitalite_concept (wellness positioning, common on Gerblé)
-- "SLOW RELEASE", "4 HOURS OF STEADY ENERGY", "TOUTE LA MATINÉE", "STEADY ENERGY" = energy_claim
-- "SANS HUILE DE PALME", "NO PALM OIL" = no_palm_oil
-- "MOINS DE SUCRES", "ALLÉGÉ EN SUCRES", "-X% SUCRES" = reduced_sugar; also set comparative_claim=true and sugar_reduction_pct to the number if stated
-- "ENGAGÉ CACAO DURABLE", "FILIÈRE DURABLE" = sustainability_halo
-- "SYSTÈME IMMUNITAIRE", "IMMUNE SUPPORT", "IMMUNE SYSTEM", "DEFENSAS", "DIFESE", "DÉFENSES" = immune_claim
-- "L. CASEI", "BIFIDUS", "PROBIOTIQUE", "PROBIOTISCH" = probiotic_claim
-- "OPTI-START", "OPTI-GROW", "OPTI-DÉJ" (Nestlé proprietary concepts) = fortification_claim
-- "ACTIVGO", "MORE POWER" (Emmi) = energy_claim
-- "DOUBLE ZERO", "ZERO SWEETENERS" = both no_added_sugar=true and no_artificial=true
-- "#1", "N°1", "NO. 1", "NUMÉRO 1" = comparative_claim
-- "3 INGREDIENTS", "3 ZUTATEN", "3 INGRÉDIENTS", "NUR 3" = minimal_ingredients_claim
-- "CREATED FOR WOMEN", "FOR WOMEN", "POUR LES FEMMES" = gender_targeting_claim
-- "INGREDIENTS YOU CAN SEE", "SEE & PRONOUNCE", "FROM REAL FOOD" = clean_label_claim
-- "HEART HEALTHY", "WHOLE GRAIN", "ANCIENT GRAINS", "SUPER GRAINS" = fortification_claim
-- "+X% free", "+X% gratuit", "+X% more", "bonus pack", "X% offert" = promotional volume claims only — add a short string to other_claims, NOT comparative_claim
-- CRITICAL: if ANY specific claim field is set to true, no_claims_detected MUST be false. no_claims_detected = true ONLY when every other claim field is false.
-- "Nature" alone on French/Belgian/Swiss packaging means "plain/unflavored" 
-  (e.g. "Yaourt Nature", "Briochettes Nature") — this is NOT a natural_claim. 
-  Only flag natural_claim for explicit naturalness language: "100% natural", 
-  "naturel", "ingrédients naturels", "natural flavors", "arôme naturel"
-- If OCR quality is poor due to stylized/artistic typography, still attempt to identify any readable claim words even if full sentences unreadable; set ocr_quality="stylized" when large artistic typography fragments the text
+IMAGE TEXT CONTEXT — CLASSIFY THIS FIRST
 
-FORTIFICATION CLAIMS — explicit nutrient highlights (not background nutrition table values):
-- "CALCIUM", "+CALCIUM", "CALCIUM +", "RICHE EN CALCIUM", "SOURCE DE CALCIUM", "HIGH IN CALCIUM" = fortification_claim=true, add "Calcium" to fortification_nutrients
-- "RICHE EN VITAMINES", "SOURCE DE VITAMINES", "VITAMINES A, C, D", any highlighted vitamin letter or group = fortification_claim=true
-- "MAGNÉSIUM", "FER", "ZINC", "SÉLÉNIUM", "OMÉGA-3", "OMEGA-3" when highlighted as a benefit = fortification_claim=true
-- "CALCIUM + CÉRÉALES", "CALCIUM + VITAMINES" = fortification_claim=true, capture both in fortification_nutrients
-- Rule: if a nutrient name appears prominently on pack outside of a nutrition facts table context, it is a fortification claim
+Determine what kind of pack text the OCR represents before extracting claims.
+
+Allowed image_context values:
+
+- front_of_pack:
+  Primarily short product-name, benefit, claim, certification or marketing
+  phrases that could reasonably appear on the consumer-facing front panel.
+
+- mixed_pack_text:
+  Contains both genuine marketing claims and substantial legal information.
+  Extract only clearly separated marketing claims. Ignore nutrient names and
+  ingredients appearing only inside legal text or tables.
+
+- ingredient_or_legal_panel:
+  Primarily an ingredient list, allergen declaration, storage instructions,
+  manufacturer/importer details or another legal information label.
+
+- nutrition_label:
+  Primarily nutrition-table rows containing energy/kJ/kcal, fat, saturated fat,
+  carbohydrate, sugars, protein, salt and repeated numeric values.
+
+- price_sticker:
+  Primarily retailer, price, weight, unit-price, date, barcode or shelf-label
+  information.
+
+- uncertain:
+  The OCR does not provide enough evidence to classify the panel reliably.
+
+Ingredient/legal-panel clues include:
+- starts with INGREDIENTS / INGRÉDIENTS / ZUTATEN / INGREDIENTI or equivalent;
+- long comma- or semicolon-separated text;
+- many percentages, parentheses, additives, allergens or "may contain" phrases;
+- storage, address, importer or manufacturer details.
+
+A text length above 25 words is supporting evidence only. Do NOT classify a
+text as a legal panel solely because it is long.
+
+FRONT-OF-PACK NUTRITION INFORMATION
+A small front-of-pack nutrition box, traffic-light panel, nutrient summary,
+or row of nutrient values does not make the image a nutrition_label.
+If the product branding and consumer-facing front panel are clearly visible,
+classify the image as front_of_pack and ignore the nutrient values when
+extracting claims.
+
+SMALL LEGAL TEXT ON AN OTHERWISE VALID FRONT PACK
+A small ingredients, nutrition, legal, recycling, or manufacturer-information
+block at the bottom or side of an otherwise clear front pack does not make the
+whole image ingredient_or_legal_panel.
+If prominent consumer-facing marketing text is present, classify the image as
+mixed_pack_text and extract only the clearly marketing-oriented statements.
+Classify according to the dominant purpose of the photographed panel, not
+merely because some small legal text was successfully read by OCR.
+
+If image_context is ingredient_or_legal_panel, nutrition_label or price_sticker:
+- set claim_extraction_status="not_applicable_non_front";
+- set every claim field to false;
+- return empty lists and null numeric values;
+- set no_claims_detected=null;
+- do not treat nutrient or ingredient names as claims.
+
+If image_context is uncertain or the OCR is unreadable (mostly garbled characters):
+- set claim_extraction_status="unreadable";
+- set every claim field to false;
+- set no_claims_detected=null;
+- set ocr_quality="poor".
+
+Only set claim_extraction_status="completed" when front-of-pack marketing
+content can be assessed.
+
+IMPORTANT: Do not set a claim based solely on the reference product name. A
+claim must also be present in the OCR text being analysed.
+
+General extraction rules:
+- Do NOT infer claims — only extract what is explicitly stated in the OCR text
+- Set no_claims_detected=true if you find NO health/wellness claims at all on a
+  valid front-of-pack image (claim_extraction_status="completed")
+- CRITICAL: if ANY specific claim field is set to true, no_claims_detected MUST
+  be false. no_claims_detected=true ONLY when every other claim field is false.
+- no_claims_detected=null when claim_extraction_status is not "completed"
+- Set ocr_quality=poor if the text is mostly garbled or unreadable
+- detected_claim_phrases: list up to 5 short phrases copied from the OCR that
+  triggered claim fields. Keep each under 10 words. Do not explain reasoning.
+- Return ONLY the JSON object, no explanation, no markdown fences
+
+FUNCTIONAL BENEFIT CLAIMS:
+
+Protein:
+- "HIGH PROTEIN", "RICH IN PROTEIN", "SOURCE OF PROTEIN", "HIGH IN PROTEIN",
+  "RICHE EN PROTÉINES", "SOURCE DE PROTÉINES", "+PROTEIN" = protein_claim
+
+Fibre:
+- "HIGH FIBRE", "HIGH FIBER", "SOURCE OF FIBRE", "RICHE EN FIBRES",
+  "HIGH IN FIBRE", "ADDED FIBRE" = fibre_claim
+
+Gut health (three distinct raw fields, all roll up to gut_health):
+- gut_health_claim: "GUT HEALTH", "DIGESTIVE HEALTH", "SUPPORTS DIGESTION",
+  "DIGESTIVE COMFORT", "HEALTHY DIGESTION", "MICROBIOME SUPPORT",
+  "INTESTINAL FLORA", "REGULARITY", "TRANSIT SUPPORT", "INTESTINAL FUNCTION"
+  when expressed as a BENEFIT. NOTE: "digestive biscuits" or "digestive" used
+  only as a product type is NOT a gut_health_claim.
+- probiotic_claim: "PROBIOTIC", "LIVE CULTURES", "ACTIVE CULTURES", prominently
+  highlighted L. CASEI, BIFIDUS or named probiotic cultures as a feature.
+  "PROBIOTIQUE", "PROBIOTISCH" = probiotic_claim.
+  Do not infer probiotic positioning merely from ingredient list entries.
+- prebiotic_claim: "PREBIOTIC", "PREBIOTIC FIBRE", "FEEDS BENEFICIAL BACTERIA",
+  "SUPPORTS BENEFICIAL GUT BACTERIA" = prebiotic_claim.
+  Do not infer prebiotic positioning merely because inulin or chicory root
+  appears in the ingredient list.
+
+Immunity — keep separate from fortification:
+- immune_claim ONLY when wording is: "IMMUNE SUPPORT", "SUPPORTS THE IMMUNE
+  SYSTEM", "IMMUNITY", "NATURAL DEFENCES", "HELPS PROTECT", "IMMUNE DEFENCE",
+  "SYSTÈME IMMUNITAIRE", "DEFENSAS", "DIFESE"
+- Highlighted vitamins C/D, zinc or selenium WITHOUT explicit immunity wording
+  are fortification_claim ONLY, not immune_claim.
+
+Energy:
+- "SLOW RELEASE", "4 HOURS OF STEADY ENERGY", "TOUTE LA MATINÉE",
+  "STEADY ENERGY", "ACTIVGO", "MORE POWER" = energy_claim
+
+Reduced fat:
+- reduced_fat_claim: "REDUCED FAT", "LOWER FAT", "LESS FAT", "LOW FAT",
+  "LIGHT", "LITE", "FAT FREE", "ALLÉGÉ EN MATIÈRES GRASSES",
+  "RÉDUIT EN MATIÈRES GRASSES", "MOINS DE GRAISSES", "X% LESS FAT" = reduced_fat_claim.
+  Set fat_reduction_pct to the number if stated (e.g. 30 for "-30%").
+  Do not use "light" as a reduced-fat signal for coffee, beer, or any product
+  where "light" describes a flavour, roast level or alcohol content.
+
+Whole grain:
+- whole_grain_claim: "WHOLE GRAIN", "WHOLEGRAIN", "WHOLE WHEAT", "WHOLEWHEAT",
+  "100% WHOLE GRAIN", "MADE WITH WHOLE GRAINS", "GRAINS ENTIERS",
+  "CÉRÉALES COMPLÈTES", "BLÉ COMPLET" = whole_grain_claim.
+  Do not classify "ANCIENT GRAINS", "MULTIGRAIN" or "MULTI-GRAIN" as
+  whole_grain_claim unless the text explicitly says "whole grain."
+
+Sleep (new field):
+- sleep_claim: "SLEEP SUPPORT", "RESTFUL SLEEP", "SUPPORTS SLEEP QUALITY",
+  "HELPS YOU SLEEP", "BEDTIME SUPPORT", "NIGHT-TIME RELAXATION",
+  "SLEEP QUALITY" = sleep_claim.
+  Do not infer a sleep claim solely from melatonin, magnesium, L-theanine,
+  chamomile or the word "night" used as a flavour or product name.
+
+Brain/cognitive health (new field):
+- brain_health_claim: "BRAIN HEALTH", "COGNITIVE HEALTH", "SUPPORTS MEMORY",
+  "FOCUS", "CONCENTRATION", "MENTAL PERFORMANCE", "COGNITIVE FUNCTION" when
+  expressed as a BENEFIT = brain_health_claim.
+  Highlighted OMEGA-3 without an explicit brain/cognitive statement is a
+  fortification_claim only. Do not infer brain_health_claim from omega-3 alone.
+  Do not classify vague words such as "smart", "clever" or "power" as a
+  brain-health claim unless the cognitive benefit is explicit.
+
+FORTIFICATION CLAIMS — explicit nutrient highlights (not nutrition-table values):
+- "CALCIUM", "+CALCIUM", "RICHE EN CALCIUM", "HIGH IN CALCIUM" = fortification_claim,
+  add "Calcium" to fortification_nutrients
+- Any highlighted vitamin letter or group = fortification_claim
+- "MAGNÉSIUM", "FER", "ZINC", "SÉLÉNIUM", "OMÉGA-3", "OMEGA-3" when highlighted
+  as a benefit = fortification_claim
+- "OPTI-START", "OPTI-GROW", "OPTI-DÉJ" (Nestlé proprietary concepts) = fortification_claim
+- Rule: if a nutrient name appears prominently OUTSIDE a nutrition facts table,
+  it is a fortification claim. Nutrient names appearing ONLY inside a nutrition
+  table are not claims.
 
 FREE-FROM / CLEAN LABEL:
-- "SANS CONSERVATEURS", "RECETTE SANS CONSERVATEURS", "NO PRESERVATIVES", "SENZA CONSERVANTI" = no_artificial=true
-- "SANS COLORANTS", "NO ARTIFICIAL COLOURS", "SANS COLORANTS ARTIFICIELS" = no_artificial=true
+- "SANS CONSERVATEURS", "NO PRESERVATIVES", "SENZA CONSERVANTI" = no_artificial=true
+- "SANS COLORANTS", "NO ARTIFICIAL COLOURS" = no_artificial=true
 - "SANS ARÔMES ARTIFICIELS", "NO ARTIFICIAL FLAVOURS" = no_artificial=true
 - "SANS ADDITIFS", "NO ADDITIVES" = no_artificial=true AND clean_label_claim=true
+- "ZERO SWEETENERS" alone does NOT mean sugar_free_claim — add "zero_sweeteners" to other_claims
+- "DOUBLE ZERO" = only set sugar_free_claim=true AND no_artificial=true when the OCR
+  also states what the two zeros refer to (e.g. "0% sugar, 0% fat"). Otherwise
+  add "double_zero" to other_claims without setting specific claim fields.
+- "SANS HUILE DE PALME", "NO PALM OIL" = no_palm_oil
 
 FRENCH & EUROPEAN ORIGIN CLAIMS:
-- "100% FRANÇAIS", "100% FRANCE", "PRODUIT EN FRANCE", "FABRIQUÉ EN FRANCE" = origin_quality_claim=true
-- "LAIT FRANÇAIS", "LAIT DE VACHE FRANÇAISE", "CRÈME FRAÎCHE FRANÇAISE", "VACHES FRANÇAISES" = origin_quality_claim=true
-- "LAIT FRAIS", "LAIT FRAIS & CRÈME" = origin_quality_claim=true (fresh milk claim)
-- "ORIGINE FRANCE", "FILIÈRE FRANÇAISE", "AGRICULTEURS FRANÇAIS" = origin_quality_claim=true
-- "100% BELGE", "100% SWISS", "SCHWEIZER MILCH", "LAIT SUISSE" = origin_quality_claim=true
+- "100% FRANÇAIS", "PRODUIT EN FRANCE", "FABRIQUÉ EN FRANCE" = origin_quality_claim
+- "LAIT FRANÇAIS", "LAIT DE VACHE FRANÇAISE", "VACHES FRANÇAISES" = origin_quality_claim
+- "LAIT FRAIS", "LAIT FRAIS & CRÈME" = origin_quality_claim (fresh milk claim)
+- "ORIGINE FRANCE", "FILIÈRE FRANÇAISE", "AGRICULTEURS FRANÇAIS" = origin_quality_claim
+- "SCHWEIZER MILCH", "LAIT SUISSE" = origin_quality_claim
 
 REFORMULATION / NEW RECIPE:
-- "NOUVELLE RECETTE", "NEW RECIPE", "NEUE REZEPTUR", "NUEVA RECETA" = reformulation_claim=true
-- "NOUVEAU", "NOUVEAUTÉ", "NEW", "NEU" on a product = reformulation_claim=true
-- "ENCORE MEILLEUR", "EVEN BETTER", "IMPROVED RECIPE" = reformulation_claim=true AND comparative_claim=true
+- "NOUVELLE RECETTE", "NEW RECIPE", "NEUE REZEPTUR" = reformulation_claim
+- "NOUVEAU", "NOUVEAUTÉ", "NEW", "NEU" on a product = reformulation_claim
+- "ENCORE MEILLEUR", "EVEN BETTER", "IMPROVED RECIPE" = reformulation_claim AND comparative_claim
 
-CHILDREN / KIDS TARGETING:
-- "POUR LE GOÛTER", "GOÛTER", "KIDS", "POUR LES ENFANTS", "CROISSANCE", "ENFANTS" when used as a positioning/occasion claim = add to other_claims as "kids_occasion"
-- "POUR TA CROISSANCE" = add to other_claims as "kids_growth"
+SUGAR / COMPARATIVE:
+- "NO ADDED SUGAR", "WITHOUT ADDED SUGAR", "SANS SUCRES AJOUTÉS",
+  "OHNE ZUCKERZUSATZ", "SENZA ZUCCHERI AGGIUNTI", "NO ADDED SUGARS",
+  "SUGAR FREE", "SUGAR-FREE", "ZÉRO SUCRE", "SANS SUCRE", "ZUCKERFREI" = sugar_free_claim
+- "MOINS DE SUCRES", "ALLÉGÉ EN SUCRES", "-X% SUCRES", "REDUCED SUGAR",
+  "LESS SUGAR" = reduced_sugar; also set comparative_claim=true and
+  sugar_reduction_pct to the number if stated
+- "#1", "N°1", "NO. 1", "NUMÉRO 1" = comparative_claim
 
-IMAGE CONTEXT — assess first, before extracting claims:
-- If the OCR text consists mainly of nutrition table rows (Energie/kJ/kcal, Graisses/Fat, Glucides/Carbohydrates, Protéines/Proteins, Sel/Salt with numeric values per 100g), this is a NUTRITION LABEL, not front-of-pack claims. Set no_claims_detected=true and ocr_quality="nutrition_label"
-- If the OCR text consists mainly of ingredient lists (long comma/semicolon-separated lists of ingredients), set no_claims_detected=true and ocr_quality="ingredient_list"  
-- If the OCR text is a price sticker or retailer label (price in DH, £, $, €, shelf label codes), set no_claims_detected=true and ocr_quality="price_sticker"
-- Only extract claims when the OCR reflects genuine front-of-pack marketing content"""
+FREE-FROM / IDENTITY:
+- "VEGAN", "100% VEGAN", "VÉGAN", "VEGANO" = vegan_claim
+- "PLANT-BASED", "PLANT BASED", "À BASE DE PLANTES", "PFLANZENBASIERT",
+  "BASE VÉGÉTALE" = plant_based_claim
+- "DAIRY-FREE", "DAIRY FREE", "NON-DAIRY", "SANS PRODUITS LAITIERS" = dairy_free_claim
+- "LACTOSE FREE", "LACTOSE-FREE", "SANS LACTOSE", "LAKTOSEFREI",
+  "LACTOSEVRIJ" = lactose_free_claim
+- "GLUTEN-FREE", "GLUTEN FREE", "SANS GLUTEN", "GLUTENFREI", "SENZA GLUTINE" = gluten_free_claim
+
+NATURAL / CLEAN LABEL:
+- "100% NATURAL", "ALL NATURAL", "NATURAL INGREDIENTS", "INGRÉDIENTS NATURELS",
+  "NATÜRLICHE ZUTATEN", "INGREDIENTI NATURALI" = natural_claim
+- "100% NATURAL" alone on a US/UK product IS a natural_claim (unlike French "nature")
+- "NATURE" alone on French/Belgian/Swiss packaging means "plain/unflavored" — NOT natural_claim
+- "CLEAN LABEL", "SIMPLE INGREDIENTS", "NOTHING ARTIFICIAL",
+  "INGREDIENTS YOU CAN SEE" = clean_label_claim
+- "3 INGRÉDIENTS", "3 INGREDIENTS", "NUR 3 ZUTATEN", "ONLY X INGREDIENTS" = minimal_ingredients_claim
+
+OTHER:
+- "VITALITÉ", "VITALITE" = vitalite_concept
+- "ENGAGÉ CACAO DURABLE", "FILIÈRE DURABLE" = sustainability_halo
+- "CREATED FOR WOMEN", "POUR LES FEMMES" = gender_targeting_claim
+- "POUR LE GOÛTER", "KIDS", "POUR LES ENFANTS", "CROISSANCE" = add to other_claims
+- "+X% free", "+X% gratuit", "BONUS PACK" = add to other_claims only, NOT comparative_claim
+- Capture organic/bio: "bio", "organic", "biologique", "biologisch" = organic_claim
+- Capture heritage: "the original", "since 19xx", "established" = heritage_claim"""
 
 
 # ── Azure Vision OCR ──────────────────────────────────────────────────────────
@@ -305,6 +465,118 @@ def ocr_image(image_url: str, max_retries: int = 3) -> tuple[str, str]:
 
 # ── LLM claim extraction ───────────────────────────────────────────────────────
 
+
+BOOL_CLAIM_FIELDS = [
+    "protein_claim", "sugar_free_claim", "reduced_sugar", "no_palm_oil",
+    "no_artificial", "natural_claim", "fortification_claim", "fibre_claim",
+    "gut_health_claim", "probiotic_claim", "prebiotic_claim",
+    "immune_claim", "energy_claim", "sleep_claim", "brain_health_claim",
+    "vitalite_concept", "sustainability_halo", "reformulation_claim",
+    "comparative_claim", "glp1_positioning", "origin_quality_claim",
+    "clean_label_claim", "minimal_ingredients_claim", "artisan_claim",
+    "vegan_claim", "organic_claim", "dairy_free_claim", "lactose_free_claim",
+    "plant_based_claim", "heritage_claim", "gluten_free_claim",
+    "gender_targeting_claim", "reduced_fat_claim", "whole_grain_claim",
+    "no_claims_detected",
+]
+
+VALID_IMAGE_CONTEXTS = {
+    "front_of_pack", "mixed_pack_text", "ingredient_or_legal_panel",
+    "nutrition_label", "price_sticker", "uncertain",
+}
+VALID_CLAIM_STATUSES = {"completed", "not_applicable_non_front", "unreadable"}
+VALID_OCR_QUALITIES  = {"good", "partial", "poor"}
+NON_FRONT_STATUSES_V = {"not_applicable_non_front", "unreadable"}
+
+# Image context → claim_extraction_status consistency mapping.
+# These two fields are not independent — the validator enforces
+# the contract rather than trusting two potentially contradictory
+# LLM outputs (see validate_and_normalise).
+FRONT_CONTEXTS = {"front_of_pack", "mixed_pack_text"}
+NON_FRONT_CONTEXTS = {
+    "ingredient_or_legal_panel",
+    "nutrition_label",
+    "price_sticker",
+}
+
+
+def validate_and_normalise(claims: dict) -> dict:
+    """Normalise a raw LLM JSON response:
+    - fill any missing boolean field with False;
+    - validate enum fields (image_context, claim_extraction_status, ocr_quality);
+    - enforce list types for list fields;
+    - enforce no_claims_detected consistency;
+    - for non-front images, zero out all claim fields.
+    """
+    # Validate / default enum fields
+    ctx = claims.get("image_context", "uncertain")
+    if ctx not in VALID_IMAGE_CONTEXTS:
+        claims["image_context"] = "uncertain"
+    status = claims.get("claim_extraction_status", "unreadable")
+    if status not in VALID_CLAIM_STATUSES:
+        claims["claim_extraction_status"] = "unreadable"
+    quality = claims.get("ocr_quality", "poor")
+    if quality not in VALID_OCR_QUALITIES:
+        claims["ocr_quality"] = "poor"
+
+    # Enforce image_context → claim_extraction_status consistency.
+    # These fields are not independent: front_of_pack / mixed_pack_text
+    # always implies "completed"; legal/nutrition/price panels always
+    # imply "not_applicable_non_front"; uncertain implies "unreadable".
+    # Capture the LLM's original status before any correction so the
+    # audit flag can record whether an override was needed.
+    _original_status = claims["claim_extraction_status"]
+    _ctx = claims["image_context"]
+    if _ctx in FRONT_CONTEXTS:
+        claims["claim_extraction_status"] = "completed"
+    elif _ctx in NON_FRONT_CONTEXTS:
+        claims["claim_extraction_status"] = "not_applicable_non_front"
+    elif _ctx == "uncertain":
+        claims["claim_extraction_status"] = "unreadable"
+    claims["status_normalised"] = (
+        _original_status != claims["claim_extraction_status"]
+    )
+
+    # Fill missing booleans with False
+    for field in BOOL_CLAIM_FIELDS:
+        if field not in claims:
+            claims[field] = False
+        elif not isinstance(claims[field], bool):
+            # null/None → False for claim fields (except no_claims_detected
+            # which can be null for non-front images)
+            if field != "no_claims_detected":
+                claims[field] = bool(claims[field])
+
+    # Enforce list fields
+    for lf in ("fortification_nutrients", "sustainability_certs",
+               "other_claims", "detected_claim_phrases"):
+        if not isinstance(claims.get(lf), list):
+            claims[lf] = []
+
+    # For non-front images: zero out all claim booleans, set no_claims_detected=null
+    if claims.get("claim_extraction_status") in NON_FRONT_STATUSES_V:
+        for field in BOOL_CLAIM_FIELDS:
+            if field != "no_claims_detected":
+                claims[field] = False
+        claims["no_claims_detected"] = None
+        claims["fortification_nutrients"] = []
+        claims["detected_claim_phrases"] = []
+
+    # no_claims_detected consistency check for completed extractions
+    if claims.get("claim_extraction_status") == "completed":
+        has_any_claim = any(
+            claims.get(f) is True
+            for f in BOOL_CLAIM_FIELDS
+            if f != "no_claims_detected"
+        )
+        if has_any_claim:
+            claims["no_claims_detected"] = False
+        elif claims.get("no_claims_detected") is None:
+            claims["no_claims_detected"] = True
+
+    return claims
+
+
 def extract_claims(ocr_text: str, product_name: str = "",
                     max_retries: int = 3) -> tuple[dict, str]:
     """
@@ -326,7 +598,34 @@ def extract_claims(ocr_text: str, product_name: str = "",
         "Content-Type": "application/json",
     }
 
-    user_message = f"Product: {product_name}\n\nFront-of-pack text:\n{ocr_text[:2000]}"
+    # Compute deterministic context hints (advisory — helps nano classify
+    # the image type before the LLM sees the unstructured text)
+    words = ocr_text.split()
+    word_count = len(words)
+    comma_count = ocr_text.count(",")
+    semicolon_count = ocr_text.count(";")
+    first_word = words[0].lower() if words else ""
+    starts_with_ingredients = any(first_word.startswith(w) for w in
+        ("ingredient", "ingrédient", "zutaten", "ingredienti", "ingrediënten"))
+    nutrition_terms = sum(ocr_text.lower().count(t) for t in
+        ("kcal", "kj", "protein", "protéine", "fat", "graisses", "carbohydrate",
+         "glucide", "salt", "sel", "fibre", "/100g", "/100ml", "per serving"))
+    currency_detected = any(c in ocr_text for c in ("€", "£", "$", "£/kg", "DH"))
+
+    context_hints = (
+        f"word_count={word_count}\n"
+        f"comma_count={comma_count}\n"
+        f"semicolon_count={semicolon_count}\n"
+        f"starts_with_ingredients={str(starts_with_ingredients).lower()}\n"
+        f"nutrition_term_count={nutrition_terms}\n"
+        f"currency_detected={str(currency_detected).lower()}"
+    )
+
+    user_message = (
+        f"Reference product name — context only, not claim evidence:\n{product_name}\n\n"
+        f"Deterministic OCR context hints (advisory, not authoritative):\n{context_hints}\n\n"
+        f"OCR text to analyse:\n{ocr_text[:2000]}"
+    )
 
     body = {
         "model": OPENAI_DEPLOYMENT,
@@ -335,7 +634,7 @@ def extract_claims(ocr_text: str, product_name: str = "",
             {"role": "user",   "content": user_message},
         ],
         "temperature": 0,
-        "max_tokens": 500,
+        "max_tokens": 800,
     }
 
     for attempt in range(max_retries):
@@ -348,6 +647,7 @@ def extract_claims(ocr_text: str, product_name: str = "",
                     if content.startswith("json"):
                         content = content[4:]
                 claims = json.loads(content)
+                claims = validate_and_normalise(claims)
                 return claims, "success"
             elif resp.status_code == 429:
                 if attempt < max_retries - 1:
@@ -398,12 +698,44 @@ class CostTracker:
 # ── Main pipeline ─────────────────────────────────────────────────────────────
 
 def find_latest_sample():
+    """Find the clean-run sample or fall back to legacy smart_sample."""
+    # v3+ clean run output takes precedence
+    clean = SAMPLE_DIR / "sample_clean_run.csv"
+    if clean.exists():
+        return clean
+    # Legacy pattern kept for backward compatibility
     files = sorted(SAMPLE_DIR.glob("smart_sample_*.csv"), reverse=True)
-    if not files:
-        raise FileNotFoundError(
-            "No smart_sample_*.csv found. Run smart_sample.py first."
+    if files:
+        return files[0]
+    raise FileNotFoundError(
+        "No sample file found. Expected pipeline/sample_clean_run.csv "
+        "(from smart_sample.py) or data/sample/smart_sample_*.csv."
+    )
+
+
+def enrich_sample_from_db(df: "pd.DataFrame", db_path) -> "pd.DataFrame":
+    """Join product_name, primary_brand, image_url from DB by barcode.
+    These fields should not be duplicated in the sampling CSV — the DB is
+    the authoritative source for mutable product metadata. Falls back
+    gracefully if DB is unavailable (test mode without DB)."""
+    try:
+        import sqlite3, pandas as pd
+        conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+        fields = pd.read_sql_query(
+            "SELECT barcode, product_name, primary_brand AS brands, image_url "
+            "FROM products",
+            conn, dtype={"barcode": str}
         )
-    return files[0]
+        conn.close()
+        # Drop any stale product columns from the CSV before joining
+        drop_cols = [c for c in ("product_name", "brands", "image_url")
+                     if c in df.columns]
+        df = df.drop(columns=drop_cols)
+        return df.merge(fields, on="barcode", how="left")
+    except Exception as e:
+        print(f"  WARNING: DB join for product fields failed ({e}); "
+              f"product_name/brands/image_url may be empty.")
+        return df
 
 
 def load_checkpoint(checkpoint_path):
@@ -421,7 +753,7 @@ def load_checkpoint(checkpoint_path):
 def main():
     parser = argparse.ArgumentParser(description="Pack-image claim extraction")
     parser.add_argument("--test",   action="store_true",
-                        help="Test mode: process only 10 products")
+                        help="Test mode: stratified 100-product sample (50 per region)")
     parser.add_argument("--resume", action="store_true",
                         help="Resume from checkpoint file")
     parser.add_argument("--input",  type=str, default=None,
@@ -449,16 +781,77 @@ def main():
         print(f"    set AZURE_OPENAI_KEY=your_key_here")
         sys.exit(1)
 
-    # Load smart sample
+    # Load sample (v3+ uses pipeline/sample_clean_run.csv)
     input_path = Path(args.input) if args.input else find_latest_sample()
     print(f"  Input: {input_path.name}")
     df = pd.read_csv(input_path, dtype={"barcode": str})
+    # Enrich with product_name/brands/image_url from DB (not duplicated in CSV)
+    db_path = Path(__file__).resolve().parent.parent / "database" / "positioning_radar.db"
+    df = enrich_sample_from_db(df, db_path)
     print(f"  Products in sample: {len(df):,}")
 
-    # Test mode
+    # Test mode: stratified 100-row sample (50 per region)
     if args.test:
-        df = df.head(10)
-        print(f"  TEST MODE: processing {len(df)} products only")
+        # Column names match sample_clean_run.csv — verify if structure changes.
+        _REGION_COL    = "sampling_region"
+        _CATEGORY_COL  = "query_category"
+        _COMPONENT_COL = "sample_component"       # backbone / matrix / calibration
+        _PROXY_COL     = "has_positioning_signal"  # explicit positioning vs control
+        _RISK_COL      = "non_front_risk"          # likely sticker / ingredient-panel image
+
+        def _stratified_50(region_df: pd.DataFrame, seed: int = 42) -> pd.DataFrame:
+            n_total = 50
+            # Reserve ~10 rows with high non-front / sticker risk (key failure mode)
+            if _RISK_COL in region_df.columns:
+                high_risk = region_df[region_df[_RISK_COL] == True]
+                safe      = region_df[region_df[_RISK_COL] != True]
+            else:
+                high_risk = pd.DataFrame()
+                safe      = region_df
+            n_risk    = min(10, len(high_risk))
+            n_safe    = n_total - n_risk
+            risk_rows = (high_risk.sample(n=n_risk, random_state=seed)
+                         if n_risk > 0 else pd.DataFrame())
+            # Stratify safe rows by component × category × positioning signal
+            strata_cols = [c for c in [_COMPONENT_COL, _CATEGORY_COL, _PROXY_COL]
+                           if c in safe.columns]
+            if strata_cols and len(safe) > 0:
+                grouped = safe.groupby(strata_cols, group_keys=False)
+                safe_sample = (
+                    grouped
+                    .apply(lambda g: g.sample(
+                        n=max(1, round(n_safe * len(g) / len(safe))),
+                        random_state=seed
+                    ))
+                    .sample(frac=1, random_state=seed)
+                    .head(n_safe)
+                )
+                if len(safe_sample) < n_safe:
+                    top_up = (safe.drop(safe_sample.index)
+                              .sample(n=min(n_safe - len(safe_sample),
+                                           len(safe) - len(safe_sample)),
+                                      random_state=seed))
+                    safe_sample = pd.concat([safe_sample, top_up])
+            else:
+                safe_sample = safe.sample(n=min(n_safe, len(safe)), random_state=seed)
+            return (pd.concat([risk_rows, safe_sample])
+                    .sample(frac=1, random_state=seed))
+
+        if _REGION_COL in df.columns:
+            df = (df.groupby(_REGION_COL, group_keys=False)
+                    .apply(_stratified_50)
+                    .reset_index(drop=True))
+            region_counts = df[_REGION_COL].value_counts().to_dict()
+        else:
+            df = df.sample(n=min(100, len(df)), random_state=42).reset_index(drop=True)
+            region_counts = {}
+
+        print(f"  TEST MODE: {len(df)} stratified products "
+              f"({', '.join(f'{r}: {c}' for r, c in sorted(region_counts.items()))})")
+        if _COMPONENT_COL in df.columns:
+            print(f"  Components: {df[_COMPONENT_COL].value_counts().to_dict()}")
+        if _CATEGORY_COL in df.columns:
+            print(f"  Categories: {df[_CATEGORY_COL].value_counts().to_dict()}")
 
     # Checkpoint / resume
     output_path = SAMPLE_DIR / f"vision_results_{timestamp}.csv"
@@ -482,10 +875,18 @@ def main():
             break
 
         barcode     = str(row.barcode)
-        product     = str(getattr(row, "product_name", ""))
-        brand       = str(getattr(row, "brands", ""))
-        image_url   = str(getattr(row, "image_url", ""))
-        tier        = getattr(row, "tier", None)
+        product     = str(getattr(row, "product_name", "") or "")
+        brand       = str(getattr(row, "brands", "") or "")
+        image_url   = str(getattr(row, "image_url", "") or "")
+        # Carry all sampling metadata columns through to the output row.
+        # This replaces the obsolete "tier" field and preserves the full
+        # stratification context (component, stratum, weights, reality
+        # bands, positioning proxy, etc.) needed for later modelling.
+        sampling_meta = {
+            col: getattr(row, col, None)
+            for col in df.columns
+            if col not in ("barcode", "product_name", "brands", "image_url")
+        }
 
         print(f"  [{i:>5}/{len(df)}] {brand[:25]:<25} {product[:30]:<30}", end=" ")
 
@@ -503,10 +904,10 @@ def main():
               f"cost:{tracker.estimated_chf:.3f} CHF")
 
         result = {
+            **sampling_meta,  # all sampling metadata passes through first
             "barcode":       barcode,
             "product_name":  product,
             "brands":        brand,
-            "tier":          tier,
             "image_url":     image_url,
             # pack_analysis_attempted=1 means this product was submitted
             # for image-based extraction, regardless of OCR/LLM outcome —
@@ -530,22 +931,41 @@ def main():
         # Raw keys such as sustainability_halo or glp1_positioning are
         # extraction-schema keys only and should not be treated as final
         # product language in the UI, README, or Power BI deck.
-        # Note also that ocr_quality may be "good"/"partial"/"poor"/
-        # "stylized" per the prompt — downstream scripts should not
-        # assume only three values.
+        # ocr_quality is "good"/"partial"/"poor" only (v4+).
+        # image_context: front_of_pack/mixed_pack_text/ingredient_or_legal_panel/
+        #   nutrition_label/price_sticker/uncertain.
+        # claim_extraction_status: completed/not_applicable_non_front/unreadable.
         if claims:
             for key in [
-                "protein_claim", "no_added_sugar", "reduced_sugar",
+                # Core claim booleans
+                "protein_claim", "sugar_free_claim", "reduced_sugar",
                 "no_palm_oil", "no_artificial", "natural_claim",
-                "fortification_claim", "fibre_claim", "probiotic_claim",
-                "immune_claim", "energy_claim", "vitalite_concept",
-                "sustainability_halo", "reformulation_claim", "comparative_claim",
-                "glp1_positioning", "no_claims_detected", "ocr_quality",
-                "protein_amount_g", "sugar_reduction_pct", "comparative_reference",
+                "fortification_claim", "fibre_claim",
+                # Gut health (three distinct fields)
+                "gut_health_claim", "probiotic_claim", "prebiotic_claim",
+                # Immunity (separate from fortification)
+                "immune_claim",
+                # Energy, sleep, brain/cognitive
+                "energy_claim", "sleep_claim", "brain_health_claim",
+                # Reduced fat and whole grain
+                "reduced_fat_claim", "whole_grain_claim",
+                # Free-from identity
+                "vegan_claim", "organic_claim", "dairy_free_claim", "lactose_free_claim",
+                "gluten_free_claim", "plant_based_claim",
+                # Other functional / positioning
+                "vitalite_concept", "sustainability_halo", "reformulation_claim",
+                "comparative_claim", "glp1_positioning",
                 "origin_quality_claim", "clean_label_claim", "minimal_ingredients_claim",
-                "artisan_claim", "vegan_claim", "organic_claim", "dairy_free_claim",
-                "plant_based_claim", "heritage_claim", "gluten_free_claim",
-                "gender_targeting_claim",
+                "artisan_claim", "heritage_claim", "gender_targeting_claim",
+                # Image context and extraction status
+                "image_context", "claim_extraction_status",
+                # Readability / formatting metadata
+                "no_claims_detected", "ocr_quality",
+                # Audit: True if validator overrode LLM claim_extraction_status
+                "status_normalised",
+                # Numeric / string fields
+                "protein_amount_g", "sugar_reduction_pct", "fat_reduction_pct",
+                "comparative_reference",
             ]:
                 result[f"v3_{key}"] = claims.get(key)
             result["v3_fortification_nutrients"] = "|".join(
@@ -556,6 +976,9 @@ def main():
             )
             result["v3_other_claims"] = "|".join(
                 claims.get("other_claims", []) or []
+            )
+            result["v3_detected_claim_phrases"] = "|".join(
+                claims.get("detected_claim_phrases", []) or []
             )
 
         results.append(result)
@@ -583,8 +1006,23 @@ def main():
 
         if "v3_no_claims_detected" in results_df.columns:
             no_claims = results_df["v3_no_claims_detected"].sum()
-            has_claims = llm_ok - no_claims
-            print(f"  Products with claims: {has_claims:,}")
+            results_df_s = pd.DataFrame(results)
+            if "v3_claim_extraction_status" in results_df_s.columns:
+                completed = results_df_s["v3_claim_extraction_status"] == "completed"
+                print(f"  claim_extraction_status:")
+                for ctx, cnt in results_df_s["v3_claim_extraction_status"].value_counts().items():
+                    print(f"    {ctx}: {cnt:,}")
+                if "v3_image_context" in results_df_s.columns:
+                    print(f"  image_context (front-of-pack / non-front):")
+                    for ctx, cnt in results_df_s["v3_image_context"].value_counts().items():
+                        print(f"    {ctx}: {cnt:,}")
+                with_claims = (completed & (results_df_s.get("v3_no_claims_detected", True) == False)).sum()
+                no_claims_front = (completed & (results_df_s.get("v3_no_claims_detected", False) == True)).sum()
+                print(f"  Completed front packs WITH claims: {with_claims:,}")
+                print(f"  Completed front packs NO claims:   {no_claims_front:,}")
+            else:
+                has_claims = llm_ok - no_claims
+                print(f"  Products with claims: {has_claims:,}")
             print(f"  Products no claims:   {int(no_claims):,}")
 
     tracker.summary()

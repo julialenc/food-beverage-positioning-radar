@@ -27,7 +27,7 @@ claim territory share analysis across ALL claims on a product, use
 pack_claims_found directly rather than claim_category_1/2.
 
 Cut 2 — claim_category_2 (sub-group):
-    protein | fiber | gut_health | vitamins | immune | energy
+    protein | fiber | gut_health | vitamins | immune | energy | sleep | brain_health
     no_added_x | no_artificial | free_from
     organic | natural
     comparative | heritage | sustainability | other
@@ -124,23 +124,34 @@ LIQUID_KCAL_THRESHOLD = 100
 # Maps claim keywords to (category_1, category_2).
 
 CLAIM_TAXONOMY = {
-    # FUNCTIONAL claims
-    "protein_claim":             ("FUNCTIONAL", "protein"),
-    "fibre_claim":                ("FUNCTIONAL", "fiber"),
-    "probiotic_claim":            ("FUNCTIONAL", "gut_health"),
-    "prebiotic_claim":            ("FUNCTIONAL", "gut_health"),
-    "immune_claim":               ("FUNCTIONAL", "immune"),
-    "fortification_claim":        ("FUNCTIONAL", "vitamins"),
-    "energy_claim":                ("FUNCTIONAL", "energy"),
-    "vitalite_concept":            ("FUNCTIONAL", "vitamins"),
+    # FUNCTIONAL claims — aligned with Nielsen IQ functional-benefit categories
+    "protein_claim":              ("FUNCTIONAL", "protein"),
+    "fibre_claim":                 ("FUNCTIONAL", "fiber"),
+    # Gut health: three raw fields, all roll up to gut_health
+    "gut_health_claim":           ("FUNCTIONAL", "gut_health"),
+    "probiotic_claim":             ("FUNCTIONAL", "gut_health"),
+    "prebiotic_claim":             ("FUNCTIONAL", "gut_health"),
+    # Immunity (separate from fortification — vitamins alone != immune claim)
+    "immune_claim":                ("FUNCTIONAL", "immune"),
+    "fortification_claim":         ("FUNCTIONAL", "vitamins"),
+    "energy_claim":                 ("FUNCTIONAL", "energy"),
+    "vitalite_concept":             ("FUNCTIONAL", "vitamins"),
+    # New in v3: sleep and brain/cognitive health
+    "sleep_claim":                 ("FUNCTIONAL", "sleep"),
+    "brain_health_claim":          ("FUNCTIONAL", "brain_health"),
+
+    # Fat and whole-grain positioning (v3)
+    "reduced_fat_claim":           ("FREE_OF", "reduced_fat"),
+    "whole_grain_claim":           ("FUNCTIONAL", "whole_grain"),
 
     # FREE_OF claims — three distinct sub-types
-    "no_added_sugar":             ("FREE_OF", "no_added_x"),
+    "sugar_free_claim":           ("FREE_OF", "no_added_x"),
     "reduced_sugar":               ("FREE_OF", "no_added_x"),
     "no_artificial":               ("FREE_OF", "no_artificial"),
     "no_palm_oil":                  ("FREE_OF", "free_from"),
     "gluten_free_claim":           ("FREE_OF", "free_from"),
     "dairy_free_claim":            ("FREE_OF", "free_from"),
+    "lactose_free_claim":          ("FREE_OF", "free_from"),
     "plant_based_claim":           ("FREE_OF", "free_from"),
     "vegan_claim":                  ("FREE_OF", "free_from"),
 
@@ -280,10 +291,15 @@ def compute_claim_benchmark_intersections(row):
     intersections = []
 
     pack_claims = row.get("pack_claims_found")
-    if pd.notna(pack_claims) and str(pack_claims).strip() not in ("", "nan"):
-        claims = str(pack_claims)  # prefer pack-image claims when available
-    else:
+    if pd.isna(pack_claims):
+        # NULL means no valid pack observation (not analyzed, non-front image,
+        # or failed extraction) — ingredient fallback is appropriate here.
         claims = get_ingredient_fallback_claims(row)
+    else:
+        # Empty string means front-of-pack was assessed and no claims found.
+        # Do NOT substitute ingredient proxy claims — that would contaminate
+        # a genuine no-claim observation with inferred signals.
+        claims = str(pack_claims)
 
     liquid = is_liquid(row.get("energy_kcal"))
     thresholds = NUTRITION_BENCHMARK_THRESHOLDS["liquid"] if liquid \
@@ -303,7 +319,7 @@ def compute_claim_benchmark_intersections(row):
             pass
 
     # Sugar-reduction positioning + sugar above reference threshold
-    if "no_added_sugar" in claims or "reduced_sugar" in claims:
+    if "sugar_free_claim" in claims or "reduced_sugar" in claims:
         try:
             if float(row.get("sugars_100g")) > thresholds["sugar"]["high"]:
                 intersections.append("Sugar-reduction positioning with sugar above reference threshold")
@@ -371,7 +387,9 @@ def main():
             a.protein_fat_intersection_flag,
             a.fibre_sugar_processing_intersection_flag,
             a.plant_based_nutrition_intersection_flag,
-            a.processing_markers_found
+            a.processing_markers_found,
+            a.image_context, a.claim_extraction_status,
+            a.detected_claim_phrases, a.prompt_version
         FROM products p
         LEFT JOIN product_analysis a ON p.barcode = a.barcode
     """, conn, dtype={"barcode": str})
@@ -526,6 +544,9 @@ def main():
         "fibre_sugar_processing_intersection_flag",
         "plant_based_nutrition_intersection_flag",
         "processing_markers_found",
+        # Audit fields — image classification and extraction traceability
+        "image_context", "claim_extraction_status",
+        "detected_claim_phrases", "prompt_version",
     ]
 
     pbi_df = df[[c for c in pbi_cols if c in df.columns]].copy()
