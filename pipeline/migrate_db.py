@@ -24,6 +24,15 @@ TO_ADD = {
     # release — e.g. a superseded pilot observation. The app must filter on
     # this column, never on claim_source='vision'.
     "release_run_id":          "TEXT",
+    # Sampling frame. The sample was designed, quota'd and weighted on
+    # sampling_region — NOT on products.primary_country, which reflects
+    # where a product was tagged in OFF and spans 80+ values inside this
+    # release. Any regional breakdown must group on sampling_region.
+    "sampling_region":         "TEXT",
+    "sampling_category":       "TEXT",
+    "sample_component":        "TEXT",
+    "primary_stratum_id":      "TEXT",
+    "sampling_weight":         "REAL",
 }
 
 conn = sqlite3.connect(DB_PATH)

@@ -64,6 +64,17 @@ PACK_CLAIM_FIELDS = [
     "reduced_fat_claim", "whole_grain_claim",
 ]
 
+def safe_float(value):
+    """Return a float, or None for blanks/NaN/unparseable values."""
+    try:
+        if value is None or (isinstance(value, float) and pd.isna(value)):
+            return None
+        s = str(value).strip()
+        return None if s == "" or s.lower() in {"nan", "none"} else float(s)
+    except (TypeError, ValueError):
+        return None
+
+
 def safe_text(val):
     """
     Convert a value to a clean string for SQLite storage, or None.
@@ -169,6 +180,12 @@ def update_db_positioning_scores(conn, merged_df, timestamp, release_run_id=None
             and pack_claims_found.
     Rows attempted but failed (Path 1 only) preserve any prior result.
 
+    Sampling-frame columns (sampling_region, sampling_category,
+    sample_component, primary_stratum_id, sampling_weight) are persisted so
+    the app can group on the frame the sample was actually designed on.
+    products.primary_country is NOT the frame — it spans 80+ values inside
+    this release and carries no sampling validity.
+
     release_run_id stamps every attempted row with the release it belongs to.
     The app must scope the claim population on this column — claim_source
     ='vision' also matches superseded pilot observations.
@@ -198,6 +215,11 @@ def update_db_positioning_scores(conn, merged_df, timestamp, release_run_id=None
                 detected_claim_phrases    = ?,
                 claims_json               = ?,
                 release_run_id            = ?,
+                sampling_region           = ?,
+                sampling_category         = ?,
+                sample_component          = ?,
+                primary_stratum_id        = ?,
+                sampling_weight           = ?,
                 analyzed_at               = ?
             WHERE barcode = ?
         """, (
@@ -212,6 +234,11 @@ def update_db_positioning_scores(conn, merged_df, timestamp, release_run_id=None
             safe_text(row.get("v3_detected_claim_phrases")),
             safe_text(row.get("claims_json")),
             release_run_id,
+            safe_text(row.get("sampling_region")),
+            safe_text(row.get("sampling_category")),
+            safe_text(row.get("sample_component")),
+            safe_text(row.get("primary_stratum_id")),
+            safe_float(row.get("sampling_weight")),
             timestamp,
             str(row["barcode"])
         ))
