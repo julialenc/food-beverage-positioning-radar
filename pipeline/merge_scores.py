@@ -151,7 +151,7 @@ def load_db_data(conn, barcodes):
     """, conn, dtype={"barcode": str})
 
 
-def update_db_positioning_scores(conn, merged_df, timestamp):
+def update_db_positioning_scores(conn, merged_df, timestamp, release_run_id=None):
     """
     Write pack-image extraction results back to the product_analysis table.
 
@@ -168,6 +168,10 @@ def update_db_positioning_scores(conn, merged_df, timestamp):
         2b. Valid front-of-pack with a score: writes the new composite score
             and pack_claims_found.
     Rows attempted but failed (Path 1 only) preserve any prior result.
+
+    release_run_id stamps every attempted row with the release it belongs to.
+    The app must scope the claim population on this column — claim_source
+    ='vision' also matches superseded pilot observations.
 
     claim_source, claim_category_1, claim_category_2,
     nutrition_benchmark_flags, and claim_benchmark_intersections are NOT
@@ -193,6 +197,7 @@ def update_db_positioning_scores(conn, merged_df, timestamp):
                 claim_extraction_status   = ?,
                 detected_claim_phrases    = ?,
                 claims_json               = ?,
+                release_run_id            = ?,
                 analyzed_at               = ?
             WHERE barcode = ?
         """, (
@@ -206,6 +211,7 @@ def update_db_positioning_scores(conn, merged_df, timestamp):
             safe_text(row.get("v3_claim_extraction_status")),
             safe_text(row.get("v3_detected_claim_phrases")),
             safe_text(row.get("claims_json")),
+            release_run_id,
             timestamp,
             str(row["barcode"])
         ))
@@ -250,12 +256,23 @@ def main():
         help="Path to a specific vision_results CSV (default: auto-detect "
              "latest, excluding checkpoint files)"
     )
+    parser.add_argument(
+        "--release-id", type=str, default=None,
+        help="Release identifier stamped onto every row written this run "
+             "(e.g. release_2026_01_us_uk). Required for any run whose "
+             "results will be published in the app."
+    )
     args = parser.parse_args()
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     print(f"\nFood & Beverage Positioning Radar - merge_scores.py")
     print(f"Run timestamp: {timestamp}")
-    print(f"Merging vision results and writing pack_claims_found to database\n")
+    print(f"Merging vision results and writing pack_claims_found to database")
+    if args.release_id:
+        print(f"Release ID: {args.release_id}\n")
+    else:
+        print(f"WARNING: no --release-id given; rows will not be scoped "
+              f"to a release and the app will not pick them up\n")
 
     # ── Load vision results ───────────────────────────────────────────────────
     vision_path = Path(args.input) if args.input else find_latest_vision_results()
@@ -352,7 +369,8 @@ def main():
 
         # ── Write results to DB ───────────────────────────────────────────────────
     print(f"\n  Writing pack-image results to database...")
-    updated = update_db_positioning_scores(conn, merged, timestamp)
+    updated = update_db_positioning_scores(conn, merged, timestamp,
+                                           release_run_id=args.release_id)
     print(f"  Updated {updated:,} rows in product_analysis")
     conn.close()
 

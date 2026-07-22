@@ -20,6 +20,10 @@ TO_ADD = {
     "claim_extraction_status": "TEXT",
     "detected_claim_phrases":  "TEXT",
     "claims_json":             "TEXT",
+    # Release scoping. NULL means the row is not part of any published
+    # release — e.g. a superseded pilot observation. The app must filter on
+    # this column, never on claim_source='vision'.
+    "release_run_id":          "TEXT",
 }
 
 conn = sqlite3.connect(DB_PATH)

@@ -1,414 +1,532 @@
 """
-smart_sample.py
-----------------
-Generates the priority image sample for pack-image claim extraction.
+smart_sample.py — stratified enriched sampler for the clean OCR/LLM run.
 
-Four-tier sampling strategy (see docs/ADR.md ADR-006):
+COMPLETE REPLACEMENT of the original smart_sample.py, which was built
+around composition_marker_score (now deprecated — see llm_sampling_design_log.md
+and ADR.md). The design is fully documented in llm_sampling_design_log.md.
 
-TIER 1 — Named priority brands (sampled regardless of brand-level
-    thresholds)
-    Brands selected for their high density of front-of-pack positioning
-    claims, identified during early data exploration.
-    TIER1_SAMPLE_N products per brand, spread across the available
-    composition-marker score distribution.
+Current scope: US & Canada + UK & Ireland only.
+France: deferred pending a French keyword dictionary for the positioning
+proxy. See llm_sampling_design_log.md for the reasoning.
 
-TIER 2 — NOVA group 4 + Nutri-Score D/E + ingredient-based claim signals
-    Products where additional pack-image context is analytically useful:
-    an ingredient/name-derived claim signal is present alongside NOVA
-    group 4 and Nutri-Score D/E reference grades. This tier prioritizes
-    records where composition indicators and positioning signals
-    intersect, without treating that intersection as a product verdict.
-    TIER2_SAMPLE_N products per brand, brands with >= TIER2_MIN_N products.
+INPUTS (all pre-computed pipeline outputs — run these first):
+  pipeline/positioning_signals_us_uk.csv  (detect_positioning_signals.py)
+  pipeline/reality_bands.csv              (assign_reality_bands.py)
+  pipeline/formulation_families.csv       (classify_formulation_families.py)
+  database/positioning_radar.db           (for prompt calibration panel)
 
-TIER 3 — Brands with higher average composition marker scores
-    Brands with a higher average composition_marker_score, not already
-    captured by Tier 1 or 2.
-    TIER3_SAMPLE_N products per brand, avg score >= TIER3_MIN_AVG_SCORE,
-    n >= TIER3_MIN_N.
+OUTPUTS:
+  pipeline/sample_clean_run.csv           (selected products + full metadata)
+  pipeline/sample_clean_run_summary.csv   (quota fill report)
 
-TIER 4 — Named intersection pattern quota sampling
-    A dedicated quota for two specific, recurring intersection patterns
-    (see docs/COLUMN_DESCRIPTIONS.md), to ensure sufficient pack-image
-    coverage for these patterns regardless of brand.
+THREE SAMPLING COMPONENTS per region-category:
+  35% BACKBONE   -- proportional to formulation-family distribution, random
+                    within family; exact inclusion probabilities; brand-capped.
+  50% MATRIX     -- positioning(explicit/none) x reality(favorable/typical/
+                    unfavorable) per priority territory; deliberately enriches
+                    analytically important cells; approximate weights.
+  15% CALIBRATION -- rare territory enrichment (immune/gut-health/fibre
+                     formulation pools) + 5% prompt-comparison panel from
+                     the prior ~5k LLM run.
 
-Methodology note:
-    This is a purposive priority sample for pack-image claim extraction,
-    not a market-representative sample. The goal is to maximize useful
-    coverage for OCR/LLM analysis by prioritizing brands, categories, and
-    product patterns where front-of-pack positioning signals are likely
-    to be analytically informative. Product counts in this sample should
-    not be interpreted as market share, retail distribution, or claim
-    prevalence.
+DESIGN PRINCIPLES:
+  - No exclusion of previously analyzed products -- clean run.
+  - Formulation families used where available; positioning + reality bands
+    are the primary strata for cereals (84% other = data sparsity + bootstrap
+    contamination, not a classifier failure).
+  - Territory-specific reality: "favorable" = high for protein/fibre,
+    low for sugar/satfat/energy.
+  - Zero-heavy bands (zero/positive_lower/positive_upper) mapped to
+    low/typical/high for sampling purposes.
+  - Exact weights for backbone; approximate/flagged for matrix and
+    calibration (greedy multi-cell deduplication prevents exact calc).
+  - Random seed 42, stored with every output row for reproducibility.
 
-Output:
-    data/sample/smart_sample_<timestamp>.csv
-    - barcode, product_name, brands, image_url
-    - tier (1/2/3/4), sampling_reason
-    - all nutritional + analysis columns for context
-
-Usage:
-    python pipeline/smart_sample.py
-
-Prerequisites:
-    - database/positioning_radar.db must exist and have been populated
-      via pipeline/load.py
-
-Cost guidance:
-    The original pack-image extraction run (v3, see docs/ADR.md) covered
-    approximately 4,700 products using Azure AI Vision (OCR) and Azure
-    OpenAI gpt-4.1-nano (claim extraction), at a total cost of
-    approximately 8 CHF — roughly 1.70 CHF per 1,000 products for OCR
-    and LLM extraction combined. This is a historical project estimate
-    based on the v3 run, not a pricing guarantee — cloud and model
-    prices may change; confirm current pricing before larger reruns.
-    This script can be rerun to select an additional sample for the
-    planned v3.5 model benchmark (~50 CHF budget, see docs/ADR.md).
+Usage: python pipeline/smart_sample.py [--seed 42] [--dry-run]
 """
 
+from __future__ import annotations
+
+import argparse
 import sqlite3
+from pathlib import Path
+
+import numpy as np
 import pandas as pd
-import os
-from datetime import datetime
 
-ROOT       = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_PATH    = os.path.join(ROOT, "database", "positioning_radar.db")
-SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
+ROOT    = Path(__file__).resolve().parent.parent
+DB_PATH = ROOT / "database" / "positioning_radar.db"
 
-# Estimated cost per 1,000 products, based on the actual v3 run total
-# (~8 CHF for ~4,700 products, OCR + LLM combined, gpt-4.1-nano).
-# Historical estimate, not a pricing guarantee — see module docstring.
-ACTUAL_COST_PER_1000_CHF = 1.70
-V35_BUDGET_CHF = 50
+POSITIONING_CSV = Path(__file__).resolve().parent / "positioning_signals_us_uk.csv"
+REALITY_CSV     = Path(__file__).resolve().parent / "reality_bands.csv"
+FAMILIES_CSV    = Path(__file__).resolve().parent / "formulation_families.csv"
+OUT_SAMPLE_CSV  = Path(__file__).resolve().parent / "sample_clean_run.csv"
+OUT_SUMMARY_CSV = Path(__file__).resolve().parent / "sample_clean_run_summary.csv"
 
-# ── Brands to exclude from sampling ──────────────────────────────────────────
-# Brands excluded because they are outside the MVP scope or appear due to
-# category noise in Open Food Facts.
-EXCLUDE_BRANDS = [
-    'sapporo ichiban',  # instant noodles appearing in beverage/snack scope
-    'sapporo',          # alcoholic beverage brand, outside MVP scope
-]
+RANDOM_SEED = 42
+RUN_ID      = "release-01-image-eligible"
 
-# ── Tier 1: Named priority brands ────────────────────────────────────────────
-# These are sampled regardless of brand-level thresholds. Selected during
-# early data exploration for their high density of front-of-pack
-# positioning claims.
-TIER1_BRANDS = [
-    # Swiss / European premium snacks and dairy
-    "emmi", "chiefs",
-    # Natural/fruit positioning
-    "innocent", "nakd",
-    # Plant milk
-    "alpro", "oatly",
-    # Breakfast / snack fortification
-    "belvita", "gerble", "nature valley",
-    # Cereal
-    "kellogg's", "special k",
-    # Probiotic drinks
-    "actimel", "danone",
-    # High-protein
-    "hipro", "fairlife",
-    # Confectionery with protein claims
-    "mars", "snickers", "bounty", "twix",
-    # Conglomerates
-    "nestle",
-]
+IN_SCOPE_REGIONS = {"US_CANADA", "UK_IE"}
 
-# ── Tier 2: NOVA group 4 + D/E + ingredient-based claim signals ──────────────
-TIER2_NOVA       = 4.0
-TIER2_NUTRISCORE = ("D", "E")
-TIER2_MIN_N      = 5
-TIER2_SAMPLE_N   = 8
+# -- Quota targets (products per region-category) ----------------------------
+QUOTA_TARGET: dict[tuple[str, str], int] = {
+    ("US_CANADA", "snacks"):    2450,
+    ("US_CANADA", "dairies"):   2450,
+    ("US_CANADA", "cereals"):   1400,
+    ("US_CANADA", "beverages"):  700,
+    ("UK_IE",     "snacks"):    2450,
+    ("UK_IE",     "dairies"):   2450,
+    ("UK_IE",     "cereals"):   1400,
+    ("UK_IE",     "beverages"):  700,
+}
 
-# ── Tier 3: Brands with higher average composition marker scores ────────────
-TIER3_MIN_AVG_SCORE = 20
-TIER3_MIN_N         = 10
-TIER3_SAMPLE_N      = 5
+COMPONENT_SPLIT = {"backbone": 0.35, "matrix": 0.50, "calibration": 0.15}
 
-# ── Per-brand sample size ─────────────────────────────────────────────────────
-TIER1_SAMPLE_N = 15
+# Per category: territory priority order for matrix enrichment
+TERRITORY_PRIORITY: dict[str, list[str]] = {
+    "snacks":    ["protein", "fibre", "sugar", "satfat", "energy"],
+    "dairies":   ["protein", "sugar", "satfat", "energy"],
+    "cereals":   ["fibre", "sugar", "protein", "energy"],
+    "beverages": ["sugar", "energy", "protein", "satfat"],
+}
 
+# territory -> (reality_band_column, favorable_direction)
+TERRITORY_REALITY: dict[str, tuple[str, str]] = {
+    "protein": ("protein_band", "high"),
+    "fibre":   ("fibre_band",   "high"),
+    "sugar":   ("sugars_band",  "low"),
+    "satfat":  ("satfat_band",  "low"),
+    "energy":  ("energy_band",  "low"),
+}
 
-def get_conn():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+# Matrix cell priority weights {(signal, reality_class): weight}
+CELL_WEIGHTS: dict[tuple[str, str], float] = {
+    ("explicit", "favorable"):   0.25,
+    ("explicit", "typical"):     0.20,
+    ("explicit", "unfavorable"): 0.20,
+    ("none",     "favorable"):   0.25,
+    ("none",     "typical"):     0.05,
+    ("none",     "unfavorable"): 0.05,
+}
+
+MAX_BRAND_SHARE          = 0.15
+CALIBRATION_PANEL_SHARE  = 0.05
 
 
-def load_products_with_scores(conn):
-    """Load all products with composition scores and image URLs."""
-    df = pd.read_sql("""
-        SELECT
-            p.barcode, p.product_name, p.brands, p.primary_brand,
-            p.query_category, p.off_categories, p.primary_country,
-            p.nova_group, p.nutriscore_grade,
-            p.energy_kcal, p.fat_100g, p.saturated_fat_100g,
-            p.carbs_100g, p.sugars_100g, p.protein_100g, p.salt_100g,
-            p.image_url,
-            a.composition_marker_score,
-            a.processing_markers_found,
-            a.ingredient_based_claim_signals_found,
-            a.absence_reduction_claims_found,
-            a.has_artificial_sweetener,
-            a.sugar_positioning_intersection_flag,
-            a.protein_fat_intersection_flag,
-            a.fibre_sugar_processing_intersection_flag,
-            a.plant_based_nutrition_intersection_flag,
-            a.pack_analysis_attempted
-        FROM products p
-        LEFT JOIN product_analysis a ON p.barcode = a.barcode
-        WHERE p.image_url IS NOT NULL
-          AND p.image_url NOT LIKE '%/invalid/%'
-          AND p.image_url != ''
+# -- Helpers -----------------------------------------------------------------
+
+def load_inputs() -> pd.DataFrame:
+    pos = pd.read_csv(POSITIONING_CSV)
+    rea = pd.read_csv(REALITY_CSV)
+    fam = pd.read_csv(FAMILIES_CSV)
+    for df in (pos, rea, fam):
+        df["barcode"] = df["barcode"].astype(str)
+
+    # The pre-computed CSVs contain signal/band/family columns but not the
+    # product-level fields needed for scope filtering and brand-capping.
+    # Load those directly from the DB so we don't depend on the CSVs
+    # including every product field.
+    conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+    product_fields = pd.read_sql_query("""
+        SELECT barcode, product_name, primary_brand, query_category AS category,
+               observed_market_region_codes, image_url
+        FROM products
+        WHERE primary_brand IS NOT NULL
+          AND TRIM(LOWER(primary_brand)) NOT IN ('unknown', '', 'nan')
+          AND image_url IS NOT NULL
+          AND TRIM(image_url) <> ''
+          AND LOWER(TRIM(image_url)) NOT IN ('nan', 'none', 'null')
+          AND (
+              LOWER(TRIM(image_url)) LIKE 'http://%'
+              OR LOWER(TRIM(image_url)) LIKE 'https://%'
+          )
     """, conn)
-    # Note: pack_analysis_attempted is included for forward compatibility
-    # with a future --mode flag distinguishing model-benchmark reruns
-    # (which may reasonably reuse previously analyzed products) from
-    # coverage-expansion runs (which should exclude them). Not yet
-    # populated by the pipeline — written later by merge_scores.py — and
-    # not filtered on here. See docs/ADR.md v3.5.
-    df = df[~df['primary_brand'].isin(EXCLUDE_BRANDS)]
-    return df
+    # image_url filter is intentional: products without a usable image URL are
+    # not eligible for front-of-pack claim analysis. They are still valid for
+    # nutrition/landscape/ingredient analysis — they are simply excluded from
+    # the OCR/LLM sampling universe. See notes_data_quality_local.md and the
+    # us_release_sample_preflight.csv QA archive for the coverage breakdown.
+    conn.close()
+    product_fields["barcode"] = product_fields["barcode"].astype(str)
+
+    # Drop category/region columns from CSVs that duplicate the DB version —
+    # after pandas merges, duplicated column names become _x/_y suffixes which
+    # breaks downstream lookups. product_fields from the DB is the authoritative
+    # source for category and observed_market_region_codes.
+    rea_clean = rea.drop(columns=[c for c in ("category", "region_code",
+                                               "observed_market_region_codes")
+                                   if c in rea.columns])
+    pos_clean = pos.drop(columns=[c for c in ("category", "query_category",
+                                               "observed_market_region_codes")
+                                   if c in pos.columns])
+
+    merged = (rea_clean
+              .merge(pos_clean, on="barcode", how="left")
+              .merge(fam[["barcode", "formulation_family", "family_source",
+                           "family_rule_version"]].rename(
+                               columns={"family_rule_version": "family_rule_ver"}),
+                     on="barcode", how="left")
+              .merge(product_fields, on="barcode", how="inner"))
+
+    def primary_region(codes):
+        for c in str(codes or "").split("|"):
+            if c in IN_SCOPE_REGIONS:
+                return c
+        return None
+
+    merged["primary_region"] = merged["observed_market_region_codes"].apply(
+        primary_region)
+    merged["pre_llm_positioning_signal"] = merged[
+        "pre_llm_positioning_signal"].fillna("none")
+    merged["formulation_family"] = merged["formulation_family"].fillna(
+        "other_" + merged["category"])
+    return merged[merged["primary_region"].notna()].copy()
 
 
-def sample_diverse(group, n, score_col="composition_marker_score"):
-    """
-    Select up to n products from a group, spread across the available
-    composition-marker score distribution where scores exist. If fewer
-    than n scored products are available, remaining slots are filled
-    from products without a score, so a brand is still represented at
-    its target sample size even when scoring data is incomplete.
-
-    This is a score-diverse per-brand sample, not a statistically
-    representative one — see the methodology note in the module
-    docstring.
-    """
-    if len(group) <= n:
-        return group
-
-    scored = group.dropna(subset=[score_col])
-
-    if len(scored) >= n:
-        scored = scored.sort_values(score_col)
-        if n > 1:
-            indices = [int(i * (len(scored) - 1) / (n - 1)) for i in range(n)]
-        else:
-            indices = [0]
-        return scored.iloc[indices]
-
-    # Fewer than n scored products available — take all scored products
-    # and fill the remaining quota from unscored products, so Tier 1
-    # brands in particular are still represented at their target count.
-    unscored = group[group[score_col].isna()]
-    n_fill = n - len(scored)
-    filled = unscored.sample(min(n_fill, len(unscored)), random_state=42)
-    return pd.concat([scored.sort_values(score_col), filled])
+def normalize_band(band) -> str | None:
+    if pd.isna(band) or band is None:
+        return None
+    b = str(band)
+    mapping = {"zero": "low", "positive_lower": "typical",
+               "positive_upper": "high"}
+    return mapping.get(b, b if b in ("low", "typical", "high") else None)
 
 
-def sample_tier1(df):
-    """
-    Tier 1: named brands, sampled regardless of brand-level thresholds,
-    score-diverse with unscored fill (see sample_diverse()).
-    """
-    print(f"\n  TIER 1 — Named priority brands ({len(TIER1_BRANDS)} brands, {TIER1_SAMPLE_N} products each)")
-    results = []
-    for brand in TIER1_BRANDS:
-        group = df[df["primary_brand"] == brand].copy()
-        if len(group) == 0:
-            print(f"    {brand:<25} not present in current DB snapshot")
-            continue
-        sampled = sample_diverse(group, TIER1_SAMPLE_N)
-        sampled = sampled.copy()
-        sampled["tier"] = 1
-        sampled["sampling_reason"] = f"tier1_named_brand:{brand}"
-        results.append(sampled)
-        print(f"    {brand:<25} {len(group):>5} in DB → {len(sampled)} sampled")
-    return pd.concat(results, ignore_index=True) if results else pd.DataFrame()
+def get_reality_class(row: pd.Series, territory: str) -> str:
+    band_col, favorable_dir = TERRITORY_REALITY[territory]
+    band = normalize_band(row.get(band_col))
+    if band is None:
+        return "unknown"
+    if band == favorable_dir:
+        return "favorable"
+    if band in ("low", "high"):
+        return "unfavorable"
+    return "typical"
 
 
-def sample_tier2(df, already_sampled_barcodes):
-    """
-    Tier 2: NOVA group 4 + D/E Nutri-Score + ingredient-based claim
-    signals, by brand. Selected because this is where pack-image
-    analysis is most useful — an ingredient-based claim signal is
-    present alongside NOVA group 4 and a D/E Nutri-Score reference
-    grade.
-    """
-    print(f"\n  TIER 2 — NOVA group 4 + Nutri-Score D/E + ingredient-based claim signals")
-
-    mask = (
-        (df["nova_group"] == TIER2_NOVA) &
-        (df["nutriscore_grade"].str.upper().isin(TIER2_NUTRISCORE)) &
-        (df["ingredient_based_claim_signals_found"].notna()) &
-        (df["ingredient_based_claim_signals_found"] != "") &
-        (~df["barcode"].isin(already_sampled_barcodes))
-    )
-    pool = df[mask].copy()
-    print(f"    Pool: {len(pool):,} products match NOVA group 4 + Nutri-Score D/E + claim signal criteria")
-
-    results = []
-    brand_counts = pool["primary_brand"].value_counts()
-    eligible_brands = brand_counts[brand_counts >= TIER2_MIN_N].index
-
-    for brand in eligible_brands[:500]:
-        group = pool[pool["primary_brand"] == brand]
-        sampled = sample_diverse(group, TIER2_SAMPLE_N)
-        sampled = sampled.copy()
-        sampled["tier"] = 2
-        sampled["sampling_reason"] = f"tier2_nova4_de_claim_signals:{brand}"
-        results.append(sampled)
-
-    tier2_df = pd.concat(results, ignore_index=True) if results else pd.DataFrame()
-    print(f"    {len(eligible_brands)} eligible brands → {len(tier2_df)} products sampled")
-    return tier2_df
+def has_territory_signal(row: pd.Series, territory: str) -> bool:
+    terrs = str(row.get("pre_llm_positioning_territories") or "")
+    return territory in terrs.split("|")
 
 
-def sample_tier3(df, already_sampled_barcodes):
-    """
-    Tier 3: brands with higher average composition marker scores, not
-    already captured by Tier 1 or 2.
-    """
-    print(f"\n  TIER 3 — Brands with higher average composition marker scores")
-
-    pool = df[
-        (~df["barcode"].isin(already_sampled_barcodes)) &
-        (df["composition_marker_score"].notna())
-    ].copy()
-
-    brand_stats = pool.groupby("primary_brand").agg(
-        avg_score=("composition_marker_score", "mean"),
-        n=("barcode", "count")
-    ).reset_index()
-
-    eligible = brand_stats[
-        (brand_stats["avg_score"] >= TIER3_MIN_AVG_SCORE) &
-        (brand_stats["n"] >= TIER3_MIN_N)
-    ].sort_values("avg_score", ascending=False)
-
-    print(f"    {len(eligible)} brands with avg_score >= {TIER3_MIN_AVG_SCORE}, n >= {TIER3_MIN_N}")
-
-    results = []
-    for _, row in eligible.head(150).iterrows():
-        brand = row["primary_brand"]
-        group = pool[pool["primary_brand"] == brand]
-        sampled = sample_diverse(group, TIER3_SAMPLE_N)
-        sampled = sampled.copy()
-        sampled["tier"] = 3
-        sampled["sampling_reason"] = f"tier3_higher_composition_marker_score:{brand}"
-        results.append(sampled)
-
-    tier3_df = pd.concat(results, ignore_index=True) if results else pd.DataFrame()
-    print(f"    {len(tier3_df)} products sampled from {min(len(eligible), 150)} brands")
-    return tier3_df
+def apply_brand_cap(df: pd.DataFrame, target_n: int,
+                    rng: np.random.Generator) -> pd.DataFrame:
+    max_per_brand = max(1, int(target_n * MAX_BRAND_SHARE))
+    parts = []
+    for _, grp in df.groupby("primary_brand", dropna=False):
+        if len(grp) > max_per_brand:
+            grp = grp.sample(max_per_brand, random_state=int(rng.integers(0, 2**31)))
+        parts.append(grp)
+    return pd.concat(parts) if parts else df.head(0)
 
 
-def sample_tier4_intersection_patterns(df, already_sampled_barcodes):
-    """
-    Tier 4: dedicated quota sampling for two specific, recurring
-    intersection patterns, to ensure sufficient pack-image coverage
-    for these patterns regardless of brand. See docs/COLUMN_DESCRIPTIONS.md
-    for the full definition of each pattern flag.
-    """
-    print(f"\n  TIER 4 — Intersection pattern quota sampling")
-    results = []
-    patterns = [
-        ("sugar_positioning_intersection_flag",      "Sugar positioning intersection",      100),
-        ("fibre_sugar_processing_intersection_flag", "Fibre/processing intersection",       100),
-    ]
-    for col, label, target in patterns:
+# -- Component 1: backbone ---------------------------------------------------
+
+def sample_backbone(df: pd.DataFrame, target_n: int,
+                    rng: np.random.Generator) -> pd.DataFrame:
+    df = apply_brand_cap(df, target_n, rng)
+    family_counts = df["formulation_family"].value_counts()
+    total = max(len(df), 1)
+    parts = []
+    for family, n_available in family_counts.items():
+        proportion = n_available / total
+        n_target = max(1, round(proportion * target_n))
+        grp = df[df["formulation_family"] == family]
+        n_draw = min(n_target, len(grp))
+        sampled = grp.sample(n_draw, random_state=int(rng.integers(0, 2**31))).copy()
+        sampled["sample_component"] = "backbone"
+        sampled["primary_stratum_id"] = f"backbone|{family}"
+        sampled["stratum_population_n"] = len(grp)
+        sampled["stratum_target_n"] = n_draw
+        sampled["inclusion_probability"] = n_draw / len(grp)
+        sampled["sampling_weight"] = len(grp) / n_draw
+        # Weights are approximate, not exact: the eligible pool is first
+        # randomly brand-capped (apply_brand_cap), so the probability is
+        # calculated relative to the post-cap pool, not the full eligible
+        # region-category-family population. Use the backbone for prevalence
+        # calibration but treat weights as approximate.
+        sampled["weight_status"] = "approximate_brand_capped"
+        sampled["sampling_reason"] = f"backbone: {family}"
+        parts.append(sampled)
+    if not parts:
+        return pd.DataFrame()
+    result = pd.concat(parts)
+    if len(result) > target_n:
+        result = result.sample(target_n, random_state=int(rng.integers(0, 2**31)))
+    return result
+
+
+# -- Component 2: matrix enrichment -----------------------------------------
+
+def sample_matrix(df: pd.DataFrame, target_n: int, category: str,
+                  rng: np.random.Generator,
+                  already_selected: set) -> pd.DataFrame:
+    territories = TERRITORY_PRIORITY.get(category, [])
+    if not territories:
+        return pd.DataFrame()
+
+    n_per_territory = max(1, target_n // len(territories))
+    parts = []
+    selected_here: set = set()
+
+    for territory in territories:
+        band_col = TERRITORY_REALITY[territory][0]
         pool = df[
-            (df[col] == True) &
-            (~df["barcode"].isin(already_sampled_barcodes))
+            (~df["barcode"].isin(already_selected))
+            & (~df["barcode"].isin(selected_here))
+            & df[band_col].notna()
         ].copy()
-        sampled = pool.sample(min(target, len(pool)), random_state=42)
-        sampled = sampled.copy()
-        sampled["tier"] = 4
-        sampled["sampling_reason"] = f"tier4_{col}"
-        results.append(sampled)
-        print(f"    {label}: {len(pool):,} available → {len(sampled)} sampled")
-    return pd.concat(results, ignore_index=True) if results else pd.DataFrame()
+        if pool.empty:
+            continue
+
+        pool["_signal"] = pool.apply(
+            lambda r: "explicit" if has_territory_signal(r, territory) else "none",
+            axis=1)
+        pool["_reality"] = pool.apply(
+            lambda r: get_reality_class(r, territory), axis=1)
+        pool["_cell"] = list(zip(pool["_signal"], pool["_reality"]))
+
+        total_weight = sum(CELL_WEIGHTS.get(c, 0.01)
+                           for c in pool["_cell"].unique())
+        for cell, grp in pool.groupby("_cell"):
+            cw = CELL_WEIGHTS.get(cell, 0.01)
+            n_draw = min(max(1, round(n_per_territory * cw / total_weight)),
+                         len(grp))
+            sampled = grp.sample(n_draw, random_state=int(rng.integers(0, 2**31))).copy()
+            sig, rea = cell if isinstance(cell, tuple) else (cell, "unknown")
+            sampled["sample_component"] = "matrix"
+            sampled["primary_stratum_id"] = f"matrix|{territory}|{sig}|{rea}"
+            sampled["stratum_population_n"] = len(grp)
+            sampled["stratum_target_n"] = n_draw
+            sampled["inclusion_probability"] = None
+            sampled["sampling_weight"] = None
+            sampled["weight_status"] = "approximate"
+            sampled["sampling_reason"] = (
+                f"matrix: {territory}, signal={sig}, reality={rea}")
+            parts.append(sampled)
+            selected_here.update(sampled["barcode"].tolist())
+
+    if not parts:
+        return pd.DataFrame()
+    result = pd.concat(parts)
+    result = result[~result["barcode"].duplicated(keep="first")]
+    if len(result) > target_n:
+        result = result.sample(target_n, random_state=int(rng.integers(0, 2**31)))
+    return result
+
+
+# -- Component 3: calibration ------------------------------------------------
+
+def sample_calibration(df: pd.DataFrame, target_n: int, category: str,
+                        rng: np.random.Generator, already_selected: set,
+                        prior_analyzed: set) -> pd.DataFrame:
+    available = df[~df["barcode"].isin(already_selected)].copy()
+    parts = []
+    in_cal: set = set()
+
+    # (a) Prompt-comparison panel
+    panel_target = max(1, round(target_n * CALIBRATION_PANEL_SHARE /
+                                COMPONENT_SPLIT["calibration"]))
+    prior_pool = available[available["barcode"].isin(prior_analyzed)]
+    n_panel = min(panel_target, len(prior_pool))
+    if n_panel > 0:
+        panel = prior_pool.sample(n_panel, random_state=int(rng.integers(0, 2**31))).copy()
+        panel["sample_component"] = "calibration_panel"
+        panel["primary_stratum_id"] = "calibration|prompt_comparison"
+        panel["stratum_population_n"] = len(prior_pool)
+        panel["stratum_target_n"] = n_panel
+        panel["inclusion_probability"] = None
+        panel["sampling_weight"] = None
+        panel["weight_status"] = "approximate"
+        panel["sampling_reason"] = "prompt-comparison panel: prior LLM run"
+        parts.append(panel)
+        in_cal.update(panel["barcode"].tolist())
+
+    # (b) Rare territory enrichment
+    rare_remaining = target_n - len(in_cal)
+    avail_rare = available[~available["barcode"].isin(in_cal)]
+    rare_pools = [("immune", "immune"), ("gut_health", "gut_health"),
+                  ("fibre_form", "fibre")]
+    for pool_label, territory in rare_pools:
+        pool = avail_rare[
+            avail_rare["formulation_territories"].fillna("").str.contains(
+                territory, na=False)
+            & ~avail_rare["barcode"].isin(in_cal)
+        ]
+        if pool.empty:
+            continue
+        n_draw = min(max(1, rare_remaining // len(rare_pools)), len(pool))
+        sampled = pool.sample(n_draw, random_state=int(rng.integers(0, 2**31))).copy()
+        sampled["sample_component"] = "calibration_rare"
+        sampled["primary_stratum_id"] = f"calibration|rare|{pool_label}"
+        sampled["stratum_population_n"] = len(pool)
+        sampled["stratum_target_n"] = n_draw
+        sampled["inclusion_probability"] = None
+        sampled["sampling_weight"] = None
+        sampled["weight_status"] = "approximate"
+        sampled["sampling_reason"] = f"rare enrichment: {territory} formulation"
+        parts.append(sampled)
+        in_cal.update(sampled["barcode"].tolist())
+
+    # (c) Random fill
+    filled = sum(len(p) for p in parts)
+    if filled < target_n:
+        fill_pool = available[~available["barcode"].isin(in_cal)]
+        fill_n = min(target_n - filled, len(fill_pool))
+        if fill_n > 0:
+            filler = fill_pool.sample(fill_n, random_state=int(rng.integers(0, 2**31))).copy()
+            filler["sample_component"] = "calibration_random"
+            filler["primary_stratum_id"] = "calibration|random_fill"
+            filler["stratum_population_n"] = len(fill_pool)
+            filler["stratum_target_n"] = fill_n
+            filler["inclusion_probability"] = None
+            filler["sampling_weight"] = None
+            filler["weight_status"] = "approximate"
+            filler["sampling_reason"] = "calibration random fill"
+            parts.append(filler)
+
+    return pd.concat(parts) if parts else pd.DataFrame()
+
+
+# -- Main orchestrator -------------------------------------------------------
+
+def get_prior_analyzed_barcodes() -> set:
+    try:
+        conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+        rows = conn.execute(
+            "SELECT barcode FROM product_analysis WHERE claim_source = 'vision'"
+        ).fetchall()
+        conn.close()
+        return {str(r[0]) for r in rows}
+    except Exception:
+        return set()
+
+
+def build_sample(df: pd.DataFrame, region: str, category: str,
+                 rng: np.random.Generator, prior_analyzed: set,
+                 seed_used: int = RANDOM_SEED) -> pd.DataFrame:
+    scope = df[
+        (df["primary_region"] == region)
+        & (df["category"].str.lower() == category)
+    ].copy()
+    if scope.empty:
+        return pd.DataFrame()
+    quota = QUOTA_TARGET.get((region, category), 0)
+    if quota == 0:
+        return pd.DataFrame()
+
+    n_backbone    = round(quota * COMPONENT_SPLIT["backbone"])
+    n_matrix      = round(quota * COMPONENT_SPLIT["matrix"])
+    n_calibration = quota - n_backbone - n_matrix
+
+    backbone = sample_backbone(scope, n_backbone, rng)
+    selected = set(backbone["barcode"].tolist()) if not backbone.empty else set()
+
+    matrix = sample_matrix(scope, n_matrix, category, rng, selected)
+    if not matrix.empty:
+        selected.update(matrix["barcode"].tolist())
+
+    calibration = sample_calibration(scope, n_calibration, category, rng,
+                                      selected, prior_analyzed)
+
+    parts = [p for p in [backbone, matrix, calibration] if not p.empty]
+    if not parts:
+        return pd.DataFrame()
+    result = pd.concat(parts)
+    result = result[~result["barcode"].duplicated(keep="first")]
+    result["sampling_run_id"]   = RUN_ID
+    result["sampling_region"]   = region
+    result["sampling_category"] = category
+    result["quota_target"]      = quota
+    result["random_seed"]       = seed_used  # the actual CLI --seed value, not the constant
+    return result
 
 
 def main():
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    print(f"\nFood & Beverage Positioning Radar - smart_sample.py")
-    print(f"Run timestamp: {timestamp}")
-    print(f"DB: {DB_PATH}\n")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--seed", type=int, default=RANDOM_SEED)
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args()
+    rng = np.random.default_rng(args.seed)
 
-    if not os.path.exists(DB_PATH):
-        print("ERROR: Database not found. Run pipeline/load.py first.")
+    print("Loading input files...")
+    df = load_inputs()
+    print(f"  {len(df):,} products in scope (US/UK with valid region, image-eligible)")
+
+    # Image-coverage breakdown by region × category
+    print("\n  Image-eligible universe:")
+    print(f"  {'Region':<12} {'Category':<10} {'Eligible':>10}")
+    print(f"  {'-'*12} {'-'*10} {'-'*10}")
+    for (region, category), _ in QUOTA_TARGET.items():
+        n = len(df[
+            (df["primary_region"] == region)
+            & (df["category"].str.lower() == category)
+        ])
+        print(f"  {region:<12} {category:<10} {n:>10,}")
+
+    prior_analyzed = get_prior_analyzed_barcodes()
+    print(f"  {len(prior_analyzed):,} prior LLM run products "
+          f"(prompt-comparison panel candidates)")
+
+    if args.dry_run:
+        print("\n--- DRY RUN: quota plan (image-eligible universe) ---")
+        print(f"  {'Region':<12} {'Category':<10} {'Target':>8} {'Eligible':>10} {'Coverage':>10}")
+        for (region, category), quota in QUOTA_TARGET.items():
+            scope = df[(df["primary_region"] == region)
+                       & (df["category"].str.lower() == category)]
+            pct = 100 * len(scope) / quota if quota else 0
+            print(f"  {region:<12} {category:<10} {quota:>8,} {len(scope):>10,} {pct:>9.0f}%")
         return
 
-    conn = get_conn()
-    print("  Loading products with image URLs from DB...")
-    df = load_products_with_scores(conn)
-    conn.close()
+    all_parts = []
+    summary_rows = []
+    for (region, category), quota in QUOTA_TARGET.items():
+        print(f"\n{region} / {category} (target {quota:,})...")
+        part = build_sample(df, region, category, rng, prior_analyzed, seed_used=args.seed)
+        if part.empty:
+            print("  WARNING: no products sampled")
+            continue
+        n = len(part)
+        comp_counts = part["sample_component"].value_counts().to_dict()
+        print(f"  Selected {n:,} / {quota:,} ({n/quota:.0%}) | "
+              f"{comp_counts}")
+        all_parts.append(part)
+        summary_rows.append({
+            "region": region, "category": category,
+            "quota_target": quota, "selected": n,
+            "pct_filled": round(n / quota * 100, 1),
+        })
 
-    print(f"  Products with valid image URLs: {len(df):,}")
-
-    # Run four tiers
-    tier1 = sample_tier1(df)
-    tier1_barcodes = set(tier1["barcode"].tolist()) if len(tier1) else set()
-
-    tier2 = sample_tier2(df, tier1_barcodes)
-    tier2_barcodes = set(tier2["barcode"].tolist()) if len(tier2) else set()
-
-    tier3 = sample_tier3(df, tier1_barcodes | tier2_barcodes)
-    tier3_barcodes = set(tier3["barcode"].tolist()) if len(tier3) else set()
-
-    tier4 = sample_tier4_intersection_patterns(
-        df, tier1_barcodes | tier2_barcodes | tier3_barcodes
-    )
-    tier4_barcodes = set(tier4["barcode"].tolist()) if len(tier4) else set()
-
-    # Combine
-    all_tiers = []
-    for t in [tier1, tier2, tier3, tier4]:
-        if len(t):
-            all_tiers.append(t)
-
-    if not all_tiers:
-        print("\nERROR: No products sampled. Check DB content.")
+    if not all_parts:
+        print("No products sampled — check inputs.")
         return
 
-    sample = pd.concat(all_tiers, ignore_index=True)
-    sample = sample.drop_duplicates(subset=["barcode"])
+    OUTPUT_COLS = [
+        # Product identity — needed by vision_extract.py for OCR handoff
+        "barcode", "product_name", "primary_brand", "image_url",
+        "sampling_run_id", "sampling_region", "sampling_category",
+        "sample_component", "primary_stratum_id",
+        "stratum_population_n", "stratum_target_n",
+        "inclusion_probability", "sampling_weight", "weight_status",
+        "random_seed", "quota_target",
+        "formulation_family", "family_source",
+        "pre_llm_positioning_signal", "pre_llm_positioning_territories",
+        "name_confidence", "formulation_likelihood_signal",
+        "formulation_territories", "positioning_rule_version",
+        "energy_band", "protein_band", "fibre_band", "satfat_band",
+        "sugars_band", "metric_basis",
+        "sampling_reason",
+    ]
+    out = pd.concat(all_parts)
+    cols = [c for c in OUTPUT_COLS if c in out.columns]
+    out[cols].to_csv(OUT_SAMPLE_CSV, index=False)
+    pd.DataFrame(summary_rows).to_csv(OUT_SUMMARY_CSV, index=False)
 
-    # Summary
-    print(f"\n  -- Summary --------------------------------------------------")
-    print(f"  Total sampled:  {len(sample):,} products")
-    print(f"  Tier 1:         {(sample['tier'] == 1).sum():,}")
-    print(f"  Tier 2:         {(sample['tier'] == 2).sum():,}")
-    print(f"  Tier 3:         {(sample['tier'] == 3).sum():,}")
-    print(f"  Tier 4:         {(sample['tier'] == 4).sum():,}")
-
-    print(f"\n  Estimated cost (historical estimate based on the v3 run, "
-          f"gpt-4.1-nano — not a pricing guarantee):")
-    n = len(sample)
-    estimated_cost = n * ACTUAL_COST_PER_1000_CHF / 1000
-    print(f"    Estimated total:                {estimated_cost:.2f} CHF")
-    print(f"    Remaining v3.5 budget ({V35_BUDGET_CHF} CHF):  "
-          f"{V35_BUDGET_CHF - estimated_cost:.2f} CHF")
-
-    # Intersection pattern breakdown
-    print(f"\n  Benchmark intersection patterns in sample:")
-    for col, label in [
-        ("sugar_positioning_intersection_flag",          "Sugar positioning intersection"),
-        ("protein_fat_intersection_flag",                "Protein/fat intersection"),
-        ("fibre_sugar_processing_intersection_flag",     "Fibre/processing intersection"),
-        ("plant_based_nutrition_intersection_flag",      "Plant-based/nutrition intersection"),
-    ]:
-        if col in sample.columns:
-            n_flag = sample[col].sum()
-            print(f"    {label}: {int(n_flag):,}")
-
-    # Save
-    output_path = os.path.join(SAMPLE_DIR, f"smart_sample_{timestamp}.csv")
-    sample.to_csv(output_path, index=False, encoding="utf-8-sig")
-    print(f"\n  Saved -> smart_sample_{timestamp}.csv")
-    print(f"  ({len(sample):,} rows, {len(sample.columns)} columns)")
-    print(f"\n  Next step: python pipeline/vision_extract.py")
-    print(f"  Input: smart_sample_{timestamp}.csv")
-    print(f"  Confirm remaining v3.5 budget before running.\n")
+    print(f"\nTotal sample: {len(out):,} products")
+    print(f"Wrote: {OUT_SAMPLE_CSV}")
+    print(f"Wrote: {OUT_SUMMARY_CSV}")
+    print("\nQuota fill summary:")
+    print(pd.DataFrame(summary_rows).to_string(index=False))
 
 
 if __name__ == "__main__":
