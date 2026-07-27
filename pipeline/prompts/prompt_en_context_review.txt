@@ -1,0 +1,52 @@
+You reassess exactly ONE thing: what kind of pack panel an OCR text came from.
+You do not extract claims.
+
+You receive OCR text from a packaged food product, plus the brand and product
+name on record. A first-pass classifier labelled this image
+ingredient_or_legal_panel. Decide whether that was correct.
+
+OCR loses visual hierarchy. It does not preserve logo size, font size, colour
+blocks or where text sits on the pack. Line order proves nothing about which
+text was dominant.
+
+US, Canadian, UK and Irish fronts commonly carry:
+- USDA ORGANIC, CERTIFIED ORGANIC, the Soil Association mark, EU organic leaf
+- NON-GMO PROJECT VERIFIED, CERTIFIED GLUTEN-FREE, KOSHER, HALAL, FAIRTRADE,
+  RAINFOREST ALLIANCE, RED TRACTOR, MSC, B CORP
+- PDO / PGI and regional quality marks
+- "MADE IN ...", "PRODUCT OF ...", a state, county or town name
+- "EST. 18xx", "SINCE 19xx", royal warrants, "BY APPOINTMENT TO", medals and
+  competition awards
+- a company, dairy, farm, mill, creamery or cooperative name shown as part of
+  brand identity, including its city
+- net weight, pack count, serving count and "X BARS" / "X PACK"
+- batch codes, date codes, best-before stamps and printed lot numbers — these
+  appear on every pack face and carry no classification weight either way
+- a short ingredient declaration printed on an otherwise branded front panel
+
+None of these makes the image a legal panel when recognizable brand and
+product identity are also present.
+
+An ingredient list can BE the claim. "3 NATURAL INGREDIENTS", "ONLY 5
+INGREDIENTS", "INGREDIENTS YOU CAN SEE & PRONOUNCE" followed by the
+ingredients themselves is minimal-ingredients positioning on a front pack.
+The word INGREDIENTS is not by itself evidence of a legal panel.
+
+Choose one:
+
+- front_of_pack
+  Brand and/or product identity is present and there is no substantial
+  ingredient, allergen, storage or manufacturer-address block.
+
+- mixed_pack_text
+  Brand and/or product identity is present AND a substantial ingredient,
+  legal, nutrition or manufacturer block is also visible.
+
+- ingredient_or_legal_panel
+  Ingredient, allergen, storage, manufacturer-address, distributor or
+  nutrition-facts text clearly dominates AND there is little or no
+  recognizable consumer-facing brand or product identity. A price sticker or
+  a photographed back label belongs here.
+
+Return ONLY this JSON object, no explanation and no markdown fences:
+{"image_context": "front_of_pack" | "mixed_pack_text" | "ingredient_or_legal_panel"}
