@@ -274,6 +274,110 @@ def search_products(
 
 
 @st.cache_data(show_spinner=False, ttl=600)
+def get_market_products(category: str, region_code: str) -> pd.DataFrame:
+    """The full product set for one region x one category — the shared
+    dataset behind Market Overview's Product Landscape and Product Profile
+    Landscape sections (spec section 10: reuse the same cleaned dataset
+    used by Product Explorer, no separate analytical source).
+
+    Returns raw per-100g/100ml nutrition fields plus derived per-100kcal
+    fields (protein/fiber/satfat/sugars), and a derived `company` column
+    from the company/brand mapping (COMPANY_OTHER_LABEL when unmapped).
+    Company/brand narrowing happens client-side on this cached frame,
+    not via separate SQL calls, since a single region x category
+    population is small enough to hold in memory (tens of thousands of
+    rows, not millions).
+    """
+    conn = get_connection()
+    df = pd.read_sql_query("""
+        SELECT barcode, product_name, primary_brand, primary_country,
+               energy_kcal, fat_100g, saturated_fat_100g, carbs_100g,
+               sugars_100g, fiber_100g, protein_100g, salt_100g,
+               nova_group, nutriscore_grade
+        FROM products
+        WHERE query_category = ?
+          AND observed_market_region_codes LIKE ?
+          AND primary_brand IS NOT NULL
+          AND TRIM(LOWER(primary_brand)) NOT IN ('unknown', '', 'nan')
+    """, conn, params=[category, f"%{region_code}%"])
+
+    for col in ["energy_kcal", "fat_100g", "saturated_fat_100g", "carbs_100g",
+                "sugars_100g", "fiber_100g", "protein_100g", "salt_100g"]:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # Per-100kcal derived metrics. Only defined where energy_kcal is a
+    # valid positive number — a product with zero/missing energy cannot
+    # receive a per-100kcal metric (spec section 12).
+    valid_energy = df["energy_kcal"].notna() & (df["energy_kcal"] > 0)
+    kcal = df["energy_kcal"].where(valid_energy)
+    df["protein_per_kcal"] = (df["protein_100g"]       / kcal * 100).where(valid_energy)
+    df["fiber_per_kcal"]   = (df["fiber_100g"]         / kcal * 100).where(valid_energy)
+    df["satfat_per_kcal"]  = (df["saturated_fat_100g"] / kcal * 100).where(valid_energy)
+    df["sugars_per_kcal"]  = (df["sugars_100g"]        / kcal * 100).where(valid_energy)
+
+    # Company: derived from primary_brand via the company/brand mapping,
+    # same convention as Product Explorer's Company filter.
+    brand_to_company: dict[str, str] = {}
+    for company, brands in get_company_brand_map().items():
+        for b in brands:
+            brand_to_company[_normalize_brand(b)] = company
+    df["company"] = df["primary_brand"].map(
+        lambda b: brand_to_company.get(_normalize_brand(b), COMPANY_OTHER_LABEL)
+    )
+
+    return df
+
+
+@st.cache_data(show_spinner=False, ttl=600)
+def get_region_category_benchmarks() -> pd.DataFrame:
+    """All 12 region x category rows for the latest snapshot, for By
+    Region. Lookup only — computed by
+    pipeline/compute_region_benchmarks.py. Empty DataFrame if the table
+    doesn't exist yet or no snapshot is found."""
+    conn = get_connection()
+    try:
+        snapshot = conn.execute(
+            "SELECT MAX(snapshot) FROM region_category_benchmarks"
+        ).fetchone()[0]
+        if snapshot is None:
+            return pd.DataFrame()
+        return pd.read_sql_query(
+            "SELECT * FROM region_category_benchmarks WHERE snapshot = ?",
+            conn, params=[snapshot],
+        )
+    except Exception as exc:
+        print(f"[get_region_category_benchmarks] query failed: {exc}")
+        return pd.DataFrame()
+
+
+@st.cache_data(show_spinner=False, ttl=600)
+def get_profile_intersections(region_code: str, category: str,
+                               full_subset_key: str) -> dict[str, tuple[int, int]]:
+    """Lookup, not calculation — reads pipeline/compute_profile_intersections.py's
+    precomputed table for the latest snapshot. Returns
+    {sub_collection_key: (eligible_count, matching_count)} for every
+    sub_collection stored under this full_subset_key. Empty dict if the
+    table doesn't exist yet (script not run) or no snapshot is found."""
+    conn = get_connection()
+    try:
+        snapshot = conn.execute(
+            "SELECT MAX(snapshot) FROM profile_intersections"
+        ).fetchone()[0]
+        if snapshot is None:
+            return {}
+        rows = conn.execute("""
+            SELECT sub_collection_key, eligible_count, matching_count
+            FROM profile_intersections
+            WHERE snapshot = ? AND region_code = ? AND category = ?
+              AND full_subset_key = ?
+        """, (snapshot, region_code, category, full_subset_key)).fetchall()
+        return {r[0]: (r[1], r[2]) for r in rows}
+    except Exception as exc:
+        print(f"[get_profile_intersections] query failed: {exc}")
+        return {}
+
+
+@st.cache_data(show_spinner=False, ttl=600)
 def get_category_region_averages() -> dict:
     """Precompute IS-table nutritional averages by (query_category, region).
     metric keys: energy_kcal, protein_per_kcal, fiber_per_kcal,

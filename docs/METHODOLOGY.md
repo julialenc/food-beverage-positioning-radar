@@ -23,15 +23,30 @@ database licensed under the Open Database License (ODbL). See
 
 ## Pack-image claim extraction process
 
-A subset of products (currently around 4,700, selected via a purposive
-tiered sampling strategy favouring brands and categories where positioning
-claims are most likely to be present) have undergone front-of-pack image
-analysis: Azure AI
-Vision's Read API performs OCR on the product image, and the extracted text
-is passed to Azure OpenAI's `gpt-4.1-nano` deployment for structured claim
-extraction. Total cost for the full run to date was approximately 8 CHF.
-Products outside this subset rely on ingredient-text and product-name signals
-only (see "Claim taxonomy" below).
+A sampled subset of image-eligible products has undergone front-of-pack image
+analysis. Across the current US/UK and France analytical releases, the project
+contains 17,127 valid front-of-pack observations. Azure AI Vision's Read API
+performs OCR on the product image, and the extracted text is passed to Azure
+OpenAI's `gpt-4.1-nano` deployment for structured claim extraction. Total OCR
+and LLM cost for the US, UK, and France runs was approximately 20 CHF.
+
+The sampled releases are designed to study claim territories within an
+image-eligible Open Food Facts sampling frame. They are not retail-sales
+samples, market-share estimates, or a census of all packaged products. When
+prevalence is reported from the extraction releases, this project distinguishes
+between:
+
+- **Sample proportion:** the observed proportion among all sampled products,
+  including purposive components intentionally enriched for analytically
+  interesting claim territories.
+- **Backbone design-weighted estimate within the image-eligible OFF sampling
+  frame:** an approximate design-weighted estimate based only on the
+  probability-oriented backbone component of the sample. These weights are
+  approximate after brand capping, and Open Food Facts itself is not a
+  probability sample of retail sales or shelf presence.
+
+See `docs/CLAIM_EXTRACTION.md` for the full sampling design, prompt history,
+release record, extraction validator, and OCR/LLM limitations.
 
 ## Metric definitions
 
@@ -40,16 +55,32 @@ measure.
 
 ### Claim taxonomy
 **Status:** Implemented
-**What it measures:** Groups pack claims into five categories — functional,
-free-from / reduced-content, natural/organic, other positioning, or no claim
-identified — and a secondary sub-category (e.g. protein, gut health, no
-added sugar, heritage). Sourced from pack-image extraction where
-available (`claim_source` = `vision`), falling back to combined
-ingredient-text and product-name signals otherwise (`claim_source` =
-`ingredient_text_only`). Stored category codes (`FUNCTIONAL`, `FREE_OF`,
-etc.) are not display-ready — see `docs/UI_LABELS.md` for the
-canonical code-to-label mapping used by the Streamlit app and Power BI
-deck.
+**What it measures:** Groups detected positioning into five categories —
+functional, free-from / reduced-content, natural/organic, other positioning,
+or no claim identified — and a secondary sub-category (e.g. protein, gut
+health, no added sugar, heritage). Where a valid front-pack observation exists,
+the taxonomy is sourced from OCR/LLM pack-image extraction (`claim_source` =
+`vision`). Where no valid pack observation exists, a fallback classification
+may rely on product-name, label, and ingredient-derived signals
+(`claim_source` = `ingredient_text_only`). Stored category codes
+(`FUNCTIONAL`, `FREE_OF`, etc.) are not display-ready — see
+`docs/UI_LABELS.md` for the canonical code-to-label mapping used by the
+Streamlit app.
+
+The distinction between missing pack evidence and a confirmed no-claim front
+pack is load-bearing:
+
+- `pack_claims_found = NULL` means no valid pack observation exists: not
+  analyzed, non-front image, or extraction failure. This is the only state
+  where ingredient/name fallback is allowed.
+- `pack_claims_found = ""` means the front pack was assessed and no taxonomy
+  claim was found. This must remain a true no-claim observation and must not
+  trigger ingredient-derived fallback.
+- `pack_claims_found = "..."` contains pipe-separated claims detected from
+  front-pack evidence.
+
+Ingredient-derived fallback classifications must not be presented as
+front-of-pack observations in the user interface or reporting language.
 **What it does not measure:** Whether a claim is legally valid, substantiated,
 or compliant with food labelling regulation in any jurisdiction. It also
 reflects only the single highest-priority category present on a
@@ -58,7 +89,7 @@ that, the underlying `pack_claims_found` field lists every individual
 claim detected.
 
 ### Ingredient markers
-**Status:** Implemented
+**Status:** Implemented internally; not a user-facing score in the current MVP
 **What it measures:** Identifies ingredient-processing markers in the
 ingredient list (e.g. emulsifiers, artificial sweeteners, glucose syrups,
 modified starches) and summarizes them into a weighted score
@@ -67,11 +98,14 @@ see `docs/COLUMN_DESCRIPTIONS.md` for the exact formula), with a
 categorical reference band
 (`Extensive`/`Moderate`/`Limited`/`Minimal markers`). This is a
 composition-only signal, computed independently of any pack claim.
+The score remains in the pipeline for historical compatibility and internal
+analysis, but proprietary composite-style scores are not displayed in the
+current Streamlit MVP.
 **What it does not measure:** Whether a product is good or bad, or whether
 any individual marker is harmful in the amount present.
 
 ### Positioning-to-composition gap
-**Status:** Implemented
+**Status:** Legacy/internal; not a user-facing metric in the current MVP
 **What it measures:** A composite signal combining the ingredient-marker
 score with the weight of front-of-pack claims present and, when claims are
 present, additional context from processing level and Nutri-Score. A higher
@@ -86,17 +120,19 @@ violates any advertising standard. It is also not purely a measure of
 "claim versus reality" in every case: the ingredient-marker component applies
 regardless of whether any claim is present, so a product with no detected
 claims can still receive a non-zero value. This is a composite analytical
-score, not a deception detector.
+score, not a deception detector. Because of this interpretability limitation,
+the score is retained only for historical/internal compatibility and is not
+shown as a proprietary score in the current Streamlit MVP.
 
 ### Claim-benchmark intersections
 **Status:** Implemented
-**What it measures:** Specific instances where a detected positioning (a
-pack claim where available, otherwise combined ingredient-text and
-absence/reduction signals) co-occurs with a relevant nutrition,
-ingredient, or processing benchmark signal — for example, "Protein
-positioning with saturated fat above reference threshold." Computed for
-every product, using whichever evidence layer fed that product's claim
-taxonomy (see `claim_source` above).
+**What it measures:** Specific instances where detected positioning co-occurs
+with a relevant nutrition, ingredient, or processing benchmark signal — for
+example, "Protein positioning with saturated fat above reference threshold."
+For products with valid OCR/LLM extraction, the positioning side comes from
+front-pack evidence. For products without a valid pack observation, any
+fallback-derived intersection should be interpreted as a weaker evidence layer
+and labelled accordingly through `claim_source`.
 **What it does not measure:** Intent. The presence of an intersection does
 not imply the claim is false; both the positioning and the composition data
 point can be simultaneously accurate.
@@ -107,8 +143,7 @@ point can be simultaneously accurate.
 salt) sits above a reference threshold, applied per 100g or 100ml. Stored as
 neutral codes (e.g. `sugar_above_reference`), not display text — see
 `docs/UI_LABELS.md` for the code-to-label mapping used by the Streamlit
-app and Power BI deck. Thresholds
-follow the UK Food Standards Agency's front-of-pack labelling guidance and are
+app. Thresholds follow the UK Food Standards Agency's front-of-pack labelling guidance and are
 used here as a single reference scheme for cross-product comparison. The EU's
 mandatory nutrition declaration (Regulation 1169/2011) requires these nutrient
 values to be stated on pack in a standard format, but the regulation itself
@@ -179,30 +214,27 @@ exists yet at the point this table is computed.
 
 **`weekly_brand_positioning_summary`** is computed by `db_summary.py`,
 the final reporting aggregation layer, run after `merge_scores.py` and
-`tag_claims.py` have fully enriched the database. This is the actual
-market-intelligence summary intended for the Power BI deck: claim
-taxonomy shares, pack-claim coverage, benchmark intersection rates, and
-average positioning-to-composition gap, all computed from the full
-current database snapshot — not only the products changed in a given
-weekly update, so a trend chart never confuses "what changed this week"
-with "the observed market this week." Each reporting snapshot is
-identified by `week_ending` (the reporting period) and `run_timestamp`
-(the precise execution time), enabling time-series queries (e.g. "% of
-products with a protein claim over time") without losing prior periods'
-data.
+`tag_claims.py` have fully enriched the database. It contains claim taxonomy
+shares, pack-claim coverage, benchmark intersection rates, and other
+reporting-stage summaries computed from the full current database snapshot —
+not only the products changed in a given weekly update, so a trend chart never
+confuses "what changed this week" with "the observed market this week." Each
+reporting snapshot is identified by `week_ending` (the reporting period) and
+`run_timestamp` (the precise execution time), enabling time-series queries
+(e.g. "% of products with a protein claim over time") without losing prior
+periods' data.
 
 A third table, **`positioning_example_products`**, is not a time
 series at all — it is a small, curated set of neutral product examples
-for Streamlit/Power BI overview pages, fully replaced on every
-`db_summary.py` run. See `docs/ADR.md` ADR-012 for the full
-architectural rationale for this separation.
+for Streamlit overview pages, fully replaced on every `db_summary.py` run.
+See `docs/ADR.md` ADR-012 for the full architectural rationale for this
+separation.
 
-Final Power BI exports (`powerbi_final_*.csv`) are generated by
-`db_summary.py`, not by the earlier `load.py`, `merge_scores.py`, or
-`tag_claims.py` exports. Those earlier exports remain useful for QA and
-product-level inspection at each pipeline stage; `db_summary.py`'s
-exports are the final, reporting-stage outputs intended for the Power
-BI deck itself.
+Reporting-stage exports generated by `db_summary.py` are separate from the
+earlier `load.py`, `merge_scores.py`, or `tag_claims.py` exports. Those earlier
+exports remain useful for QA and product-level inspection at each pipeline
+stage; `db_summary.py` outputs are the final aggregate reporting layer used by
+the Streamlit analytical board and any downstream analysis.
 
 ## Brand and company mapping
 
@@ -218,4 +250,21 @@ heterogeneous (see `docs/ADR.md`).
 
 See `docs/LIMITATIONS.md` for the full catalogue of known limitations
 affecting interpretation, including coverage gaps, context limitations (such
-as sports nutrition products), and extraction quality caveats.
+as sports nutrition products), and extraction quality caveats. Current
+methodology caveats that materially affect interpretation include:
+
+- **Open Food Facts category contamination:** the current cereals release
+  figures include pasta, bread, flour, rusks, breadsticks, and puff pastry
+  products; snacks contamination by noodles is also under review. These are
+  source taxonomy and filtering issues, not claim-extraction failures.
+- **OCR and pack-design limitations:** OCR quality degrades on dark packs,
+  angled or cropped images, small thumbnails, and highly stylized typography.
+- **Panel-classification residual error:** some valid front packs are likely
+  still classified as non-front, especially where certification, origin, or
+  short ingredient declarations dominate the OCR text.
+- **Unmapped claim understatement:** some claim-like text captured in
+  `other_claims` or `detected_claim_phrases` is not mapped into the boolean
+  taxonomy, producing a small estimated understatement of claim prevalence in
+  release-01.
+- **Missing is not zero:** null values, failed observations, and confirmed zero
+  values have different meanings and must not be collapsed during analysis.

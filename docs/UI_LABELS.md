@@ -3,14 +3,14 @@
 This document is the canonical mapping from stored taxonomy codes
 (`claim_category_1`, `claim_category_2` in `product_analysis` — see
 `docs/COLUMN_DESCRIPTIONS.md`) to the display labels used in the
-Streamlit app and Power BI deck.
+Streamlit app.
 
 **Why this file exists:** the stored codes (`FUNCTIONAL`, `no_added_x`,
 etc.) are deliberately short, stable, and rename-resistant for use as
 database values, filter keys, and join columns. They are not meant to
 be shown to users directly. This file defines the one set of
-user-facing labels both interfaces should use, so wording doesn't
-drift between the Streamlit app and the Power BI deck.
+user-facing labels the app should use, so wording does not drift
+between database outputs and the Streamlit interface.
 
 **Rule:** any interface displaying `claim_category_1` or
 `claim_category_2` to a person reads its label from this file, not from
@@ -37,7 +37,11 @@ display labels can be revised here without touching pipeline code.
 | `vitamins` | Vitamins / fortification |
 | `immune` | Immune support |
 | `energy` | Energy |
+| `sleep` | Sleep |
+| `brain_health` | Brain health |
+| `whole_grain` | Whole grain |
 | `no_added_x` | No added / reduced sugar |
+| `reduced_fat` | Reduced fat |
 | `no_artificial` | No artificial ingredients |
 | `free_from` | Free-from / plant-based |
 | `natural` | Natural |
@@ -62,12 +66,11 @@ list of zero or more of these codes per product — not a single value.
 
 ## Implementation note
 
-Both `app.py` and the Power BI deck should implement this as a simple
-lookup (dict in Python, or a mapping/calculated column in Power BI),
-applied only at display time — filtering, joins, and any stored
-exports should continue to use the underlying codes, not the display
-labels, so the two interfaces stay queryable against the same values.
+The Streamlit app should implement this as a simple lookup, applied only
+at display time — filtering, joins, and any stored exports should
+continue to use the underlying codes, not the display labels, so queries
+remain stable even if display wording changes.
 
 If a label in this table is revised, update it here first, then update
-both interfaces to match — this file is the source of truth, not a
-record of what either interface currently does.
+the interface to match — this file is the source of truth, not a record
+of what the interface currently does.

@@ -220,6 +220,7 @@ def update_db_positioning_scores(conn, merged_df, timestamp, release_run_id=None
                 sample_component          = ?,
                 primary_stratum_id        = ?,
                 sampling_weight           = ?,
+                weight_status             = ?,
                 analyzed_at               = ?
             WHERE barcode = ?
         """, (
@@ -239,6 +240,7 @@ def update_db_positioning_scores(conn, merged_df, timestamp, release_run_id=None
             safe_text(row.get("sample_component")),
             safe_text(row.get("primary_stratum_id")),
             safe_float(row.get("sampling_weight")),
+            safe_text(row.get("weight_status")),
             timestamp,
             str(row["barcode"])
         ))

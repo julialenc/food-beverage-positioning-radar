@@ -34,6 +34,7 @@ import csv
 import os
 import re
 import sqlite3
+import unicodedata
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -62,6 +63,8 @@ GEO_SUFFIXES = [
 
 def _normalize(s: str) -> str:
     """Canonical form for company-match scoring only (not for alias detection)."""
+    s = unicodedata.normalize("NFKD", s)
+    s = s.encode("ascii", errors="ignore").decode("ascii")
     s = s.lower()
     s = re.sub(r"[-_./,]", " ", s)
     s = re.sub(r"\b(the|company|co|ltd|inc|s\.?a\.?|group|international|foods?)\b", "", s)
@@ -70,15 +73,22 @@ def _normalize(s: str) -> str:
 
 # ── Existing: company coverage report ─────────────────────────────────────────
 
-def load_mapping() -> dict[str, list[str]]:
-    """Returns {parent_company: [normalized primary_brand_db, ...]}."""
+def load_mapping() -> tuple[dict[str, list[str]], dict[str, set[str]]]:
+    """Returns company match hints and ownership statuses by normalized brand."""
     mapping: dict[str, list[str]] = {}
+    statuses_by_brand: dict[str, set[str]] = {}
     with open(MAPPING_PATH, encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
             company  = row["parent_company"].strip()
             brand_db = _normalize(row["primary_brand_db"].strip())
+            status = row.get("ownership_resolution_status", "").strip().lower() or "direct"
+            if not brand_db:
+                continue
+            statuses_by_brand.setdefault(brand_db, set()).add(status)
+            if status == "manual_review" or company.lower() == "manual review":
+                continue
             mapping.setdefault(company, []).append(brand_db)
-    return mapping
+    return mapping, statuses_by_brand
 
 
 def best_company_match(
@@ -257,9 +267,8 @@ def main() -> None:
         print(f"Mapping file not found: {MAPPING_PATH}")
         return
 
-    # ── 1. Company coverage report (unchanged) ────────────────────────────────
-    mapping = load_mapping()
-    all_mapped_norms = {nb for brands in mapping.values() for nb in brands}
+    # ── 1. Company coverage report ───────────────────────────────────────────
+    mapping, statuses_by_brand = load_mapping()
 
     conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
     rows = conn.execute("""
@@ -277,39 +286,72 @@ def main() -> None:
     total = len(rows)
 
     coverage_results = []
-    mapped_count = 0
+    direct_count = 0
+    scoped_review_count = 0
     for brand, n in rows:
         norm = _normalize(brand)
-        if norm in all_mapped_norms:
-            mapped_count += 1
+        statuses = statuses_by_brand.get(norm)
+        if statuses == {"direct"}:
+            direct_count += 1
             continue
-        suggested_company, score = best_company_match(norm, mapping)
+        if statuses:
+            scoped_review_count += 1
+            coverage_results.append({
+                "primary_brand_in_db":    brand,
+                "product_count":          n,
+                "normalized_form":        norm,
+                "coverage_status":        "scoped_or_manual_review",
+                "mapping_statuses":       "|".join(sorted(statuses)),
+                "weak_similarity_hint":   "",
+                "similarity_score":       "",
+                "requires_review_reason": "mapped, but ownership is market-scoped or has a manual-review fallback",
+                "action":                 "review_scope",
+            })
+            continue
+        # Fuzzy matching is only a weak review hint, not ownership attribution.
+        # Limit it to material brands so this diagnostic stays fast.
+        if n >= 10:
+            suggested_company, score = best_company_match(norm, mapping)
+        else:
+            suggested_company, score = "", 0.0
         coverage_results.append({
-            "primary_brand_in_db":   brand,
-            "product_count":         n,
-            "normalized_form":       norm,
-            "suggested_company":     suggested_company if score >= 0.4 else "",
-            "similarity_score":      score if score >= 0.4 else "",
-            "action":                "review",
+            "primary_brand_in_db":    brand,
+            "product_count":          n,
+            "normalized_form":        norm,
+            "coverage_status":        "unmapped",
+            "mapping_statuses":       "",
+            "weak_similarity_hint":   suggested_company if score >= 0.8 else "",
+            "similarity_score":       score if score >= 0.8 else "",
+            "requires_review_reason": "no primary_brand_db match in company_brand_mapping.csv",
+            "action":                 "review",
         })
 
     print(f"\n{'='*60}")
     print(f"COMPANY COVERAGE REPORT")
     print(f"{'='*60}")
     print(f"Total distinct brands in DB: {total:,}")
-    print(f"Already mapped to a company: {mapped_count:,} ({100*mapped_count//total}%)")
-    print(f"Unmapped (need review):      {len(coverage_results):,}")
-    print(f"\nTop 10 unmapped by product count:")
+    print(f"Resolved direct mappings:    {direct_count:,} ({100*direct_count/total:.1f}%)")
+    print(f"Scoped/manual-review mapped: {scoped_review_count:,}")
+    print(f"Need review in report:       {len(coverage_results):,}")
+    print(f"\nTop 10 report rows by product count:")
     for r in coverage_results[:10]:
-        s = f" → maybe {r['suggested_company']} ({r['similarity_score']})" if r["suggested_company"] else ""
-        print(f"  {r['primary_brand_in_db']:35s}  n={r['product_count']:5,}{s}")
+        hint = (
+            f" -> weak hint {r['weak_similarity_hint']} ({r['similarity_score']})"
+            if r["weak_similarity_hint"]
+            else ""
+        )
+        print(
+            f"  {r['primary_brand_in_db']:35s}  "
+            f"n={r['product_count']:5,}  "
+            f"{r['coverage_status']}{hint}"
+        )
 
     if coverage_results:
         with open(COVERAGE_OUT, "w", newline="", encoding="utf-8-sig") as f:
             writer = csv.DictWriter(f, fieldnames=list(coverage_results[0].keys()))
             writer.writeheader()
             writer.writerows(coverage_results)
-        print(f"\nSaved → {COVERAGE_OUT.name}")
+        print(f"\nSaved -> {COVERAGE_OUT.name}")
 
     # ── 2. Brand alias candidates (new) ───────────────────────────────────────
     print(f"\n{'='*60}")
@@ -335,7 +377,7 @@ def main() -> None:
     for r in all_r[:15]:
         print(
             f"  [{r['confidence']:6s}] {r['variant_brand']:35s} "
-            f"→ {r['canonical_brand']:25s}  "
+            f"-> {r['canonical_brand']:25s}  "
             f"({r['pattern']}, n={r['variant_count']})"
         )
 
@@ -348,18 +390,17 @@ def main() -> None:
             )
             writer.writeheader()
             writer.writerows(all_r)
-        print(f"\nSaved → {ALIAS_OUT.name}")
+        print(f"\nSaved -> {ALIAS_OUT.name}")
 
     print(f"\n{'='*60}")
     print("NEXT STEPS")
     print(f"{'='*60}")
     print(f"1. Open data/reference/brand_alias_candidates.csv")
-    print(f"2. For each row, add 'confirm' or 'skip' in the action column")
-    print(f"   High-confidence rows are safe to bulk-confirm")
-    print(f"   Medium-confidence rows need individual review")
-    print(f"3. Save the reviewed file as:")
+    print(f"2. Review candidate rows individually; do not bulk-confirm by confidence alone")
+    print(f"3. Append approved rows to the existing curated file:")
     print(f"   data/reference/brand_alias_mapping.csv")
-    print(f"4. Re-run the pipeline from clean.py:")
+    print(f"4. Do not overwrite brand_alias_mapping.csv with the candidate file")
+    print(f"5. Re-run the pipeline from clean.py:")
     print(f"   python pipeline/clean.py")
     print(f"   python pipeline/analyze.py")
     print(f"   python pipeline/load.py")

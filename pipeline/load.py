@@ -2,7 +2,6 @@
 load.py
 -------
 Loads analyzed product data into SQLite database.
-Also writes a clean CSV for future Power BI connection.
 
 Schema:
     products             — product identity + nutrition (UPSERT on barcode)
@@ -18,7 +17,7 @@ Schema:
 Design principles:
     - INSERT OR REPLACE on barcode — idempotent, safe to run multiple times
     - last_modified_t drives weekly diff logic in production
-    - weekly_brand_summary pre-aggregated so Power BI never touches raw rows
+    - weekly_brand_summary pre-aggregated for early pipeline review
     - ingestion_log records source (api / bulk_export) for auditability
     - product_analysis declares its full schema upfront, including columns
       not yet populated by analyze.py (claim taxonomy, benchmark flags,
@@ -40,8 +39,6 @@ Input:
 
 Output:
     database/positioning_radar.db
-    data/sample/powerbi_products_<timestamp>.csv
-    data/sample/powerbi_analysis_<timestamp>.csv
 
 Production note:
     Week 0: run on full OFF bulk export (~50,000-100,000 filtered products)
@@ -151,6 +148,17 @@ CREATE TABLE IF NOT EXISTS product_analysis (
     pack_analysis_timestamp                  TEXT,
     pack_claims_found                       TEXT,
     claim_source                           TEXT,      -- 'vision' or 'nlp_only'
+    image_context                          TEXT,
+    claim_extraction_status                TEXT,
+    detected_claim_phrases                 TEXT,
+    claims_json                            TEXT,
+    release_run_id                         TEXT,
+    sampling_region                        TEXT,
+    sampling_category                      TEXT,
+    sample_component                       TEXT,
+    primary_stratum_id                     TEXT,
+    sampling_weight                        REAL,
+    weight_status                          TEXT,
 
     -- Claim taxonomy (populated by tag_claims.py)
     claim_category_1                        TEXT,
@@ -402,6 +410,10 @@ ANALYSIS_COLS = [
     "pack_analysis_attempted", "ocr_text", "ocr_status", "llm_status",
     "vision_model", "prompt_version", "pack_analysis_timestamp",
     "pack_claims_found", "claim_source",
+    "image_context", "claim_extraction_status", "detected_claim_phrases",
+    "claims_json", "release_run_id", "sampling_region", "sampling_category",
+    "sample_component", "primary_stratum_id", "sampling_weight",
+    "weight_status",
     "claim_category_1", "claim_category_2",
     "nutrition_benchmark_flags", "claim_benchmark_intersections",
     "positioning_composition_gap", "positioning_composition_gap_band",
@@ -467,10 +479,9 @@ def load_product_analysis(df, conn, timestamp):
 def compute_weekly_brand_summary(df, conn, timestamp):
     """
     Compute brand-level aggregations and insert into weekly_brand_summary.
-    This pre-aggregation means Power BI never touches raw product rows
-    for trend charts. Grouped by primary_brand (normalized), not the raw
-    brands field, for consistency with every other aggregation in the
-    pipeline.
+    This pre-aggregation supports early pipeline review. Grouped by
+    primary_brand (normalized), not the raw brands field, for consistency
+    with every other aggregation in the pipeline.
 
     Scope note: this runs at load.py time, before merge_scores.py and
     tag_claims.py have populated pack claims, claim taxonomy, benchmark
@@ -560,39 +571,6 @@ def compute_weekly_brand_summary(df, conn, timestamp):
     print(f"  Weekly brand summary: {rows_inserted} brand/category rows inserted")
 
 
-# ── Power BI CSV export ───────────────────────────────────────────────────────
-
-def export_powerbi_csvs(df, timestamp):
-    """
-    Write two clean CSVs for Power BI connection:
-    - powerbi_products_<timestamp>.csv  — products + nutrition
-    - powerbi_analysis_<timestamp>.csv  — analysis fields + flags
-
-    These are flat, clean, Power BI-ready. No processing needed in DAX.
-    utf-8-sig encoding for Excel/Power BI Windows compatibility.
-    """
-    # Products CSV — PRODUCT_COLS already includes primary_country, no
-    # need to append it again
-    product_cols_csv = [c for c in PRODUCT_COLS if c in df.columns]
-    df_products = df[product_cols_csv].copy()
-    products_path = os.path.join(
-        SAMPLE_DIR, f"powerbi_products_{timestamp}.csv"
-    )
-    df_products.to_csv(products_path, index=False, encoding="utf-8-sig")
-    print(f"  Power BI products CSV → powerbi_products_{timestamp}.csv "
-          f"({len(df_products)} rows)")
-
-    # Analysis CSV
-    analysis_cols_csv = [c for c in ANALYSIS_COLS if c in df.columns]
-    df_analysis = df[analysis_cols_csv].copy()
-    analysis_path = os.path.join(
-        SAMPLE_DIR, f"powerbi_analysis_{timestamp}.csv"
-    )
-    df_analysis.to_csv(analysis_path, index=False, encoding="utf-8-sig")
-    print(f"  Power BI analysis CSV → powerbi_analysis_{timestamp}.csv "
-          f"({len(df_analysis)} rows)")
-
-
 # ── Ingestion log ─────────────────────────────────────────────────────────────
 
 def log_run(conn, timestamp, source, input_file, rows_in,
@@ -657,10 +635,6 @@ def main():
         # ── Compute weekly brand summary ──────────────────────────────────────
         print(f"\n  Computing weekly brand summary...")
         compute_weekly_brand_summary(df, conn, timestamp)
-
-        # ── Export Power BI CSVs ──────────────────────────────────────────────
-        print(f"\n  Exporting Power BI CSVs...")
-        export_powerbi_csvs(df, timestamp)
 
         # ── Log the run ───────────────────────────────────────────────────────
         log_run(

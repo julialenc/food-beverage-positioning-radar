@@ -2,8 +2,8 @@
 
 ## Food & Beverage Positioning Radar
 
-**Version:** 2.0
-**Date:** June 2026
+**Version:** 2.1
+**Date:** August 2026
 **Status:** Active
 **Author:** Julia Lenc
 
@@ -31,7 +31,7 @@ through claims, ingredients, nutrition, processing, and product design.
 It ingests product data from Open Food Facts (OFF), cleans and enriches
 it, applies ingredient-based analysis and front-of-pack claim extraction,
 computes positioning and benchmark metrics, and stores results for
-Streamlit and Power BI consumption.
+the Streamlit analytical board and downstream QA/export workflows.
 
 **Core analytical question:** How do packaged foods and beverages position
 themselves through claims, ingredients, nutrition, processing, and product
@@ -175,9 +175,10 @@ Python.
 auditable results. Every detected marker can be traced to a specific
 keyword in a specific ingredient field. This is essential for a
 reproducible market intelligence tool — every signal must be
-independently verifiable. Option A also produces the
-`composition_marker_score` that feeds the ingredient-analysis layer of
-the positioning-to-composition gap metric.
+independently verifiable. Option A also produces the internal
+`composition_marker_score`, retained for historical compatibility and
+diagnostics but not shown as a user-facing proprietary score in the
+current Streamlit MVP.
 
 **Validation methodology:** Validate the ingredient dictionary on a small
 known sample before scaling. Three false positives were identified and
@@ -198,19 +199,19 @@ is not implemented in v1. The infrastructure is ready but it is not
 prioritised ahead of the vision pipeline.
 
 **Rationale:** The vision pipeline (v3) has higher analytical value for
-the positioning-to-composition gap metric and was prioritised. K-Means
-segmentation costs nothing computationally at the point of need and can
-be added at any time. The `product_segment_label` column is present as
-NULL in both `clean.py` output and the SQLite schema — when implemented,
-it requires changes only to `analyze.py` with no schema migration.
+the core positioning question and was prioritised. K-Means segmentation
+costs nothing computationally at the point of need and can be added at
+any time. The `product_segment_label` column is present as NULL in both
+`clean.py` output and the SQLite schema — when implemented, it requires
+changes only to `analyze.py` with no schema migration.
 
 **What segmentation adds:** Automatic grouping of products into market
 segments based on macronutrient profiles, claim patterns, and processing
 level. Intended to surface product clusters such as high-protein/lower-sugar
 products vs high-energy/high-claim products within a category — described
 by their centroid characteristics, not by health verdicts. Useful for
-Power BI scatter plots (e.g. sugar vs protein, coloured by segment) and
-for the "emerging product segments" business question in the brief.
+Streamlit market-overview views and for the "emerging product segments"
+business question in the brief.
 
 **Stub in place:** `clean.py` adds `product_segment_label = None`.
 The SQLite schema includes `product_segment_label TEXT` in the
@@ -229,24 +230,27 @@ The SQLite schema includes `product_segment_label TEXT` in the
 **Rationale:** Front-of-pack claim extraction has higher analytical value
 for the core positioning question — it captures pack communication signals
 that cannot be inferred from ingredient text alone. The vision pipeline
-supplies the front-of-pack evidence layer needed to compute the
-positioning-to-composition composite signal in `merge_scores.py`.
-Without pack-image claims, the metric is ingredient-only and cannot
-represent front-of-pack positioning.
+supplies the front-of-pack evidence layer needed to distinguish what a
+product contains from what the pack communicates.
 
-**Smart sampling strategy:** Do not analyze all products. Prioritize
-brands and categories where positioning claims are most likely to be
-present (see `pipeline/smart_sample.py` for the four-tier sampling logic).
-Actual coverage: approximately 4,700 products.
+**Sampling strategy:** Do not analyze all products. Use a curated,
+image-eligible sample with a probability-oriented backbone plus purposive
+matrix and calibration components. This supports both sample proportions
+and approximate backbone design-weighted estimates within the image-eligible
+OFF sampling frame. See `docs/CLAIM_EXTRACTION.md` for the current sampling
+design.
 
-**Actual cost and model (post-run):** Azure AI Vision Read API for OCR
-plus Azure OpenAI `gpt-4.1-nano` for structured claim extraction.
-Total cost for the full run: approximately 8 CHF. Haiku and gpt-4o-mini
-were evaluated but gpt-4.1-nano was selected on cost/quality grounds.
+**Actual coverage and cost (current releases):** Across the current US/UK
+and France analytical releases, the project contains 17,127 valid
+front-of-pack observations. Azure AI Vision Read API for OCR plus Azure
+OpenAI `gpt-4.1-nano` for structured claim extraction cost approximately
+20 CHF total for the US, UK, and France OCR/LLM runs.
 
-**v3 output joins to v1 on barcode:** `composition_marker_score` (from
-`analyze.py`) + extracted pack claims (from `vision_extract.py`) →
-`positioning_composition_gap` (computed in `merge_scores.py`).
+**Current status of the composite score:** The historical v3 pipeline joined
+`composition_marker_score` (from `analyze.py`) with extracted pack claims
+(from `vision_extract.py`) in `merge_scores.py`. The resulting
+`positioning_composition_gap` is retained only for historical/internal
+compatibility and is not shown as a user-facing score in the Streamlit MVP.
 
 ---
 
@@ -256,7 +260,7 @@ were evaluated but gpt-4.1-nano was selected on cost/quality grounds.
 **Status:** Active — schema extended by ADR-012
 
 **Decision:** Store all pipeline output in SQLite with concurrent CSV
-export for Power BI and notebooks.
+exports for QA, notebooks, and downstream analysis.
 
 **Schema (six tables, two groups):**
 
@@ -266,46 +270,52 @@ Core/load tables (owned by `load.py`):
   flags, and positioning metrics, UPSERT on barcode
 - `weekly_brand_summary` — ingredient-stage QA / early summary only,
   computed at `load.py` time before pack-image claims or claim taxonomy
-  exist. NOT the final Power BI market-intelligence table — see
+  exist. NOT the final market-intelligence reporting table — see
   `weekly_brand_positioning_summary` below and ADR-012.
 - `ingestion_log` — one row per pipeline run, full audit trail
 
 Final reporting tables (owned by `db_summary.py`, see ADR-012):
 - `weekly_brand_positioning_summary` — the actual pre-aggregated
-  market-intelligence summary for Power BI trend charts, computed from
+  market-intelligence summary for reporting views, computed from
   the full database snapshot after `merge_scores.py` and `tag_claims.py`
   have run
 - `positioning_example_products` — curated product-level examples for
-  Streamlit/Power BI overview pages
+  Streamlit overview pages
 
 **Why SQLite not PostgreSQL:** Single-developer research project. SQLite
 is zero-infrastructure, file-based, version-controllable (schema.sql),
 and sufficient for hundreds of thousands of rows. Migration to PostgreSQL
 requires changing one connection string and no other code.
 
-**Why pre-aggregate for Power BI:** DAX calculations on 100,000+ raw
-rows are slow. `weekly_brand_positioning_summary` pre-computes
-brand-level metrics in Python so Power BI does only rendering. This
-pattern scales to any dataset size.
+**Why pre-aggregate:** Summary views over 100,000+ raw rows can become
+slow and hard to audit when every calculation is done interactively.
+`weekly_brand_positioning_summary` pre-computes brand/category metrics in
+Python so the Streamlit app and downstream analysis read stable,
+reproducible reporting tables. This pattern scales to larger datasets and
+keeps calculation logic in the version-controlled pipeline.
 
 **UPSERT logic:** INSERT OR REPLACE on barcode primary key. Safe to run
 multiple times. Handles Open Food Facts contributor corrections to
 existing products automatically.
 
 **WAL mode:** `PRAGMA journal_mode=WAL` enables safe concurrent reads
-while Python writes — important when Power BI or Streamlit is connected.
+while Python writes — important when Streamlit or analysis tools are
+connected.
 
 ---
 
 ### ADR-008 — Brand normalisation: primary_brand extraction
 
 **Date:** 20 May 2026
-**Status:** Active — company mapping complete
+**Status:** Active — mapping files maintained; scoped resolver pending
 
 **Decision:** Extract `primary_brand` (first comma-separated token from
 the `brands` field, lowercased, accent-stripped) as a normalisation step.
-Full company-to-brand mapping table maintained in
-`data/reference/company_brand_mapping.csv`.
+Brand-reference data is maintained in two layers:
+`data/reference/brand_alias_mapping.csv` maps observed brand variants to
+canonical brand strings, while `data/reference/company_brand_mapping.csv`
+maps canonical brands to direct, market-scoped, or manual-review ownership
+rows.
 
 **Problem:** The OFF `brands` field is free-text, contributor-entered.
 The same company appears as multiple strings: `nestlé`, `nestle`,
@@ -316,12 +326,16 @@ normalisation (see OBS-014).
 **v1 fix:** `primary_brand` = first token, lowercased, accent-stripped
 (NFKD normalisation). Reduces fragmentation significantly at low effort.
 
-**Company mapping:** `data/reference/company_brand_mapping.csv` covers
-276 brands across approximately 40 parent companies. Enables company-level
-filtering and roll-up views in Power BI and Streamlit. All pattern
-metrics are computed at brand level; company-level views are aggregations
-of those brand-level results. See `docs/BRAND_COMPANY_MAPPING.md` for
-mapping methodology and known complications.
+**Company mapping:** `data/reference/company_brand_mapping.csv` currently
+contains 407 mapping rows across 101 parent-company values. It includes
+ownership-resolution metadata (`direct`, `market_scoped`, `manual_review`)
+so market-specific brands such as `cheerios`, `kellogg's`, and `kitkat` can
+be represented without false one-company attribution. All pattern metrics are
+computed at brand level; company-level views are navigational aggregations of
+brand-level results. The scoped ownership data is implemented in the CSV, but
+the Streamlit resolver logic is still pending. See
+`docs/BRAND_COMPANY_MAPPING.md` for mapping methodology and known
+complications.
 
 ---
 
@@ -359,15 +373,13 @@ claim-territory analysis.
 
 ---
 
-### ADR-010 — Architectural pivot: Component B and C fed by vision, not ingredient text
+### ADR-010 — Architectural pivot: pack-claim evidence comes from vision, not ingredient text
 
 **Date:** 22 May 2026
 **Status:** Active — implemented from v3 onward
 
-**Decision:** The `positioning_composition_gap` Components B (claim
-weight) and C (processing/nutrition context weight) are fed exclusively
-by Azure Vision front-of-pack extraction output, not by ingredient text
-analysis.
+**Decision:** The pack-claim evidence layer is fed by Azure Vision
+front-of-pack extraction output, not by ingredient text analysis.
 
 **Rationale:** Component B in the original v1 design used ingredient text
 as a proxy for front-of-pack claims. This produced systematic false
@@ -383,7 +395,7 @@ Root cause: ingredient text describes what a product contains. Front-of-pack
 describes what a brand communicates. These are different information
 sources requiring different detection methods.
 
-**New architecture (implemented in v3):**
+**Historical v3 composite architecture:**
 
 Component A — ingredient composition score (0–40 points):
 Source: `ingredients_text` + `additives_tags` (keyword dictionary).
@@ -403,9 +415,10 @@ Full composite stored as `positioning_composition_gap` (0–100).
 See `docs/METHODOLOGY.md` for the complete formula and its known
 limitations as a composite rather than a pure gap metric.
 
-**Actual cost and model:** Azure AI Vision Read API (OCR) + Azure OpenAI
-`gpt-4.1-nano` (claim extraction). Total run cost: approximately 8 CHF
-for 4,700 products.
+**Current status:** The evidence-layer decision remains active:
+front-pack claims come from OCR/LLM pack observation, not ingredient
+inference. The composite score itself is legacy/internal and is not
+displayed as a user-facing proprietary score in the Streamlit MVP.
 
 **False positives eliminated by this change:** Enriched flour vitamins,
 milk proteins as texture ingredients, natural colorants, tautological
@@ -420,9 +433,11 @@ energy claims, protein-as-ingredient. See OBS-010 through OBS-017 in
 **Status:** Active — informs sampling and reporting strategy
 
 **Decision:** Analytical metrics are reported at brand level, not company
-level. The `company_brand_mapping.csv` enables company-level roll-up
-views in Power BI and Streamlit but all scoring, segmentation, and
-benchmark intersection detection runs at `primary_brand` level.
+level. The `company_brand_mapping.csv` enables company-owner navigation and
+cautious roll-up views in Streamlit and downstream exports, but market-scoped
+ownership rows require region/country-aware resolver logic before they should
+be treated as fully resolved company attribution. All scoring, segmentation,
+and benchmark intersection detection runs at `primary_brand` level.
 
 **Rationale:** Company portfolios are too heterogeneous for company-level
 metric averages to be meaningful (a conglomerate whose portfolio spans
@@ -441,8 +456,8 @@ Type 2 — Mainstream brands with a dedicated functional product line:
 core portfolio carries minimal claims; a functional sub-line is added
 to address a specific positioning territory. Examples: Snickers Protein,
 Emmi Energy Milk, Emmi PUR, Mars Bar Protein, Special K Protein. Most
-illustrative for positioning-to-composition gap analysis — mainstream
-brand equity applied to a focused claim territory.
+illustrative for studying how mainstream brand equity is applied to a
+focused claim territory.
 
 Type 3 — Mainstream brands with portfolio-wide positioning architecture:
 claims appear consistently across the entire portfolio as part of brand
@@ -491,8 +506,8 @@ Proprietary (Nestlé OPTI-GROW).
 - Filter brand-level summary views to n ≥ 20 products per brand to
   surface Type 3 portfolio-scale patterns
 - Type 1 brands dominate raw metric rankings but are less analytically
-  informative for positioning-to-composition gap analysis
-- Type 2 brands are the most illustrative case studies for the gap
+  informative for broad portfolio-level positioning analysis
+- Type 2 brands are the most illustrative case studies for the relationship
   between ingredient composition and front-of-pack communication
 - Vegan and plant-based claims are classified as product-identity and
   substitution positioning rather than a nutritional benefit claim
@@ -513,7 +528,7 @@ claim taxonomy, benchmark flags, claim-benchmark intersections. This is
 analysis: it operates on one product at a time. `db_summary.py`'s job is
 reporting: brand/category summaries, claim territory distributions,
 benchmark intersection rates, and a curated set of product-level
-examples for Streamlit and Power BI overview pages. These are different
+examples for Streamlit overview pages. These are different
 responsibilities, and keeping them in separate scripts keeps each one
 focused and independently testable.
 
@@ -571,8 +586,8 @@ analyze.py        →  data/sample/analyzed_*.csv
                       absence_reduction_claims_found]
 
 load.py           →  database/positioning_radar.db
-                     data/sample/powerbi_products_*.csv
-                     data/sample/powerbi_analysis_*.csv
+                     data/sample/reporting_products_*.csv
+                     data/sample/reporting_analysis_*.csv
                      [contract: full product_analysis schema declared
                       upfront via DDL_* constants — see ADR-010 update
                       below — including fields not yet populated by
@@ -593,7 +608,7 @@ vision_extract.py →  data/reference/vision_results_*.csv
                       fields via an explicit allowlist.]
 
 merge_scores.py   →  database/positioning_radar.db (pack-image results
-                     and positioning_composition_gap written)
+                     and legacy/internal composite fields written)
                      data/sample/merged_results_*.csv
                      [contract: barcode join of analyzed + vision results;
                       writes attempt metadata for every product attempted
@@ -602,7 +617,7 @@ merge_scores.py   →  database/positioning_radar.db (pack-image results
                       result with NULL on a failed rerun]
 
 tag_claims.py     →  database/positioning_radar.db (claim taxonomy added)
-                     data/sample/powerbi_tagged_*.csv
+                     data/sample/reporting_tagged_*.csv
                      [contract: claim_source, claim_category_1,
                       claim_category_2, nutrition_benchmark_flags,
                       claim_benchmark_intersections — UPDATE only, no
@@ -611,7 +626,7 @@ tag_claims.py     →  database/positioning_radar.db (claim taxonomy added)
 
 db_summary.py     →  database/positioning_radar.db (weekly_brand_positioning_summary
                      and positioning_example_products written)
-                     data/sample/powerbi_final_*.csv
+                     data/sample/reporting_final_*.csv
                      [contract: queries the full current database
                       snapshot, not intermediate CSVs — recomputed from
                       scratch every run regardless of whether the
@@ -649,7 +664,7 @@ pipeline steps.
 | No sales volume data | Cannot measure market share | Documented in `docs/LIMITATIONS.md` |
 | Brand fragmentation | Conglomerate aggregations need care | Company mapping in `data/reference/`; category filters recommended |
 | OFF category folksonomy | Some category misclassification | Refined using `off_categories` full hierarchy field |
-| Image-based analysis covers a subset | Front-of-pack claim coverage is incomplete for non-sampled products; fallback taxonomy may rely on product name, labels, and ingredient/name-derived signals | ~4,700 products analyzed; `pack_analysis_attempted` flag indicates coverage |
+| Image-based analysis covers a subset | Front-of-pack claim coverage is incomplete for non-sampled products; fallback taxonomy may rely on product name, labels, and ingredient/name-derived signals | 17,127 valid front-of-pack observations across the current US/UK and France releases; use `release_run_id`, `claim_source`, and `pack_analysis_attempted` for coverage interpretation |
 | Sports nutrition context | Benchmark flags may reflect intended use, not unexpected profile | Documented in `docs/LIMITATIONS.md` |
 | Liquid/solid classification is a proxy | Energy-density heuristic may misclassify some formats | MVP approximation; flagged for review if benchmark flags become central |
 
@@ -665,20 +680,19 @@ extraction, segmentation), not a sequential release train.
 
 | Version | Status | Core deliverable |
 |---|---|---|
-| v1 | 🔄 Rebuilding | Rule-based ingredient analysis, composition marker score — pipeline logic validated in prior repo; schema rename, production run, and Streamlit rebuild pending |
-| v1.5 | 📋 Planned | German ingredient dictionary, UK/US bulk export filtering |
-| v2 | 📋 Planned | K-Means product segmentation + Power BI insight deck (category maps, claim territories, brand/company summaries, benchmark intersections, segment views) |
-| v3 | ✅ Complete | Vision pipeline, pack-image claim extraction, ~4,700 products analyzed — vision results archived; re-tagging only if claim taxonomy changes |
-| v3.5 | 📋 Planned | Extended vision run on additional products (~50 CHF budget); model benchmark comparing gpt-4.1-nano, gpt-4o-mini, and Claude Haiku on cost, extraction quality, and structured output reliability; results documented in `notebooks/` |
-| Production | 📋 Planned | Full OFF bulk export, weekly scheduler, Streamlit public deployment |
+| v1 | Rebuilding | Rule-based ingredient analysis; composite scores retained internally but not user-facing in the Streamlit MVP |
+| v1.5 | Planned | German ingredient dictionary and broader bulk-export filtering |
+| v2 | Planned | Product segmentation and additional Streamlit market-overview views |
+| v3 | Complete | Vision pipeline and pack-image claim extraction; current US/UK and France releases contain 17,127 valid front-of-pack observations |
+| v3.5 | Planned | Prompt/model calibration and targeted future extraction tests, including English panel-context review and prompt-drift checks |
+| Production | Planned | Full OFF bulk export, weekly scheduler, Streamlit public deployment |
 
 ---
 
 *This document is updated as new decisions are made.*
-*Last updated: July 2026 (ADR-013 added: production data strategy —
-bulk export bootstrap vs weekly incremental API; ADR-014 added:
-intentional curated sampling rationale before full-scale LLM
-extraction)*
+*Last updated: August 2026 (current release scale, Streamlit-only MVP scope,
+legacy composite-score status, and bulk bootstrap status reconciled with
+`docs/METHODOLOGY.md` and `docs/CLAIM_EXTRACTION.md`).*
 
 ### ADR-013 — Production data strategy: bulk export bootstrap + weekly incremental API
 
@@ -691,8 +705,8 @@ paths that serve different purposes and must not be conflated:
 1. **Bulk export bootstrap** — one-time initial population of the
    database from the OFF monthly CSV dump
    (`world.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz`,
-   ~10-15 GB compressed, ~3 million products). To be implemented as a
-   separate `bootstrap.py` pipeline stage before production launch.
+   ~10-15 GB compressed, ~3 million products), implemented through the
+   dedicated `bootstrap.py` pipeline stage.
 
 2. **Weekly incremental update** — `ingest.py` queries the OFF search
    API for new and recently-modified products in the target categories,
@@ -709,11 +723,9 @@ exactly this use case and encourages its use over API scraping.
 `ingest.py` is the right tool for incremental updates; it is the wrong
 tool for initial database population.
 
-**Current state (MVP):** `ingest.py` is being used for initial
-population of the development database during the MVP phase because
-`bootstrap.py` does not yet exist. This is a known deviation from the
-intended production architecture, documented here so it is not
-replicated in production.
+**Current state (MVP):** `bootstrap.py` exists and is the intended full
+bulk-population path. `ingest.py` remains the incremental API path and
+should not be used as the initial bulk-population mechanism.
 
 **Implication for `ingest.py`:** Weekly incremental updates via the
 API should target new/modified products only (filtered by
@@ -728,14 +740,13 @@ should be much lower (hundreds, not thousands).
 ### ADR-014 — Intentional curated sampling before full-scale LLM extraction
 
 **Date:** 12 July 2026
-**Status:** Active — governs v3 and v3.5 vision extraction strategy
+**Status:** Active — governs current and future vision extraction strategy
 
 **Decision:** The vision extraction pipeline (`vision_extract.py`) runs
 on a curated smart sample rather than the full product database.
-`smart_sample.py` selects products using a four-tier priority scheme:
-named priority brands (15 products each), NOVA 4 + Nutri-Score D/E
-products with detectable claim signals, high composition-marker brands,
-and intersection pattern quota sampling.
+`smart_sample.py` selects products using three components: a
+probability-oriented backbone, a purposive positioning-by-reality matrix,
+and a calibration component for rare territories and prompt comparison.
 
 **Rationale:** This is a deliberate analytical and economic choice, not
 a technical limitation.
@@ -753,16 +764,15 @@ working before committing to a full production run.
 *Economic rationale:* Vision extraction costs real money per product
 (~0.0017 CHF per product at gpt-4.1-nano rates). A random draw from
 3 million OFF products would cost thousands of CHF to achieve
-meaningful claim coverage. The curated sample achieves representative
+meaningful claim coverage. The curated sample achieves broad analytical
 coverage of the claim territory space at a fraction of the cost.
 
 *Sequencing rationale:* The correct production sequence is therefore:
-(1) validate claim taxonomy and extraction quality on the curated
-sample; (2) run the model benchmark (v3.5 — gpt-4.1-nano vs gpt-4o-mini
-vs Claude Haiku) on a small comparison set; (3) only then commit to
-full-scale extraction using the confirmed model and prompt version.
-Scaling before validation would bake any taxonomy gaps or extraction
-errors into the full production dataset.
+(1) validate claim taxonomy and extraction quality on curated samples;
+(2) run targeted prompt/model calibration panels where needed; (3) only
+then commit to larger-scale extraction using the confirmed language
+profile and prompt version. Scaling before validation would bake any
+taxonomy gaps or extraction errors into the full production dataset.
 
 **Known implication:** Products outside the smart sample have no
 vision-extracted claims. Their claim taxonomy is derived from
@@ -772,5 +782,8 @@ evidence caption in the product card and the `pack_analysis_attempted`
 flag. It is not a data quality failure — it is the intended state until
 full-scale extraction runs.
 
----
+**Current release record:** See `docs/CLAIM_EXTRACTION.md` for the active
+release IDs, prompt versions, second-pass panel-context review, release
+denominators, and known extraction limitations.
 
+---

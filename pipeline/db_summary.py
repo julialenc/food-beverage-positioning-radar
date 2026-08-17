@@ -69,8 +69,8 @@ Tables created (DDL owned by this script, not load.py):
         "No claim exists" for the same reason.
 
     positioning_example_products
-        A small, neutral set of product-level examples for Streamlit /
-        Power BI overview pages — NOT a time series. Fully replaced
+        A small, neutral set of product-level examples for Streamlit
+        overview pages — NOT a time series. Fully replaced
         (truncate + reinsert) on every run; run_timestamp is recorded
         for provenance only, not for historical accumulation.
         selection_reason values are deliberately neutral — see
@@ -96,10 +96,6 @@ Input:
 Output:
     database/positioning_radar.db (new rows in weekly_brand_positioning_summary
                                     and positioning_example_products)
-    data/sample/powerbi_final_products_<timestamp>.csv
-    data/sample/powerbi_final_analysis_<timestamp>.csv
-    data/sample/powerbi_weekly_brand_positioning_summary_<timestamp>.csv
-    data/sample/powerbi_positioning_examples_<timestamp>.csv
 """
 
 import sqlite3
@@ -230,7 +226,8 @@ def load_full_snapshot(conn):
     df = pd.read_sql("""
         SELECT
             p.barcode, p.product_name, p.primary_brand, p.query_category,
-            p.primary_country, p.nova_group, p.nutriscore_grade, p.image_url,
+            p.primary_country, p.quantity, p.additives_tags, p.created_t,
+            p.nova_group, p.nutriscore_grade, p.image_url,
             a.composition_marker_score, a.positioning_composition_gap,
             a.positioning_composition_gap_band,
             a.pack_claims_found, a.pack_analysis_attempted, a.claim_source,
@@ -500,65 +497,6 @@ def write_positioning_examples(conn, examples, run_timestamp):
     return len(rows)
 
 
-# ── Power BI exports ───────────────────────────────────────────────────────────
-
-def export_powerbi_csvs(df, summary_rows, examples, timestamp):
-    """Write final, reporting-stage Power BI CSVs — distinct from the
-    ingredient-stage exports from load.py and the product-level tagged
-    export from tag_claims.py."""
-
-    products_path = SAMPLE_DIR / f"powerbi_final_products_{timestamp}.csv"
-    product_cols = [
-        "barcode", "product_name", "primary_brand", "query_category",
-        "primary_country", "nova_group", "nutriscore_grade", "image_url",
-    ]
-    df[product_cols].to_csv(products_path, index=False, encoding="utf-8-sig")
-
-    analysis_path = SAMPLE_DIR / f"powerbi_final_analysis_{timestamp}.csv"
-    analysis_cols = [c for c in df.columns if c not in product_cols]
-    df[["barcode"] + analysis_cols].to_csv(analysis_path, index=False, encoding="utf-8-sig")
-
-    summary_cols = [
-        "week_ending", "run_timestamp", "source_scope", "primary_brand", "query_category",
-        "product_count", "pack_analyzed_count", "pct_pack_analyzed", "pct_with_pack_claims",
-        "pct_with_pack_claims_among_analyzed",
-        "positioning_gap_scored_count", "pct_positioning_gap_scored",
-        "claim_tagged_count", "pct_claim_tagged",
-        "pct_functional", "pct_free_of", "pct_natural_organic", "pct_other_claim", "pct_no_claim",
-        "top_claim_category_1", "top_claim_category_2",
-        "top_detected_claim_category_1", "top_detected_claim_category_2",
-        "avg_composition_marker_score", "avg_positioning_composition_gap",
-        "pct_nova4", "pct_with_nutrition_benchmark_flags", "pct_with_claim_benchmark_intersections",
-        "pct_with_artificial_sweetener",
-        "pct_sugar_above_reference", "pct_saturated_fat_above_reference",
-        "pct_fat_above_reference", "pct_salt_above_reference",
-    ]
-    summary_path = SAMPLE_DIR / f"powerbi_weekly_brand_positioning_summary_{timestamp}.csv"
-    pd.DataFrame(summary_rows, columns=summary_cols).to_csv(
-        summary_path, index=False, encoding="utf-8-sig"
-    )
-
-    examples_rows = []
-    for row, reason in examples:
-        examples_rows.append({
-            "barcode": row["barcode"], "product_name": row["product_name"],
-            "primary_brand": row["primary_brand"], "query_category": row["query_category"],
-            "claim_category_1": row.get("claim_category_1"),
-            "claim_category_2": row.get("claim_category_2"),
-            "pack_claims_found": row.get("pack_claims_found"),
-            "nutrition_benchmark_flags": row.get("nutrition_benchmark_flags"),
-            "claim_benchmark_intersections": row.get("claim_benchmark_intersections"),
-            "positioning_composition_gap": row.get("positioning_composition_gap"),
-            "composition_marker_score": row.get("composition_marker_score"),
-            "nova_group": row.get("nova_group"), "nutriscore_grade": row.get("nutriscore_grade"),
-            "image_url": row.get("image_url"), "selection_reason": reason,
-        })
-    examples_path = SAMPLE_DIR / f"powerbi_positioning_examples_{timestamp}.csv"
-    pd.DataFrame(examples_rows).to_csv(examples_path, index=False, encoding="utf-8-sig")
-
-    return products_path, analysis_path, summary_path, examples_path
-
-
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 
@@ -798,17 +736,7 @@ def main():
 
     conn.close()
 
-    # ── Power BI exports ───────────────────────────────────────────────────────
-    print(f"\n  Writing final Power BI exports...")
-    products_path, analysis_path, summary_path, examples_path = export_powerbi_csvs(
-        df, summary_rows, examples, timestamp
-    )
-    print(f"  -> {products_path.name}")
-    print(f"  -> {analysis_path.name}")
-    print(f"  -> {summary_path.name}")
-    print(f"  -> {examples_path.name}")
-
-    print(f"\n  Done. Final reporting tables and exports are ready.")
+    print(f"\n  Done. Final reporting tables are ready.")
     print(f"  Next step: streamlit run app.py\n")
 
 

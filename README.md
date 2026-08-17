@@ -16,8 +16,8 @@ Food & Beverage Positioning Radar maps how packaged food and beverage
 products position themselves through claims, ingredients, nutrition,
 processing, and design. It ingests product data from Open Food
 Facts, extracts front-of-pack claims using OCR and LLM analysis, applies
-ingredient-based composition scoring, and computes positioning and
-benchmark metrics for exploration in a Streamlit app and a Power BI deck.
+ingredient and nutrition analysis, and computes benchmark and
+claim-intersection metrics for exploration in a Streamlit analytical board.
 
 **Main question:** How do packaged foods and beverages position themselves
 through claims, ingredients, nutrition, processing, and design?
@@ -78,9 +78,8 @@ See `docs/METHODOLOGY.md` for the full scope statement.
 
 | Deliverable | Role | Description |
 |---|---|---|
-| Streamlit app (`app.py`) | Main product | Search, filter, sort, and inspect products. Product card shows pack image, extracted claims, brand/category, nutrition, processing indicators, benchmark flags, and positioning-to-composition views. |
-| Power BI deck (`powerbi/`) | Secondary insight layer | Category maps, claim territories, brand/company summaries, benchmark intersections, and, once implemented, segment views, built from `db_summary.py`'s final reporting exports. Fast aggregate storytelling; Streamlit for deeper inspection. |
-| This repository | Technical and reproducibility layer | Code, methodology, column descriptions, prompt and model experiments, notebooks, and benchmark tables. Serves the AI engineering audience without changing the main UX. |
+| Streamlit app (`app.py`) | Main product | Search, filter, sort, and inspect products. Product and overview pages show pack image evidence, extracted claims, brand/category, nutrition, processing indicators, benchmark flags, and claim-composition intersections. |
+| This repository | Technical and reproducibility layer | Code, methodology, column descriptions, prompt history, sampling design, QA notes, and benchmark/export tables. Serves the AI engineering audience without changing the main UX. |
 
 ---
 
@@ -89,17 +88,16 @@ See `docs/METHODOLOGY.md` for the full scope statement.
 Every metric has a definition, a scope statement, and a non-scope
 statement in `docs/METHODOLOGY.md`. Stored values are short, stable codes
 (not display text) — see `docs/UI_LABELS.md` for the canonical
-code-to-label mapping used by the Streamlit app and Power BI deck.
+code-to-label mapping used by the Streamlit app.
 
 | Metric | What it measures |
 |---|---|
-| Claim taxonomy (`claim_category_1`/`2`) | Groups pack claims into `FUNCTIONAL`, `FREE_OF`, `NATURAL_ORGANIC`, `OTHER`, or `NO_CLAIM`, plus a sub-category. Sourced from pack-image extraction where available (`claim_source` = `vision`), otherwise from combined ingredient/name-derived signals |
-| Composition marker score | Weighted ingredient-processing marker score (0–40), with a reference band (`Extensive`/`Moderate`/`Limited`/`Minimal markers`) |
-| Positioning-to-composition gap | Composite of composition markers, claim weight, and processing/nutrition context (0–100), with a reference band (`High`/`Moderate`/`Low`/`Minimal positioning-composition signal`) |
+| Claim taxonomy (`claim_category_1`/`2`) | Groups detected positioning into `FUNCTIONAL`, `FREE_OF`, `NATURAL_ORGANIC`, `OTHER`, or `NO_CLAIM`, plus a sub-category. Sourced from pack-image extraction where available (`claim_source` = `vision`); fallback-derived classifications are labelled separately and must not be read as front-pack observations |
+| Front-pack claim evidence | OCR/LLM observations from image-eligible sampled products. The current US/UK and France releases contain 17,127 valid front-of-pack observations |
 | Nutrition benchmark flags | Nutrients (sugar, saturated fat, fat, salt) above UK FSA front-of-pack reference thresholds, stored as neutral codes |
 | Claim-benchmark intersections | Co-occurrences of a detected positioning with a relevant nutrition or composition benchmark signal |
 | Completeness score | Percentage of key structured fields populated per product (data quality indicator, not product quality) |
-| Product segment | Planned — K-Means groupings by claim, ingredient, nutrition, and processing profile |
+| Product segment | Planned — groupings by claim, ingredient, nutrition, and processing profile for future Streamlit market-overview views |
 
 ---
 
@@ -109,15 +107,23 @@ code-to-label mapping used by the Streamlit app and Power BI deck.
 food-beverage-positioning-radar/
 │
 ├── pipeline/
-│   ├── ingest.py            # OFF API pull with pagination and retry
+│   ├── bootstrap.py         # OFF bulk export download/filter/category assignment
+│   ├── ingest.py            # OFF API pull for incremental updates
 │   ├── clean.py              # Cleaning, language detection, completeness
-│   ├── analyze.py            # Ingredient marker analysis, composition score
-│   ├── load.py                # SQLite storage + Power BI CSV export
-│   ├── smart_sample.py        # Purposive tiered sample for vision analysis
+│   ├── analyze.py            # Ingredient marker analysis
+│   ├── load.py                # SQLite storage + QA/reporting CSV export
+│   ├── detect_positioning_signals.py    # Pre-LLM positioning proxy
+│   ├── assign_reality_bands.py          # Sampling reality bands
+│   ├── classify_formulation_families.py # Rule-based product-type families
+│   ├── smart_sample.py        # Curated sample for vision analysis
 │   ├── vision_extract.py     # Azure Vision OCR + LLM claim extraction
-│   ├── merge_scores.py       # Joins composition + vision → positioning gap
+│   ├── review_context_check.py # Second-pass panel-context review
+│   ├── merge_scores.py       # Joins vision results and writes pack-claim evidence
 │   ├── tag_claims.py          # Claim taxonomy + nutrition benchmark flags
-│   ├── db_summary.py          # Final reporting aggregation layer
+│   ├── compute_axis_ranges.py           # Market Overview display ranges
+│   ├── compute_region_benchmarks.py     # Region/category benchmark table
+│   ├── compute_profile_intersections.py # Profile-intersection precompute
+│   ├── db_summary.py          # Reporting aggregation layer
 │   ├── validate_tags.py      # Manual QA sampler for claim taxonomy
 │   ├── export_schema.py      # Exports live DB schema to schema.sql
 │   ├── verify_schema.py      # Checks live DB against current DDL
@@ -125,27 +131,26 @@ food-beverage-positioning-radar/
 │
 ├── app.py                    # Streamlit main product
 │
-├── notebooks/                # Model benchmarks, exploratory analysis
-│
 ├── database/
 │   └── schema.sql            # Auto-generated schema reference (see export_schema.py)
 │
 ├── data/
 │   ├── reference/
-│   │   └── company_brand_mapping.csv   # 276 brands → parent company
+│   │   ├── company_brand_mapping.csv   # Brand → parent company
+│   │   └── brand_alias_mapping.csv     # Brand variant → canonical brand
+│   ├── country_region_mapping.csv
 │   ├── raw/                  # Raw OFF API JSON (gitignored)
 │   └── sample/                # Pipeline CSVs (gitignored)
 │
 ├── docs/
 │   ├── METHODOLOGY.md          # Metric definitions, scope statements, reporting layers
+│   ├── CLAIM_EXTRACTION.md      # Sampling, prompt history, OCR/LLM release record
 │   ├── COLUMN_DESCRIPTIONS.md  # Every database field documented
 │   ├── BRAND_COMPANY_MAPPING.md # Brand/company mapping methodology
 │   ├── UI_LABELS.md             # Stored-code → display-label mapping
 │   ├── OBSERVATIONS.md          # Data quality and market-pattern findings
 │   ├── LIMITATIONS.md           # Known limitations for interpretation
 │   └── ADR.md                   # Architecture Decision Records
-│
-├── powerbi/                  # Power BI deck
 │
 ├── logs/                     # Pipeline run logs (gitignored)
 │
@@ -183,18 +188,22 @@ cp .env.example .env
 **Core pipeline** (no Azure credentials needed):
 
 ```bash
-python pipeline/ingest.py       # Pull products from Open Food Facts API
+python pipeline/bootstrap.py    # Full OFF bulk-export population
+# or, for small incremental/API updates:
+python pipeline/ingest.py
 python pipeline/clean.py        # Clean, detect language, score completeness
 python pipeline/analyze.py      # Ingredient marker analysis
 python pipeline/load.py         # Load into SQLite, export CSVs
-                                 # (use --source bulk_export for a full bulk-export run)
 ```
 
 **Vision pipeline** (requires Azure credentials, incurs API cost — see
-`docs/METHODOLOGY.md` and `docs/ADR.md` for historical cost estimates):
+`docs/CLAIM_EXTRACTION.md`, `docs/METHODOLOGY.md`, and `docs/ADR.md`):
 
 ```bash
-python pipeline/smart_sample.py            # Select a purposive sample for image analysis
+python pipeline/detect_positioning_signals.py
+python pipeline/assign_reality_bands.py
+python pipeline/classify_formulation_families.py
+python pipeline/smart_sample.py            # Select a curated sample for image analysis
 python pipeline/vision_extract.py --test   # Test on 10 products first
 python pipeline/vision_extract.py          # Full run (--resume to continue an interrupted run)
 python pipeline/merge_scores.py            # Join composition + vision results
@@ -263,12 +272,12 @@ the full rationale behind each decision.
 
 | Version | Status | Core deliverable |
 |---|---|---|
-| v1 | 🔄 Rebuilding | Rule-based ingredient analysis, composition marker score — pipeline logic validated; schema rename, production run, and Streamlit rebuild pending |
-| v1.5 | 📋 Planned | German ingredient dictionary, UK/US bulk export filtering |
-| v2 | 📋 Planned | K-Means product segmentation + Power BI insight deck |
-| v3 | ✅ Complete | Vision pipeline, pack-image claim extraction, ~4,700 products analyzed |
-| v3.5 | 📋 Planned | Extended vision run (~50 CHF budget); model benchmark comparing gpt-4.1-nano, gpt-4o-mini, and Claude Haiku on cost, quality, and structured output reliability |
-| Production | 📋 Planned | Full OFF bulk export, weekly scheduler, Streamlit public deployment |
+| v1 | Rebuilding | Rule-based ingredient analysis; composite scores retained internally but not user-facing in the Streamlit MVP |
+| v1.5 | Planned | German ingredient dictionary and broader bulk-export filtering |
+| v2 | Planned | Product segmentation and additional Streamlit market-overview views |
+| v3 | Complete | Vision pipeline and pack-image claim extraction; current US/UK and France releases contain 17,127 valid front-of-pack observations |
+| v3.5 | Planned | Prompt/model calibration and targeted future extraction tests, including English panel-context review and prompt-drift checks |
+| Production | Planned | Full OFF bulk export, weekly scheduler, Streamlit public deployment |
 
 ---
 
@@ -277,9 +286,10 @@ the full rationale behind each decision.
 | Document | Contents |
 |---|---|
 | `docs/METHODOLOGY.md` | Metric definitions, scope and non-scope statements, extraction process, the ingredient-stage vs final-summary reporting distinction |
+| `docs/CLAIM_EXTRACTION.md` | Front-of-pack sampling design, prompt history, OCR/LLM release record, validator behavior, and extraction limitations |
 | `docs/COLUMN_DESCRIPTIONS.md` | Every database field documented with type, source, and interpretation notes |
 | `docs/BRAND_COMPANY_MAPPING.md` | Brand normalisation methodology, mapping structure, known complications |
-| `docs/UI_LABELS.md` | Canonical stored-code → display-label mapping for the Streamlit app and Power BI deck |
+| `docs/UI_LABELS.md` | Canonical stored-code → display-label mapping for the Streamlit app |
 | `docs/OBSERVATIONS.md` | Data quality findings and market-pattern observations from development |
 | `docs/LIMITATIONS.md` | Data source limits, ODbL licensing, methodology and extraction caveats |
 | `docs/ADR.md` | Architecture Decision Records — why the system was built the way it was |

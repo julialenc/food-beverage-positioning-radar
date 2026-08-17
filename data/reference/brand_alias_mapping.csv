@@ -107,7 +107,7 @@ hilco llc,hilco,geo_suffix,14,21,high,,suffix removed: 'llc'
 popcornopolis llc,popcornopolis,geo_suffix,14,19,high,,suffix removed: 'llc'
 coffee-mate,coffee mate,punctuation,13,19,high,confirm,
 auchan baby,auchan,prefix,13,5928,high,confirm,
-kellogg's special k,kellogg's,prefix,13,1337,high,confirm,
+kellogg's special k,special k,prefix,13,1337,high,confirm,manual correction: preserve specific cereal brand
 la boulangere bio,la boulangere,prefix,13,281,high,confirm,
 morrisons baked by us,morrisons,prefix,13,821,high,confirm,
 twinings of london,twinings,prefix,13,270,high,confirm,
@@ -529,8 +529,8 @@ hershey's gold,hershey's,prefix,3,224,high,confirm,
 hostess donettes,hostess,prefix,3,176,high,confirm,
 hostess twinkies,hostess,prefix,3,176,high,confirm,
 innocent foods,innocent,prefix,3,327,high,confirm,
-kellogg's eggo,kellogg's,prefix,3,1337,high,confirm,
-kellogg's nutri grain,kellogg's,prefix,3,1337,high,confirm,
+kellogg's eggo,eggo,prefix,3,1337,high,confirm,manual correction: preserve specific cereal brand
+kellogg's nutri grain,nutri-grain,prefix,3,1337,high,confirm,manual correction: preserve specific cereal brand
 kemps llc,kemps,prefix,3,52,high,confirm,
 kind protein,kind,prefix,3,328,high,confirm,
 kind protein max,kind,prefix,3,328,high,confirm,
@@ -757,8 +757,8 @@ italiamo lidl,italiamo,prefix,2,148,high,confirm,
 jacob's creek,jacob's,prefix,2,55,high,confirm,
 jamba juice company,jamba juice,prefix,2,162,high,confirm,
 jardin bio logique,jardin bio,prefix,2,407,high,confirm,
-kellogg's apple jacks,kellogg's,prefix,2,1337,high,confirm,
-kellogg's town house,kellogg's,prefix,2,1337,high,confirm,
+kellogg's apple jacks,apple jacks,prefix,2,1337,high,confirm,manual correction: preserve specific cereal brand
+kellogg's town house,town house,prefix,2,1337,high,confirm,manual correction: preserve specific cereal brand
 kemps select,kemps,prefix,2,52,high,confirm,
 kind kids,kind,prefix,2,328,high,confirm,
 kind thins,kind,prefix,2,328,high,confirm,
@@ -824,7 +824,7 @@ nature's promise kids,nature's promise,prefix,2,147,high,confirm,
 nescafe azera,nescafe,prefix,2,305,high,confirm,
 nestle abuelita,nestle,prefix,2,3514,high,confirm,
 nestle coffeemate,nestle,prefix,2,3514,high,confirm,
-nestle kitkat,nestle,prefix,2,3514,high,confirm,
+nestle kitkat,kitkat,prefix,2,3514,high,confirm,manual correction: preserve KitKat brand
 nestle nespresso,nestle,prefix,2,3514,high,confirm,
 nestle nesquik,nestle,prefix,2,3514,high,confirm,
 nestle nido,nestle,prefix,2,3514,high,confirm,
@@ -1066,7 +1066,7 @@ busy-baker,busy baker,punctuation,1,3,high,confirm,
 chan-ou-teung,chan ou teung,punctuation,1,3,high,confirm,
 hautes alpes naturellement,hautes-alpes naturellement,punctuation,1,3,high,confirm,
 health ade kombucha,health-ade kombucha,punctuation,1,3,high,confirm,
-kellogg's nutri-grain,kellogg's nutri grain,punctuation,1,3,high,confirm,
+kellogg's nutri-grain,nutri-grain,punctuation,1,3,high,confirm,manual correction: preserve specific cereal brand
 laiterie des bas vignons,laiterie des bas-vignons,punctuation,1,3,high,confirm,
 moulin meckert-diemer,moulin meckert diemer,punctuation,1,3,high,confirm,
 poitou-chevre,poitou chevre,punctuation,1,3,high,confirm,
@@ -1715,17 +1715,17 @@ karma kitchen,karma,prefix,1,59,high,confirm,
 karma sucra,karma,prefix,1,59,high,confirm,
 kashi  solana beach california,kashi,prefix,1,190,high,confirm,
 kashi solana beach california usa,kashi,prefix,1,190,high,confirm,
-kellogg's bluey,kellogg's,prefix,1,1337,high,confirm,
-kellogg's froot loops,kellogg's,prefix,1,1337,high,confirm,
-kellogg's frosted flakes,kellogg's,prefix,1,1337,high,confirm,
-kellogg's krave,kellogg's,prefix,1,1337,high,confirm,
-kellogg's raisin bran,kellogg's,prefix,1,1337,high,confirm,
-kellogg's scooby-doo,kellogg's,prefix,1,1337,high,confirm,
-kellogg's zucaritas,kellogg's,prefix,1,1337,high,confirm,
-kelloggs all-bran,kelloggs,prefix,1,67,high,confirm,
-kelloggs raisin bran,kelloggs,prefix,1,67,high,confirm,
-kelloggs special,kelloggs,prefix,1,67,high,confirm,
-kelloggs special k,kelloggs,prefix,1,67,high,confirm,
+kellogg's bluey,bluey,prefix,1,1337,high,confirm,manual correction: preserve specific licensed cereal/product brand
+kellogg's froot loops,froot loops,prefix,1,1337,high,confirm,manual correction: preserve specific cereal brand
+kellogg's frosted flakes,frosted flakes,prefix,1,1337,high,confirm,manual correction: preserve specific cereal brand
+kellogg's krave,krave,prefix,1,1337,high,confirm,manual correction: preserve specific cereal brand
+kellogg's raisin bran,raisin bran,prefix,1,1337,high,confirm,manual correction: preserve specific cereal brand
+kellogg's scooby-doo,scooby-doo,prefix,1,1337,high,confirm,manual correction: preserve specific licensed cereal/product brand
+kellogg's zucaritas,zucaritas,prefix,1,1337,high,confirm,manual correction: preserve specific cereal brand
+kelloggs all-bran,all-bran,prefix,1,67,high,confirm,manual correction: preserve specific cereal brand
+kelloggs raisin bran,raisin bran,prefix,1,67,high,confirm,manual correction: preserve specific cereal brand
+kelloggs special,special k,prefix,1,67,high,,manual review: incomplete source string; possible Special K
+kelloggs special k,special k,prefix,1,67,high,confirm,manual correction: preserve specific cereal brand
 ker cadelac kids,ker cadelac,prefix,1,281,high,confirm,
 kettle chip company,kettle,prefix,1,219,high,confirm,
 kettle chips sea salt & balsamic vinegar,kettle,prefix,1,219,high,confirm,

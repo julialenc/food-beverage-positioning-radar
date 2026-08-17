@@ -57,28 +57,65 @@ import pandas as pd
 ROOT    = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "database" / "positioning_radar.db"
 
-POSITIONING_CSV = Path(__file__).resolve().parent / "positioning_signals_us_uk.csv"
-REALITY_CSV     = Path(__file__).resolve().parent / "reality_bands.csv"
-FAMILIES_CSV    = Path(__file__).resolve().parent / "formulation_families.csv"
-OUT_SAMPLE_CSV  = Path(__file__).resolve().parent / "sample_clean_run.csv"
-OUT_SUMMARY_CSV = Path(__file__).resolve().parent / "sample_clean_run_summary.csv"
+PIPELINE_DIR    = Path(__file__).resolve().parent
+REALITY_CSV     = PIPELINE_DIR / "reality_bands.csv"
+FAMILIES_CSV    = PIPELINE_DIR / "formulation_families.csv"
 
 RANDOM_SEED = 42
-RUN_ID      = "release-01-image-eligible"
 
-IN_SCOPE_REGIONS = {"US_CANADA", "UK_IE"}
-
-# -- Quota targets (products per region-category) ----------------------------
-QUOTA_TARGET: dict[tuple[str, str], int] = {
-    ("US_CANADA", "snacks"):    2450,
-    ("US_CANADA", "dairies"):   2450,
-    ("US_CANADA", "cereals"):   1400,
-    ("US_CANADA", "beverages"):  700,
-    ("UK_IE",     "snacks"):    2450,
-    ("UK_IE",     "dairies"):   2450,
-    ("UK_IE",     "cereals"):   1400,
-    ("UK_IE",     "beverages"):  700,
+# -- Region profiles ---------------------------------------------------------
+# One profile per sampling run. Selected with --region.
+#
+# A product can carry several region codes (see derive_region_codes in
+# clean.py). Because only one profile's regions are in scope per run,
+# primary_region() resolves to "contains this region" rather than "first
+# region listed" — the order in observed_market_region_codes is OFF
+# contributor insertion order and carries no meaning.
+#
+# Overlap between runs is handled by --exclude-released, not by the region
+# codes: a product already extracted under a previous release must not be
+# re-sampled, or the second merge would overwrite the first release's row.
+REGION_PROFILES: dict[str, dict] = {
+    "us_uk": {
+        "regions":         {"US_CANADA", "UK_IE"},
+        "run_id":          "release-01-image-eligible",
+        "positioning_csv": "positioning_signals_us_uk.csv",
+        "out_sample":      "sample_clean_run.csv",
+        "out_summary":     "sample_clean_run_summary.csv",
+        "quotas": {
+            ("US_CANADA", "snacks"):    2450,
+            ("US_CANADA", "dairies"):   2450,
+            ("US_CANADA", "cereals"):   1400,
+            ("US_CANADA", "beverages"):  700,
+            ("UK_IE",     "snacks"):    2450,
+            ("UK_IE",     "dairies"):   2450,
+            ("UK_IE",     "cereals"):   1400,
+            ("UK_IE",     "beverages"):  700,
+        },
+    },
+    "france": {
+        "regions":         {"FRANCE"},
+        "run_id":          "release-02-france",
+        "positioning_csv": "positioning_signals_fr.csv",
+        "out_sample":      "sample_france_run.csv",
+        "out_summary":     "sample_france_run_summary.csv",
+        # Same quotas as us_uk so the two releases stay comparable.
+        "quotas": {
+            ("FRANCE", "snacks"):    2450,
+            ("FRANCE", "dairies"):   2450,
+            ("FRANCE", "cereals"):   1400,
+            ("FRANCE", "beverages"):  700,
+        },
+    },
 }
+
+# Rebound in main() from the selected profile — do not edit directly.
+POSITIONING_CSV  = PIPELINE_DIR / REGION_PROFILES["us_uk"]["positioning_csv"]
+OUT_SAMPLE_CSV   = PIPELINE_DIR / REGION_PROFILES["us_uk"]["out_sample"]
+OUT_SUMMARY_CSV  = PIPELINE_DIR / REGION_PROFILES["us_uk"]["out_summary"]
+RUN_ID           = REGION_PROFILES["us_uk"]["run_id"]
+IN_SCOPE_REGIONS = REGION_PROFILES["us_uk"]["regions"]
+QUOTA_TARGET: dict[tuple[str, str], int] = REGION_PROFILES["us_uk"]["quotas"]
 
 COMPONENT_SPLIT = {"backbone": 0.35, "matrix": 0.50, "calibration": 0.15}
 
@@ -390,6 +427,29 @@ def sample_calibration(df: pd.DataFrame, target_n: int, category: str,
 
 # -- Main orchestrator -------------------------------------------------------
 
+def get_released_barcodes() -> set:
+    """
+    Barcodes already carrying a release_run_id in product_analysis.
+
+    The database stores one row per barcode. If a new sample picked up a
+    barcode already published in an earlier release, merge_scores.py would
+    overwrite that row's release_run_id, sampling_region and claim data —
+    silently shrinking the earlier release. Excluding them is what keeps
+    releases disjoint.
+    """
+    with sqlite3.connect(DB_PATH) as conn:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(product_analysis)")}
+        if "release_run_id" not in cols:
+            print("  [warn] product_analysis has no release_run_id column - "
+                  "run load.py with the current schema first. No barcodes excluded.")
+            return set()
+        rows = conn.execute("""
+            SELECT barcode FROM product_analysis
+            WHERE release_run_id IS NOT NULL AND TRIM(release_run_id) <> ''
+        """).fetchall()
+    return {str(r[0]) for r in rows}
+
+
 def get_prior_analyzed_barcodes() -> set:
     try:
         conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
@@ -444,14 +504,56 @@ def build_sample(df: pd.DataFrame, region: str, category: str,
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--region", choices=sorted(REGION_PROFILES),
+                        default="us_uk",
+                        help="Which region profile to sample (default: us_uk)")
+    parser.add_argument("--exclude-released", action="store_true",
+                        help="Exclude barcodes already carrying a release_run_id. "
+                             "Required for any run after the first, or the new "
+                             "merge would overwrite the earlier release.")
     parser.add_argument("--seed", type=int, default=RANDOM_SEED)
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     rng = np.random.default_rng(args.seed)
 
-    print("Loading input files...")
+    # Apply the selected region profile.
+    global POSITIONING_CSV, OUT_SAMPLE_CSV, OUT_SUMMARY_CSV
+    global RUN_ID, IN_SCOPE_REGIONS, QUOTA_TARGET
+    profile          = REGION_PROFILES[args.region]
+    POSITIONING_CSV  = PIPELINE_DIR / profile["positioning_csv"]
+    OUT_SAMPLE_CSV   = PIPELINE_DIR / profile["out_sample"]
+    OUT_SUMMARY_CSV  = PIPELINE_DIR / profile["out_summary"]
+    RUN_ID           = profile["run_id"]
+    IN_SCOPE_REGIONS = profile["regions"]
+    QUOTA_TARGET     = profile["quotas"]
+
+    print(f"\nRegion profile: {args.region}")
+    print(f"  Regions:  {sorted(IN_SCOPE_REGIONS)}")
+    print(f"  Run ID:   {RUN_ID}")
+    print(f"  Output:   {OUT_SAMPLE_CSV.name}")
+
+    if not POSITIONING_CSV.exists():
+        print(f"\n  ERROR: {POSITIONING_CSV.name} not found.")
+        print(f"  The pre-LLM positioning proxy is language-specific and is")
+        print(f"  produced by detect_positioning_signals.py. Generate it for")
+        print(f"  this region before sampling — without it the matrix and")
+        print(f"  calibration strata cannot be built.")
+        return
+
+    print("\nLoading input files...")
     df = load_inputs()
-    print(f"  {len(df):,} products in scope (US/UK with valid region, image-eligible)")
+    print(f"  {len(df):,} products in scope (valid region, image-eligible)")
+
+    if args.exclude_released:
+        released = get_released_barcodes()
+        before   = len(df)
+        df = df[~df["barcode"].astype(str).isin(released)].copy()
+        print(f"  {len(released):,} barcodes already in a published release")
+        print(f"  {before - len(df):,} excluded — {len(df):,} remain available")
+    elif args.region != "us_uk":
+        print(f"\n  WARNING: --exclude-released not set. Any barcode already")
+        print(f"  published in an earlier release will be re-sampled, and the")
+        print(f"  next merge_scores.py run would overwrite that release's row.")
 
     # Image-coverage breakdown by region × category
     print("\n  Image-eligible universe:")

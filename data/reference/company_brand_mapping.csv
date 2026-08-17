@@ -1,404 +1,408 @@
-parent_company,brand,primary_brand_db,category,hq_country,notes
-Nestlé,nesquik,nesquik,powder_drinks,CH,Chocolate powder and RTD dairy variants; also used as cereal brand via CPW
-Nestlé,milo,milo,powder_drinks,CH,Malted chocolate powder; energy/nutrition positioning varies by market
-Nestlé,nido,nido,powder_drinks,CH,Milk powder brand; strong in emerging markets
-Nestlé,carnation,carnation,powder_drinks,CH,Evaporated milk and milk powder/creamer products; market scope varies
-Nestlé,coffee mate,coffee mate,powder_drinks,CH,Non-dairy creamer/powder beverage adjacent; include only if creamers are in scope
-Nestlé,kitkat,kitkat,snacks,CH,Global Nestlé brand except US where Hershey manufactures under license
-Nestlé,aero,aero,snacks,CH,Chocolate confectionery brand; market scope varies
-Nestlé,smarties,smarties,snacks,CH,Chocolate confectionery; not US Smarties candy
-Nestlé,quality street,quality street,snacks,CH,Confectionery assortment; heritage/seasonal positioning
-Nestlé,cailler,cailler,snacks,CH,Swiss chocolate brand; relevant for Switzerland/Europe
-Nestlé,lion,lion,snacks,CH,Chocolate bar; also cereal brand via CPW in some markets
-Nestlé,toll house,toll house,snacks,CH,Baking morsels/cookie dough; US-oriented snack/baking brand
-Cereal Partners Worldwide,nesquik cereal,nesquik cereal,breakfast_cereals,CH,Nestlé-branded cereal via CPW; kids/chocolate positioning
-Cereal Partners Worldwide,fitness,fitness,breakfast_cereals,CH,Nestlé-branded cereal via CPW; adult/wellness positioning
-Cereal Partners Worldwide,chocapic,chocapic,breakfast_cereals,CH,Nestlé-branded cereal via CPW; kids/chocolate positioning
-Cereal Partners Worldwide,cheerios,cheerios,breakfast_cereals,CH,CPW/Nestlé-branded in many non-US markets; General Mills brand in US
-Cereal Partners Worldwide,lion cereal,lion cereal,breakfast_cereals,CH,Nestlé-branded cereal via CPW; indulgent cereal extension
-Cereal Partners Worldwide,shreddies,shreddies,breakfast_cereals,CH,Nestlé-branded cereal in several markets via CPW
-Cereal Partners Worldwide,clusters,clusters,breakfast_cereals,CH,Nestlé-branded cereal via CPW; market scope varies
-Cereal Partners Worldwide,gold flakes,gold flakes,breakfast_cereals,CH,Nestlé-branded cereal via CPW; market scope varies
-General Mills,cheerios,cheerios,breakfast_cereals,US,Core US cereal brand; CPW/Nestlé-branded in many non-US markets
-General Mills,lucky charms,lucky charms,breakfast_cereals,US,Core US cereal brand
-General Mills,cinnamon toast crunch,cinnamon toast crunch,breakfast_cereals,US,Core US cereal brand
-General Mills,wheaties,wheaties,breakfast_cereals,US,Heritage cereal; sports/performance associations
-General Mills,trix,trix,breakfast_cereals,US,Kids cereal brand
-General Mills,cocoa puffs,cocoa puffs,breakfast_cereals,US,Kids/chocolate cereal brand
-General Mills,nature valley,nature valley,bars,US,Granola/snack bars; sustained energy/protein variants
-General Mills,fiber one,fiber one,bars,US,Fibre-led snack bar and cereal brand
-General Mills,larabar,larabar,bars,US,Minimal-ingredient fruit/nut bar brand
-General Mills,annies,annies,snacks,US,Organic/natural snacks and meals; kid/family positioning
-General Mills,yoplait,yoplait,dairy,US,US yogurt business; European Yoplait ownership is different
-Mars,snickers,snickers,snacks,US,Core chocolate bar; protein variant exists in some markets
-Mars,mars bar,mars bar,snacks,US,Core chocolate bar; market recipes/positioning vary
-Mars,twix,twix,snacks,US,Core chocolate biscuit bar
-Mars,bounty,bounty,snacks,US,Chocolate/coconut bar; market scope varies
-Mars,m&m's,m&m's,snacks,US,Core chocolate confectionery
-Mars,skittles,skittles,snacks,US,Sugar confectionery
-Mars,kind,kind,bars,US,Nut/snack bars; acquired by Mars
-Mars,nature's bakery,nature's bakery,bars,US,Fig bars and soft-baked snacks; Mars-owned
-Mars,pringles,pringles,snacks,US,Moved to Mars with Kellanova; salty snack
-Mars,cheez-it,cheez-it,snacks,US,Moved to Mars with Kellanova; crackers/salty snacks
-Mars,pop-tarts,pop-tarts,snacks,US,Moved to Mars with Kellanova; toaster pastries/snacks
-Mars,rice krispies treats,rice krispies treats,bars,US,Moved to Mars with Kellanova; snack bars
-Mars,rxbar,rxbar,bars,US,Moved to Mars with Kellanova; protein/ingredient-led bars
-Mars,nutri-grain,nutri-grain,bars,US,Moved to Mars with Kellanova; cereal bars
-Mars,special k bars,special k bars,bars,US,Moved to Mars with Kellanova; bar line distinct from North American cereal ownership
-Mars,kellogg's international cereals,kellogg's international cereals,breakfast_cereals,US,International cereal brands moved with Kellanova; North America cereals are Ferrero/WK Kellogg
-Mars,corn flakes international,corn flakes international,breakfast_cereals,US,Kellogg's international cereal under Mars/Kellanova; North America under Ferrero/WK Kellogg
-Mars,special k international,special k international,breakfast_cereals,US,Kellogg's international cereal under Mars/Kellanova; North America under Ferrero/WK Kellogg
-Mars,coco pops international,coco pops international,breakfast_cereals,US,Kellogg's international cereal under Mars/Kellanova; North America equivalent ownership differs
-Mars,frosties international,frosties international,breakfast_cereals,US,Kellogg's international cereal under Mars/Kellanova; North America equivalent ownership differs
-Mars,morningstar farms,morningstar farms,plant_based,US,Moved to Mars with Kellanova; plant-based frozen foods; not beverage but relevant plant-based CPG
-Ferrero,ferrero rocher,ferrero rocher,snacks,LU,Core praline/confectionery brand
-Ferrero,nutella,nutella,snacks,LU,Spread/snack adjacency; breakfast/snacking relevance
-Ferrero,kinder,kinder,snacks,LU,Kids/family confectionery brand
-Ferrero,tic tac,tic tac,snacks,LU,Sugar confectionery/mints
-Ferrero,thorntons,thorntons,snacks,LU,UK chocolate/confectionery brand
-Ferrero,butterfinger,butterfinger,snacks,LU,US confectionery brand via Ferrara/Ferrero
-Ferrero,crunch,crunch,snacks,LU,US confectionery brand via Ferrara/Ferrero
-Ferrero,baby ruth,baby ruth,snacks,LU,US confectionery brand via Ferrara/Ferrero
-Ferrero,nerds,nerds,snacks,LU,Sugar confectionery via Ferrara/Ferrero
-Ferrero,trolli,trolli,snacks,LU,Gummy confectionery via Ferrara/Ferrero
-Ferrero,keebler,keebler,biscuits,LU,US cookie/cracker brand via Ferrara/Ferrero
-Ferrero,famous amos,famous amos,biscuits,LU,Cookie brand via Ferrara/Ferrero
-Ferrero,power crunch,power crunch,bars,LU,Protein wafer bar; Ferrero/Ferrara portfolio
-Ferrero,corn flakes north america,corn flakes north america,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition
-Ferrero,frosted flakes,frosted flakes,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition
-Ferrero,froot loops,froot loops,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition
-Ferrero,rice krispies north america,rice krispies north america,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition
-Ferrero,special k north america,special k north america,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition
-Ferrero,raisin bran,raisin bran,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition
-Ferrero,kashi,kashi,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition
-Ferrero,bear naked,bear naked,breakfast_cereals,LU,WK Kellogg North America granola brand after Ferrero acquisition
-Mondelez,oreo,oreo,biscuits,US,Global biscuit/cookie brand
-Mondelez,belvita,belvita,biscuits,US,Breakfast biscuits; sustained-energy/wholegrain positioning
-Mondelez,lu,lu,biscuits,US,Biscuit brand; not parent of BelVita
-Mondelez,chips ahoy!,chips ahoy!,biscuits,US,Cookie brand
-Mondelez,ritz,ritz,biscuits,US,Cracker brand
-Mondelez,tuc,tuc,biscuits,US,Cracker brand; market scope varies
-Mondelez,wheat thins,wheat thins,biscuits,US,Cracker/snack brand
-Mondelez,triscuit,triscuit,biscuits,US,Cracker/snack brand
-Mondelez,cadbury,cadbury,snacks,US,Chocolate/confectionery; market rights vary in US
-Mondelez,milka,milka,snacks,US,Chocolate brand
-Mondelez,toblerone,toblerone,snacks,US,Chocolate brand; Swiss heritage but Mondelez-owned
-Mondelez,côte d'or,cote d'or,snacks,US,Chocolate brand
-Mondelez,marabou,marabou,snacks,US,Chocolate brand; Nordics
-Mondelez,clif,clif,bars,US,Energy/nutrition bars; acquired by Mondelez
-Mondelez,luna,luna,bars,US,Nutrition bar brand from Clif portfolio
-Mondelez,grenade,grenade,bars,US,Performance/protein bars; majority stake acquired by Mondelez
-Mondelez,perfect snacks,perfect snacks,bars,US,Refrigerated protein bars/snacks
-Mondelez,hu,hu,snacks,US,Better-for-you chocolate/snacking brand
-Mondelez,tate's bake shop,tate's bake shop,biscuits,US,Premium cookie brand
-Mondelez,tang,tang,powder_drinks,US,Powdered beverage brand; important for your powder-drink scope
-Mondelez,bournvita,bournvita,powder_drinks,US,Chocolate/malted powder drink; important in India/Africa
-Mondelez,philadelphia,philadelphia,dairy,US,Cream cheese brand listed in Mondelez portfolio; ownership/licensing varies by market
-PepsiCo,lay's,lay's,snacks,US,Global potato chips brand
-PepsiCo,doritos,doritos,snacks,US,Tortilla chips brand
-PepsiCo,cheetos,cheetos,snacks,US,Cheese-flavored snack brand
-PepsiCo,ruffles,ruffles,snacks,US,Ridged potato chips brand
-PepsiCo,tostitos,tostitos,snacks,US,Tortilla chips/dips brand
-PepsiCo,fritos,fritos,snacks,US,Corn chips brand
-PepsiCo,sun chips,sun chips,snacks,US,Multigrain chips brand
-PepsiCo,popcorners,popcorners,snacks,US,Popped corn snack brand; protein variants emerging
-PepsiCo,quaker,quaker,breakfast_cereals,US,"Oats, hot cereals, granola and cereal-adjacent products"
-PepsiCo,cap'n crunch,cap'n crunch,breakfast_cereals,US,Quaker/PepsiCo cereal brand
-PepsiCo,life cereal,life cereal,breakfast_cereals,US,Quaker/PepsiCo cereal brand
-PepsiCo,quaker chewy,quaker chewy,bars,US,Granola bars/snack bars
-PepsiCo,gamesa,gamesa,biscuits,US,Biscuits/cookies; strong in Mexico/Latin America
-PepsiCo,sabritas,sabritas,snacks,US,Mexico salty snack brand under PepsiCo
-Hershey,hershey's,hershey's,snacks,US,Core chocolate brand
-Hershey,reese's,reese's,snacks,US,Core peanut-butter/chocolate brand
-Hershey,kitkat us,kitkat us,snacks,US,US license for KitKat; Nestlé owns brand in many non-US markets
-Hershey,kisses,kisses,snacks,US,Chocolate confectionery
-Hershey,almond joy,almond joy,snacks,US,Chocolate/coconut confectionery
-Hershey,skinny pop,skinny pop,snacks,US,Better-for-you popcorn brand
-Hershey,pirate's booty,pirate's booty,snacks,US,Better-for-you puffed snack
-Hershey,dot's pretzels,dot's pretzels,snacks,US,Pretzel snack brand acquired by Hershey
-Hershey,scharffen berger,scharffen berger,snacks,US,Premium chocolate; market scope varies
-Post Holdings,honey bunches of oats,honey bunches of oats,breakfast_cereals,US,Core Post cereal brand
-Post Holdings,pebbles,pebbles,breakfast_cereals,US,Core Post cereal brand
-Post Holdings,grape-nuts,grape-nuts,breakfast_cereals,US,Core Post cereal brand
-Post Holdings,malt-o-meal,malt-o-meal,breakfast_cereals,US,Bagged/value cereal brand
-Post Holdings,honeycomb,honeycomb,breakfast_cereals,US,Core Post cereal brand
-Post Holdings,great grains,great grains,breakfast_cereals,US,Adult/wellness cereal brand
-Post Holdings,weetabix,weetabix,breakfast_cereals,US,UK cereal brand owned by Post Holdings
-Post Holdings,alpen,alpen,breakfast_cereals,US,Muesli/cereal brand under Weetabix/Post
-Post Holdings,ufit,ufit,dairy_drinks,US,Protein drinks under Weetabix/Post segment
-Danone,activia,activia,dairy,FR,Yogurt; probiotic/gut-health positioning
-Danone,actimel,actimel,dairy_drinks,FR,Fermented dairy drink; immune/probiotic positioning
-Danone,hipro,hipro,dairy,FR,High-protein dairy range
-Danone,oikos,oikos,dairy,FR,Greek-style yogurt/protein positioning
-Danone,danonino,danonino,dairy,FR,Kids yogurt; nutrition/no-added-sugar claims vary by market
-Danone,taillefine,taillefine,dairy,FR,Light/low-fat dairy positioning; market scope varies
-Danone,danette,danette,dairy,FR,Dairy dessert brand
-Danone,dannon,dannon,dairy,FR,US Danone/Dannon dairy brand
-Danone,light & fit,light & fit,dairy,FR,US yogurt/protein/light positioning
-Danone,stonyfield,stonyfield,dairy,FR,Organic yogurt/dairy brand under Danone North America
-Danone,silk,silk,plant_based_drinks,FR,Plant-based milks/creamers/yogurts; Danone North America
-Danone,so delicious,so delicious,plant_based,FR,Plant-based frozen desserts/yogurts/creamers; Danone North America
-Danone,alpro,alpro,plant_based_drinks,FR,Plant-based drinks/yogurts; acquired via WhiteWave
-Danone,huel,huel,powder_drinks,FR,Functional complete-nutrition powders/RTD; Danone announced definitive agreement in Mar 2026; closing subject to approvals
-Lactalis,président,president,dairy,FR,Cheese/butter/cream; global dairy brand
-Lactalis,galbani,galbani,dairy,FR,Italian cheese brand
-Lactalis,parmalat,parmalat,dairy,FR,Milk/dairy brand
-Lactalis,lactel,lactel,dairy,FR,Milk/dairy brand
-Lactalis,siggi's,siggi's,dairy,FR,Icelandic-style skyr/yogurt brand
-Lactalis,stonyfield canada,stonyfield canada,dairy,FR,Organic dairy in some markets; confirm local ownership if needed
-Lactalis,anchor,anchor,dairy,FR,Former Fonterra consumer brand in many markets; Greater China exception may remain with Fonterra
-Lactalis,mainland,mainland,dairy,FR,Former Fonterra consumer cheese/butter brand
-Lactalis,anlene,anlene,powder_drinks,FR,Former Fonterra adult milk powder/supplement brand in many markets
-Lactalis,anmum,anmum,powder_drinks,FR,Former Fonterra maternal/child nutrition milk powder brand in many markets
-Lactalis,kapiti,kapiti,dairy,FR,Former Fonterra premium cheese/ice cream brand
-Lactalis,bega license,bega license,dairy,FR,Australian license moved with Fonterra consumer sale; brand/legal scope should be checked by market
-Arla,arla protein,arla protein,dairy_drinks,DK,High-protein dairy drinks/yogurts
-Arla,arla,arla,dairy,DK,Core dairy brand
-Arla,lurpak,lurpak,dairy,DK,Butter/spreads; global dairy brand
-Arla,castello,castello,dairy,DK,Specialty cheese brand
-Arla,cocio,cocio,dairy_drinks,DK,Chocolate milk brand
-Arla,puck,puck,dairy,DK,Cheese/cream brand; strong in Middle East
-Arla,apetina,apetina,dairy,DK,Cheese brand
-Arla,arla skyr,arla skyr,dairy,DK,Skyr/yogurt/protein positioning; market scope varies
-FrieslandCampina,chocomel,chocomel,dairy_drinks,NL,Chocolate milk brand; known as Cécémel in Belgium
-FrieslandCampina,dutch lady,dutch lady,dairy,NL,"Milk, yogurt, dairy drinks and milk powder in Asia"
-FrieslandCampina,campina,campina,dairy,NL,Core dairy brand
-FrieslandCampina,friso,friso,powder_drinks,NL,Infant/child milk powder; regulatory-sensitive category
-FrieslandCampina,rainbow,rainbow,dairy,NL,Evaporated/condensed milk and dairy; Middle East/Asia
-FrieslandCampina,optimel,optimel,dairy_drinks,NL,Low/no-sugar dairy drinks/yogurts; market scope varies
-FrieslandCampina,yazoo,yazoo,dairy_drinks,NL,Flavoured milk drink; UK market
-Fonterra,anchor greater china,anchor greater china,dairy,NZ,Fonterra retained Anchor consumer business in Greater China; many other Anchor consumer markets moved to Lactalis
-Bel Group,babybel,babybel,dairy,FR,Cheese snack portions
-Bel Group,the laughing cow,the laughing cow,dairy,FR,Cheese portions/spreads
-Bel Group,boursin,boursin,dairy,FR,Cheese/spread brand
-Bel Group,kiri,kiri,dairy,FR,Cheese portions; strong in Europe/Middle East/Asia
-Bel Group,gogo squeez,gogo squeez,fruit_snacks,FR,Fruit pouch snack brand via MOM Group
-Bel Group,pom'potes,pom'potes,fruit_snacks,FR,Fruit pouch snack brand via MOM Group
-Bel Group,materne,materne,fruit_snacks,FR,Compotes/fruit snack brand via MOM Group
-Bel Group,mont blanc,mont blanc,dairy,FR,Dairy dessert brand via MOM Group
-Bel Group,nurishh,nurishh,plant_based,FR,"Plant-based cheese brand; availability changed/limited, verify market before use"
-Flora Food Group,flora,flora,plant_based,NL,Plant-based spreads/butter alternatives
-Flora Food Group,becel,becel,plant_based,NL,Spreads; heart-health/plant oils positioning
-Flora Food Group,proactiv,proactiv,plant_based,NL,Plant-sterol cholesterol-lowering spreads; regulated health claim territory
-Flora Food Group,rama,rama,plant_based,NL,Spreads/cooking products; strong in Europe
-Flora Food Group,country crock,country crock,plant_based,NL,US spreads/plant butter
-Flora Food Group,i can't believe it's not butter,i can't believe it's not butter,plant_based,NL,US spreads; plant-based variants
-Flora Food Group,blue band,blue band,plant_based,NL,Spreads; strong in Africa/Asia
-Flora Food Group,violife,violife,plant_based,NL,Plant-based cheese alternatives
-Flora Food Group,elmlea,elmlea,plant_based,NL,Cream alternatives; market scope varies
-Flora Food Group,bertolli spreads,bertolli spreads,plant_based,NL,Spread products under Flora Food Group; olive oil brand ownership/licensing can vary
-Oatly,oatly oat drink,oatly oat drink,plant_based_drinks,SE,Oat milk/drink; global plant-based brand
-Oatly,oatly barista,oatly barista,plant_based_drinks,SE,Barista oat drink; strong coffee-channel use case
-Oatly,oatly yogurt alternative,oatly yogurt alternative,plant_based,SE,Oat-based yogurt alternative; market scope varies
-Chobani,chobani yogurt,chobani yogurt,dairy,US,Greek yogurt/protein dairy
-Chobani,chobani complete,chobani complete,dairy_drinks,US,High-protein/complete nutrition dairy drinks/yogurts
-Chobani,chobani oat milk,chobani oat milk,plant_based_drinks,US,Oat milk/plant-based drinks
-Chobani,chobani creamer,chobani creamer,dairy_drinks,US,Dairy and plant-based creamers; market scope varies
-Emmi,emmi energy milk,emmi energy milk,dairy_drinks,CH,High-protein dairy drink; not generally vegan; watch natural milk sugar vs no-added-sugar claims
-Emmi,emmi caffè latte,emmi caffe latte,dairy_drinks,CH,RTD coffee milk drink
-Emmi,emmi good day,emmi good day,dairy_drinks,CH,Dairy drink; market scope varies
-Emmi,aktifit,aktifit,dairy_drinks,CH,Probiotic/functional dairy drink; Actimel-type territory
-Emmi,kaaltbach,kaaltbach,dairy,CH,Premium cheese brand
-Emmi,le petit chevrier,le petit chevrier,dairy,CH,Goat dairy/cheese brand; market scope varies
-Lotus Bakeries,lotus biscoff,lotus biscoff,biscuits,BE,Global biscuit/spread/snack brand
-Lotus Bakeries,nakd,nakd,bars,BE,Fruit/nut bars; clean-label/natural-sugar positioning
-Lotus Bakeries,trek,trek,bars,BE,Protein flapjacks/bars
-Lotus Bakeries,bear,bear,fruit_snacks,BE,Fruit snacks; child/family positioning
-Lotus Bakeries,kiddylicious,kiddylicious,fruit_snacks,BE,Baby/toddler snacks
-Lotus Bakeries,peijnenburg,peijnenburg,biscuits,BE,Gingerbread/snack cake; regional brand
-Lotus Bakeries,peter's yard,peter's yard,biscuits,BE,Sourdough crispbread/crackers
-Otsuka / Nutrition & Santé,gerblé,gerble,biscuits,JP,French nutrition/health biscuit brand under Nutrition & Santé
-Otsuka / Nutrition & Santé,gerlinéa,gerlinea,bars,JP,Diet/meal-replacement bars and shakes; market scope varies
-Otsuka / Nutrition & Santé,milical,milical,powder_drinks,JP,Diet/meal replacement powders/shakes; market scope varies
-Otsuka / Nutrition & Santé,céréal bio,cereal bio,plant_based,JP,Organic/plant-based foods; market scope varies
-Otsuka / Nutrition & Santé,isostar,isostar,powder_drinks,JP,Sports nutrition powder/drinks; include if sports hydration/nutrition is in scope
-pladis,mcvitie's,mcvitie's,biscuits,UK,Biscuit brand; Digestives/Jaffa Cakes etc.
-pladis,godiva,godiva,snacks,UK,Premium chocolate brand; global/regional licensing can vary
-pladis,ülker,ulker,snacks,UK,Chocolate/biscuits/snacks; strong in Turkey and surrounding markets
-pladis,jacob's,jacob's,biscuits,UK,Crackers/biscuits; market scope varies
-pladis,carr's,carr's,biscuits,UK,Crackers/biscuits
-pladis,go ahead,go ahead,bars,UK,Fruit/biscuit snack bars
-pladis,flipz,flipz,snacks,UK,Chocolate-covered pretzels
-pladis,bn,bn,biscuits,UK,Biscuit brand
-pladis,verkade,verkade,biscuits,UK,Dutch biscuit/chocolate brand
-Grupo Bimbo,bimbo,bimbo,bakery_snacks,MX,Bakery brand; packaged bread/snack adjacency
-Grupo Bimbo,barcel,barcel,snacks,MX,Salty snacks division/brand
-Grupo Bimbo,takis,takis,snacks,MX,Rolled tortilla chip/snack brand under Barcel/Grupo Bimbo
-Grupo Bimbo,marinela,marinela,snacks,MX,Snack cakes/sweet baked snacks
-Grupo Bimbo,oroweat,oroweat,bakery_snacks,MX,Bread/bakery brand
-Grupo Bimbo,thomas',thomas',bakery_snacks,MX,English muffins/bagels; US brand
-Grupo Bimbo,sara lee bakery,sara lee bakery,bakery_snacks,MX,Bakery/snack cakes; bakery brand scope varies
-Grupo Bimbo,entenmann's,entenmann's,bakery_snacks,MX,Sweet baked snacks
-Grupo Bimbo,little bites,little bites,snacks,MX,Mini muffins/sweet baked snacks
-Grupo Bimbo,arnold,arnold,bakery_snacks,MX,Bread/bakery brand; US
-Grupo Bimbo,dempster's,dempster's,bakery_snacks,MX,Bread/bakery brand; Canada
-The Campbell's Company,goldfish,goldfish,snacks,US,Cracker snack brand
-The Campbell's Company,pepperidge farm,pepperidge farm,biscuits,US,Cookies/crackers/bakery snacks
-The Campbell's Company,snyder's of hanover,snyder's of hanover,snacks,US,Pretzel snack brand
-The Campbell's Company,kettle brand,kettle brand,snacks,US,Potato chips brand
-The Campbell's Company,cape cod,cape cod,snacks,US,Kettle chips brand
-The Campbell's Company,lance,lance,snacks,US,Sandwich crackers/snacks
-The Campbell's Company,late july,late july,snacks,US,Organic tortilla chips/snacks
-The Campbell's Company,emerald,emerald,snacks,US,Nuts/snacks; market scope varies
-Lindt & Sprüngli,lindt,lindt,snacks,CH,Premium chocolate brand
-Lindt & Sprüngli,ghirardelli,ghirardelli,snacks,CH,US chocolate brand
-Lindt & Sprüngli,russell stover,russell stover,snacks,CH,US boxed chocolate/confectionery brand
-Lindt & Sprüngli,whitman's,whitman's,snacks,CH,US boxed chocolate brand
-Lindt & Sprüngli,caffarel,caffarel,snacks,CH,Italian chocolate brand
-Lindt & Sprüngli,hofbauer,hofbauer,snacks,CH,Confectionery brand; market scope varies
-Meiji,meiji milk chocolate,meiji milk chocolate,snacks,JP,Core chocolate brand
-Meiji,meiji the cacao,meiji the cacao,snacks,JP,Cacao/chocolate line
-Meiji,chocolate kouka,chocolate kouka,snacks,JP,High-cacao/polyphenol chocolate line
-Meiji,kinoko no yama,kinoko no yama,snacks,JP,Chocolate biscuit snack
-Meiji,takenoko no sato,takenoko no sato,snacks,JP,Chocolate biscuit snack
-Meiji,meiji bulgaria yogurt,meiji bulgaria yogurt,dairy,JP,Yogurt brand; probiotic/fermented dairy positioning
-Meiji,meiji protein milk,meiji protein milk,dairy_drinks,JP,High-protein dairy drink; strong in some Asian markets
-Savencia,caprice des dieux,caprice des dieux,dairy,FR,Specialty cheese brand
-Savencia,elle & vire,elle & vire,dairy,FR,Cream/butter brand
-Savencia,st môret,st moret,dairy,FR,Fresh cheese/spread brand
-Savencia,saint agur,saint agur,dairy,FR,Blue cheese brand
-Savencia,le rustique,le rustique,dairy,FR,Cheese brand
-Savencia,tartare,tartare,dairy,FR,Fresh cheese/spread brand
-Savencia,bresso,bresso,dairy,FR,Fresh cheese brand
-Savencia,alouette,alouette,dairy,FR,Cheese/spread brand
-Savencia,valrhona,valrhona,snacks,FR,Premium chocolate; professional/retail
-Savencia,la maison du chocolat,la maison du chocolat,snacks,FR,Premium chocolate brand
-Saputo,dairyland,dairyland,dairy,CA,Canadian dairy brand
-Saputo,armstrong,armstrong,dairy,CA,Cheese brand
-Saputo,neilson,neilson,dairy,CA,Canadian dairy brand
-Saputo,stella,stella,dairy,CA,US Italian-style cheese brand
-Saputo,frigo,frigo,dairy,CA,US cheese brand
-Saputo,cathedral city,cathedral city,dairy,CA,UK cheese brand under Saputo Dairy UK
-Saputo,clover,clover,dairy,CA,Dairy brand; market scope varies
-Saputo,scotsburn,scotsburn,dairy,CA,Canadian dairy brand
-Saputo,devondale murray goulburn,devondale murray goulburn,dairy,CA,Australian dairy brand; Saputo portfolio
-Coca-Cola,fairlife,fairlife,dairy_drinks,US,Filtered milk/protein dairy drinks; non-soda Coca-Cola-owned brand
-Kraft Heinz,notco joint products,notco joint products,plant_based,US,Kraft Heinz NotCo co-branded plant-based products; product availability varies
-Kraft Heinz,kraft singles,kraft singles,dairy,US,Processed cheese slices; include only if cheese/dairy foods are in scope
-Carrefour,carrefour,carrefour,snacks,FR,
-Auchan,auchan,auchan,snacks,FR,
-U,u,u,snacks,FR,
-Casino,casino,casino,snacks,FR,
-Lidl,lidl,lidl,snacks,FR,
-Cora,cora,cora,snacks,FR,
-Leader Price,leader price,leader price,snacks,FR,
-Marque Rep re,marque rep re,marque rep re,snacks,FR,
-Tesco,tesco,tesco,snacks,GB,UK's largest retailer; own-label across all categories
-Sainsbury's,sainsbury's,sainsbury's,snacks,GB,UK retailer; own-label includes Taste the Difference premium line
-Asda,asda,asda,snacks,GB,UK retailer; owned by Walmart / EG Group
-Marks & Spencer,marks & spencer,marks & spencer,snacks,GB,UK retailer; known for premium own-label food
-Meijer,meijer,meijer,snacks,US,Midwest US retailer; own-label across grocery categories
-Wegmans,wegmans,wegmans,snacks,US,US regional retailer; strong own-label
-Walmart / Great Value,great value,great value,snacks,US,Walmart private label brand
-Trader Joe's,trader joe's,trader joe's,snacks,US,US specialty retailer; almost all products are own-label
-Leclerc,leclerc,leclerc,snacks,FR,French retailer (E.Leclerc); own-label and sourcing centre
-Monoprix,monoprix,monoprix,snacks,FR,French retailer (Casino Group); urban premium positioning
-Franprix,franprix,franprix,snacks,FR,French retailer (Casino Group); urban convenience
-Belle France,belle france,belle france,snacks,FR,French retailer own-label
-La Vie Claire,la vie claire,la vie claire,snacks,FR,French organic retail chain; own-label products
-Hema,hema,hema,snacks,NL,Dutch retailer; own-label food products
-Netto,netto,netto,snacks,DE,German/Danish discount retailer (Edeka / Salling Group)
-Nestlé,nestle,nestle,snacks,CH,Canonical brand spelling without accent
-Danone,danone,danone,dairies,FR,Parent company brand used on some products directly
-Kellogg's,kellogg's,kellogg's,cereals,US,Canonical Kellogg's brand
-Haribo,haribo,haribo,snacks,DE,Family-owned German confectionery
-Lipton,lipton,lipton,beverages,GB,Unilever brand (tea and RTD beverages)
-Coca-Cola,coca-cola,coca-cola,beverages,US,Flagship brand — was missing from mapping
-Leclerc,marque repere,marque repere,snacks,FR,Leclerc Repère private label — supersedes corrupted Marque Repère company entry
-Leclerc,e.leclerc,e.leclerc,snacks,FR,Leclerc full-name variant
-Leclerc,bio village,bio village,snacks,FR,Leclerc organic private label
-Leclerc,delisse,delisse,dairies,FR,Leclerc private label (Marque Repère range)
-Aldi,aldi,aldi,snacks,DE,German discount retailer (Aldi Nord / Aldi Süd)
-Lidl,milbona,milbona,dairies,DE,Lidl dairy private label
-Morrisons,morrisons,morrisons,snacks,GB,UK supermarket
-Waitrose,waitrose,waitrose,snacks,GB,John Lewis Partnership
-Kroger,kroger,kroger,snacks,US,US largest supermarket chain
-Kroger,harris teeter,harris teeter,snacks,US,Kroger subsidiary
-Intermarché,intermarche,intermarche,snacks,FR,Les Mousquetaires
-Intermarché,chabrior,chabrior,snacks,FR,Intermarché private label
-Intermarché,paturages,paturages,dairies,FR,Intermarché dairy private label
-Coop,coop,coop,snacks,CH,Swiss / European cooperative retailer
-Biocoop,biocoop,biocoop,snacks,FR,French organic cooperative (independent from Coop)
-Whole Foods / Amazon,whole foods market,whole foods market,snacks,US,US organic specialty retailer
-Whole Foods / Amazon,365 everyday value,365 everyday value,snacks,US,Whole Foods private label
-H-E-B,h-e-b,h-e-b,snacks,US,Texas family-owned retailer
-Hy-Vee,hy-vee,hy-vee,snacks,US,Midwest US employee-owned retailer
-Ahold Delhaize,ahold,ahold,snacks,NL,Dutch-US retailer group
-Ahold Delhaize,delhaize,delhaize,snacks,BE,Belgian-US retailer (Ahold Delhaize subsidiary)
-Marks & Spencer,m&s,m&s,snacks,GB,Marks & Spencer abbreviation variant
-Target,market pantry,market pantry,snacks,US,Target private label
-Dia,dia,dia,snacks,ES,Spanish discount retailer
-Ferrero,ferrero,ferrero,snacks,DE,Parent company brand on some products directly
-Starbucks,starbucks,starbucks,beverages,US,RTD coffee and packaged food products
-Barilla,barilla,barilla,snacks,IT,Italian pasta — family-owned
-Tropicana,tropicana,tropicana,beverages,US,Now independent brand (PAI Partners ex-PepsiCo)
-Wawa,wawa,wawa,snacks,US,US convenience store chain
-Picard,picard,picard,dairies,FR,Independent French frozen food specialist
-Panzani,lustucru,lustucru,snacks,FR,Panzani subsidiary (Ebro Foods group)
-Ecotone,bjorg,bjorg,snacks,FR,Ecotone organic foods brand (ex-Wessanen)
-Thiriet,thiriet,thiriet,snacks,FR,Independent French frozen food delivery company
-St Michel,st michel,st michel,snacks,FR,Independent French biscuit company
-Papa John's,papa john's,papa john's,snacks,US,Restaurant brand retail products
-Sonic,sonic,sonic,beverages,US,Restaurant brand retail products
-TGI Friday's,tgi friday's,tgi friday's,snacks,US,Restaurant brand retail products
-Firehouse Subs,firehouse subs,firehouse subs,snacks,US,Restaurant brand retail products
-
-Coca-Cola,fanta,fanta,beverages,US,Flavored carbonated drinks
-Coca-Cola,sprite,sprite,beverages,US,Lemon-lime carbonated drink
-Coca-Cola,minute maid,minute maid,beverages,US,Juice brand
-Coca-Cola,schweppes,schweppes,beverages,GB,Tonic and mixers — Coca-Cola in most markets
-Coca-Cola,powerade,powerade,beverages,US,Sports drink brand
-Coca-Cola,vitaminwater,vitaminwater,beverages,US,Flavored water brand
-Coca-Cola,simply,simply,beverages,US,Simply Orange juice range
-Coca-Cola,innocent,innocent,beverages,GB,Smoothies and juices — Coca-Cola owned
-PepsiCo,pepsi,pepsi,beverages,US,Core PepsiCo beverage brand
-PepsiCo,walkers,walkers,snacks,GB,UK crisps — PepsiCo (Lay's equivalent)
-PepsiCo,mountain dew,mountain dew,beverages,US,Citrus carbonated drink
-PepsiCo,gatorade,gatorade,beverages,US,Sports drink brand
-General Mills,general mills,general mills,snacks,US,Parent company brand used directly
-Mars,mars,mars,snacks,US,Parent company brand used directly
-Kraft Heinz,kraft,kraft,snacks,US,Kraft brand
-Kraft Heinz,heinz,heinz,snacks,US,Heinz brand
-Kraft Heinz,velveeta,velveeta,dairies,US,Processed cheese brand
-Nestlé,nescafe,nescafe,beverages,CH,Nestlé instant coffee brand
-Nestlé,maggi,maggi,snacks,CH,Soups sauces and seasonings
-Nestlé,buitoni,buitoni,snacks,CH,Pasta and Italian food brand
-Nestlé,san pellegrino,san pellegrino,beverages,CH,Sparkling mineral water
-Nestlé,perrier,perrier,beverages,CH,Sparkling mineral water
-Nestlé,vittel,vittel,beverages,CH,Still mineral water
-Danone,evian,evian,beverages,FR,Premium water brand
-Danone,volvic,volvic,beverages,FR,Mineral water brand
-Ferrero,raffaello,raffaello,snacks,IT,Coconut almond chocolate balls
-Mondelez,trident,trident,snacks,US,Chewing gum brand
-The Campbell's Company,campbell's,campbell's,snacks,US,Parent company brand
-The Campbell's Company,v8,v8,beverages,US,Vegetable and fruit juice brand
-Chobani,chobani,chobani,dairies,US,Parent company brand
-Lidl,sondey,sondey,snacks,DE,Lidl biscuits brand
-Lidl,solevita,solevita,beverages,DE,Lidl juice brand
-Ahold Delhaize,giant,giant,snacks,NL,Giant Food stores private label
-Ahold Delhaize,food lion,food lion,snacks,NL,Food Lion stores private label
-Target,target stores,target stores,snacks,US,Target stores brand variant
-Carrefour,reflets de france,reflets de france,snacks,FR,Carrefour premium regional range
-Carrefour,eco+,eco+,snacks,FR,Carrefour economy range
-Carrefour,saveurs de nos regions,saveurs de nos regions,snacks,FR,Carrefour regional flavors range
-Ecotone,bonneterre,bonneterre,snacks,FR,Ecotone organic brand
-Andros,bonne maman,bonne maman,snacks,FR,French jam and dessert brand
-Léa Nature,jardin bio,jardin bio,snacks,FR,French organic food brand
-Perfetti Van Melle,mentos,mentos,snacks,IT,Mints and confectionery
-Alnatura,alnatura,alnatura,snacks,DE,German organic food retailer and brand
-Ocean Spray,ocean spray,ocean spray,beverages,US,Cranberry growers cooperative
-Arizona Beverages,arizona,arizona,beverages,US,US independent RTD tea brand
-Giant Eagle,giant eagle,giant eagle,snacks,US,US independent retailer
-Sheetz,sheetz,sheetz,snacks,US,US convenience store chain
-Wakefern / ShopRite,shoprite,shoprite,snacks,US,US cooperative supermarket chain
-Priméal,primeal,primeal,snacks,FR,French organic food specialist
-Tipiak,tipiak,tipiak,snacks,FR,French food company
-Moulin des Moines,moulin des moines,moulin des moines,cereals,FR,Independent French flour and grain mill
-Yum! Brands,taco bell,taco bell,snacks,US,Restaurant brand retail products
-Red Robin,red robin,red robin,snacks,US,Restaurant brand retail products
-White Castle,white castle,white castle,snacks,US,Restaurant brand retail products
-Associated Wholesale Grocers,food club,food club,snacks,US,AWG cooperative private label
-Migros,migros,migros,snacks,CH,Swiss cooperative retailer and own-label brand
-Nestlé,nespresso,nespresso,beverages,CH,Premium coffee system — Nestlé brand
-Mondelez,mondelez,mondelez,snacks,US,Parent company brand used directly on some products
-Tops Friendly Markets,tops,tops,snacks,US,US regional supermarket chain (Northeast)
+﻿parent_company,brand,primary_brand_db,category,hq_country,notes,ownership_resolution_status,market_scope,country_tags_include,country_tags_exclude,region_codes_include,product_scope_note
+Nestlé,nesquik,nesquik,powder_drinks,CH,Chocolate powder and RTD dairy variants; also used as cereal brand via CPW,direct,,,,,
+Nestlé,milo,milo,powder_drinks,CH,Malted chocolate powder; energy/nutrition positioning varies by market,direct,,,,,
+Nestlé,nido,nido,powder_drinks,CH,Milk powder brand; strong in emerging markets,direct,,,,,
+Nestlé,carnation,carnation,powder_drinks,CH,Evaporated milk and milk powder/creamer products; market scope varies,direct,,,,,
+Nestlé,coffee mate,coffee mate,powder_drinks,CH,Non-dairy creamer/powder beverage adjacent; include only if creamers are in scope,direct,,,,,
+Nestlé,kitkat,kitkat,snacks,CH,Global Nestlé brand except US where Hershey manufactures/distributes under license,market_scoped,Non-US / non-US_CANADA markets,,,FRANCE|UK_IE|DACH|BENELUX|NORDICS|SOUTHERN_EUROPE,Use when OFF country/region tags indicate non-US markets covered by this project
+Hershey,kitkat,kitkat,snacks,US,US license for KitKat; Hershey manufactures/distributes under license in the US,market_scoped,US,,,US_CANADA,Use when OFF country/region tags indicate US/Canada; verify Canada separately if needed
+Manual review,kitkat,kitkat,snacks,MULTI,Market-specific ownership: Nestlé in most non-US markets; Hershey manufactures/distributes under license in the US,manual_review,,,,,"Use when country tags are missing, conflicting, or outside scoped rules"
+Hershey,kitkat us,kitkat us,snacks,US,US license helper key for KitKat; only usable when cleaned brand key explicitly resolves to kitkat us,market_scoped,US,,,US_CANADA,Retained as helper key if alias or market-aware logic produces kitkat us
+Nestlé,aero,aero,snacks,CH,Chocolate confectionery brand; market scope varies,direct,,,,,
+Nestlé,smarties,smarties,snacks,CH,Chocolate confectionery; not US Smarties candy,direct,,,,,
+Nestlé,quality street,quality street,snacks,CH,Confectionery assortment; heritage/seasonal positioning,direct,,,,,
+Nestlé,cailler,cailler,snacks,CH,Swiss chocolate brand; relevant for Switzerland/Europe,direct,,,,,
+Nestlé,lion,lion,snacks,CH,Chocolate bar; also cereal brand via CPW in some markets,direct,,,,,
+Nestlé,toll house,toll house,snacks,CH,Baking morsels/cookie dough; US-oriented snack/baking brand,direct,,,,,
+Cereal Partners Worldwide,nesquik cereal,nesquik cereal,breakfast_cereals,CH,Nestlé-branded cereal via CPW; kids/chocolate positioning,direct,,,,,
+Cereal Partners Worldwide,fitness,fitness,breakfast_cereals,CH,Nestlé-branded cereal via CPW; adult/wellness positioning,direct,,,,,
+Cereal Partners Worldwide,chocapic,chocapic,breakfast_cereals,CH,Nestlé-branded cereal via CPW; kids/chocolate positioning,direct,,,,,
+General Mills,cheerios,cheerios,breakfast_cereals,US,General Mills in US/Canada,market_scoped,US / Canada,,,US_CANADA,Use when OFF country/region tags indicate US or Canada
+Cereal Partners Worldwide,cheerios,cheerios,breakfast_cereals,CH,CPW/Nestlé-branded cereals in Europe and many non-US markets,market_scoped,Europe / many non-US CPW markets,,,FRANCE|UK_IE|DACH|BENELUX|NORDICS|SOUTHERN_EUROPE,Use when OFF country/region tags indicate covered European CPW markets
+Manual review,cheerios,cheerios,breakfast_cereals,MULTI,"Market-specific ownership: General Mills in US/Canada; Cereal Partners Worldwide/Nestlé-branded in Europe, Latin America, and Asia; CPW/Uncle Tobys in Australia/New Zealand",manual_review,,,,,"Use when country tags are missing, conflicting, or outside scoped rules"
+Cereal Partners Worldwide,lion cereal,lion cereal,breakfast_cereals,CH,Nestlé-branded cereal via CPW; indulgent cereal extension,direct,,,,,
+Cereal Partners Worldwide,shreddies,shreddies,breakfast_cereals,CH,Nestlé-branded cereal in several markets via CPW,direct,,,,,
+Cereal Partners Worldwide,clusters,clusters,breakfast_cereals,CH,Nestlé-branded cereal via CPW; market scope varies,direct,,,,,
+Cereal Partners Worldwide,gold flakes,gold flakes,breakfast_cereals,CH,Nestlé-branded cereal via CPW; market scope varies,direct,,,,,
+General Mills,lucky charms,lucky charms,breakfast_cereals,US,Core US cereal brand,direct,,,,,
+General Mills,cinnamon toast crunch,cinnamon toast crunch,breakfast_cereals,US,Core US cereal brand,direct,,,,,
+General Mills,wheaties,wheaties,breakfast_cereals,US,Heritage cereal; sports/performance associations,direct,,,,,
+General Mills,trix,trix,breakfast_cereals,US,Kids cereal brand,direct,,,,,
+General Mills,cocoa puffs,cocoa puffs,breakfast_cereals,US,Kids/chocolate cereal brand,direct,,,,,
+General Mills,nature valley,nature valley,bars,US,Granola/snack bars; sustained energy/protein variants,direct,,,,,
+General Mills,fiber one,fiber one,bars,US,Fibre-led snack bar and cereal brand,direct,,,,,
+General Mills,larabar,larabar,bars,US,Minimal-ingredient fruit/nut bar brand,direct,,,,,
+General Mills,annies,annies,snacks,US,Organic/natural snacks and meals; kid/family positioning,direct,,,,,
+General Mills,yoplait,yoplait,dairy,US,US yogurt business; European Yoplait ownership is different,direct,,,,,
+Mars,snickers,snickers,snacks,US,Core chocolate bar; protein variant exists in some markets,direct,,,,,
+Mars,mars bar,mars bar,snacks,US,Core chocolate bar; market recipes/positioning vary,direct,,,,,
+Mars,twix,twix,snacks,US,Core chocolate biscuit bar,direct,,,,,
+Mars,bounty,bounty,snacks,US,Chocolate/coconut bar; market scope varies,direct,,,,,
+Mars,m&m's,m&m's,snacks,US,Core chocolate confectionery,direct,,,,,
+Mars,skittles,skittles,snacks,US,Sugar confectionery,direct,,,,,
+Mars,kind,kind,bars,US,Nut/snack bars; acquired by Mars,direct,,,,,
+Mars,nature's bakery,nature's bakery,bars,US,Fig bars and soft-baked snacks; Mars-owned,direct,,,,,
+Mars,pringles,pringles,snacks,US,Moved to Mars with Kellanova; salty snack,direct,,,,,
+Mars,cheez-it,cheez-it,snacks,US,Moved to Mars with Kellanova; crackers/salty snacks,direct,,,,,
+Mars,pop-tarts,pop-tarts,snacks,US,Moved to Mars with Kellanova; toaster pastries/snacks,direct,,,,,
+Mars,rice krispies treats,rice krispies treats,bars,US,Moved to Mars with Kellanova; snack bars,direct,,,,,
+Mars,rxbar,rxbar,bars,US,Moved to Mars with Kellanova; protein/ingredient-led bars,direct,,,,,
+Mars,nutri-grain,nutri-grain,bars,US,Moved to Mars with Kellanova; cereal bars,direct,,,,,
+Mars,special k bars,special k bars,bars,US,Moved to Mars with Kellanova; bar line distinct from North American cereal ownership,direct,,,,,
+Mars,kellogg's international cereals,kellogg's international cereals,breakfast_cereals,US,International cereal brands moved with Kellanova; North America cereals are Ferrero/WK Kellogg,direct,,,,,
+Mars,corn flakes international,corn flakes international,breakfast_cereals,US,Kellogg's international cereal under Mars/Kellanova; North America under Ferrero/WK Kellogg,direct,,,,,
+Mars,special k international,special k international,breakfast_cereals,US,Kellogg's international cereal under Mars/Kellanova; North America under Ferrero/WK Kellogg,direct,,,,,
+Mars,coco pops international,coco pops international,breakfast_cereals,US,Kellogg's international cereal under Mars/Kellanova; North America equivalent ownership differs,direct,,,,,
+Mars,frosties international,frosties international,breakfast_cereals,US,Kellogg's international cereal under Mars/Kellanova; North America equivalent ownership differs,direct,,,,,
+Mars,morningstar farms,morningstar farms,plant_based,US,Moved to Mars with Kellanova; plant-based frozen foods; not beverage but relevant plant-based CPG,direct,,,,,
+Ferrero,ferrero rocher,ferrero rocher,snacks,LU,Core praline/confectionery brand,direct,,,,,
+Ferrero,nutella,nutella,snacks,LU,Spread/snack adjacency; breakfast/snacking relevance,direct,,,,,
+Ferrero,kinder,kinder,snacks,LU,Kids/family confectionery brand,direct,,,,,
+Ferrero,tic tac,tic tac,snacks,LU,Sugar confectionery/mints,direct,,,,,
+Ferrero,thorntons,thorntons,snacks,LU,UK chocolate/confectionery brand,direct,,,,,
+Ferrero,butterfinger,butterfinger,snacks,LU,US confectionery brand via Ferrara/Ferrero,direct,,,,,
+Ferrero,crunch,crunch,snacks,LU,US confectionery brand via Ferrara/Ferrero,direct,,,,,
+Ferrero,baby ruth,baby ruth,snacks,LU,US confectionery brand via Ferrara/Ferrero,direct,,,,,
+Ferrero,nerds,nerds,snacks,LU,Sugar confectionery via Ferrara/Ferrero,direct,,,,,
+Ferrero,trolli,trolli,snacks,LU,Gummy confectionery via Ferrara/Ferrero,direct,,,,,
+Ferrero,keebler,keebler,biscuits,LU,US cookie/cracker brand via Ferrara/Ferrero,direct,,,,,
+Ferrero,famous amos,famous amos,biscuits,LU,Cookie brand via Ferrara/Ferrero,direct,,,,,
+Ferrero,power crunch,power crunch,bars,LU,Protein wafer bar; Ferrero/Ferrara portfolio,direct,,,,,
+Ferrero,corn flakes north america,corn flakes north america,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition,direct,,,,,
+Ferrero,frosted flakes,frosted flakes,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition,direct,,,,,
+Ferrero,froot loops,froot loops,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition,direct,,,,,
+Ferrero,rice krispies north america,rice krispies north america,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition,direct,,,,,
+Ferrero,special k north america,special k north america,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition,direct,,,,,
+Ferrero,raisin bran,raisin bran,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition,direct,,,,,
+Ferrero,kashi,kashi,breakfast_cereals,LU,WK Kellogg North America brand after Ferrero acquisition,direct,,,,,
+Ferrero,bear naked,bear naked,breakfast_cereals,LU,WK Kellogg North America granola brand after Ferrero acquisition,direct,,,,,
+Mondelez,oreo,oreo,biscuits,US,Global biscuit/cookie brand,direct,,,,,
+Mondelez,belvita,belvita,biscuits,US,Breakfast biscuits; sustained-energy/wholegrain positioning,direct,,,,,
+Mondelez,lu,lu,biscuits,US,Biscuit brand; not parent of BelVita,direct,,,,,
+Mondelez,chips ahoy!,chips ahoy!,biscuits,US,Cookie brand,direct,,,,,
+Mondelez,ritz,ritz,biscuits,US,Cracker brand,direct,,,,,
+Mondelez,tuc,tuc,biscuits,US,Cracker brand; market scope varies,direct,,,,,
+Mondelez,wheat thins,wheat thins,biscuits,US,Cracker/snack brand,direct,,,,,
+Mondelez,triscuit,triscuit,biscuits,US,Cracker/snack brand,direct,,,,,
+Mondelez,cadbury,cadbury,snacks,US,Chocolate/confectionery; market rights vary in US,direct,,,,,
+Mondelez,milka,milka,snacks,US,Chocolate brand,direct,,,,,
+Mondelez,toblerone,toblerone,snacks,US,Chocolate brand; Swiss heritage but Mondelez-owned,direct,,,,,
+Mondelez,côte d'or,cote d'or,snacks,US,Chocolate brand,direct,,,,,
+Mondelez,marabou,marabou,snacks,US,Chocolate brand; Nordics,direct,,,,,
+Mondelez,clif,clif,bars,US,Energy/nutrition bars; acquired by Mondelez,direct,,,,,
+Mondelez,luna,luna,bars,US,Nutrition bar brand from Clif portfolio,direct,,,,,
+Mondelez,grenade,grenade,bars,US,Performance/protein bars; majority stake acquired by Mondelez,direct,,,,,
+Mondelez,perfect snacks,perfect snacks,bars,US,Refrigerated protein bars/snacks,direct,,,,,
+Mondelez,hu,hu,snacks,US,Better-for-you chocolate/snacking brand,direct,,,,,
+Mondelez,tate's bake shop,tate's bake shop,biscuits,US,Premium cookie brand,direct,,,,,
+Mondelez,tang,tang,powder_drinks,US,Powdered beverage brand; important for your powder-drink scope,direct,,,,,
+Mondelez,bournvita,bournvita,powder_drinks,US,Chocolate/malted powder drink; important in India/Africa,direct,,,,,
+Mondelez,philadelphia,philadelphia,dairy,US,Cream cheese brand listed in Mondelez portfolio; ownership/licensing varies by market,direct,,,,,
+PepsiCo,lay's,lay's,snacks,US,Global potato chips brand,direct,,,,,
+PepsiCo,doritos,doritos,snacks,US,Tortilla chips brand,direct,,,,,
+PepsiCo,cheetos,cheetos,snacks,US,Cheese-flavored snack brand,direct,,,,,
+PepsiCo,ruffles,ruffles,snacks,US,Ridged potato chips brand,direct,,,,,
+PepsiCo,tostitos,tostitos,snacks,US,Tortilla chips/dips brand,direct,,,,,
+PepsiCo,fritos,fritos,snacks,US,Corn chips brand,direct,,,,,
+PepsiCo,sun chips,sun chips,snacks,US,Multigrain chips brand,direct,,,,,
+PepsiCo,popcorners,popcorners,snacks,US,Popped corn snack brand; protein variants emerging,direct,,,,,
+PepsiCo,quaker,quaker,breakfast_cereals,US,"Oats, hot cereals, granola and cereal-adjacent products",direct,,,,,
+PepsiCo,cap'n crunch,cap'n crunch,breakfast_cereals,US,Quaker/PepsiCo cereal brand,direct,,,,,
+PepsiCo,life cereal,life cereal,breakfast_cereals,US,Quaker/PepsiCo cereal brand,direct,,,,,
+PepsiCo,quaker chewy,quaker chewy,bars,US,Granola bars/snack bars,direct,,,,,
+PepsiCo,gamesa,gamesa,biscuits,US,Biscuits/cookies; strong in Mexico/Latin America,direct,,,,,
+PepsiCo,sabritas,sabritas,snacks,US,Mexico salty snack brand under PepsiCo,direct,,,,,
+Hershey,hershey's,hershey's,snacks,US,Core chocolate brand,direct,,,,,
+Hershey,reese's,reese's,snacks,US,Core peanut-butter/chocolate brand,direct,,,,,
+Hershey,kisses,kisses,snacks,US,Chocolate confectionery,direct,,,,,
+Hershey,almond joy,almond joy,snacks,US,Chocolate/coconut confectionery,direct,,,,,
+Hershey,skinny pop,skinny pop,snacks,US,Better-for-you popcorn brand,direct,,,,,
+Hershey,pirate's booty,pirate's booty,snacks,US,Better-for-you puffed snack,direct,,,,,
+Hershey,dot's pretzels,dot's pretzels,snacks,US,Pretzel snack brand acquired by Hershey,direct,,,,,
+Hershey,scharffen berger,scharffen berger,snacks,US,Premium chocolate; market scope varies,direct,,,,,
+Post Holdings,honey bunches of oats,honey bunches of oats,breakfast_cereals,US,Core Post cereal brand,direct,,,,,
+Post Holdings,pebbles,pebbles,breakfast_cereals,US,Core Post cereal brand,direct,,,,,
+Post Holdings,grape-nuts,grape-nuts,breakfast_cereals,US,Core Post cereal brand,direct,,,,,
+Post Holdings,malt-o-meal,malt-o-meal,breakfast_cereals,US,Bagged/value cereal brand,direct,,,,,
+Post Holdings,honeycomb,honeycomb,breakfast_cereals,US,Core Post cereal brand,direct,,,,,
+Post Holdings,great grains,great grains,breakfast_cereals,US,Adult/wellness cereal brand,direct,,,,,
+Post Holdings,weetabix,weetabix,breakfast_cereals,US,UK cereal brand owned by Post Holdings,direct,,,,,
+Post Holdings,alpen,alpen,breakfast_cereals,US,Muesli/cereal brand under Weetabix/Post,direct,,,,,
+Post Holdings,ufit,ufit,dairy_drinks,US,Protein drinks under Weetabix/Post segment,direct,,,,,
+Danone,activia,activia,dairy,FR,Yogurt; probiotic/gut-health positioning,direct,,,,,
+Danone,actimel,actimel,dairy_drinks,FR,Fermented dairy drink; immune/probiotic positioning,direct,,,,,
+Danone,hipro,hipro,dairy,FR,High-protein dairy range,direct,,,,,
+Danone,oikos,oikos,dairy,FR,Greek-style yogurt/protein positioning,direct,,,,,
+Danone,danonino,danonino,dairy,FR,Kids yogurt; nutrition/no-added-sugar claims vary by market,direct,,,,,
+Danone,taillefine,taillefine,dairy,FR,Light/low-fat dairy positioning; market scope varies,direct,,,,,
+Danone,danette,danette,dairy,FR,Dairy dessert brand,direct,,,,,
+Danone,dannon,dannon,dairy,FR,US Danone/Dannon dairy brand,direct,,,,,
+Danone,light & fit,light & fit,dairy,FR,US yogurt/protein/light positioning,direct,,,,,
+Lactalis,stonyfield,stonyfield,dairy,FR,Organic yogurt/dairy brand under Lactalis; Danone sold Stonyfield to Lactalis in 2017,direct,,,,,
+Danone,silk,silk,plant_based_drinks,FR,Plant-based milks/creamers/yogurts; Danone North America,direct,,,,,
+Danone,so delicious,so delicious,plant_based,FR,Plant-based frozen desserts/yogurts/creamers; Danone North America,direct,,,,,
+Danone,alpro,alpro,plant_based_drinks,FR,Plant-based drinks/yogurts; acquired via WhiteWave,direct,,,,,
+Huel,huel,huel,powder_drinks,GB,Independent / Huel Ltd; Danone acquisition announced Mar 2026 but not mapped to Danone until closing is formally completed,direct,,,,,
+Lactalis,président,president,dairy,FR,Cheese/butter/cream; global dairy brand,direct,,,,,
+Lactalis,galbani,galbani,dairy,FR,Italian cheese brand,direct,,,,,
+Lactalis,parmalat,parmalat,dairy,FR,Milk/dairy brand,direct,,,,,
+Lactalis,lactel,lactel,dairy,FR,Milk/dairy brand,direct,,,,,
+Lactalis,siggi's,siggi's,dairy,FR,Icelandic-style skyr/yogurt brand,direct,,,,,
+Lactalis,stonyfield canada,stonyfield canada,dairy,FR,Organic dairy brand under Lactalis in Canada; confirm local ownership if needed,direct,,,,,
+Lactalis,anchor,anchor,dairy,FR,Former Fonterra consumer brand transferred to Lactalis in many markets; Greater China / retained-market exceptions may apply,direct,,,,,
+Lactalis,mainland,mainland,dairy,FR,Former Fonterra consumer brand transferred to Lactalis in many markets; Greater China / retained-market exceptions may apply,direct,,,,,
+Lactalis,anlene,anlene,powder_drinks,FR,Former Fonterra consumer brand transferred to Lactalis in many markets; Greater China / retained-market exceptions may apply,direct,,,,,
+Lactalis,anmum,anmum,powder_drinks,FR,Former Fonterra consumer brand transferred to Lactalis in many markets; Greater China / retained-market exceptions may apply,direct,,,,,
+Lactalis,kapiti,kapiti,dairy,FR,Former Fonterra consumer brand transferred to Lactalis in many markets; Greater China / retained-market exceptions may apply,direct,,,,,
+Lactalis,bega license,bega license,dairy,FR,License-specific Bega row associated with Lactalis/Fonterra consumer brand transaction; check market/legal scope if actual OFF bega products appear separately,direct,,,,,
+Arla,arla protein,arla protein,dairy_drinks,DK,High-protein dairy drinks/yogurts,direct,,,,,
+Arla,arla,arla,dairy,DK,Core dairy brand,direct,,,,,
+Arla,lurpak,lurpak,dairy,DK,Butter/spreads; global dairy brand,direct,,,,,
+Arla,castello,castello,dairy,DK,Specialty cheese brand,direct,,,,,
+Arla,cocio,cocio,dairy_drinks,DK,Chocolate milk brand,direct,,,,,
+Arla,puck,puck,dairy,DK,Cheese/cream brand; strong in Middle East,direct,,,,,
+Arla,apetina,apetina,dairy,DK,Cheese brand,direct,,,,,
+Arla,arla skyr,arla skyr,dairy,DK,Skyr/yogurt/protein positioning; market scope varies,direct,,,,,
+FrieslandCampina,chocomel,chocomel,dairy_drinks,NL,Chocolate milk brand; known as Cécémel in Belgium,direct,,,,,
+FrieslandCampina,dutch lady,dutch lady,dairy,NL,"Milk, yogurt, dairy drinks and milk powder in Asia",direct,,,,,
+FrieslandCampina,campina,campina,dairy,NL,Core dairy brand,direct,,,,,
+FrieslandCampina,friso,friso,powder_drinks,NL,Infant/child milk powder; regulatory-sensitive category,direct,,,,,
+FrieslandCampina,rainbow,rainbow,dairy,NL,Evaporated/condensed milk and dairy; Middle East/Asia,direct,,,,,
+FrieslandCampina,optimel,optimel,dairy_drinks,NL,Low/no-sugar dairy drinks/yogurts; market scope varies,direct,,,,,
+FrieslandCampina,yazoo,yazoo,dairy_drinks,NL,Flavoured milk drink; UK market,direct,,,,,
+Fonterra,anchor greater china,anchor greater china,dairy,NZ,Fonterra retained Anchor consumer business in Greater China; many other Anchor consumer markets moved to Lactalis,direct,,,,,
+Bel Group,babybel,babybel,dairy,FR,Cheese snack portions,direct,,,,,
+Bel Group,the laughing cow,the laughing cow,dairy,FR,Cheese portions/spreads,direct,,,,,
+Bel Group,boursin,boursin,dairy,FR,Cheese/spread brand,direct,,,,,
+Bel Group,kiri,kiri,dairy,FR,Cheese portions; strong in Europe/Middle East/Asia,direct,,,,,
+Bel Group,gogo squeez,gogo squeez,fruit_snacks,FR,Fruit pouch snack brand via MOM Group,direct,,,,,
+Bel Group,pom'potes,pom'potes,fruit_snacks,FR,Fruit pouch snack brand via MOM Group,direct,,,,,
+Bel Group,materne,materne,fruit_snacks,FR,Compotes/fruit snack brand via MOM Group,direct,,,,,
+Bel Group,mont blanc,mont blanc,dairy,FR,Dairy dessert brand via MOM Group,direct,,,,,
+Bel Group,nurishh,nurishh,plant_based,FR,"Plant-based cheese brand; availability changed/limited, verify market before use",direct,,,,,
+Flora Food Group,flora,flora,plant_based,NL,Plant-based spreads/butter alternatives,direct,,,,,
+Flora Food Group,becel,becel,plant_based,NL,Spreads; heart-health/plant oils positioning,direct,,,,,
+Flora Food Group,proactiv,proactiv,plant_based,NL,Plant-sterol cholesterol-lowering spreads; regulated health claim territory,direct,,,,,
+Flora Food Group,rama,rama,plant_based,NL,Spreads/cooking products; strong in Europe,direct,,,,,
+Flora Food Group,country crock,country crock,plant_based,NL,US spreads/plant butter,direct,,,,,
+Flora Food Group,i can't believe it's not butter,i can't believe it's not butter,plant_based,NL,US spreads; plant-based variants,direct,,,,,
+Flora Food Group,blue band,blue band,plant_based,NL,Spreads; strong in Africa/Asia,direct,,,,,
+Flora Food Group,violife,violife,plant_based,NL,Plant-based cheese alternatives,direct,,,,,
+Flora Food Group,elmlea,elmlea,plant_based,NL,Cream alternatives; market scope varies,direct,,,,,
+Flora Food Group,bertolli spreads,bertolli spreads,plant_based,NL,Spread products under Flora Food Group; Bertolli olive oil ownership/licensing differs by product type,direct,,,,,
+Oatly,oatly oat drink,oatly oat drink,plant_based_drinks,SE,Oat milk/drink; global plant-based brand,direct,,,,,
+Oatly,oatly barista,oatly barista,plant_based_drinks,SE,Barista oat drink; strong coffee-channel use case,direct,,,,,
+Oatly,oatly yogurt alternative,oatly yogurt alternative,plant_based,SE,Oat-based yogurt alternative; market scope varies,direct,,,,,
+Chobani,chobani yogurt,chobani yogurt,dairy,US,Greek yogurt/protein dairy,direct,,,,,
+Chobani,chobani complete,chobani complete,dairy_drinks,US,High-protein/complete nutrition dairy drinks/yogurts,direct,,,,,
+Chobani,chobani oat milk,chobani oat milk,plant_based_drinks,US,Oat milk/plant-based drinks,direct,,,,,
+Chobani,chobani creamer,chobani creamer,dairy_drinks,US,Dairy and plant-based creamers; market scope varies,direct,,,,,
+Emmi,emmi energy milk,emmi energy milk,dairy_drinks,CH,High-protein dairy drink; not generally vegan; watch natural milk sugar vs no-added-sugar claims,direct,,,,,
+Emmi,emmi caffè latte,emmi caffe latte,dairy_drinks,CH,RTD coffee milk drink,direct,,,,,
+Emmi,emmi good day,emmi good day,dairy_drinks,CH,Dairy drink; market scope varies,direct,,,,,
+Emmi,aktifit,aktifit,dairy_drinks,CH,Probiotic/functional dairy drink; Actimel-type territory,direct,,,,,
+Emmi,kaaltbach,kaaltbach,dairy,CH,Premium cheese brand,direct,,,,,
+Emmi,le petit chevrier,le petit chevrier,dairy,CH,Goat dairy/cheese brand; market scope varies,direct,,,,,
+Lotus Bakeries,lotus biscoff,lotus biscoff,biscuits,BE,Global biscuit/spread/snack brand,direct,,,,,
+Lotus Bakeries,nakd,nakd,bars,BE,Fruit/nut bars; clean-label/natural-sugar positioning,direct,,,,,
+Lotus Bakeries,trek,trek,bars,BE,Protein flapjacks/bars,direct,,,,,
+Lotus Bakeries,bear,bear,fruit_snacks,BE,Fruit snacks; child/family positioning,direct,,,,,
+Lotus Bakeries,kiddylicious,kiddylicious,fruit_snacks,BE,Baby/toddler snacks,direct,,,,,
+Lotus Bakeries,peijnenburg,peijnenburg,biscuits,BE,Gingerbread/snack cake; regional brand,direct,,,,,
+Lotus Bakeries,peter's yard,peter's yard,biscuits,BE,Sourdough crispbread/crackers,direct,,,,,
+Otsuka / Nutrition & Santé,gerblé,gerble,biscuits,JP,French nutrition/health biscuit brand under Nutrition & Santé,direct,,,,,
+Otsuka / Nutrition & Santé,gerlinéa,gerlinea,bars,JP,Diet/meal-replacement bars and shakes; market scope varies,direct,,,,,
+Otsuka / Nutrition & Santé,milical,milical,powder_drinks,JP,Diet/meal replacement powders/shakes; market scope varies,direct,,,,,
+Otsuka / Nutrition & Santé,céréal bio,cereal bio,plant_based,JP,Organic/plant-based foods; market scope varies,direct,,,,,
+Otsuka / Nutrition & Santé,isostar,isostar,powder_drinks,JP,Sports nutrition powder/drinks; include if sports hydration/nutrition is in scope,direct,,,,,
+pladis,mcvitie's,mcvitie's,biscuits,UK,Biscuit brand; Digestives/Jaffa Cakes etc.,direct,,,,,
+pladis,godiva,godiva,snacks,UK,Premium chocolate brand under Yildiz Holding / pladis for packaged CPG context; ownership/licensing can vary by region/channel,direct,,,,,
+pladis,ülker,ulker,snacks,UK,Chocolate/biscuits/snacks; strong in Turkey and surrounding markets,direct,,,,,
+pladis,jacob's,jacob's,biscuits,UK,Crackers/biscuits; market scope varies,direct,,,,,
+pladis,carr's,carr's,biscuits,UK,Crackers/biscuits,direct,,,,,
+pladis,go ahead,go ahead,bars,UK,Fruit/biscuit snack bars,direct,,,,,
+pladis,flipz,flipz,snacks,UK,Chocolate-covered pretzels,direct,,,,,
+pladis,bn,bn,biscuits,UK,Biscuit brand,direct,,,,,
+pladis,verkade,verkade,biscuits,UK,Dutch biscuit/chocolate brand,direct,,,,,
+Grupo Bimbo,bimbo,bimbo,bakery_snacks,MX,Bakery brand; packaged bread/snack adjacency,direct,,,,,
+Grupo Bimbo,barcel,barcel,snacks,MX,Salty snacks division/brand,direct,,,,,
+Grupo Bimbo,takis,takis,snacks,MX,Rolled tortilla chip/snack brand under Barcel/Grupo Bimbo,direct,,,,,
+Grupo Bimbo,marinela,marinela,snacks,MX,Snack cakes/sweet baked snacks,direct,,,,,
+Grupo Bimbo,oroweat,oroweat,bakery_snacks,MX,Bread/bakery brand,direct,,,,,
+Grupo Bimbo,thomas',thomas',bakery_snacks,MX,English muffins/bagels; US brand,direct,,,,,
+Grupo Bimbo,sara lee bakery,sara lee bakery,bakery_snacks,MX,Bakery/snack cakes; bakery brand scope varies,direct,,,,,
+Grupo Bimbo,entenmann's,entenmann's,bakery_snacks,MX,Sweet baked snacks,direct,,,,,
+Grupo Bimbo,little bites,little bites,snacks,MX,Mini muffins/sweet baked snacks,direct,,,,,
+Grupo Bimbo,arnold,arnold,bakery_snacks,MX,Bread/bakery brand; US,direct,,,,,
+Grupo Bimbo,dempster's,dempster's,bakery_snacks,MX,Bread/bakery brand; Canada,direct,,,,,
+The Campbell's Company,goldfish,goldfish,snacks,US,Cracker snack brand,direct,,,,,
+The Campbell's Company,pepperidge farm,pepperidge farm,biscuits,US,Cookies/crackers/bakery snacks,direct,,,,,
+The Campbell's Company,snyder's of hanover,snyder's of hanover,snacks,US,Pretzel snack brand,direct,,,,,
+The Campbell's Company,kettle brand,kettle brand,snacks,US,Potato chips brand,direct,,,,,
+The Campbell's Company,cape cod,cape cod,snacks,US,Kettle chips brand,direct,,,,,
+The Campbell's Company,lance,lance,snacks,US,Sandwich crackers/snacks,direct,,,,,
+The Campbell's Company,late july,late july,snacks,US,Organic tortilla chips/snacks,direct,,,,,
+The Campbell's Company,emerald,emerald,snacks,US,Nuts/snacks; market scope varies,direct,,,,,
+Lindt & Sprüngli,lindt,lindt,snacks,CH,Premium chocolate brand,direct,,,,,
+Lindt & Sprüngli,ghirardelli,ghirardelli,snacks,CH,US chocolate brand,direct,,,,,
+Lindt & Sprüngli,russell stover,russell stover,snacks,CH,US boxed chocolate/confectionery brand,direct,,,,,
+Lindt & Sprüngli,whitman's,whitman's,snacks,CH,US boxed chocolate brand,direct,,,,,
+Lindt & Sprüngli,caffarel,caffarel,snacks,CH,Italian chocolate brand,direct,,,,,
+Lindt & Sprüngli,hofbauer,hofbauer,snacks,CH,Confectionery brand; market scope varies,direct,,,,,
+Meiji,meiji milk chocolate,meiji milk chocolate,snacks,JP,Core chocolate brand,direct,,,,,
+Meiji,meiji the cacao,meiji the cacao,snacks,JP,Cacao/chocolate line,direct,,,,,
+Meiji,chocolate kouka,chocolate kouka,snacks,JP,High-cacao/polyphenol chocolate line,direct,,,,,
+Meiji,kinoko no yama,kinoko no yama,snacks,JP,Chocolate biscuit snack,direct,,,,,
+Meiji,takenoko no sato,takenoko no sato,snacks,JP,Chocolate biscuit snack,direct,,,,,
+Meiji,meiji bulgaria yogurt,meiji bulgaria yogurt,dairy,JP,Yogurt brand; probiotic/fermented dairy positioning,direct,,,,,
+Meiji,meiji protein milk,meiji protein milk,dairy_drinks,JP,High-protein dairy drink; strong in some Asian markets,direct,,,,,
+Savencia,caprice des dieux,caprice des dieux,dairy,FR,Specialty cheese brand,direct,,,,,
+Savencia,elle & vire,elle & vire,dairy,FR,Cream/butter brand,direct,,,,,
+Savencia,st môret,st moret,dairy,FR,Fresh cheese/spread brand,direct,,,,,
+Savencia,saint agur,saint agur,dairy,FR,Blue cheese brand,direct,,,,,
+Savencia,le rustique,le rustique,dairy,FR,Cheese brand,direct,,,,,
+Savencia,tartare,tartare,dairy,FR,Fresh cheese/spread brand,direct,,,,,
+Savencia,bresso,bresso,dairy,FR,Fresh cheese brand,direct,,,,,
+Savencia,alouette,alouette,dairy,FR,Cheese/spread brand,direct,,,,,
+Savencia,valrhona,valrhona,snacks,FR,Premium chocolate; professional/retail,direct,,,,,
+Savencia,la maison du chocolat,la maison du chocolat,snacks,FR,Premium chocolate brand,direct,,,,,
+Saputo,dairyland,dairyland,dairy,CA,Canadian dairy brand,direct,,,,,
+Saputo,armstrong,armstrong,dairy,CA,Cheese brand,direct,,,,,
+Saputo,neilson,neilson,dairy,CA,Canadian dairy brand,direct,,,,,
+Saputo,stella,stella,dairy,CA,US Italian-style cheese brand,direct,,,,,
+Saputo,frigo,frigo,dairy,CA,US cheese brand,direct,,,,,
+Saputo,cathedral city,cathedral city,dairy,CA,UK cheese brand under Saputo Dairy UK,direct,,,,,
+Saputo,clover,clover,dairy,CA,Dairy brand; market scope varies,direct,,,,,
+Saputo,scotsburn,scotsburn,dairy,CA,Canadian dairy brand,direct,,,,,
+Saputo,devondale murray goulburn,devondale murray goulburn,dairy,CA,Australian dairy brand; Saputo portfolio,direct,,,,,
+Coca-Cola,fairlife,fairlife,dairy_drinks,US,Filtered milk/protein dairy drinks; non-soda Coca-Cola-owned brand,direct,,,,,
+Kraft Heinz,notco joint products,notco joint products,plant_based,US,Kraft Heinz NotCo co-branded plant-based products; product availability varies,direct,,,,,
+Kraft Heinz,kraft singles,kraft singles,dairy,US,Processed cheese slices; include only if cheese/dairy foods are in scope,direct,,,,,
+Carrefour,carrefour,carrefour,snacks,FR,,direct,,,,,
+Auchan,auchan,auchan,snacks,FR,,direct,,,,,
+U,u,u,snacks,FR,,direct,,,,,
+Casino,casino,casino,snacks,FR,,direct,,,,,
+Lidl,lidl,lidl,snacks,FR,,direct,,,,,
+Cora,cora,cora,snacks,FR,,direct,,,,,
+Leader Price,leader price,leader price,snacks,FR,,direct,,,,,
+Marque Rep re,marque rep re,marque rep re,snacks,FR,,direct,,,,,
+Tesco,tesco,tesco,snacks,GB,UK's largest retailer; own-label across all categories,direct,,,,,
+Sainsbury's,sainsbury's,sainsbury's,snacks,GB,UK retailer; own-label includes Taste the Difference premium line,direct,,,,,
+Asda,asda,asda,snacks,GB,UK retailer; owned by Walmart / EG Group,direct,,,,,
+Marks & Spencer,marks & spencer,marks & spencer,snacks,GB,UK retailer; known for premium own-label food,direct,,,,,
+Meijer,meijer,meijer,snacks,US,Midwest US retailer; own-label across grocery categories,direct,,,,,
+Wegmans,wegmans,wegmans,snacks,US,US regional retailer; strong own-label,direct,,,,,
+Walmart / Great Value,great value,great value,snacks,US,Walmart private label brand,direct,,,,,
+Trader Joe's,trader joe's,trader joe's,snacks,US,US specialty retailer; almost all products are own-label,direct,,,,,
+Leclerc,leclerc,leclerc,snacks,FR,French retailer (E.Leclerc); own-label and sourcing centre,direct,,,,,
+Monoprix,monoprix,monoprix,snacks,FR,French retailer (Casino Group); urban premium positioning,direct,,,,,
+Franprix,franprix,franprix,snacks,FR,French retailer (Casino Group); urban convenience,direct,,,,,
+Belle France,belle france,belle france,snacks,FR,French retailer own-label,direct,,,,,
+La Vie Claire,la vie claire,la vie claire,snacks,FR,French organic retail chain; own-label products,direct,,,,,
+Hema,hema,hema,snacks,NL,Dutch retailer; own-label food products,direct,,,,,
+Netto,netto,netto,snacks,DE,German/Danish discount retailer (Edeka / Salling Group),direct,,,,,
+Nestlé,nestle,nestle,snacks,CH,Canonical brand spelling without accent,direct,,,,,
+Danone,danone,danone,dairy,FR,Parent company brand used on some products directly,direct,,,,,
+Ferrero,kellogg's,kellogg's,breakfast_cereals,LU,North American cereal ownership after WK Kellogg acquisition by Ferrero,market_scoped,US / Canada / North America cereal,,,US_CANADA,Use only for generic Kellogg's rows when market indicates North America cereal
+Mars,kellogg's,kellogg's,breakfast_cereals,US,International cereal ownership after Kellanova acquisition by Mars,market_scoped,International cereal,,,FRANCE|UK_IE|DACH|BENELUX|NORDICS|SOUTHERN_EUROPE,Use only for generic Kellogg's rows when market indicates international cereal
+Manual review,kellogg's,kellogg's,breakfast_cereals,MULTI,Ambiguous post-split brand mark: North American cereal business moved from WK Kellogg Co to Ferrero Group; global snacks and international cereal moved from Kellanova to Mars,manual_review,,,,,Use when market/country tags or product type are unclear
+Haribo,haribo,haribo,snacks,DE,Family-owned German confectionery,direct,,,,,
+LIPTON Teas and Infusions,lipton,lipton,beverages,GB,Tea brand under LIPTON Teas and Infusions / CVC; RTD tea may be JV/licensing-specific by market,market_scoped,Tea / packaged tea; RTD varies by market,,,,Scope-by-product-type row; resolver should not treat as universal RTD beverage ownership
+Coca-Cola,coca-cola,coca-cola,beverages,US,Flagship brand — was missing from mapping,direct,,,,,
+Leclerc,marque repere,marque repere,snacks,FR,Leclerc Repère private label — supersedes corrupted Marque Repère company entry,direct,,,,,
+Leclerc,e.leclerc,e.leclerc,snacks,FR,Leclerc full-name variant,direct,,,,,
+Leclerc,bio village,bio village,snacks,FR,Leclerc organic private label,direct,,,,,
+Leclerc,delisse,delisse,dairy,FR,Leclerc private label (Marque Repère range),direct,,,,,
+Aldi,aldi,aldi,snacks,DE,German discount retailer (Aldi Nord / Aldi Süd),direct,,,,,
+Lidl,milbona,milbona,dairy,DE,Lidl dairy private label,direct,,,,,
+Morrisons,morrisons,morrisons,snacks,GB,UK supermarket,direct,,,,,
+Waitrose,waitrose,waitrose,snacks,GB,John Lewis Partnership,direct,,,,,
+Kroger,kroger,kroger,snacks,US,US largest supermarket chain,direct,,,,,
+Kroger,harris teeter,harris teeter,snacks,US,Kroger subsidiary,direct,,,,,
+Intermarché,intermarche,intermarche,snacks,FR,Les Mousquetaires,direct,,,,,
+Intermarché,chabrior,chabrior,snacks,FR,Intermarché private label,direct,,,,,
+Intermarché,paturages,paturages,dairy,FR,Intermarché dairy private label,direct,,,,,
+Coop,coop,coop,snacks,CH,Swiss / European cooperative retailer,direct,,,,,
+Biocoop,biocoop,biocoop,snacks,FR,French organic cooperative (independent from Coop),direct,,,,,
+Whole Foods / Amazon,whole foods market,whole foods market,snacks,US,US organic specialty retailer,direct,,,,,
+Whole Foods / Amazon,365 everyday value,365 everyday value,snacks,US,Whole Foods private label,direct,,,,,
+H-E-B,h-e-b,h-e-b,snacks,US,Texas family-owned retailer,direct,,,,,
+Hy-Vee,hy-vee,hy-vee,snacks,US,Midwest US employee-owned retailer,direct,,,,,
+Ahold Delhaize,ahold,ahold,snacks,NL,Dutch-US retailer group,direct,,,,,
+Ahold Delhaize,delhaize,delhaize,snacks,BE,Belgian-US retailer (Ahold Delhaize subsidiary),direct,,,,,
+Marks & Spencer,m&s,m&s,snacks,GB,Marks & Spencer abbreviation variant,direct,,,,,
+Target,market pantry,market pantry,snacks,US,Target private label,direct,,,,,
+Dia,dia,dia,snacks,ES,Spanish discount retailer,direct,,,,,
+Ferrero,ferrero,ferrero,snacks,DE,Parent company brand on some products directly,direct,,,,,
+Starbucks,starbucks,starbucks,beverages,US,RTD coffee and packaged food products,direct,,,,,
+Barilla,barilla,barilla,snacks,IT,Italian pasta — family-owned,direct,,,,,
+Tropicana Brands Group,tropicana,tropicana,beverages,US,Juice brand under Tropicana Brands Group / PAI Partners; PepsiCo retained a minority non-controlling stake after sale,direct,,,,,
+Wawa,wawa,wawa,snacks,US,US convenience store chain,direct,,,,,
+Picard,picard,picard,dairy,FR,Independent French frozen food specialist,direct,,,,,
+Panzani,lustucru,lustucru,snacks,FR,Panzani subsidiary (Ebro Foods group),direct,,,,,
+Ecotone,bjorg,bjorg,snacks,FR,Ecotone organic foods brand (ex-Wessanen),direct,,,,,
+Thiriet,thiriet,thiriet,snacks,FR,Independent French frozen food delivery company,direct,,,,,
+St Michel,st michel,st michel,snacks,FR,Independent French biscuit company,direct,,,,,
+Papa John's,papa john's,papa john's,snacks,US,Restaurant brand retail products,direct,,,,,
+Sonic,sonic,sonic,beverages,US,Restaurant brand retail products,direct,,,,,
+TGI Friday's,tgi friday's,tgi friday's,snacks,US,Restaurant brand retail products,direct,,,,,
+Firehouse Subs,firehouse subs,firehouse subs,snacks,US,Restaurant brand retail products,direct,,,,,
+Coca-Cola,fanta,fanta,beverages,US,Flavored carbonated drinks,direct,,,,,
+Coca-Cola,sprite,sprite,beverages,US,Lemon-lime carbonated drink,direct,,,,,
+Coca-Cola,minute maid,minute maid,beverages,US,Juice brand,direct,,,,,
+Coca-Cola,schweppes,schweppes,beverages,GB,"Tonic and mixers; Coca-Cola in many markets, but ownership/licensing is market-specific, including North America exceptions",market_scoped,Many Coca-Cola markets; exceptions apply,,,,Resolver should not treat as universal ownership where market exceptions matter
+Coca-Cola,powerade,powerade,beverages,US,Sports drink brand,direct,,,,,
+Coca-Cola,vitaminwater,vitaminwater,beverages,US,Flavored water brand,direct,,,,,
+Coca-Cola,simply,simply,beverages,US,Simply Orange juice range,direct,,,,,
+Coca-Cola,innocent,innocent,beverages,GB,Smoothies and juices - Coca-Cola owned,direct,,,,,
+PepsiCo,pepsi,pepsi,beverages,US,Core PepsiCo beverage brand,direct,,,,,
+PepsiCo,walkers,walkers,snacks,GB,UK crisps — PepsiCo (Lay's equivalent),direct,,,,,
+PepsiCo,mountain dew,mountain dew,beverages,US,Citrus carbonated drink,direct,,,,,
+PepsiCo,gatorade,gatorade,beverages,US,Sports drink brand,direct,,,,,
+General Mills,general mills,general mills,snacks,US,Parent company brand used directly,direct,,,,,
+Mars,mars,mars,snacks,US,Parent company brand used directly,direct,,,,,
+Kraft Heinz,kraft,kraft,snacks,US,Kraft brand,direct,,,,,
+Kraft Heinz,heinz,heinz,snacks,US,Heinz brand,direct,,,,,
+Kraft Heinz,velveeta,velveeta,dairy,US,Processed cheese brand,direct,,,,,
+Nestlé,nescafe,nescafe,beverages,CH,Nestlé instant coffee brand,direct,,,,,
+Nestlé,maggi,maggi,snacks,CH,Soups sauces and seasonings,direct,,,,,
+Nestlé,buitoni,buitoni,snacks,CH,Pasta and Italian food brand,direct,,,,,
+Nestlé,san pellegrino,san pellegrino,beverages,CH,Sparkling mineral water,direct,,,,,
+Nestlé,perrier,perrier,beverages,CH,Sparkling mineral water,direct,,,,,
+Nestlé,vittel,vittel,beverages,CH,Still mineral water,direct,,,,,
+Danone,evian,evian,beverages,FR,Premium water brand,direct,,,,,
+Danone,volvic,volvic,beverages,FR,Mineral water brand,direct,,,,,
+Ferrero,raffaello,raffaello,snacks,IT,Coconut almond chocolate balls,direct,,,,,
+Mondelez,trident,trident,snacks,US,Chewing gum brand,direct,,,,,
+The Campbell's Company,campbell's,campbell's,snacks,US,Parent company brand,direct,,,,,
+The Campbell's Company,v8,v8,beverages,US,Vegetable and fruit juice brand,direct,,,,,
+Chobani,chobani,chobani,dairy,US,Parent company brand,direct,,,,,
+Lidl,sondey,sondey,snacks,DE,Lidl biscuits brand,direct,,,,,
+Lidl,solevita,solevita,beverages,DE,Lidl juice brand,direct,,,,,
+Ahold Delhaize,giant,giant,snacks,NL,Giant Food stores private label,direct,,,,,
+Ahold Delhaize,food lion,food lion,snacks,NL,Food Lion stores private label,direct,,,,,
+Target,target stores,target stores,snacks,US,Target stores brand variant,direct,,,,,
+Carrefour,reflets de france,reflets de france,snacks,FR,Carrefour premium regional range,direct,,,,,
+Carrefour,eco+,eco+,snacks,FR,Carrefour economy range,direct,,,,,
+Carrefour,saveurs de nos regions,saveurs de nos regions,snacks,FR,Carrefour regional flavors range,direct,,,,,
+Ecotone,bonneterre,bonneterre,snacks,FR,Ecotone organic brand,direct,,,,,
+Andros,bonne maman,bonne maman,snacks,FR,French jam and dessert brand,direct,,,,,
+Léa Nature,jardin bio,jardin bio,snacks,FR,French organic food brand,direct,,,,,
+Perfetti Van Melle,mentos,mentos,snacks,IT,Mints and confectionery,direct,,,,,
+Alnatura,alnatura,alnatura,snacks,DE,German organic food retailer and brand,direct,,,,,
+Ocean Spray,ocean spray,ocean spray,beverages,US,Cranberry growers cooperative,direct,,,,,
+Arizona Beverages,arizona,arizona,beverages,US,US independent RTD tea brand,direct,,,,,
+Giant Eagle,giant eagle,giant eagle,snacks,US,US independent retailer,direct,,,,,
+Sheetz,sheetz,sheetz,snacks,US,US convenience store chain,direct,,,,,
+Wakefern / ShopRite,shoprite,shoprite,snacks,US,US cooperative supermarket chain,direct,,,,,
+Priméal,primeal,primeal,snacks,FR,French organic food specialist,direct,,,,,
+Tipiak,tipiak,tipiak,snacks,FR,French food company,direct,,,,,
+Moulin des Moines,moulin des moines,moulin des moines,breakfast_cereals,FR,Independent French flour and grain mill,direct,,,,,
+Yum! Brands,taco bell,taco bell,snacks,US,Restaurant brand retail products,direct,,,,,
+Red Robin,red robin,red robin,snacks,US,Restaurant brand retail products,direct,,,,,
+White Castle,white castle,white castle,snacks,US,Restaurant brand retail products,direct,,,,,
+Associated Wholesale Grocers,food club,food club,snacks,US,AWG cooperative private label,direct,,,,,
+Migros,migros,migros,snacks,CH,Swiss cooperative retailer and own-label brand,direct,,,,,
+Nestlé,nespresso,nespresso,beverages,CH,Premium coffee system — Nestlé brand,direct,,,,,
+Mondelez,mondelez,mondelez,snacks,US,Parent company brand used directly on some products,direct,,,,,
+Tops Friendly Markets,tops,tops,snacks,US,US regional supermarket chain (Northeast),direct,,,,,

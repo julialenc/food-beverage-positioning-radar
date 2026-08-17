@@ -40,6 +40,7 @@ def load_release(conn, release_id):
             p.query_category, p.primary_country,
             a.release_run_id, a.claim_source,
             a.sampling_region, a.sampling_category, a.sample_component,
+            a.sampling_weight, a.weight_status,
             a.claim_category_1, a.claim_category_2,
             a.pack_claims_found, a.image_context,
             a.claim_extraction_status, a.detected_claim_phrases,
@@ -56,11 +57,62 @@ def summarise(df):
     sub["has_claim"] = (sub["pack_claims_found"].notna()
                         & (sub["pack_claims_found"].astype(str).str.strip() != ""))
 
+    w = pd.to_numeric(sub.get("sampling_weight"), errors="coerce")
+    has_weights = w.notna().any() and (w.fillna(0) > 0).any()
+
+    def rate(frame, weights=None):
+        """Unweighted or weighted share of products carrying a claim."""
+        if frame.empty:
+            return float("nan")
+        if weights is None:
+            return 100 * frame["has_claim"].mean()
+        ww = weights.reindex(frame.index).fillna(0)
+        return (float("nan") if ww.sum() <= 0
+                else 100 * (ww * frame["has_claim"]).sum() / ww.sum())
+
     print(f"\n  -- Release claim prevalence ---------------------------------")
     print(f"  Assessed front-of-pack observations: {len(sub):,}")
     n = int(sub["has_claim"].sum())
     print(f"  Carrying at least one taxonomy claim: {n:,} "
-          f"({100*n/max(len(sub),1):.1f}%)")
+          f"({rate(sub):.1f}% of the sample)")
+
+    n_w = int((w.fillna(0) > 0).sum())
+    if has_weights:
+        wstat = ""
+        if "weight_status" in sub.columns:
+            vals = sorted({str(v) for v in sub.loc[w.fillna(0) > 0, "weight_status"]
+                           if str(v).strip() and str(v).lower() != "nan"})
+            wstat = f" [{', '.join(vals)}]" if vals else ""
+        print(f"\n  Weighted estimate (probability-sampled component only){wstat}:")
+        print(f"    n = {n_w:,} of {len(sub):,} assessed observations "
+              f"({100*n_w/max(len(sub),1):.0f}%)")
+        print(f"    Market estimate: {rate(sub, w):.1f}%")
+        print(f"\n  Only the backbone component carries a weight. The matrix and")
+        print(f"  calibration components are purposive and no weight was computed")
+        print(f"  for them, so they are excluded from this figure — verified in")
+        print(f"  the source sample, not lost in the pipeline.")
+        print(f"  Weights are approximate and brand-capped, not exact inverse")
+        print(f"  inclusion probabilities — see llm_sampling_design_log.md before")
+        print(f"  describing this figure in any published output.")
+        # Separate the two effects folded into the sample-vs-weighted gap.
+        prob = sub[w.fillna(0) > 0]
+        purp = sub[w.fillna(0) <= 0]
+        print(f"\n  Decomposing the gap:")
+        print(f"    all components,   unweighted:  {rate(sub):>5.1f}%  (n={len(sub):,})")
+        print(f"    purposive only,   unweighted:  {rate(purp):>5.1f}%  (n={len(purp):,})")
+        print(f"    probability only, unweighted:  {rate(prob):>5.1f}%  (n={len(prob):,})")
+        print(f"    probability only, weighted:    {rate(sub, w):>5.1f}%  (n={n_w:,})")
+        comp_effect = rate(prob) - rate(sub)
+        wgt_effect  = rate(sub, w) - rate(prob)
+        print(f"\n    composition effect (which products): {comp_effect:+.1f} pp")
+        print(f"    weighting effect (within backbone):  {wgt_effect:+.1f} pp")
+
+        print(f"\n  Report {rate(sub, w):.1f}% (n={n_w:,}) as the market estimate.")
+        print(f"  Report {rate(sub):.1f}% (n={len(sub):,}) only as a description of")
+        print(f"  the sample, never as a market figure.")
+    else:
+        print(f"\n  NOTE: sampling_weight is empty — re-run load.py with the")
+        print(f"  current schema, then merge_scores.py. Only unweighted figures available.")
 
     dims = [("sampling_region", "region")]
     # sampling_category and query_category carry the same values; show one.
@@ -72,17 +124,45 @@ def summarise(df):
     for dim, label in dims:
         if dim not in sub.columns or sub[dim].isna().all():
             continue
-        g = sub.groupby(dim)["has_claim"].agg(["sum", "count"])
-        g["pct"] = 100 * g["sum"] / g["count"]
         print(f"\n  By {label}:")
-        for idx, row in g.sort_values("pct", ascending=False).iterrows():
-            print(f"    {str(idx)[:26]:<28} {int(row['sum']):>5,}/{int(row['count']):>5,}"
-                  f"   {row['pct']:>5.1f}%")
+        header = f"    {'':<28} {'claims/n':>13}  {'sample':>8}"
+        if has_weights:
+            header += f"  {'weighted':>9} {'(n)':>8}"
+        print(header)
+        rows = []
+        for key, grp in sub.groupby(dim):
+            gw = w.reindex(grp.index)
+            rows.append((key, int(grp["has_claim"].sum()), len(grp), rate(grp),
+                         rate(grp, w) if has_weights else None,
+                         int((gw.fillna(0) > 0).sum())))
+        for key, k, tot, unw, wtd, nw in sorted(rows, key=lambda r: -r[3]):
+            line = f"    {str(key)[:26]:<28} {k:>5,}/{tot:>6,}  {unw:>7.1f}%"
+            if has_weights:
+                line += f"  {wtd:>8.1f}% {nw:>8,}"
+            print(line)
 
     if "sampling_region" in sub.columns and sub["sampling_region"].isna().all():
-        print(f"\n  NOTE: sampling_region is empty — re-run merge_scores.py after")
-        print(f"  migrate_db.py to persist the sampling frame. Country-level")
+        print(f"\n  NOTE: sampling_region is empty — re-run load.py with the")
+        print(f"  current schema, then merge_scores.py. Country-level")
         print(f"  breakdowns are not a valid substitute.")
+
+    if has_weights:
+        print(f"\n  Weight diagnostics:")
+        print(f"    rows with a weight:  {int(w.notna().sum()):,} / {len(sub):,}")
+        print(f"    min / median / max:  {w.min():.2f} / {w.median():.2f} / {w.max():.2f}")
+        if "sample_component" in sub.columns:
+            print(f"    by sample component:")
+            for comp, grp in sub.groupby("sample_component"):
+                cw = w.reindex(grp.index)
+                n_ok = int((cw.fillna(0) > 0).sum())
+                mean_str = f"{cw.mean():>7.2f}" if n_ok else "      —"
+                basis = "probability" if n_ok else "purposive (no design weight)"
+                print(f"      {str(comp)[:22]:<24} n={len(grp):>5,}  "
+                      f"weighted={n_ok:>5,}  mean {mean_str}  {basis}")
+        if "weight_status" in sub.columns and not sub["weight_status"].isna().all():
+            print(f"    weight_status:")
+            for val, k in sub["weight_status"].value_counts(dropna=False).items():
+                print(f"      {str(val)[:30]:<32} {k:>6,}")
 
     print(f"\n  Cut 1 distribution:")
     for val, k in sub["claim_category_1"].value_counts(dropna=False).items():

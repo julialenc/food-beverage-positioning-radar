@@ -22,22 +22,26 @@ rows = conn.execute("""
 """, (f"{prefix}%",)).fetchall()
 conn.close()
 
+if not rows:
+    print(f"\nNo brands starting with '{prefix}' found.")
+    raise SystemExit(0)
+
 total = sum(n for _, n in rows)
-main  = rows[0][1] if rows else 0
-pct   = main / total * 100 if total else 0
+main  = rows[0][1]
+pct   = main / total * 100
 
 print(f"\nBrands starting with '{prefix}': {len(rows)} variants, {total:,} total products")
 print(f"Largest variant: '{rows[0][0]}' ({main:,} products = {pct:.1f}% of group)\n")
 print(f"{'Brand':<50} {'Products':>8}  {'% of group':>10}")
 print("-" * 73)
 for brand, n in rows:
-    bar = "█" * min(int(n / total * 40), 40)
+    bar = "#" * min(int(n / total * 40), 40)
     print(f"{brand:<50} {n:>8}  {n/total*100:>9.1f}%  {bar}")
 
 print(f"\n{'TOTAL':<50} {total:>8}")
 print(f"\n95% threshold: {total * 0.95:.0f} products")
 print(f"Already unified under '{rows[0][0]}': {main:,} ({pct:.1f}%)")
 if pct >= 95:
-    print("✓ Above 95% — done, no further action needed.")
+    print("Above 95% - done, no further action needed.")
 else:
-    print(f"△ Below 95% — {total - main:,} products in {len(rows)-1} variants still unmatched.")
+    print(f"Below 95% - {total - main:,} products in {len(rows)-1} variants still unmatched.")

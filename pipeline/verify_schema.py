@@ -2,9 +2,8 @@
 verify_schema.py
 -----------------
 Compares the LIVE database's actual schema against what the current
-pipeline code declares — the DDL constants in load.py and db_summary.py
-— for every table either script owns. Reports any drift in either
-direction, across all six tables, not just one or two.
+pipeline code declares - the DDL constants in load.py, db_summary.py,
+and known helper-table scripts. Reports any drift in either direction.
 
 Why this exists: CREATE TABLE IF NOT EXISTS is a no-op if a table
 already exists — it will NOT add new columns or rename old ones. If
@@ -42,23 +41,31 @@ sys.path.insert(0, str(ROOT / "pipeline"))
 from load import (
     DDL_PRODUCTS, DDL_PRODUCT_ANALYSIS,
     DDL_WEEKLY_BRAND_SUMMARY, DDL_INGESTION_LOG,
+    DDL_MARKET_TREND_WEEKLY,
 )
 from db_summary import (
     DDL_WEEKLY_BRAND_POSITIONING_SUMMARY, DDL_POSITIONING_EXAMPLE_PRODUCTS,
 )
+from compute_axis_ranges import DDL as DDL_AXIS_RANGE_CONFIG
+from compute_region_benchmarks import DDL as DDL_REGION_CATEGORY_BENCHMARKS
+from compute_profile_intersections import DDL as DDL_PROFILE_INTERSECTIONS
 
 DB_PATH = ROOT / "database" / "positioning_radar.db"
 
-# Every table either load.py or db_summary.py owns, keyed by table name
-# to its current DDL constant — the single source of truth for what
+# Every table owned by pipeline DDL, keyed by table name to its current
+# DDL constant. The DDL in the owning script is the source of truth for what
 # "correct" looks like.
 TABLE_DDL = {
     "products":                         DDL_PRODUCTS,
     "product_analysis":                 DDL_PRODUCT_ANALYSIS,
     "weekly_brand_summary":             DDL_WEEKLY_BRAND_SUMMARY,
     "ingestion_log":                    DDL_INGESTION_LOG,
+    "market_trend_weekly":              DDL_MARKET_TREND_WEEKLY,
     "weekly_brand_positioning_summary": DDL_WEEKLY_BRAND_POSITIONING_SUMMARY,
     "positioning_example_products":     DDL_POSITIONING_EXAMPLE_PRODUCTS,
+    "axis_range_config":                DDL_AXIS_RANGE_CONFIG,
+    "region_category_benchmarks":       DDL_REGION_CATEGORY_BENCHMARKS,
+    "profile_intersections":            DDL_PROFILE_INTERSECTIONS,
 }
 
 
@@ -76,7 +83,7 @@ def get_declared_columns(ddl_sql):
     """
     table_name = get_table_name_from_ddl(ddl_sql)
     ref_conn = sqlite3.connect(":memory:")
-    ref_conn.execute(ddl_sql)
+    ref_conn.executescript(ddl_sql)
     cols = {row[1] for row in ref_conn.execute(f"PRAGMA table_info({table_name})")}
     ref_conn.close()
     return cols
@@ -100,7 +107,7 @@ def main():
         )
     }
 
-    print("\nverify_schema.py — comparing live database against current DDL\n")
+    print("\nverify_schema.py - comparing live database against current DDL\n")
 
     any_drift = False
 
@@ -108,7 +115,7 @@ def main():
         declared_cols = get_declared_columns(ddl)
 
         if table_name not in live_tables:
-            print(f"[{table_name}] NOT FOUND in live database — "
+            print(f"[{table_name}] NOT FOUND in live database - "
                   f"run the pipeline step that creates it.")
             any_drift = True
             continue
@@ -130,8 +137,8 @@ def main():
             print(f"  Present in live DB but not declared in code "
                   f"(stale/legacy column): {sorted(missing_in_code)}")
 
-    # Tables that exist in the live DB but aren't owned by any DDL
-    # checked here — e.g. a leftover table from an older schema version.
+    # Tables that exist in the live DB but aren't owned by any DDL checked here,
+    # e.g. a leftover table from an older schema version.
     unexpected_tables = live_tables - set(TABLE_DDL.keys())
     if unexpected_tables:
         any_drift = True

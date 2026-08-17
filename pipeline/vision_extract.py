@@ -64,8 +64,10 @@ See docs/ADR.md ADR-006 and ADR-010 for architecture rationale.
 """
 
 import os
+import re
 import sys
 import json
+import unicodedata
 import time
 import argparse
 import requests
@@ -92,302 +94,71 @@ OPENAI_KEY        = os.getenv("AZURE_OPENAI_KEY", "")
 OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4.1-nano")
 COST_ALERT_CHF    = float(os.getenv("AZURE_COST_ALERT_CHF", "45"))
 
+# Project cost estimates, CHF per 1,000 calls. Used only by CostTracker to
+# project spend and trip the alert — they do not affect extraction.
+OCR_COST_PER_1K   = float(os.getenv("AZURE_OCR_COST_PER_1K_CHF", "1.50"))
+LLM_COST_PER_1K   = float(os.getenv("AZURE_LLM_COST_PER_1K_CHF", "0.20"))
+
 # Increment when SYSTEM_PROMPT changes. This is the original, locked
 # extraction prompt used for the v3 run (see docs/ADR.md ADR-006) —
 # do not change the prompt text itself without also bumping this.
-PROMPT_VERSION = "v4"
+# ── Language profiles ───────────────────────────────────────────────────────
+# One standalone prompt per language, loaded from pipeline/prompts/ at run
+# time rather than pasted inline — the archive and the active prompt are then
+# the same artifact and cannot drift apart.
+#
+# "en" is the release-01 prompt, frozen. "fr" is v5: same JSON schema,
+# validator contract and taxonomy, French phrase coverage, plus the
+# mixed_pack_text tightening that release-01 did not have. When English is
+# next re-run it should get that fix too, as v5-en.
+PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 
-# Cost per 1000 operations (CHF estimates).
-# OCR_COST_PER_1K is Azure AI Vision Read API's published per-image rate.
-# LLM_COST_PER_1K is derived from the actual v3 run total (~8 CHF for
-# ~4,700 products with gpt-4.1-nano, combined OCR+LLM ≈ 1.70 CHF/1,000 —
-# see smart_sample.py ACTUAL_COST_PER_1000_CHF) minus the OCR component.
-# Historical estimate, not a pricing guarantee — confirm current Azure
-# OpenAI pricing before any larger rerun.
-OCR_COST_PER_1K   = 1.50
-LLM_COST_PER_1K   = 0.20
-
-# ── System prompt for LLM claim extraction ────────────────────────────────────
-# This prompt is locked — it is known to perform well and should not be
-# edited casually. Its raw JSON field names (e.g. sustainability_halo,
-# glp1_positioning, vitalite_concept) are extraction-schema keys, not
-# final product language; see the note above the flattening block below.
-
-SYSTEM_PROMPT = """You are a food labelling analyst. You receive OCR text extracted
-from a packaged food product. Extract health and marketing claims.
-
-Return ONLY valid JSON with this exact structure:
-{
-  "image_context": "front_of_pack | mixed_pack_text | ingredient_or_legal_panel | nutrition_label | price_sticker | uncertain",
-  "claim_extraction_status": "completed | not_applicable_non_front | unreadable",
-  "protein_claim": true/false,
-  "protein_amount_g": null or number (grams per 100g or per serving if stated),
-  "sugar_free_claim": true/false,
-  "reduced_sugar": true/false,
-  "sugar_reduction_pct": null or number (e.g. 32 for "-32%"),
-  "no_palm_oil": true/false,
-  "no_artificial": true/false,
-  "natural_claim": true/false,
-  "fortification_claim": true/false,
-  "fortification_nutrients": [] or list of nutrient names,
-  "fibre_claim": true/false,
-  "gut_health_claim": true/false,
-  "probiotic_claim": true/false,
-  "prebiotic_claim": true/false,
-  "immune_claim": true/false,
-  "energy_claim": true/false,
-  "sleep_claim": true/false,
-  "brain_health_claim": true/false,
-  "vitalite_concept": true/false,
-  "sustainability_halo": true/false,
-  "sustainability_certs": [] or list,
-  "reformulation_claim": true/false,
-  "comparative_claim": true/false,
-  "comparative_reference": null or string,
-  "glp1_positioning": true/false,
-  "vegan_claim": true/false,
-  "organic_claim": true/false,
-  "dairy_free_claim": true/false,
-  "lactose_free_claim": true/false,
-  "plant_based_claim": true/false,
-  "heritage_claim": true/false,
-  "gluten_free_claim": true/false,
-  "gender_targeting_claim": true/false,
-  "minimal_ingredients_claim": true/false,
-  "origin_quality_claim": true/false,
-  "clean_label_claim": true/false,
-  "artisan_claim": true/false,
-  "detected_claim_phrases": [],
-  "reduced_fat_claim": true/false,
-  "fat_reduction_pct": null or number (e.g. 30 for "-30% fat vs reference"),
-  "whole_grain_claim": true/false,
-  "other_claims": [] or list of short strings for claims that do not fit any field above,
-  "no_claims_detected": true/false/null,
-  "ocr_quality": "good"/"partial"/"poor"
+LANGUAGE_PROFILES: dict[str, dict] = {
+    # Release-01 ran on v4 with no review step. The reviewer is defined here
+    # so the diagnostic can measure release-01's false-exclusion rate, and so
+    # future English runs get the same protection France has. Any English run
+    # that must reproduce release-01 exactly needs --no-context-review.
+    "en": {"prompt_file": "prompt_v4.txt",    "version": "v4",
+           "context_review_prompt": "prompt_en_context_review.txt"},
+    "fr": {"prompt_file": "prompt_v5_1_fr.txt", "version": "v5.1-fr",
+           # Second-pass panel-context reviewer. Only languages that define
+           # one get the review step, so this also gates the feature.
+           "context_review_prompt": "prompt_fr_context_review.txt"},
 }
 
-IMAGE TEXT CONTEXT — CLASSIFY THIS FIRST
+# Rebound in main() from the selected profile.
+PROMPT_VERSION = LANGUAGE_PROFILES["en"]["version"]
+SYSTEM_PROMPT  = ""
 
-Determine what kind of pack text the OCR represents before extracting claims.
 
-Allowed image_context values:
+def clean_value(value) -> str:
+    """Return a clean string, treating NaN/None/'nan' as empty."""
+    if value is None:
+        return ""
+    try:
+        if pd.isna(value):
+            return ""
+    except (TypeError, ValueError):
+        pass
+    s = str(value).strip()
+    return "" if s.lower() in {"nan", "none", "null"} else s
 
-- front_of_pack:
-  Primarily short product-name, benefit, claim, certification or marketing
-  phrases that could reasonably appear on the consumer-facing front panel.
 
-- mixed_pack_text:
-  Contains both genuine marketing claims and substantial legal information.
-  Extract only clearly separated marketing claims. Ignore nutrient names and
-  ingredients appearing only inside legal text or tables.
+def load_prompt(language: str) -> tuple[str, str]:
+    """Return (prompt_text, version) for a language profile."""
+    profile = LANGUAGE_PROFILES[language]
+    path = PROMPTS_DIR / profile["prompt_file"]
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Prompt file not found: {path}\n"
+            f"  Each language profile loads its prompt from pipeline/prompts/.\n"
+            f"  Expected {profile['prompt_file']} for language '{language}'."
+        )
+    text = path.read_text(encoding="utf-8").strip()
+    if len(text) < 500:
+        raise ValueError(f"{path.name} looks truncated ({len(text)} chars).")
+    return text, profile["version"]
 
-- ingredient_or_legal_panel:
-  Primarily an ingredient list, allergen declaration, storage instructions,
-  manufacturer/importer details or another legal information label.
-
-- nutrition_label:
-  Primarily nutrition-table rows containing energy/kJ/kcal, fat, saturated fat,
-  carbohydrate, sugars, protein, salt and repeated numeric values.
-
-- price_sticker:
-  Primarily retailer, price, weight, unit-price, date, barcode or shelf-label
-  information.
-
-- uncertain:
-  The OCR does not provide enough evidence to classify the panel reliably.
-
-Ingredient/legal-panel clues include:
-- starts with INGREDIENTS / INGRÉDIENTS / ZUTATEN / INGREDIENTI or equivalent;
-- long comma- or semicolon-separated text;
-- many percentages, parentheses, additives, allergens or "may contain" phrases;
-- storage, address, importer or manufacturer details.
-
-A text length above 25 words is supporting evidence only. Do NOT classify a
-text as a legal panel solely because it is long.
-
-FRONT-OF-PACK NUTRITION INFORMATION
-A small front-of-pack nutrition box, traffic-light panel, nutrient summary,
-or row of nutrient values does not make the image a nutrition_label.
-If the product branding and consumer-facing front panel are clearly visible,
-classify the image as front_of_pack and ignore the nutrient values when
-extracting claims.
-
-SMALL LEGAL TEXT ON AN OTHERWISE VALID FRONT PACK
-A small ingredients, nutrition, legal, recycling, or manufacturer-information
-block at the bottom or side of an otherwise clear front pack does not make the
-whole image ingredient_or_legal_panel.
-If prominent consumer-facing marketing text is present, classify the image as
-mixed_pack_text and extract only the clearly marketing-oriented statements.
-Classify according to the dominant purpose of the photographed panel, not
-merely because some small legal text was successfully read by OCR.
-
-If image_context is ingredient_or_legal_panel, nutrition_label or price_sticker:
-- set claim_extraction_status="not_applicable_non_front";
-- set every claim field to false;
-- return empty lists and null numeric values;
-- set no_claims_detected=null;
-- do not treat nutrient or ingredient names as claims.
-
-If image_context is uncertain or the OCR is unreadable (mostly garbled characters):
-- set claim_extraction_status="unreadable";
-- set every claim field to false;
-- set no_claims_detected=null;
-- set ocr_quality="poor".
-
-Only set claim_extraction_status="completed" when front-of-pack marketing
-content can be assessed.
-
-IMPORTANT: Do not set a claim based solely on the reference product name. A
-claim must also be present in the OCR text being analysed.
-
-General extraction rules:
-- Do NOT infer claims — only extract what is explicitly stated in the OCR text
-- Set no_claims_detected=true if you find NO health/wellness claims at all on a
-  valid front-of-pack image (claim_extraction_status="completed")
-- CRITICAL: if ANY specific claim field is set to true, no_claims_detected MUST
-  be false. no_claims_detected=true ONLY when every other claim field is false.
-- no_claims_detected=null when claim_extraction_status is not "completed"
-- Set ocr_quality=poor if the text is mostly garbled or unreadable
-- detected_claim_phrases: list up to 5 short phrases copied from the OCR that
-  triggered claim fields. Keep each under 10 words. Do not explain reasoning.
-- Return ONLY the JSON object, no explanation, no markdown fences
-
-FUNCTIONAL BENEFIT CLAIMS:
-
-Protein:
-- "HIGH PROTEIN", "RICH IN PROTEIN", "SOURCE OF PROTEIN", "HIGH IN PROTEIN",
-  "RICHE EN PROTÉINES", "SOURCE DE PROTÉINES", "+PROTEIN" = protein_claim
-
-Fibre:
-- "HIGH FIBRE", "HIGH FIBER", "SOURCE OF FIBRE", "RICHE EN FIBRES",
-  "HIGH IN FIBRE", "ADDED FIBRE" = fibre_claim
-
-Gut health (three distinct raw fields, all roll up to gut_health):
-- gut_health_claim: "GUT HEALTH", "DIGESTIVE HEALTH", "SUPPORTS DIGESTION",
-  "DIGESTIVE COMFORT", "HEALTHY DIGESTION", "MICROBIOME SUPPORT",
-  "INTESTINAL FLORA", "REGULARITY", "TRANSIT SUPPORT", "INTESTINAL FUNCTION"
-  when expressed as a BENEFIT. NOTE: "digestive biscuits" or "digestive" used
-  only as a product type is NOT a gut_health_claim.
-- probiotic_claim: "PROBIOTIC", "LIVE CULTURES", "ACTIVE CULTURES", prominently
-  highlighted L. CASEI, BIFIDUS or named probiotic cultures as a feature.
-  "PROBIOTIQUE", "PROBIOTISCH" = probiotic_claim.
-  Do not infer probiotic positioning merely from ingredient list entries.
-- prebiotic_claim: "PREBIOTIC", "PREBIOTIC FIBRE", "FEEDS BENEFICIAL BACTERIA",
-  "SUPPORTS BENEFICIAL GUT BACTERIA" = prebiotic_claim.
-  Do not infer prebiotic positioning merely because inulin or chicory root
-  appears in the ingredient list.
-
-Immunity — keep separate from fortification:
-- immune_claim ONLY when wording is: "IMMUNE SUPPORT", "SUPPORTS THE IMMUNE
-  SYSTEM", "IMMUNITY", "NATURAL DEFENCES", "HELPS PROTECT", "IMMUNE DEFENCE",
-  "SYSTÈME IMMUNITAIRE", "DEFENSAS", "DIFESE"
-- Highlighted vitamins C/D, zinc or selenium WITHOUT explicit immunity wording
-  are fortification_claim ONLY, not immune_claim.
-
-Energy:
-- "SLOW RELEASE", "4 HOURS OF STEADY ENERGY", "TOUTE LA MATINÉE",
-  "STEADY ENERGY", "ACTIVGO", "MORE POWER" = energy_claim
-
-Reduced fat:
-- reduced_fat_claim: "REDUCED FAT", "LOWER FAT", "LESS FAT", "LOW FAT",
-  "LIGHT", "LITE", "FAT FREE", "ALLÉGÉ EN MATIÈRES GRASSES",
-  "RÉDUIT EN MATIÈRES GRASSES", "MOINS DE GRAISSES", "X% LESS FAT" = reduced_fat_claim.
-  Set fat_reduction_pct to the number if stated (e.g. 30 for "-30%").
-  Do not use "light" as a reduced-fat signal for coffee, beer, or any product
-  where "light" describes a flavour, roast level or alcohol content.
-
-Whole grain:
-- whole_grain_claim: "WHOLE GRAIN", "WHOLEGRAIN", "WHOLE WHEAT", "WHOLEWHEAT",
-  "100% WHOLE GRAIN", "MADE WITH WHOLE GRAINS", "GRAINS ENTIERS",
-  "CÉRÉALES COMPLÈTES", "BLÉ COMPLET" = whole_grain_claim.
-  Do not classify "ANCIENT GRAINS", "MULTIGRAIN" or "MULTI-GRAIN" as
-  whole_grain_claim unless the text explicitly says "whole grain."
-
-Sleep (new field):
-- sleep_claim: "SLEEP SUPPORT", "RESTFUL SLEEP", "SUPPORTS SLEEP QUALITY",
-  "HELPS YOU SLEEP", "BEDTIME SUPPORT", "NIGHT-TIME RELAXATION",
-  "SLEEP QUALITY" = sleep_claim.
-  Do not infer a sleep claim solely from melatonin, magnesium, L-theanine,
-  chamomile or the word "night" used as a flavour or product name.
-
-Brain/cognitive health (new field):
-- brain_health_claim: "BRAIN HEALTH", "COGNITIVE HEALTH", "SUPPORTS MEMORY",
-  "FOCUS", "CONCENTRATION", "MENTAL PERFORMANCE", "COGNITIVE FUNCTION" when
-  expressed as a BENEFIT = brain_health_claim.
-  Highlighted OMEGA-3 without an explicit brain/cognitive statement is a
-  fortification_claim only. Do not infer brain_health_claim from omega-3 alone.
-  Do not classify vague words such as "smart", "clever" or "power" as a
-  brain-health claim unless the cognitive benefit is explicit.
-
-FORTIFICATION CLAIMS — explicit nutrient highlights (not nutrition-table values):
-- "CALCIUM", "+CALCIUM", "RICHE EN CALCIUM", "HIGH IN CALCIUM" = fortification_claim,
-  add "Calcium" to fortification_nutrients
-- Any highlighted vitamin letter or group = fortification_claim
-- "MAGNÉSIUM", "FER", "ZINC", "SÉLÉNIUM", "OMÉGA-3", "OMEGA-3" when highlighted
-  as a benefit = fortification_claim
-- "OPTI-START", "OPTI-GROW", "OPTI-DÉJ" (Nestlé proprietary concepts) = fortification_claim
-- Rule: if a nutrient name appears prominently OUTSIDE a nutrition facts table,
-  it is a fortification claim. Nutrient names appearing ONLY inside a nutrition
-  table are not claims.
-
-FREE-FROM / CLEAN LABEL:
-- "SANS CONSERVATEURS", "NO PRESERVATIVES", "SENZA CONSERVANTI" = no_artificial=true
-- "SANS COLORANTS", "NO ARTIFICIAL COLOURS" = no_artificial=true
-- "SANS ARÔMES ARTIFICIELS", "NO ARTIFICIAL FLAVOURS" = no_artificial=true
-- "SANS ADDITIFS", "NO ADDITIVES" = no_artificial=true AND clean_label_claim=true
-- "ZERO SWEETENERS" alone does NOT mean sugar_free_claim — add "zero_sweeteners" to other_claims
-- "DOUBLE ZERO" = only set sugar_free_claim=true AND no_artificial=true when the OCR
-  also states what the two zeros refer to (e.g. "0% sugar, 0% fat"). Otherwise
-  add "double_zero" to other_claims without setting specific claim fields.
-- "SANS HUILE DE PALME", "NO PALM OIL" = no_palm_oil
-
-FRENCH & EUROPEAN ORIGIN CLAIMS:
-- "100% FRANÇAIS", "PRODUIT EN FRANCE", "FABRIQUÉ EN FRANCE" = origin_quality_claim
-- "LAIT FRANÇAIS", "LAIT DE VACHE FRANÇAISE", "VACHES FRANÇAISES" = origin_quality_claim
-- "LAIT FRAIS", "LAIT FRAIS & CRÈME" = origin_quality_claim (fresh milk claim)
-- "ORIGINE FRANCE", "FILIÈRE FRANÇAISE", "AGRICULTEURS FRANÇAIS" = origin_quality_claim
-- "SCHWEIZER MILCH", "LAIT SUISSE" = origin_quality_claim
-
-REFORMULATION / NEW RECIPE:
-- "NOUVELLE RECETTE", "NEW RECIPE", "NEUE REZEPTUR" = reformulation_claim
-- "NOUVEAU", "NOUVEAUTÉ", "NEW", "NEU" on a product = reformulation_claim
-- "ENCORE MEILLEUR", "EVEN BETTER", "IMPROVED RECIPE" = reformulation_claim AND comparative_claim
-
-SUGAR / COMPARATIVE:
-- "NO ADDED SUGAR", "WITHOUT ADDED SUGAR", "SANS SUCRES AJOUTÉS",
-  "OHNE ZUCKERZUSATZ", "SENZA ZUCCHERI AGGIUNTI", "NO ADDED SUGARS",
-  "SUGAR FREE", "SUGAR-FREE", "ZÉRO SUCRE", "SANS SUCRE", "ZUCKERFREI" = sugar_free_claim
-- "MOINS DE SUCRES", "ALLÉGÉ EN SUCRES", "-X% SUCRES", "REDUCED SUGAR",
-  "LESS SUGAR" = reduced_sugar; also set comparative_claim=true and
-  sugar_reduction_pct to the number if stated
-- "#1", "N°1", "NO. 1", "NUMÉRO 1" = comparative_claim
-
-FREE-FROM / IDENTITY:
-- "VEGAN", "100% VEGAN", "VÉGAN", "VEGANO" = vegan_claim
-- "PLANT-BASED", "PLANT BASED", "À BASE DE PLANTES", "PFLANZENBASIERT",
-  "BASE VÉGÉTALE" = plant_based_claim
-- "DAIRY-FREE", "DAIRY FREE", "NON-DAIRY", "SANS PRODUITS LAITIERS" = dairy_free_claim
-- "LACTOSE FREE", "LACTOSE-FREE", "SANS LACTOSE", "LAKTOSEFREI",
-  "LACTOSEVRIJ" = lactose_free_claim
-- "GLUTEN-FREE", "GLUTEN FREE", "SANS GLUTEN", "GLUTENFREI", "SENZA GLUTINE" = gluten_free_claim
-
-NATURAL / CLEAN LABEL:
-- "100% NATURAL", "ALL NATURAL", "NATURAL INGREDIENTS", "INGRÉDIENTS NATURELS",
-  "NATÜRLICHE ZUTATEN", "INGREDIENTI NATURALI" = natural_claim
-- "100% NATURAL" alone on a US/UK product IS a natural_claim (unlike French "nature")
-- "NATURE" alone on French/Belgian/Swiss packaging means "plain/unflavored" — NOT natural_claim
-- "CLEAN LABEL", "SIMPLE INGREDIENTS", "NOTHING ARTIFICIAL",
-  "INGREDIENTS YOU CAN SEE" = clean_label_claim
-- "3 INGRÉDIENTS", "3 INGREDIENTS", "NUR 3 ZUTATEN", "ONLY X INGREDIENTS" = minimal_ingredients_claim
-
-OTHER:
-- "VITALITÉ", "VITALITE" = vitalite_concept
-- "ENGAGÉ CACAO DURABLE", "FILIÈRE DURABLE" = sustainability_halo
-- "CREATED FOR WOMEN", "POUR LES FEMMES" = gender_targeting_claim
-- "POUR LE GOÛTER", "KIDS", "POUR LES ENFANTS", "CROISSANCE" = add to other_claims
-- "+X% free", "+X% gratuit", "BONUS PACK" = add to other_claims only, NOT comparative_claim
-- Capture organic/bio: "bio", "organic", "biologique", "biologisch" = organic_claim
-- Capture heritage: "the original", "since 19xx", "established" = heritage_claim"""
 
 
 # ── Azure Vision OCR ──────────────────────────────────────────────────────────
@@ -400,8 +171,12 @@ def ocr_image(image_url: str, max_retries: int = 3) -> tuple[str, str]:
     if not VISION_ENDPOINT or not VISION_KEY:
         return "", "no_credentials"
 
-    if not image_url or "/invalid/" in image_url:
-        return "", "invalid_url"
+    if (
+        not image_url
+        or image_url.lower() in {"nan", "none", "null"}
+        or not image_url.lower().startswith(("http://", "https://"))
+    ):
+        return "", "no_image"
 
     url = f"{VISION_ENDPOINT}/vision/v3.2/read/analyze"
     headers = {
@@ -561,6 +336,11 @@ def validate_and_normalise(claims: dict) -> dict:
         claims["no_claims_detected"] = None
         claims["fortification_nutrients"] = []
         claims["detected_claim_phrases"] = []
+        # Numerics are claim evidence too — a value read off an ingredient
+        # panel or price sticker is not a front-of-pack observation.
+        for num_field in ("protein_amount_g", "sugar_reduction_pct",
+                          "fat_reduction_pct", "comparative_reference"):
+            claims[num_field] = None
 
     # no_claims_detected consistency check for completed extractions
     if claims.get("claim_extraction_status") == "completed":
@@ -571,13 +351,153 @@ def validate_and_normalise(claims: dict) -> dict:
         )
         if has_any_claim:
             claims["no_claims_detected"] = False
-        elif claims.get("no_claims_detected") is None:
+        else:
+            # Nothing mapped to a taxonomy field. The model uses
+            # no_claims_detected=False to mean "front-of-pack text worth
+            # noting"; the pipeline reads it as "a taxonomy claim exists".
+            # Where nothing mapped, the model's own judgement is that no
+            # taxonomy claim is present — so resolve it here rather than in
+            # a later post-processing pass (this is the rule that had to be
+            # applied to 1,127 release-01 products after the fact).
+            had_text = bool(claims.get("other_claims")
+                            or claims.get("detected_claim_phrases"))
             claims["no_claims_detected"] = True
+            claims["unmapped_pack_text"] = had_text
+
+    claims.setdefault("unmapped_pack_text", False)
+
+    # ORDER MATTERS. Validate the numbers first, then let the surviving ones
+    # imply their flag. The reverse order would let protein_amount_g = 999
+    # set protein_claim = True and only afterwards discard the 999, leaving a
+    # claim with no evidence behind it.
+    claims["numeric_out_of_range"] = False
+    for num_field in ("protein_amount_g", "sugar_reduction_pct", "fat_reduction_pct"):
+        val = claims.get(num_field)
+        if val in (None, ""):
+            continue
+        try:
+            if not (0 <= float(val) <= 100):
+                claims[num_field] = None
+                claims["numeric_out_of_range"] = True
+        except (TypeError, ValueError):
+            claims[num_field] = None
+            claims["numeric_out_of_range"] = True
+
+    # A stated gram or percentage value is itself the claim; the model
+    # sometimes extracts the number and misses the boolean.
+    completed = claims.get("claim_extraction_status") == "completed"
+    for num_field, implied in (
+        ("protein_amount_g",      "protein_claim"),
+        ("sugar_reduction_pct",   "reduced_sugar"),
+        ("fat_reduction_pct",     "reduced_fat_claim"),
+        ("comparative_reference", "comparative_claim"),
+    ):
+        if completed and claims.get(num_field) not in (None, ""):
+            if claims.get(implied) is not True:
+                claims[implied] = True
+                claims["no_claims_detected"] = False
 
     return claims
 
 
-def extract_claims(ocr_text: str, product_name: str = "",
+# Words too common to carry identity signal when matching a brand or product
+# name against OCR text.
+_REFERENCE_STOPWORDS = {
+    "the", "and", "with", "for", "from", "new",
+    "de", "du", "des", "la", "le", "les", "au", "aux", "en", "et", "un", "une",
+}
+
+
+def _reference_tokens(value: str) -> set:
+    """Lowercase, de-accent and tokenise a brand or product name."""
+    v = unicodedata.normalize("NFKD", str(value or ""))
+    v = "".join(c for c in v if not unicodedata.combining(c))
+    return {t for t in re.findall(r"[a-z0-9]+", v.lower())
+            if len(t) >= 3 and t not in _REFERENCE_STOPWORDS}
+
+
+def reference_overlap(ocr_text: str, reference: str) -> float:
+    """
+    Share of a brand or product name's distinctive tokens present in the OCR.
+
+    High overlap means the photographed panel carries the product's own
+    identity, which is the strongest available signal that it is a front
+    pack. OCR strips visual hierarchy, so without this the model cannot tell
+    a branded front from a legal panel that happens to name the company.
+    """
+    ref = _reference_tokens(reference)
+    if not ref:
+        return 0.0
+    return len(ref & _reference_tokens(ocr_text)) / len(ref)
+
+
+# Categories where a first-pass ingredient_or_legal_panel call is reviewed.
+# French cheese fronts carry certification, AOP, origin, fromagerie identity
+# and often a short ingredient list, which the first pass reads as a legal
+# panel. Narrow on purpose: a blanket rule would admit real back labels.
+CONTEXT_REVIEW_CATEGORIES = {"dairies", "dairy"}
+
+# Set in main() from the language profile; empty means no review step.
+CONTEXT_REVIEW_PROMPT = ""
+
+
+def needs_context_review(row, claims: dict) -> bool:
+    """True when a legal-panel call in a review category should be reassessed."""
+    if not CONTEXT_REVIEW_PROMPT:
+        return False
+    if claims.get("image_context") != "ingredient_or_legal_panel":
+        return False
+    category = str(
+        getattr(row, "sampling_category", None)
+        or getattr(row, "query_category", None)
+        or ""
+    ).lower()
+    return category in CONTEXT_REVIEW_CATEGORIES
+
+
+def review_image_context(ocr_text: str, product_name: str = "",
+                          brand: str = "") -> tuple[str, str]:
+    """
+    Reassess panel context from the SAVED OCR text — no second Azure Vision
+    call. Returns (image_context, status); image_context is "" on failure so
+    the caller keeps the first-pass result.
+    """
+    if not OPENAI_ENDPOINT or not OPENAI_KEY or not CONTEXT_REVIEW_PROMPT:
+        return "", "skipped"
+    user_message = (
+        f"Brand: {brand}\nProduct: {product_name}\n\n"
+        f"OCR text:\n{ocr_text[:2000]}"
+    )
+    try:
+        # Same endpoint, headers and body shape as extract_claims — this is
+        # a second call against the identical deployment, only a different
+        # system prompt and a much smaller max_tokens.
+        resp = requests.post(
+            f"{OPENAI_ENDPOINT}/openai/v1/chat/completions",
+            headers={"api-key": OPENAI_KEY, "Content-Type": "application/json"},
+            json={
+                "model": OPENAI_DEPLOYMENT,
+                "messages": [
+                    {"role": "system", "content": CONTEXT_REVIEW_PROMPT},
+                    {"role": "user",   "content": user_message},
+                ],
+                "temperature": 0,
+                "max_tokens": 60,
+            },
+            timeout=60,
+        )
+        if resp.status_code != 200:
+            return "", f"http_{resp.status_code}"
+        text = resp.json()["choices"][0]["message"]["content"].strip()
+        text = text.replace("```json", "").replace("```", "").strip()
+        ctx = json.loads(text).get("image_context", "")
+        return (ctx, "success") if ctx in VALID_IMAGE_CONTEXTS else ("", "invalid")
+    except Exception as exc:
+        return "", f"error_{type(exc).__name__}"
+
+
+def extract_claims(ocr_text: str, product_name: str = "", brand: str = "",
+                   forced_context: str = "",
                     max_retries: int = 3) -> tuple[dict, str]:
     """
     Send OCR text to Azure OpenAI for structured claim extraction.
@@ -612,18 +532,47 @@ def extract_claims(ocr_text: str, product_name: str = "",
          "glucide", "salt", "sel", "fibre", "/100g", "/100ml", "per serving"))
     currency_detected = any(c in ocr_text for c in ("€", "£", "$", "£/kg", "DH"))
 
+    # Identity evidence. Every existing hint points toward legal or nutrition
+    # text; with no counterweight the model reads certification, heritage and
+    # address lines as panel evidence even when the brand is right there in
+    # the OCR.
+    brand_overlap   = reference_overlap(ocr_text, brand)
+    product_overlap = reference_overlap(ocr_text, product_name)
+    contains_ingredient_header = bool(
+        re.search(r"\b(?:ingredients?|ingr[ée]dients?)\s*:", ocr_text,
+                  flags=re.IGNORECASE)
+    )
+
     context_hints = (
         f"word_count={word_count}\n"
         f"comma_count={comma_count}\n"
         f"semicolon_count={semicolon_count}\n"
         f"starts_with_ingredients={str(starts_with_ingredients).lower()}\n"
+        f"contains_ingredient_header={str(contains_ingredient_header).lower()}\n"
         f"nutrition_term_count={nutrition_terms}\n"
-        f"currency_detected={str(currency_detected).lower()}"
+        f"currency_detected={str(currency_detected).lower()}\n"
+        f"brand_token_overlap={brand_overlap:.2f}\n"
+        f"product_name_token_overlap={product_overlap:.2f}"
     )
 
+    forced_note = ""
+    if forced_context:
+        forced_note = (
+            f"PANEL CONTEXT ALREADY ESTABLISHED: {forced_context}\n"
+            f"A second-pass review of this same OCR has determined the image "
+            f"is {forced_context}. Set image_context to exactly that value and "
+            f"extract claims accordingly. Do NOT reclassify it as an "
+            f"ingredient, legal, nutrition or price panel.\n\n"
+        )
+
     user_message = (
-        f"Reference product name — context only, not claim evidence:\n{product_name}\n\n"
-        f"Deterministic OCR context hints (advisory, not authoritative):\n{context_hints}\n\n"
+        f"{forced_note}"
+        f"Reference identity — use ONLY to judge panel context, "
+        f"NEVER as claim evidence:\n"
+        f"Brand: {brand}\n"
+        f"Product: {product_name}\n\n"
+        f"Deterministic OCR context hints (advisory, not authoritative):\n"
+        f"{context_hints}\n\n"
         f"OCR text to analyse:\n{ocr_text[:2000]}"
     )
 
@@ -720,18 +669,32 @@ def enrich_sample_from_db(df: "pd.DataFrame", db_path) -> "pd.DataFrame":
     gracefully if DB is unavailable (test mode without DB)."""
     try:
         import sqlite3, pandas as pd
+        # Filter inside SQLite. Selecting the whole products table pulls
+        # ~500k rows into pandas for a sample of a few thousand — the same
+        # memory-risk pattern that had to be removed from merge_scores.py.
+        barcodes = (df["barcode"].dropna().astype(str)
+                    .drop_duplicates().tolist())
         conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
-        fields = pd.read_sql_query(
-            "SELECT barcode, product_name, primary_brand AS brands, image_url "
-            "FROM products",
-            conn, dtype={"barcode": str}
+        conn.execute("DROP TABLE IF EXISTS temp.selected_barcodes")
+        conn.execute("CREATE TEMP TABLE selected_barcodes "
+                     "(barcode TEXT PRIMARY KEY)")
+        conn.executemany(
+            "INSERT OR IGNORE INTO selected_barcodes (barcode) VALUES (?)",
+            ((b,) for b in barcodes),
         )
+        fields = pd.read_sql_query("""
+            SELECT p.barcode, p.product_name,
+                   p.primary_brand AS brands, p.image_url
+            FROM selected_barcodes s
+            INNER JOIN products p ON p.barcode = s.barcode
+        """, conn, dtype={"barcode": str})
         conn.close()
         # Drop any stale product columns from the CSV before joining
         drop_cols = [c for c in ("product_name", "brands", "image_url")
                      if c in df.columns]
         df = df.drop(columns=drop_cols)
-        return df.merge(fields, on="barcode", how="left")
+        return df.merge(fields, on="barcode", how="left",
+                        validate="one_to_one")
     except Exception as e:
         print(f"  WARNING: DB join for product fields failed ({e}); "
               f"product_name/brands/image_url may be empty.")
@@ -758,7 +721,35 @@ def main():
                         help="Resume from checkpoint file")
     parser.add_argument("--input",  type=str, default=None,
                         help="Path to smart_sample CSV (default: auto-detect latest)")
+    parser.add_argument("--language", choices=sorted(LANGUAGE_PROFILES),
+                        default="en",
+                        help="Language profile — selects the prompt and "
+                             "PROMPT_VERSION (default: en)")
+    parser.add_argument("--no-context-review", action="store_true",
+                        help="Disable the second-pass panel-context review "
+                             "for legal-panel calls in review categories.")
+    parser.add_argument("--test-size", type=int, default=50,
+                        help="Products per region in --test mode (default: 50). "
+                             "A single-region run yields this many in total, so "
+                             "use 100 for a 100-product France test.")
     args = parser.parse_args()
+
+    # Load the language profile before anything else — a missing or truncated
+    # prompt file must stop the run, not silently change the extraction rules.
+    global SYSTEM_PROMPT, PROMPT_VERSION, CONTEXT_REVIEW_PROMPT
+    SYSTEM_PROMPT, PROMPT_VERSION = load_prompt(args.language)
+    _review_file = LANGUAGE_PROFILES[args.language].get("context_review_prompt")
+    if _review_file and not args.no_context_review:
+        _p = PROMPTS_DIR / _review_file
+        if not _p.exists():
+            raise FileNotFoundError(f"Context-review prompt not found: {_p}")
+        CONTEXT_REVIEW_PROMPT = _p.read_text(encoding="utf-8").strip()
+    print(f"  Language:  {args.language}")
+    print(f"  Prompt:    {LANGUAGE_PROFILES[args.language]['prompt_file']} "
+          f"({PROMPT_VERSION}, {len(SYSTEM_PROMPT):,} chars)")
+    print(f"  Context review: "
+          + (f"on for {sorted(CONTEXT_REVIEW_CATEGORIES)}"
+             if CONTEXT_REVIEW_PROMPT else "off"))
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     print(f"\nFood & Beverage Positioning Radar - vision_extract.py")
@@ -794,13 +785,20 @@ def main():
     if args.test:
         # Column names match sample_clean_run.csv — verify if structure changes.
         _REGION_COL    = "sampling_region"
-        _CATEGORY_COL  = "query_category"
-        _COMPONENT_COL = "sample_component"       # backbone / matrix / calibration
-        _PROXY_COL     = "has_positioning_signal"  # explicit positioning vs control
-        _RISK_COL      = "non_front_risk"          # likely sticker / ingredient-panel image
+        # Names as smart_sample.py writes them, with fallbacks for older files.
+        _CATEGORY_COL  = ("sampling_category" if "sampling_category" in df.columns
+                          else "query_category")
+        _COMPONENT_COL = "sample_component"        # backbone / matrix / calibration
+        _PROXY_COL     = ("pre_llm_positioning_signal"
+                          if "pre_llm_positioning_signal" in df.columns
+                          else "has_positioning_signal")
+        # No field predicts image type before OCR runs, so this column does not
+        # exist in current samples and the reservation below is inert. Kept so
+        # that a future pre-flight image classifier can switch it on.
+        _RISK_COL      = "non_front_risk"
 
         def _stratified_50(region_df: pd.DataFrame, seed: int = 42) -> pd.DataFrame:
-            n_total = 50
+            n_total = args.test_size
             # Reserve ~10 rows with high non-front / sticker risk (key failure mode)
             if _RISK_COL in region_df.columns:
                 high_risk = region_df[region_df[_RISK_COL] == True]
@@ -808,7 +806,9 @@ def main():
             else:
                 high_risk = pd.DataFrame()
                 safe      = region_df
-            n_risk    = min(10, len(high_risk))
+            # Reserve a fifth of the test for high non-front / sticker risk —
+            # that is the failure mode the test exists to exercise.
+            n_risk    = min(max(1, n_total // 5), len(high_risk))
             n_safe    = n_total - n_risk
             risk_rows = (high_risk.sample(n=n_risk, random_state=seed)
                          if n_risk > 0 else pd.DataFrame())
@@ -816,36 +816,51 @@ def main():
             strata_cols = [c for c in [_COMPONENT_COL, _CATEGORY_COL, _PROXY_COL]
                            if c in safe.columns]
             if strata_cols and len(safe) > 0:
-                grouped = safe.groupby(strata_cols, group_keys=False)
-                safe_sample = (
-                    grouped
-                    .apply(lambda g: g.sample(
-                        n=max(1, round(n_safe * len(g) / len(safe))),
-                        random_state=seed
-                    ))
-                    .sample(frac=1, random_state=seed)
-                    .head(n_safe)
-                )
+                # Collect sampled INDICES per stratum and select from `safe`,
+                # rather than concatenating the frames groupby().apply()
+                # returns. Current pandas excludes the grouping columns from
+                # those frames, which would silently blank sample_component,
+                # query_category and the positioning column on every sampled
+                # row. Working on the index sidesteps that entirely.
+                picked: list = []
+                for _, g in safe.groupby(strata_cols, sort=False):
+                    take = max(1, round(n_safe * len(g) / len(safe)))
+                    picked.extend(
+                        g.sample(n=min(take, len(g)), random_state=seed).index
+                    )
+                safe_sample = (safe.loc[picked]
+                               .sample(frac=1, random_state=seed)
+                               .head(n_safe))
                 if len(safe_sample) < n_safe:
-                    top_up = (safe.drop(safe_sample.index)
-                              .sample(n=min(n_safe - len(safe_sample),
-                                           len(safe) - len(safe_sample)),
-                                      random_state=seed))
-                    safe_sample = pd.concat([safe_sample, top_up])
+                    remaining = safe.drop(safe_sample.index)
+                    top_up_n = min(n_safe - len(safe_sample), len(remaining))
+                    if top_up_n > 0:
+                        safe_sample = pd.concat([
+                            safe_sample,
+                            remaining.sample(n=top_up_n, random_state=seed),
+                        ])
             else:
                 safe_sample = safe.sample(n=min(n_safe, len(safe)), random_state=seed)
             return (pd.concat([risk_rows, safe_sample])
                     .sample(frac=1, random_state=seed))
 
         if _REGION_COL in df.columns:
-            df = (df.groupby(_REGION_COL, group_keys=False)
-                    .apply(_stratified_50)
-                    .reset_index(drop=True))
+            # Iterate the groups explicitly rather than using groupby().apply().
+            # Current pandas excludes the grouping column from the frames passed
+            # to apply(), so the concatenated result loses sampling_region —
+            # iteration does not have that behaviour.
+            parts = [_stratified_50(group)
+                     for _, group in df.groupby(_REGION_COL, sort=True)]
+            df = pd.concat(parts, ignore_index=True)
             region_counts = df[_REGION_COL].value_counts().to_dict()
         else:
-            df = df.sample(n=min(100, len(df)), random_state=42).reset_index(drop=True)
+            df = df.sample(n=min(args.test_size, len(df)),
+                           random_state=42).reset_index(drop=True)
             region_counts = {}
 
+        if _RISK_COL not in df.columns:
+            print(f"  (no {_RISK_COL} column — non-front risk not reserved; "
+                  f"image type cannot be known before OCR)")
         print(f"  TEST MODE: {len(df)} stratified products "
               f"({', '.join(f'{r}: {c}' for r, c in sorted(region_counts.items()))})")
         if _COMPONENT_COL in df.columns:
@@ -875,9 +890,9 @@ def main():
             break
 
         barcode     = str(row.barcode)
-        product     = str(getattr(row, "product_name", "") or "")
-        brand       = str(getattr(row, "brands", "") or "")
-        image_url   = str(getattr(row, "image_url", "") or "")
+        product     = clean_value(getattr(row, "product_name", None))
+        brand       = clean_value(getattr(row, "brands",       None))
+        image_url   = clean_value(getattr(row, "image_url",    None))
         # Carry all sampling metadata columns through to the output row.
         # This replaces the obsolete "tier" field and preserves the full
         # stratification context (component, stratum, weights, reality
@@ -897,8 +912,32 @@ def main():
         # Stage 2: LLM claim extraction
         claims, llm_status = {}, "skipped"
         if ocr_status == "success" and ocr_text:
-            claims, llm_status = extract_claims(ocr_text, product)
+            claims, llm_status = extract_claims(ocr_text, product, brand)
             tracker.llm_calls += 1
+
+        # Stage 2b: second-pass panel-context review.
+        # Reuses the saved OCR — no second Azure Vision call. When the review
+        # rescues a front pack, claims must be extracted AGAIN: the first pass
+        # already zeroed every claim field for the presumed legal panel, so
+        # flipping only the status would create a completed observation
+        # carrying no claims.
+        review_meta = {
+            "initial_image_context":   claims.get("image_context", ""),
+            "context_review_attempted": False,
+            "reviewed_image_context":  "",
+            "context_review_changed":  False,
+        }
+        if llm_status == "success" and needs_context_review(row, claims):
+            review_meta["context_review_attempted"] = True
+            new_ctx, review_status = review_image_context(ocr_text, product, brand)
+            tracker.llm_calls += 1
+            review_meta["reviewed_image_context"] = new_ctx
+            if new_ctx in FRONT_CONTEXTS:
+                review_meta["context_review_changed"] = True
+                claims, llm_status = extract_claims(
+                    ocr_text, product, brand, forced_context=new_ctx)
+                tracker.llm_calls += 1
+                print(f"REVIEW:{new_ctx:<18} ", end="")
 
         print(f"OCR:{ocr_status:<12} LLM:{llm_status:<12} "
               f"cost:{tracker.estimated_chf:.3f} CHF")
@@ -920,6 +959,7 @@ def main():
             "ocr_status":    ocr_status,
             "llm_status":    llm_status,
             "claims_json":   json.dumps(claims) if claims else "",
+            **{f"v3_{k}": v for k, v in review_meta.items()},
         }
 
         # The v3_* fields below mirror the locked extraction prompt and
@@ -963,6 +1003,8 @@ def main():
                 "no_claims_detected", "ocr_quality",
                 # Audit: True if validator overrode LLM claim_extraction_status
                 "status_normalised",
+                # Audit: claim text the model noted but could not map
+                "unmapped_pack_text", "numeric_out_of_range",
                 # Numeric / string fields
                 "protein_amount_g", "sugar_reduction_pct", "fat_reduction_pct",
                 "comparative_reference",

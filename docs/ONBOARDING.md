@@ -1,288 +1,345 @@
 # Food & Beverage Positioning Radar — Project Onboarding
 
 This document briefs a new Claude conversation to continue development.
-Read it fully before touching any file. The GitHub repo is public:
-**https://github.com/julialenc/food-beverage-positioning-radar**
+Read it fully before touching any file.
+
+**GitHub repo (public):**
+https://github.com/julialenc/food-beverage-positioning-radar/tree/main
+
+**Local working directory:** `C:\Users\julia\food-beverage-positioning-radar`
+
+**Context:** Julia is a data scientist specialising in retail and nutrition
+forecasting, based in Geneva. Strong in model training and deployment;
+more limited exposure to production infrastructure, CI/CD and auth systems.
+Her preferred working style is methodical: validate each piece with synthetic
+data that has a known ground truth before building on top of it.
 
 ---
 
 ## 1. Project in one sentence
 
-A Streamlit market intelligence tool for CPG professionals that shows
-what packaged food products **IS** (nutritional metrics vs category average)
-and what they **TELL** (on-pack claims detected by OCR/LLM), using Open
-Food Facts data as the source. No health verdicts, no proprietary scores,
-no ingredient-based judgments shown to users.
+A Streamlit market intelligence tool for CPG professionals and dietitians
+that shows what packaged food products **ARE** (nutritional reality vs
+category benchmark) and what they **TELL** (on-pack claims detected by
+OCR + LLM), using Open Food Facts data as the source.
+No health verdicts. No proprietary scores shown to users.
 
 ---
 
-## 2. Core philosophy — non-negotiable
+## 2. Non-negotiable principles
 
-**No-blame principle:** The tool records observable facts (what's on pack,
-what's in the nutrition table). It never judges whether a product is
-healthy, misleading, or good/bad. Every column, label, and tooltip must
-reflect this. If you find yourself writing "health-washing" or "blind spot"
-or "loophole" anywhere, stop.
+**Neutral language everywhere.** "Higher protein efficiency", never
+"healthier". "Lower saturated fat", never "better". This applies to UI
+labels, code comments, prompts, and methodology text.
 
-**No proprietary scores in the UI:** We removed the positioning-composition
-gap score and composition marker score from the interface. Users see only:
-- External validated metrics: NOVA group, Nutri-Score (from OFF)
-- Nutritional ratios indexed vs country-category average (from OFF fields)
-- LLM-extracted pack claims (from vision_extract.py on front-of-pack images)
+**No proprietary composite scores in the UI.** The old
+`positioning_composition_gap` / `composition_marker_score` still exists in
+`analyze.py` and `merge_scores.py` but is not displayed anywhere and will
+be removed from the clean-run pipeline after the run completes.
 
-**IS vs TELLS architecture:**
-- **IS table:** Energy kcal/100g, Protein g/100kcal, Fibre g/100kcal,
-  Saturated fat g/100kcal — all with 🟢🟡🔴 vs country-category average
-- **TELLS:** Pack claims detected by OCR/LLM for vision-analyzed products;
-  "Not tested" for everything else. Never show ingredient-derived claims
-  as positioning signals (ferments lactiques in cheese → gut health was
-  a notorious false positive we removed).
+**No ingredient-derived claims as UI output.** The fallback path in
+`tag_claims.py` (ingredient text to inferred claim) is used only when
+`pack_claims_found` is NULL (no valid pack observation). An empty string ""
+means "front pack assessed, no claims found" and must NOT trigger the
+fallback. This distinction was explicitly fixed in July 2026.
+
+**Missing != zero, ever.** The null-vs-zero audit confirmed this for the
+full database. Every pipeline script treats NULL and 0.0 as semantically
+distinct values.
 
 ---
 
 ## 3. Tech stack
 
 - **Language:** Python 3.12 (Windows, CMD)
-- **App:** Streamlit ≥1.36 with `st.Page`/`st.navigation`
-- **DB:** SQLite (`database/positioning_radar.db`, gitignored)
-- **Data source:** Open Food Facts bulk CSV
-  (`https://static.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz`)
-- **LLM:** Azure OpenAI gpt-4.1-nano (vision + claim extraction)
-- **Working dir:** `C:\Users\julia\food-beverage-positioning-radar`
-- **Venv activation:** `.venv\Scripts\activate`
+- **App:** Streamlit >= 1.36 with st.Page / st.navigation
+- **DB:** SQLite (database/positioning_radar.db, gitignored)
+- **OCR:** Azure AI Vision (Read API)
+- **LLM:** Azure OpenAI gpt-4.1-nano (PROMPT_VERSION v3 — see below)
+- **Venv:** .venv\Scripts\activate
+- **Cost benchmark:** ~1.60 CHF per 1,000 products for OCR + LLM combined
 
 ---
 
-## 4. Repository structure
+## 4. Repository structure (key files)
 
 ```
-pipeline/           # Data pipeline scripts (run in order below)
-  bootstrap.py      # ONE-TIME: downloads OFF bulk CSV, filters to target markets/categories
-  clean.py          # Step 4b: applies brand_alias_mapping.csv
-  analyze.py        # Ingredient analysis, composition markers (internal only, not shown in UI)
-  load.py           # Loads to SQLite, creates market_trend_weekly table (Ozempic tracker)
-  smart_sample.py   # Selects priority products for vision extraction
-  vision_extract.py # OCR + LLM claim extraction (v2 prompt, Azure OpenAI)
-  merge_scores.py   # Joins vision results to DB
-  tag_claims.py     # Tags claim categories (internal; ingredient-derived NOT shown in UI)
-  db_summary.py     # Weekly brand summaries + market_trend_weekly (Ozempic tracker)
-  brand_coverage_report.py  # Generates brand_alias_candidates.csv + coverage report
-  brand_counts.py           # All brands by product count → data/reference/brand_counts.csv
-  check_brand.py            # python pipeline/check_brand.py <prefix> — 95% rule check
-  check_unmapped.py         # Shows brands in "Other / not mapped to a company"
-  check_excluded.py         # Shows pasta/pizza/tortilla products in snacks
-  check_tags.py             # Shows OFF category tags for exclusion analysis
-  append_mapping.py         # Programmatically appends to company_brand_mapping.csv
-  fix_mapping.py            # One-off fixes to company_brand_mapping.csv
-
+app.py
 pages/
-  search.py         # Product Explorer (main page — most of the work lives here)
-
+  search.py         # Product Explorer — FINAL, do not reopen
+  overview.py       # Market Overview — COMPLETE (3 sections)
 shared/
-  db.py             # SQLite access, company/region filter helpers, IS metric averages
-  components.py     # Shared UI components
+  db.py             # DB helpers, cached lookups, region/category options
+  components.py     # Shared UI colours (PRIMARY_ACCENT etc.)
   labels.py         # Parses docs/UI_LABELS.md at runtime
+pipeline/
+  bootstrap.py                   # Downloads OFF, category assignment
+  clean.py                       # Brand alias normalisation
+  analyze.py                     # Ingredient analysis (composite score, not shown in UI)
+  load.py                        # SQLite DDL + initial load (v3 columns included)
 
-data/
-  country_region_mapping.csv        # Maps countries → region codes (FRANCE, UK_IE, US_CANADA)
-  reference/
-    company_brand_mapping.csv       # ~400 rows: brand → parent company
-    brand_alias_mapping.csv         # ~2,323 confirmed aliases (bio sub-brands etc.)
-    vision_results_20260713_*.csv   # Cached v2 vision run output
-    README.md
+  # Market Overview precompute — run in this order:
+  compute_axis_ranges.py           # P99.5 display ranges + hard-plausibility flags
+  compute_region_benchmarks.py     # 12-row median/P25/P75 table (+ per-100ml beverages)
+  compute_profile_intersections.py # Funnel precompute — reads benchmarks (run second)
+
+  # LLM clean-run sampling — run in this order:
+  detect_positioning_signals.py    # Pre-LLM positioning proxy (US+UK only, EN keywords)
+  assign_reality_bands.py          # P25/P75 quartile bands per product-metric
+  classify_formulation_families.py # Rule-based product-type families
+  smart_sample.py                  # 3-component sampler -> sample_clean_run.csv
+  vision_extract.py               # OCR + GPT-4.1-nano (PROMPT_VERSION v3)
+  merge_scores.py                  # Joins vision results to DB
+  tag_claims.py                    # CLAIM_TAXONOMY classification
+
+  # Diagnostic / local-only (not committed):
+  check_axis_ranges.py, check_null_vs_zero_audit.py, check_family_others.py
+  check_positioning_diagnostics.py, check_top_outliers.py
+  export_vision_analyzed_dataset.py
+
+database/
+  schema.sql            # Reference DDL
+  positioning_radar.db  # Gitignored, rebuilt from pipeline
 
 docs/
-  ADR.md            # Architecture Decision Records (ADR-001 through ADR-014)
-  OBSERVATIONS.md   # Data quality and analytical observations (OBS-001 through OBS-028)
-  UI_LABELS.md      # Single source of truth for all display labels
+  ADR.md, OBSERVATIONS.md, METHODOLOGY.md, UI_LABELS.md, ONBOARDING.md
+
+data/
+  country_region_mapping.csv
+  reference/
+    company_brand_mapping.csv
+    brand_alias_mapping.csv
+
+# LOCAL ONLY — never committed, critical context:
+llm_sampling_design_log.md
+market_overview_phase_documentation.md
+notes_data_quality_local.md
+docs/prompt_feedback.txt       # already implemented
+docs/pre-run_feedback.txt      # already implemented
 ```
 
 ---
 
-## 5. Pipeline run sequence
+## 5. Current state — 20 July 2026
 
-**Full pipeline (after re-bootstrap):**
+### COMPLETE
+
+**Product Explorer (pages/search.py) — FINAL. Do not reopen.**
+
+**Market Overview (pages/overview.py) — COMPLETE, 3 sections:**
+1. Product Landscape: ScatterGL, 12 metrics, 15k stratified display threshold,
+   NOVA 2-bucket colouring, click-to-detail, left-pane navigation.
+2. Product Profile Landscape: 6 dimensions x NOVA variants, constant
+   denominator across all funnel levels, precomputed intersections.
+3. By Region: HTML-rendered 12-row table (not st.dataframe), median+IQR,
+   Sugars g/100kcal column, selected-row highlight, CSV download.
+
+**Market Overview pipeline precomputes:**
+- compute_axis_ranges.py -> axis_range_config (done)
+- compute_region_benchmarks.py -> region_category_benchmarks (done, per-100ml included)
+- compute_profile_intersections.py -> profile_intersections (done)
+
+**LLM sampling pipeline — all 4 input layers built and validated:**
+- detect_positioning_signals.py -> pipeline/positioning_signals_us_uk.csv (done)
+- assign_reality_bands.py -> pipeline/reality_bands.csv (done)
+- classify_formulation_families.py -> pipeline/formulation_families.csv (done)
+- smart_sample.py -> pipeline/sample_clean_run.csv, 12,029 products locked (done)
+- vision_extract.py, merge_scores.py, tag_claims.py — all updated to v3 (done)
+
+### WHERE WE STOPPED — 100-product test NOT YET RUN
+
+All files have been moved/copied to the local repo. Next action:
+
 ```bat
-del database\positioning_radar.db
-python pipeline\bootstrap.py         # ~20 min — uses cached .gz file, no re-download
-python pipeline\clean.py
-python pipeline\analyze.py
-python pipeline\load.py
-python pipeline\smart_sample.py
-python pipeline\vision_extract.py    # ~8 CHF per 5k products, can use --resume
-python pipeline\merge_scores.py
-python pipeline\tag_claims.py
-python pipeline\db_summary.py
+python pipeline\vision_extract.py --test
 ```
 
-**Incremental (after changes to clean.py/analyze.py):**
-```bat
-del database\positioning_radar.db
-python pipeline\clean.py
-python pipeline\analyze.py
-python pipeline\load.py
-python pipeline\merge_scores.py
-python pipeline\tag_claims.py
-python pipeline\db_summary.py
-```
+(--test mode processes 10 products as a smoke test. vision_extract.py now
+auto-discovers pipeline\sample_clean_run.csv and joins the DB for
+product_name, brands, image_url.)
 
-**App:**
-```bat
-taskkill /F /IM streamlit.exe /T
-streamlit run app.py
-```
+After smoke test passes: run 50 US + 50 UK from sample_clean_run.csv,
+then merge_scores.py, then tag_claims.py, then review results before the
+full US run.
 
 ---
 
-## 6. Current database state (as of July 2026)
+## 6. Locked sample — final quotas
 
-- **512,937 products** (France, UK, US — from OFF bulk CSV)
-- **Markets:** France (largest), UK & Ireland, US & Canada
-- **Categories:** snacks, beverages, cereals, dairies
-- **Vision-analyzed:** 5,198 products (v2 prompt), 5,026 LLM successes (96.7%)
-- **Actual cost:** ~8 CHF for 5,198 products (Azure showed ~8 CHF, not 0.73 CHF
-  as the script estimated — the estimate was wrong)
-- **market_trend_weekly:** 4 rows (first Ozempic tracker snapshot, July 2026)
-- **company_brand_mapping.csv:** ~400 rows, ~55 companies
-
----
-
-## 7. Key conventions
-
-### 95% rule (OBS-028)
-A brand is considered sufficiently unified when ≥95% of products sharing
-a common name prefix are under the canonical brand name. Use:
-```bat
-python pipeline\check_brand.py <prefix>
+```
+Region        Snacks  Dairy   Cereals  Beverages  Total
+US & Canada   2,039   2,160   1,108    644        5,951
+UK & Ireland  2,063   2,263   1,101    651        6,078
+Total         4,102   4,423   2,209    1,295      12,029
 ```
 
-### Brand alias mapping
-`data/reference/brand_alias_mapping.csv` — reviewed by user, only rows
-with `action = confirm` are applied in `clean.py` Step 4b.
-Generator: `python pipeline\brand_coverage_report.py`
-The old SequenceMatcher-based company suggestion is unreliable (ignore it).
-The prefix detection is now O(n × words) not O(n²).
+Under-fill is stratum shortage (no valid reality band for a matrix cell),
+not product shortage. These are the final locked numbers, not targets.
 
-### Company assignment
-`data/reference/company_brand_mapping.csv` — brand = company for private
-labels. Adding new rows does NOT require pipeline re-run (app-layer join,
-cached at session start). To add rows programmatically:
-```bat
-python pipeline\append_mapping.py   # or edit directly in Notepad
-```
-
-### Region scope
-`DOWNLOAD_SCOPE_REGIONS = {"FRANCE", "UK_IE", "US_CANADA"}` in `shared/db.py`
-Only these three appear in the Market/region filter. Adding a new market
-= add its code here + re-run bootstrap.py for that market.
-
-### Snacks exclusions (bootstrap.py)
-Pasta (gnocchi, tortellini, ravioli, fresh-pasta), plain tortillas (not
-tortilla chips — those are protected), and pizza products are excluded from
-snacks even when OFF tags them as `en:snacks`. See `assign_category()` in
-bootstrap.py for the tag lists.
+France is deferred: needs a French keyword dictionary for
+detect_positioning_signals.py before sampling. Raw French terms exist in
+analyze.py and clean.py.
 
 ---
 
-## 8. What's done
+## 7. Sampling design — critical context
 
-- ✅ Full IS/TELLS table UI with colour-coded nutritional metrics
-- ✅ Positioning filter (vision-only, friendly claim names)
-- ✅ Status vs country-category average sidebar filters
-  (Protein / Fibre / Sat fat / Sugars g/100kcal)
-- ✅ Configurable column selector (defaults pre-selected, user can add/remove)
-- ✅ Company/owner filter with Other bucket and brand dependency
-- ✅ Market/region filter scoped to download coverage only
-- ✅ Brand-category dependency in Brand dropdown
-- ✅ No-letter brands excluded from Brand dropdown and display
-- ✅ Product card: removed proprietary scores, "Not tested" for non-vision,
-  full ingredient list collapsible
-- ✅ Brand alias mapping (2,323 aliases, Kellogg's unified to 99.6%)
-- ✅ Company mapping: ~55 companies including all major retailers and CPG brands
-- ✅ Ozempic tracker (market_trend_weekly): silently accumulates weekly snapshots
-- ✅ bootstrap.py: downloads OFF bulk CSV, filters to France/UK/US,
-  snacks exclusion for pasta/tortilla/pizza
-- ✅ vision_extract.py v2 prompt: added French claim vocabulary (CALCIUM,
-  RICHE EN CALCIUM, 100% FRANÇAIS, SANS CONSERVATEURS, AOC/AOP, NOUVELLE
-  RECETTE), image context detection (ingredient lists, nutrition tables,
-  price stickers → no claims extracted)
+**The ouroboros fix (most important decision of the sampling phase):**
+The positioning proxy (what the pack SAYS) uses product_name keywords only.
+The reality band (what the product IS) uses nutrition and ingredients.
+These axes must never overlap. See llm_sampling_design_log.md for the full
+reasoning — this local file is the most important context document.
+
+Three components per region-category:
+- 35% backbone: proportional within formulation family, brand-capped 15%,
+  weight_status = "approximate_brand_capped"
+- 50% matrix: positioning-proxy x reality-band per territory, 6 cells,
+  priority-weighted, weight_status = "approximate"
+- 15% calibration: rare territory enrichment (immune/gut/fibre) + 5%
+  prompt-comparison panel from the ~5,030 prior LLM-analyzed products
+
+All sampling metadata (component, stratum, inclusion_probability, reality bands,
+positioning proxy, formulation family) passes through to every output row in
+vision_extract.py automatically via sampling_meta dict.
 
 ---
 
-## 9. What's pending — in priority order
+## 8. PROMPT_VERSION v3 — what changed and why
 
-### IMMEDIATE — run before next user session
-**Expanded LLM run (smart_sample.py needs updating first):**
-The current smart_sample.py takes 15 products per named Tier 1 brand.
-The plan is to run ALL products from CPG manufacturer brands (not retailer
-private labels). Need to:
-1. Update smart_sample.py to add a new tier that takes ALL products from
-   mapped non-retailer companies (Nestlé, Danone, Kellogg's, Mars,
-   Mondelez, Ferrero, General Mills, etc.)
-2. Run smart_sample.py → vision_extract.py overnight
-   Budget: ~8-15 CHF estimated for 20-40k products (based on 8 CHF/5k)
-3. Run merge_scores.py → tag_claims.py → db_summary.py after
+Never reuse old prompt versions (ADR-006). v3 key changes:
 
-### NEXT — pipeline maintenance pass
-These all require a full pipeline re-run (clean.py onward):
-- `clean.py`: add title case for product names (`.str.title()` in Step 3)
-- `analyze.py`: remove `ferments lactiques` and `live cultures` from
-  `probiotic_claim` triggers — these are standard dairy manufacturing
-  ingredients, not marketing claims (caused Bel/Emmi false positives)
-- A full re-bootstrap after the above: the cached `.gz` file is still in
-  `data/raw/` so bootstrap.py will filter without re-downloading (~20 min)
+1. Image context classified FIRST (6 values: front_of_pack, mixed_pack_text,
+   ingredient_or_legal_panel, nutrition_label, price_sticker, uncertain).
+   Non-front images get claim_extraction_status = "not_applicable_non_front"
+   and no_claims_detected = null. This was the critical v2 bug: ingredient
+   stickers were returning no_claims_detected=true, making them
+   indistinguishable from genuine no-claim front packs.
+2. Multi-indicator panel detection (not word count alone).
+3. Product name is "context only, not claim evidence" — claim must appear in OCR.
+4. Deterministic context hints before OCR text (advisory, not authoritative).
+5. New fields: gut_health_claim, prebiotic_claim, sleep_claim,
+   brain_health_claim, reduced_fat_claim, whole_grain_claim,
+   detected_claim_phrases[], image_context, claim_extraction_status.
+6. Immunity separated from fortification. Brain health requires explicit
+   wording (omega-3 alone stays fortification_claim).
+7. DOUBLE ZERO narrowed: "ZERO SWEETENERS" alone -> other_claims only.
+8. stylized_text removed from schema (nano can't detect typography geometry).
+9. Response validator: validate_and_normalise() fills missing booleans,
+   validates enums, zeroes claims for non-front images.
+10. max_tokens 800 (was 500).
 
-### CONTENT — pages not yet built
-- Market Overview page (scaffold exists, content not started)
-- Methodology page (5-section structure confirmed, content not started)
-- About page (scaffold exists)
+---
 
-### DEFERRED — separate sessions
-- Frozen foods category addition to bootstrap.py (different analytical
-  universe, needs its own cleaning/validation pass)
-- OFF data quality flagging: flag products where energy_kcal > 3× brand-
-  category median (OBS-027: Hipro Saveur Coco 238 kcal error)
-- License change on GitHub (not MIT — attribution required)
-- Power BI / segmentation (needs full vision coverage first)
-- RGM / price tracking (ToS complexity, retailer scraping)
+## 9. Critical cross-script invariants
+
+These were explicitly fixed and must not be reverted:
+
+pack_claims_found = None  -> no valid pack observation (not analyzed, non-front, or failed)
+pack_claims_found = ""    -> front pack assessed, no claims found (do NOT use fallback)
+pack_claims_found = "..."  -> actual claims pipe-separated
+
+pd.isna(pack_claims) triggers ingredient fallback in tag_claims.py (NOT pd.notna).
+get_pack_claims_found() returns None for non-front images (NON_FRONT_STATUSES guard).
+valid_claim_observation = has_vision & (claim_extraction_status == "completed").
+
+compute_region_benchmarks.py MUST run before compute_profile_intersections.py
+(Section 2 reads its benchmark from Section 3's table — single source of truth).
+
+Reality bands use P25/P75 quartiles for sampling, NOT the 110/90 index (different purpose).
 
 ---
 
 ## 10. Known data quality issues
 
-**OBS-027:** Hipro Saveur Coco has 238 kcal/100g in OFF; actual is ~60
-kcal/100g. Appears as 🔴 red on Energy. Heuristic to detect: flag products
-where energy > 3× brand-category median. Implementation deferred.
+See notes_data_quality_local.md for full detail.
 
-**Coca-Cola variants:** ~44 residual products not yet unified (cocatech,
-coca nasa, coca coms are NOT Coca-Cola — do not alias them).
-
-**Pasta/pizza in snacks:** bootstrap.py now excludes the tag-identifiable
-ones, but many pizza products hide under `en:savoury-cake-with-cheese...`
-tag and aren't caught. Acceptable noise for now.
+- Vodka/tea: near-zero energy paired with full-strength macros -> 500-18,800
+  protein/kcal. Excluded by hard-plausibility ceilings in precompute scripts.
+- get_category_region_averages() in shared/db.py has no implausibility
+  protection -> may distort Product Explorer arrows for beverages. Deferred.
+- US cereals satfat median = 0.0: FDA 21 CFR 101.9 labelling convention,
+  not a data error.
+- off_categories stores display text, not en:xxx canonical slugs. Always use
+  display-text substrings ("yogurts", "yaourts") not "en:yogurts" for matching.
 
 ---
 
-## 11. Important context for code changes
+## 11. Next steps in priority order
 
-When modifying db.py or search.py, always test with:
+### Immediate: 100-product test
+```bat
+python pipeline\vision_extract.py --test
+# if smoke test clean:
+python pipeline\vision_extract.py --input pipeline\sample_clean_run.csv
+# (run only 100 rows initially by using --test or editing source to limit rows)
+python pipeline\merge_scores.py
+python pipeline\tag_claims.py
+```
+Review: image_context distribution, claim_extraction_status breakdown,
+new claim fields (sleep, brain, gut_health), detected_claim_phrases quality.
+
+### After test: full US run (~6,000 products)
+```bat
+python pipeline\vision_extract.py --input pipeline\sample_clean_run.csv
+```
+(auto-discovers sample_clean_run.csv, joins DB for product fields)
+
+### After US: UK run -> France (after French dictionary)
+
+### Deferred (after full run)
+- Bootstrap re-run (OBS-029 cereals exclusion for bread/pasta contamination)
+- axis_range_config UI wiring (scatter default range, "Show full range" toggle)
+- Remove deprecated composite score from analyze.py and merge_scores.py
+- Clean up db_summary.py (deprecated table references)
+- Methodology page, About page, README update
+
+---
+
+## 12. Precompute run order (Market Overview)
+
+```bat
+python pipeline\compute_axis_ranges.py
+python pipeline\compute_region_benchmarks.py        # run before next line
+python pipeline\compute_profile_intersections.py    # reads from above
+```
+
+If region_category_benchmarks schema changes (new columns), drop and rebuild:
+```bat
+python -c "import sqlite3; c=sqlite3.connect('database/positioning_radar.db'); c.execute('DROP TABLE IF EXISTS region_category_benchmarks'); c.commit()"
+python pipeline\compute_region_benchmarks.py
+python pipeline\compute_profile_intersections.py
+```
+
+---
+
+## 13. Sampling pipeline run order
+
+```bat
+python pipeline\detect_positioning_signals.py    # US+UK only; France excluded (expected)
+python pipeline\assign_reality_bands.py
+python pipeline\classify_formulation_families.py
+python pipeline\smart_sample.py --dry-run        # check eligible counts
+python pipeline\smart_sample.py                   # -> pipeline/sample_clean_run.csv
+```
+
+---
+
+## 14. App
+
 ```bat
 taskkill /F /IM streamlit.exe /T
 streamlit run app.py
 ```
-The app uses `@st.cache_data` for company_brand_mapping, region options,
-and category averages. Changes to CSV files require app restart to take
-effect. Changes to the DB require restart AND the cache TTL to expire
-(600 seconds) or a manual `st.cache_data.clear()`.
 
-The `get_category_region_averages()` function in db.py precomputes nutritional
-averages by (query_category × primary_country mapped to region). These are
-the denominators for all 🟢🟡🔴 colour coding. Thresholds: >110% = above
-(green for good metrics, red for bad), 90-110% = parity (yellow), <90% =
-below. Energy, sat fat, sugars: higher = red. Protein, fibre: higher = green.
+---
 
-The company/brand filter in the app is an app-layer join (not SQL): the
-company_brand_mapping.csv is loaded into a dict at session start, brands are
-expanded to a list, and a `LOWER(REPLACE(primary_brand, '-', ' ')) IN (...)`
-clause is added to the WHERE. This means adding companies to the CSV takes
-effect on next app restart, no pipeline re-run needed.
+## 15. Local-only documentation (never committed)
+
+These are the most important context files not in the repo:
+
+llm_sampling_design_log.md          -- Full LLM sampling design decisions.
+                                       READ THIS before touching sampling code.
+market_overview_phase_documentation.md -- Full Market Overview build docs.
+notes_data_quality_local.md         -- Data quality findings, deferred fixes.
+docs/prompt_feedback.txt            -- Prompt v3 specification (implemented).
+docs/pre-run_feedback.txt           -- Pre-run checklist (implemented).
