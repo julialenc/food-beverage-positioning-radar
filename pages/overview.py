@@ -1,12 +1,11 @@
 """
 Market Overview.
 
-Release 1 scope: a snapshot of the observable product universe, not a
-segmentation or trend report. Three sections, built and checked one at a
-time:
-  1. Product Landscape         — this file, built now
-  2. Product Profile Landscape — cumulative AND-condition funnel, not yet built
-  3. By Region                 — fixed cross-region/category benchmark table, not yet built
+MVP scope: a snapshot of the observable product universe, not a sales-,
+share-, or trend-reporting tool. Three sections:
+  1. Product Landscape         — individual products across nutrition metrics
+  2. Product Profile Landscape — cumulative AND-condition funnel
+  3. By Region                 — fixed cross-region/category benchmark table
 
 OFF data only. No OCR/LLM/claim data anywhere on this page — that
 distinction lives in Product Explorer instead (see docs/ADR.md).
@@ -32,10 +31,426 @@ import streamlit as st
 
 from shared import components, db
 
+_SNAPSHOT_LABEL = "July 2026"
+_CATEGORY_LABELS = {
+    "beverages": "Beverages",
+    "cereals": "Cereals",
+    "dairies": "Dairy",
+    "snacks": "Snacks",
+}
+_COMPANY_OTHER_LABELS = {db.COMPANY_OTHER_LABEL, db.COMPANY_MANUAL_REVIEW_LABEL}
+_NUTRITION_COLS = [
+    "energy_kcal", "protein_100g", "fiber_100g", "sugars_100g",
+    "saturated_fat_100g", "salt_100g",
+]
+_DRILL_NUTRITION_COLS = [
+    "energy_kcal", "protein_100g", "fiber_100g", "sugars_100g",
+    "saturated_fat_100g", "salt_100g",
+]
+_NOVA_DESCRIPTIONS = {
+    1: "Unprocessed / minimally processed",
+    2: "Processed culinary ingredients",
+    3: "Processed foods",
+    4: "Ultra-processed foods",
+}
+_METRIC_LABELS = {
+    "energy_kcal": "Energy, kcal/100g",
+    "protein_100g": "Protein, g/100g",
+    "fiber_100g": "Fibre, g/100g",
+    "sugars_100g": "Sugars, g/100g",
+    "saturated_fat_100g": "Saturated fat, g/100g",
+    "salt_100g": "Salt, g/100g",
+}
+_REFERENCE_HELP = (
+    "↑ above selected country-category reference    "
+    "≈ within ±10% of selected country-category reference    "
+    "↓ below selected country-category reference"
+)
+
+
+def _category_label(category: str) -> str:
+    return _CATEGORY_LABELS.get(str(category), str(category).replace("_", " ").title())
+
+
+def _pct(numerator: int | float, denominator: int | float) -> str:
+    if not denominator:
+        return "—"
+    return f"{numerator / denominator:.0%}"
+
+
+def _fmt_num(value, decimals: int = 1, suffix: str = "") -> str:
+    if value is None or pd.isna(value):
+        return "—"
+    return f"{float(value):.{decimals}f}{suffix}"
+
+
+def _fmt_indexed(value, reference, decimals: int = 1) -> str:
+    if value is None or pd.isna(value):
+        return "—"
+    try:
+        num = float(value)
+    except (TypeError, ValueError):
+        return "—"
+    text = f"{num:.{decimals}f}"
+    if reference is None or pd.isna(reference) or reference == 0:
+        return text
+    idx = num / float(reference) * 100
+    if idx > 110:
+        arrow = "↑"
+    elif idx >= 90:
+        arrow = "≈"
+    else:
+        arrow = "↓"
+    return f"{text} {arrow}"
+
+
+def _nova_label(value) -> str:
+    if value is None or pd.isna(value):
+        return "—"
+    try:
+        nova = int(float(value))
+    except (TypeError, ValueError):
+        return "—"
+    return f"{nova} - {_NOVA_DESCRIPTIONS.get(nova, 'Not determined')}"
+
+
+def _coverage_mask(df: pd.DataFrame, col: str) -> pd.Series:
+    if col not in df.columns:
+        return pd.Series(False, index=df.index)
+    if df[col].dtype == object:
+        return df[col].notna() & (df[col].astype(str).str.strip() != "")
+    return df[col].notna()
+
+
+def _nutrition_any_mask(df: pd.DataFrame) -> pd.Series:
+    available_cols = [c for c in _NUTRITION_COLS if c in df.columns]
+    if not available_cols:
+        return pd.Series(False, index=df.index)
+    return df[available_cols].notna().any(axis=1)
+
+
+def _mapped_company_mask(df: pd.DataFrame) -> pd.Series:
+    return (
+        _coverage_mask(df, "company")
+        & ~df["company"].isin(_COMPANY_OTHER_LABELS)
+    )
+
+
+def _metric_card(label: str, value: str, help_text: str | None = None) -> None:
+    st.metric(label, value, help=help_text)
+
+
+def _nutriscore_distribution(df: pd.DataFrame) -> str:
+    ns = df["nutriscore_grade"].dropna().astype(str).str.upper()
+    ns = ns[ns.isin(["A", "B", "C", "D", "E"])]
+    if ns.empty:
+        return "—"
+    counts = ns.value_counts().reindex(["A", "B", "C", "D", "E"]).dropna().astype(int)
+    total = counts.sum()
+    return " · ".join(f"{grade}: {count / total:.0%}" for grade, count in counts.items())
+
+
+def _reference_values(df: pd.DataFrame) -> dict[str, float]:
+    return {col: df[col].median() for col in _DRILL_NUTRITION_COLS if col in df.columns}
+
+
+def _column_help_config(columns: list[str]) -> dict:
+    return {
+        col: st.column_config.TextColumn(col, help=_REFERENCE_HELP)
+        for col in columns
+        if col in _METRIC_LABELS.values() or col.startswith("Median ")
+    }
+
+
+def _brand_summary(df: pd.DataFrame, references: dict[str, float]) -> pd.DataFrame:
+    rows = []
+    for (company, brand), grp in df.groupby(["company", "primary_brand"], dropna=False):
+        nova_available = grp["nova_group"].notna().sum()
+        nova4 = (grp["nova_group"] == 4).sum()
+        rows.append({
+            "Company / owner": company or "—",
+            "Brand": brand or "—",
+            "Observed records": len(grp),
+            "Median energy, kcal/100g": grp["energy_kcal"].median(),
+            "Median protein, g/100g": grp["protein_100g"].median(),
+            "Median fibre, g/100g": grp["fiber_100g"].median(),
+            "Median sugars, g/100g": grp["sugars_100g"].median(),
+            "Median saturated fat, g/100g": grp["saturated_fat_100g"].median(),
+            "Median salt, g/100g": grp["salt_100g"].median(),
+            "NOVA 4": f"{_pct(nova4, nova_available)} ({nova4:,}/{nova_available:,})",
+            "Nutrition data coverage": _pct(_nutrition_any_mask(grp).sum(), len(grp)),
+        })
+    out = pd.DataFrame(rows)
+    if out.empty:
+        return out
+    format_map = {
+        "Median energy, kcal/100g": ("energy_kcal", 0),
+        "Median protein, g/100g": ("protein_100g", 1),
+        "Median fibre, g/100g": ("fiber_100g", 1),
+        "Median sugars, g/100g": ("sugars_100g", 1),
+        "Median saturated fat, g/100g": ("saturated_fat_100g", 1),
+        "Median salt, g/100g": ("salt_100g", 2),
+    }
+    for display_col, (source_col, decimals) in format_map.items():
+        out[display_col] = out[display_col].map(
+            lambda v, ref=references.get(source_col), d=decimals: _fmt_indexed(v, ref, d)
+        )
+    return out.sort_values("Brand", key=lambda s: s.astype(str).str.lower())
+
+
+def _product_table(df: pd.DataFrame, references: dict[str, float], limit: int = 250) -> pd.DataFrame:
+    cols = {
+        "product_name": "Product",
+        "primary_brand": "Brand",
+        "company": "Company / owner",
+        "energy_kcal": "Energy, kcal/100g",
+        "protein_100g": "Protein, g/100g",
+        "fiber_100g": "Fibre, g/100g",
+        "sugars_100g": "Sugars, g/100g",
+        "saturated_fat_100g": "Saturated fat, g/100g",
+        "salt_100g": "Salt, g/100g",
+        "nova_group": "NOVA",
+        "nutriscore_grade": "Nutri-Score",
+    }
+    view = df[[c for c in cols if c in df.columns]].head(limit).rename(columns=cols)
+    format_map = {
+        "Energy, kcal/100g": ("energy_kcal", 0),
+        "Protein, g/100g": ("protein_100g", 1),
+        "Fibre, g/100g": ("fiber_100g", 1),
+        "Sugars, g/100g": ("sugars_100g", 1),
+        "Saturated fat, g/100g": ("saturated_fat_100g", 1),
+        "Salt, g/100g": ("salt_100g", 2),
+    }
+    for display_col, (source_col, decimals) in format_map.items():
+        if display_col in view.columns:
+            view[display_col] = view[display_col].map(
+                lambda v, ref=references.get(source_col), d=decimals: _fmt_indexed(v, ref, d)
+            )
+    if "NOVA" in view.columns:
+        view["NOVA"] = view["NOVA"].map(_nova_label)
+    if "Nutri-Score" in view.columns:
+        view["Nutri-Score"] = view["Nutri-Score"].map(
+            lambda v: "—" if pd.isna(v) or str(v).strip() == "" else str(v).upper()
+        )
+    return view
+
+
+def _render_product_detail(product: pd.Series) -> None:
+    st.markdown("**Selected product details**")
+    img_col, info_col = st.columns([1, 2.2])
+    with img_col:
+        image_url = components.product_image_url(product.get("image_url"))
+        components.render_product_pack_image(
+            image_url, product_name=product.get("product_name") or ""
+        )
+    with info_col:
+        st.markdown(f"**{product.get('product_name') or 'Unnamed product'}**")
+        st.caption(
+            f"{product.get('primary_brand') or 'Unknown brand'} · "
+            f"{product.get('company') or db.COMPANY_OTHER_LABEL}"
+        )
+        detail_cols = st.columns(3)
+        detail_cols[0].metric("Energy, kcal/100g", _fmt_num(product.get("energy_kcal"), 0))
+        detail_cols[1].metric("Protein, g/100g", _fmt_num(product.get("protein_100g"), 1))
+        detail_cols[2].metric("Sugars, g/100g", _fmt_num(product.get("sugars_100g"), 1))
+        detail_cols = st.columns(3)
+        detail_cols[0].metric("Saturated fat, g/100g", _fmt_num(product.get("saturated_fat_100g"), 1))
+        detail_cols[1].metric("Salt, g/100g", _fmt_num(product.get("salt_100g"), 2))
+        detail_cols[2].metric("NOVA", _nova_label(product.get("nova_group")))
+        ns = product.get("nutriscore_grade")
+        st.caption(f"Nutri-Score: {'—' if pd.isna(ns) else str(ns).upper()}")
+    ingredients = product.get("ingredients_text")
+    if ingredients is not None and not pd.isna(ingredients) and str(ingredients).strip():
+        with st.expander("Ingredient text"):
+            st.write(str(ingredients))
+
+
+def _brand_company_label(df: pd.DataFrame) -> str:
+    companies = [
+        str(c) for c in df["company"].dropna().unique()
+        if str(c).strip()
+    ]
+    if not companies:
+        return "—"
+    companies = sorted(companies, key=lambda c: c.lower())
+    if len(companies) <= 2:
+        return " · ".join(companies)
+    return " · ".join(companies[:2]) + f" · +{len(companies) - 2} more"
+
+
+def _brand_option_match(brand_options: list[str], preferred: str, fallback_index: int) -> str:
+    preferred_norm = preferred.strip().lower()
+    for brand in brand_options:
+        if str(brand).strip().lower() == preferred_norm:
+            return brand
+    if not brand_options:
+        return ""
+    return brand_options[min(fallback_index, len(brand_options) - 1)]
+
+
+def _brand_compare_product_table(
+    df: pd.DataFrame,
+    references: dict[str, float],
+    limit: int = 100,
+) -> pd.DataFrame:
+    view = _product_table(df, references, limit=limit)
+    return view.drop(
+        columns=[c for c in ["Brand", "Company / owner"] if c in view.columns]
+    )
+
+
+def _render_compact_product_detail(product: pd.Series) -> None:
+    st.markdown(f"**{product.get('product_name') or 'Unnamed product'}**")
+    metric_cols = st.columns(2)
+    metric_cols[0].metric("Energy, kcal/100g", _fmt_num(product.get("energy_kcal"), 0))
+    metric_cols[1].metric("Protein, g/100g", _fmt_num(product.get("protein_100g"), 1))
+    metric_cols = st.columns(2)
+    metric_cols[0].metric("Fibre, g/100g", _fmt_num(product.get("fiber_100g"), 1))
+    metric_cols[1].metric("Sugars, g/100g", _fmt_num(product.get("sugars_100g"), 1))
+    metric_cols = st.columns(2)
+    metric_cols[0].metric("Saturated fat, g/100g", _fmt_num(product.get("saturated_fat_100g"), 1))
+    metric_cols[1].metric("Salt, g/100g", _fmt_num(product.get("salt_100g"), 2))
+    st.caption(
+        f"NOVA: {_nova_label(product.get('nova_group'))} · "
+        f"Nutri-Score: {'—' if pd.isna(product.get('nutriscore_grade')) else str(product.get('nutriscore_grade')).upper()}"
+    )
+    ingredients = product.get("ingredients_text")
+    if ingredients is not None and not pd.isna(ingredients) and str(ingredients).strip():
+        with st.expander("Ingredient text"):
+            st.write(str(ingredients))
+
+
+def _render_brand_compare_panel(
+    label: str,
+    company_options: list[str],
+    default_brand: str,
+    df_market: pd.DataFrame,
+    references: dict[str, float],
+) -> None:
+    key_base = label.lower().replace(" ", "_")
+    all_companies_label = "All companies / owners"
+    select_brand_label = "Select a brand"
+
+    company_key = f"bc_company_{key_base}"
+    brand_key = f"bc_brand_{key_base}"
+
+    if st.session_state.get(company_key) not in ([all_companies_label] + company_options):
+        st.session_state[company_key] = all_companies_label
+
+    company = st.selectbox(
+        f"{label}: Company / owner — optional",
+        [all_companies_label] + company_options,
+        key=company_key,
+    )
+
+    if company == all_companies_label:
+        brand_base = df_market
+    else:
+        brand_base = df_market[df_market["company"] == company]
+
+    brand_options = sorted(
+        brand_base["primary_brand"].dropna().unique(),
+        key=lambda b: str(b).lower(),
+    )
+
+    brand_choices = brand_options if company == all_companies_label else [select_brand_label] + brand_options
+    if st.session_state.get(brand_key) not in brand_choices:
+        st.session_state[brand_key] = (
+            default_brand if default_brand in brand_choices else brand_choices[0]
+        )
+
+    brand = st.selectbox(
+        f"{label}: Brand",
+        brand_choices,
+        key=brand_key,
+    )
+
+    if brand == select_brand_label:
+        st.caption("Select a brand to display observed records.")
+        return
+
+    brand_df = brand_base[brand_base["primary_brand"] == brand].copy()
+    if brand_df.empty:
+        st.caption("Select a brand to display observed records.")
+        return
+
+    st.markdown(f"### {brand}")
+    st.caption(f"Company / owner: {_brand_company_label(brand_df)}")
+
+    total_records = len(brand_df)
+    nutrition_count = int(_nutrition_any_mask(brand_df).sum())
+    nova_available = int(brand_df["nova_group"].notna().sum())
+    nova4 = int((brand_df["nova_group"] == 4).sum())
+
+    metric_cols = st.columns(2)
+    metric_cols[0].metric("Observed records", f"{total_records:,}")
+    metric_cols[1].metric("Nutrition data coverage", _pct(nutrition_count, total_records))
+    metric_cols = st.columns(2)
+    metric_cols[0].metric(
+        "Median energy, kcal/100g",
+        _fmt_indexed(brand_df["energy_kcal"].median(), references.get("energy_kcal"), 0),
+    )
+    metric_cols[1].metric(
+        "Median protein, g/100g",
+        _fmt_indexed(brand_df["protein_100g"].median(), references.get("protein_100g"), 1),
+    )
+    metric_cols = st.columns(2)
+    metric_cols[0].metric(
+        "Median fibre, g/100g",
+        _fmt_indexed(brand_df["fiber_100g"].median(), references.get("fiber_100g"), 1),
+    )
+    metric_cols[1].metric(
+        "Median sugars, g/100g",
+        _fmt_indexed(brand_df["sugars_100g"].median(), references.get("sugars_100g"), 1),
+    )
+    metric_cols = st.columns(2)
+    metric_cols[0].metric(
+        "Median saturated fat, g/100g",
+        _fmt_indexed(
+            brand_df["saturated_fat_100g"].median(),
+            references.get("saturated_fat_100g"),
+            1,
+        ),
+    )
+    metric_cols[1].metric(
+        "Median salt, g/100g",
+        _fmt_indexed(brand_df["salt_100g"].median(), references.get("salt_100g"), 2),
+    )
+    metric_cols = st.columns(2)
+    metric_cols[0].metric("NOVA 4", f"{_pct(nova4, nova_available)} ({nova4:,}/{nova_available:,})")
+    metric_cols[1].metric("Nutri-Score", _nutriscore_distribution(brand_df))
+
+    st.markdown("**Product records**")
+    product_records = brand_df.head(100)
+    product_view = _brand_compare_product_table(brand_df, references, limit=100)
+    product_event = st.dataframe(
+        product_view,
+        hide_index=True,
+        width="stretch",
+        column_config=_column_help_config(list(product_view.columns)),
+        on_select="rerun",
+        selection_mode="single-row",
+        key=f"bc_products_{label.lower().replace(' ', '_')}_{brand}",
+    )
+    if hasattr(product_event, "selection"):
+        selected_rows = product_event.selection.rows
+    else:
+        selected_rows = product_event.get("selection", {}).get("rows", [])
+    if selected_rows:
+        with st.expander("Selected product detail", expanded=True):
+            _render_compact_product_detail(product_records.iloc[selected_rows[0]])
+    if len(brand_df) > 100:
+        st.caption(f"Showing 100 of {len(brand_df):,} product records for {brand}.")
+
+
 components.inject_base_css()
 components.render_header(
     "Market Overview",
-    "Explore nutritional efficiency across the observable product universe.",
+    (
+        "Explore observed Open Food Facts product records by selected "
+        "country-category scope; counts are not sales-weighted, "
+        "distribution-weighted, or market-share estimates."
+    ),
 )
 
 if not db.database_exists():
@@ -45,47 +460,67 @@ if not db.database_exists():
 # ── Section navigation (left pane) ───────────────────────────────────────────
 # Shows name + subtitle for every planned section so a first-time visitor
 # sees what's available; a returning visitor clicks instead of scrolling.
-# Sections 2 and 3 are placeholders until built — shown so the navigation
-# shape doesn't change later, not because they have content yet.
 _SECTIONS = [
-    ("Product Landscape",
-     "Explore individual products across selected quantitative nutrition metrics."),
-    ("Product Profile Landscape",
-     "Build a cumulative profile for the selected market."),
-    ("By Region",
-     "Fixed comparison of all regions and categories."),
+    {
+        "key": "category_report",
+        "sidebar_label": "1. Category Report",
+        "view_label": (
+            "1. CATEGORY REPORT. Country-category landscape; drill into "
+            "companies, brands, and products."
+        ),
+        "caption": (
+            "Country-category landscape; drill into companies, brands, and products."
+        ),
+    },
+    {
+        "key": "brand_compare",
+        "sidebar_label": "2. Brand Compare",
+        "view_label": (
+            "2. BRAND COMPARE. Compare two brands side by side within the "
+            "selected country-category base."
+        ),
+        "caption": "Compare two brands side by side within the selected country-category base.",
+    },
+    {
+        "key": "product_map",
+        "sidebar_label": "3. Product Map",
+        "view_label": (
+            "3. PRODUCT MAP. Map observed product records across selected "
+            "nutrition dimensions."
+        ),
+        "caption": "Map observed product records across selected nutrition dimensions.",
+    },
 ]
+_SECTION_BY_KEY = {section["key"]: section for section in _SECTIONS}
+_CATEGORY_REPORT_SECTION = "category_report"
+_BRAND_COMPARE_SECTION = "brand_compare"
+_PRODUCT_MAP_SECTION = "product_map"
 
-if "mo_active_section" not in st.session_state:
-    st.session_state["mo_active_section"] = _SECTIONS[0][0]
+if (
+    "mo_active_section" not in st.session_state
+    or st.session_state["mo_active_section"] not in _SECTION_BY_KEY
+):
+    st.session_state["mo_active_section"] = _CATEGORY_REPORT_SECTION
 
 with st.sidebar:
-    st.markdown("**Market Overview sections**")
-    for i, (name, subtitle) in enumerate(_SECTIONS, start=1):
-        is_active = st.session_state["mo_active_section"] == name
+    st.markdown("**Market Overview views**")
+    for i, section in enumerate(_SECTIONS, start=1):
+        is_active = st.session_state["mo_active_section"] == section["key"]
         if st.button(
-            f"{'▶ ' if is_active else ''}{i}. {name}",
+            f"{'▶ ' if is_active else ''}{section['sidebar_label']}",
             key=f"mo_nav_{i}",
             use_container_width=True,
             type="primary" if is_active else "secondary",
         ):
-            st.session_state["mo_active_section"] = name
+            st.session_state["mo_active_section"] = section["key"]
             st.rerun()
-        st.caption(subtitle)
+        st.caption(section["caption"])
 
 active_section = st.session_state["mo_active_section"]
-
-# ── Data snapshot line (global, not scope-dependent) ─────────────────────────
-_TOTAL_PRODUCTS = db.count_products()
-st.caption(f"Data snapshot: July 2026 · {_TOTAL_PRODUCTS:,} products in database")
 
 # ── Fixed defaults for first load ────────────────────────────────────────────
 _DEFAULT_REGION_CODE = "FRANCE"
 _DEFAULT_CATEGORY    = "snacks"
-
-# ── Market scope (mandatory, single-select, shared by sections 1 and 2) ─────
-st.subheader("Market scope")
-st.caption("Mandatory fields")
 
 region_options       = db.get_region_options()  # [(code, label), ...]
 region_codes         = [code for code, _ in region_options]
@@ -94,14 +529,15 @@ region_code_to_label = dict(region_options)
 
 category_options = db.get_filter_options()["query_category"]
 
-col_region, col_category = st.columns(2)
+st.subheader("Select scope")
+col_region, col_category, col_view = st.columns([1, 1, 1.35])
 with col_region:
     default_region_idx = (
         region_codes.index(_DEFAULT_REGION_CODE)
         if _DEFAULT_REGION_CODE in region_codes else 0
     )
     region_label = st.selectbox(
-        "Region *", region_labels, index=default_region_idx, key="mo_region",
+        "Country / market", region_labels, index=default_region_idx, key="mo_region",
     )
     region_code = {v: k for k, v in region_code_to_label.items()}[region_label]
 with col_category:
@@ -110,11 +546,379 @@ with col_category:
         if _DEFAULT_CATEGORY in category_options else 0
     )
     category = st.selectbox(
-        "Category *", category_options, index=default_category_idx, key="mo_category",
+        "Category", category_options, index=default_category_idx, key="mo_category",
     )
+with col_view:
+    report_labels = [section["view_label"] for section in _SECTIONS]
+    report_keys = [section["key"] for section in _SECTIONS]
+    report_descriptions = {section["view_label"]: section["caption"] for section in _SECTIONS}
+    active_view_label = _SECTION_BY_KEY[active_section]["view_label"]
+    if st.session_state.get("mo_report") not in report_labels:
+        st.session_state["mo_report"] = active_view_label
+    report_label = st.selectbox(
+        "View",
+        report_labels,
+        index=report_labels.index(active_view_label),
+        key="mo_report",
+    )
+    selected_section_key = report_keys[report_labels.index(report_label)]
+    if selected_section_key != st.session_state["mo_active_section"]:
+        st.session_state["mo_active_section"] = selected_section_key
+        st.rerun()
+    if selected_section_key != _CATEGORY_REPORT_SECTION:
+        st.caption(report_descriptions.get(report_label, ""))
 
 # ── Load the region x category population (cached; shared by all 3 sections) ─
 df_market = db.get_market_products(category, region_code)
+selected_base = f"{region_label} · {_category_label(category)}"
+st.caption(
+    f"Current data snapshot: {_SNAPSHOT_LABEL} · "
+    f"{len(df_market):,} products in selected scope"
+)
+st.markdown(f"**Selected scope: {selected_base}**")
+
+if active_section == _BRAND_COMPARE_SECTION:
+    st.markdown("### 2. Brand Compare")
+    st.info(
+        "Select any two brands in the selected country-category base and "
+        "compare their observed records side by side; values are not "
+        "sales-weighted or market-share estimates."
+    )
+
+    brand_options = sorted(
+        df_market["primary_brand"].dropna().unique(),
+        key=lambda b: str(b).lower(),
+    )
+    if len(brand_options) < 2:
+        st.info("At least two brands are needed in the selected scope for Brand Compare.")
+        st.stop()
+
+    company_options = sorted(
+        df_market["company"].dropna().unique(),
+        key=lambda c: str(c).lower(),
+    )
+    default_brand_a = _brand_option_match(brand_options, "kitkat", 0)
+    default_brand_b = _brand_option_match(brand_options, "mars", 1)
+    if default_brand_b == default_brand_a and len(brand_options) > 1:
+        default_brand_b = brand_options[1]
+
+    scope_key = f"{region_code}|{category}|brand_compare_v2"
+    if st.session_state.get("bc_scope_key") != scope_key:
+        st.session_state["bc_scope_key"] = scope_key
+        st.session_state["bc_company_brand_a"] = "All companies / owners"
+        st.session_state["bc_company_brand_b"] = "All companies / owners"
+        st.session_state["bc_brand_brand_a"] = default_brand_a
+        st.session_state["bc_brand_brand_b"] = default_brand_b
+
+    reference_values = _reference_values(df_market)
+    total_records = len(df_market)
+    nova_count = int(_coverage_mask(df_market, "nova_group").sum())
+    nova4_count = int((df_market["nova_group"] == 4).sum())
+
+    st.markdown(f"### Reference base: {selected_base} observed records")
+    st.caption("Both selected brands are compared within this same selected country-category base.")
+    ref_cols = st.columns(5)
+    ref_cols[0].metric("Observed product records", f"{total_records:,}")
+    ref_cols[1].metric("Median energy, kcal/100g", _fmt_num(df_market["energy_kcal"].median(), 0))
+    ref_cols[2].metric("Median protein, g/100g", _fmt_num(df_market["protein_100g"].median(), 1))
+    ref_cols[3].metric("Median sugars, g/100g", _fmt_num(df_market["sugars_100g"].median(), 1))
+    ref_cols[4].metric(
+        "NOVA 4",
+        f"{_pct(nova4_count, nova_count)} ({nova4_count:,}/{nova_count:,})",
+        help=(
+            "NOVA 4 percentage is calculated among records with NOVA data "
+            "available, not among all observed records."
+        ),
+    )
+
+    st.divider()
+
+    col_a, col_b = st.columns(2)
+    with col_a:
+        _render_brand_compare_panel(
+            "Brand A",
+            company_options,
+            default_brand_a,
+            df_market,
+            reference_values,
+        )
+    with col_b:
+        _render_brand_compare_panel(
+            "Brand B",
+            company_options,
+            default_brand_b,
+            df_market,
+            reference_values,
+        )
+
+    st.stop()
+
+if active_section not in {_CATEGORY_REPORT_SECTION, _PRODUCT_MAP_SECTION}:
+    st.info("This Market Overview report is not built yet.")
+    st.stop()
+
+if active_section == _CATEGORY_REPORT_SECTION:
+    st.markdown("### 1. Category Report")
+    st.info(
+        "This report summarizes observed records for the selected "
+        "country-category base and lets you drill into companies, brands, "
+        "and products."
+    )
+
+    st.markdown(f"## {selected_base}")
+    st.caption(
+        "Observed product records from Open Food Facts for the selected "
+        "country-category base."
+    )
+
+    st.subheader("Category Report filters")
+    st.caption("Optional fields")
+    _ALL_COMPANIES_LABEL = "All companies / owners"
+    _ALL_BRANDS_LABEL = "All brands"
+
+    company_values = sorted(df_market["company"].dropna().unique())
+    col_company, col_brand = st.columns(2)
+    with col_company:
+        company_filter = st.selectbox(
+            "Company / owner — optional",
+            [_ALL_COMPANIES_LABEL] + company_values,
+            index=0,
+            key="cr_company",
+        )
+
+    if company_filter == _ALL_COMPANIES_LABEL:
+        brand_base = df_market
+        brand_values = []
+    else:
+        brand_base = df_market[df_market["company"] == company_filter]
+        brand_values = sorted(brand_base["primary_brand"].dropna().unique())
+
+    if (
+        st.session_state.get("cr_brand") != _ALL_BRANDS_LABEL
+        and st.session_state.get("cr_brand") not in brand_values
+    ):
+        st.session_state["cr_brand"] = _ALL_BRANDS_LABEL
+
+    with col_brand:
+        brand_filter = st.selectbox(
+            "Brand — optional",
+            [_ALL_BRANDS_LABEL] + brand_values,
+            index=0,
+            key="cr_brand",
+            disabled=(company_filter == _ALL_COMPANIES_LABEL),
+        )
+
+    if company_filter == _ALL_COMPANIES_LABEL:
+        st.caption("Select a company / owner first to narrow by brand.")
+    if st.button("Reset filters", key="cr_reset_filters"):
+        st.session_state["cr_company"] = _ALL_COMPANIES_LABEL
+        st.session_state["cr_brand"] = _ALL_BRANDS_LABEL
+        st.rerun()
+
+    st.divider()
+
+    total_records = len(df_market)
+    nutrition_count = int(_nutrition_any_mask(df_market).sum())
+    ingredient_count = int(_coverage_mask(df_market, "ingredients_text").sum())
+    nutriscore_count = int(_coverage_mask(df_market, "nutriscore_grade").sum())
+    nova_count = int(_coverage_mask(df_market, "nova_group").sum())
+    mapped_count = int(_mapped_company_mask(df_market).sum())
+
+    summary_cols = st.columns(3)
+    with summary_cols[0]:
+        _metric_card("Observed product records", f"{total_records:,}")
+        _metric_card(
+            "Nutrition data coverage",
+            f"{_pct(nutrition_count, total_records)}",
+            f"{nutrition_count:,} records with at least one displayed nutrition value.",
+        )
+    with summary_cols[1]:
+        _metric_card(
+            "Ingredient text coverage",
+            f"{_pct(ingredient_count, total_records)}",
+            f"{ingredient_count:,} records with ingredient text.",
+        )
+        _metric_card(
+            "Nutri-Score coverage",
+            f"{_pct(nutriscore_count, total_records)}",
+            f"{nutriscore_count:,} records with Nutri-Score available.",
+        )
+    with summary_cols[2]:
+        _metric_card(
+            "NOVA coverage",
+            f"{_pct(nova_count, total_records)}",
+            f"{nova_count:,} records with NOVA group available.",
+        )
+        _metric_card(
+            "Company mapping coverage",
+            f"{_pct(mapped_count, total_records)}",
+            f"{mapped_count:,} records mapped to a company / owner.",
+        )
+
+    st.divider()
+
+    st.markdown(f"### Reference base: {selected_base} observed records")
+    st.caption("All metrics below are calculated among records with available data.")
+
+    ref_cols = st.columns(4)
+    ref_metrics = [
+        ("Median energy, kcal/100g", "energy_kcal", 0, ""),
+        ("Median protein, g/100g", "protein_100g", 1, ""),
+        ("Median fibre, g/100g", "fiber_100g", 1, ""),
+        ("Median sugars, g/100g", "sugars_100g", 1, ""),
+        ("Median saturated fat, g/100g", "saturated_fat_100g", 1, ""),
+        ("Median salt, g/100g", "salt_100g", 2, ""),
+    ]
+    for idx, (label, col, decimals, suffix) in enumerate(ref_metrics):
+        with ref_cols[idx % 4]:
+            _metric_card(label, _fmt_num(df_market[col].median(), decimals, suffix))
+
+    nova4_count = int((df_market["nova_group"] == 4).sum())
+    nutri_dist = _nutriscore_distribution(df_market)
+    ref_extra_cols = st.columns(2)
+    with ref_extra_cols[0]:
+        _metric_card(
+            "NOVA 4 among records with NOVA available",
+            f"{_pct(nova4_count, nova_count)}",
+            "NOVA 4 percentage is calculated among records with NOVA data "
+            "available, not among all observed records.",
+        )
+    with ref_extra_cols[1]:
+        st.markdown("**Nutri-Score among records with Nutri-Score available**")
+        st.caption(nutri_dist)
+
+    st.divider()
+
+    st.markdown("### Drill-down table")
+    st.info(
+        "Company rows are navigation only; brand summaries and product rows "
+        "contain the nutrition values."
+    )
+    st.caption("Brand summaries are based on observed records in the selected base and are not sales-weighted.")
+    st.caption(
+        "Extreme values may reflect unusual products or source-data issues. "
+        "Use product-level drill-down to inspect them."
+    )
+
+    drill_df = df_market.copy()
+    if company_filter != _ALL_COMPANIES_LABEL:
+        drill_df = drill_df[drill_df["company"] == company_filter]
+    if brand_filter != _ALL_BRANDS_LABEL:
+        drill_df = drill_df[drill_df["primary_brand"] == brand_filter]
+
+    st.markdown(f"**Selected drill scope:** {len(drill_df):,} observed records")
+
+    if drill_df.empty:
+        st.info("No product records match the selected drill-down filters.")
+        st.stop()
+
+    reference_values = _reference_values(df_market)
+
+    company_counts = (
+        drill_df.groupby("company", dropna=False)
+        .agg(
+            observed_records=("barcode", "count"),
+            brands=("primary_brand", "nunique"),
+        )
+        .reset_index()
+    )
+
+    def _company_sort_key(company: str) -> tuple[int, str]:
+        company_text = str(company or "")
+        if company_text == db.COMPANY_MANUAL_REVIEW_LABEL:
+            return (1, company_text.lower())
+        if company_text == db.COMPANY_OTHER_LABEL:
+            return (2, company_text.lower())
+        return (0, company_text.lower())
+
+    company_counts = company_counts.sort_values(
+        "company", key=lambda s: s.map(_company_sort_key)
+    )
+    company_groups: list[tuple[str, pd.DataFrame]] = [
+        (company, drill_df[drill_df["company"] == company])
+        for company in company_counts["company"]
+    ]
+
+    for company_name, company_df in company_groups:
+        n_company_records = len(company_df)
+        n_company_brands = company_df["primary_brand"].nunique()
+        expander_label = (
+            f"{company_name} · {n_company_records:,} observed records · "
+            f"{n_company_brands:,} brands"
+        )
+        with st.expander(expander_label, expanded=(company_filter != _ALL_COMPANIES_LABEL)):
+            company_cols = st.columns(3)
+            with company_cols[0]:
+                _metric_card("Observed product records", f"{n_company_records:,}")
+            with company_cols[1]:
+                _metric_card("Number of brands", f"{n_company_brands:,}")
+            with company_cols[2]:
+                _metric_card(
+                    "Nutrition data coverage",
+                    _pct(_nutrition_any_mask(company_df).sum(), n_company_records),
+                )
+
+            st.markdown("**Brand summaries**")
+            brand_summary = _brand_summary(company_df, reference_values)
+            brand_event = st.dataframe(
+                brand_summary,
+                hide_index=True,
+                width="stretch",
+                column_config=_column_help_config(list(brand_summary.columns)),
+                on_select="rerun",
+                selection_mode="single-row",
+                key=f"cr_brands_{company_name}",
+            )
+
+            selected_brand = None
+            if (
+                company_filter == company_name
+                and brand_filter != _ALL_BRANDS_LABEL
+            ):
+                selected_brand = brand_filter
+            else:
+                if hasattr(brand_event, "selection"):
+                    selected_brand_rows = brand_event.selection.rows
+                else:
+                    selected_brand_rows = brand_event.get("selection", {}).get("rows", [])
+                if selected_brand_rows:
+                    selected_brand = brand_summary.iloc[selected_brand_rows[0]]["Brand"]
+
+            if selected_brand:
+                brand_products = company_df[company_df["primary_brand"] == selected_brand]
+                st.markdown(
+                    f"**Product records: {selected_brand} · "
+                    f"{len(brand_products):,} observed product records**"
+                )
+                product_records = brand_products.head(250)
+                product_view = _product_table(brand_products, reference_values, limit=250)
+                product_event = st.dataframe(
+                    product_view,
+                    hide_index=True,
+                    width="stretch",
+                    column_config=_column_help_config(list(product_view.columns)),
+                    on_select="rerun",
+                    selection_mode="single-row",
+                    key=f"cr_products_{company_name}_{selected_brand}",
+                )
+                if hasattr(product_event, "selection"):
+                    selected_rows = product_event.selection.rows
+                else:
+                    selected_rows = product_event.get("selection", {}).get("rows", [])
+                if selected_rows:
+                    _render_product_detail(product_records.iloc[selected_rows[0]])
+                if len(brand_products) > 250:
+                    st.caption(
+                        f"Showing 250 of {len(brand_products):,} product records "
+                        f"for {selected_brand}. Use the Brand filter to narrow the drill-down."
+                    )
+            else:
+                st.caption(
+                    "Select one brand in the table above, or use the filters above "
+                    "to display product records for a selected company / owner and brand."
+                )
+
+    st.stop()
 
 if active_section == "By Region":
     st.markdown("### 3. By Region")
@@ -133,7 +937,7 @@ if active_section == "By Region":
     # Fixed display order — not alphabetical, matches the spec's own
     # category ordering and the region ui_order already used for the
     # Region selectbox above.
-    _CATEGORY_ORDER = ["dairy", "snacks", "cereals", "beverages"]
+    _CATEGORY_ORDER = ["dairies", "snacks", "cereals", "beverages"]
     _region_order_map = {code: i for i, code in enumerate(region_codes)}
     bench_df["_cat_order"] = bench_df["category"].map(
         lambda c: _CATEGORY_ORDER.index(c) if c in _CATEGORY_ORDER else len(_CATEGORY_ORDER)
@@ -152,13 +956,13 @@ if active_section == "By Region":
         )
 
     st.markdown(
-        f"**Selected market highlighted: {region_label} · {category.title()}**"
+        f"**Selected market highlighted: {region_label} · {_category_label(category)}**"
     )
 
     rows_html = []
     last_cat = None
     for _, r in bench_df.iterrows():
-        cat_disp = r["category"].title()
+        cat_disp = _category_label(r["category"])
         region_disp = region_code_to_label.get(r["region_code"], r["region_code"])
         is_selected = (r["region_code"] == region_code) and (r["category"].lower() == category.lower())
         row_bg = "#EEF1EF" if is_selected else "transparent"
@@ -233,7 +1037,7 @@ if active_section == "By Region":
         "classified products, not of the full category — hover a NOVA cell "
         "for the underlying counts."
     )
-    st.caption("Benchmark snapshot: July 2026")
+    st.caption(f"Benchmark snapshot: {_SNAPSHOT_LABEL}")
 
     csv_bytes = bench_df.drop(columns=["_cat_order", "_region_order"]).to_csv(index=False).encode("utf-8")
     st.download_button(
@@ -247,8 +1051,8 @@ if active_section == "Product Profile Landscape":
     st.markdown("### 2. Product Profile Landscape")
     st.caption("Build a cumulative profile to see how often nutritional characteristics combine.")
     st.markdown(
-        f"**{region_label} · {category.title()}** &nbsp;·&nbsp; "
-        f"Current data snapshot: July 2026"
+        f"**{region_label} · {_category_label(category)}** &nbsp;·&nbsp; "
+        f"Current data snapshot: {_SNAPSHOT_LABEL}"
     )
     st.caption(
         "Each step adds another condition. Percentages show the share of "
@@ -367,12 +1171,12 @@ if active_section == "Product Profile Landscape":
             f"{eligible_count:,} of {n_total_market:,} products in the selected "
             f"region-category have valid data for all selected profile dimensions."
         )
-        st.caption("Benchmarks: index ≥110 / ≤90 · Snapshot: July 2026")
+        st.caption(f"Benchmarks: index ≥110 / ≤90 · Snapshot: {_SNAPSHOT_LABEL}")
 
     st.stop()
 
-# ── Product Landscape filters (local to this section only) ─────────────────
-st.subheader("Product Landscape filters")
+# ── Product Map filters (local to this section only) ─────────────────
+st.subheader("Product Map filters")
 st.caption("Optional fields")
 
 all_companies_present = sorted(df_market["company"].dropna().unique())
@@ -400,6 +1204,11 @@ with col_brand:
         "Brand", [_ALL_BRANDS_LABEL] + brand_pool, index=0, key="mo_brand",
     )
 
+if st.button("Reset filters", key="mo_reset_filters"):
+    st.session_state["mo_company"] = _ALL_COMPANIES_LABEL
+    st.session_state["mo_brand"] = _ALL_BRANDS_LABEL
+    st.rerun()
+
 if selected_brand == _ALL_BRANDS_LABEL:
     df_scope = df_company_scope
 else:
@@ -407,8 +1216,8 @@ else:
 
 st.divider()
 
-# ── Section 1: Product Landscape ────────────────────────────────────────────
-st.markdown("### 1. Product Landscape")
+# ── Section 3: Product Map ──────────────────────────────────────────────────
+st.markdown("### 3. Product Map")
 st.caption("Explore individual products across selected quantitative nutrition metrics.")
 
 # Quantitative-only metric registry. Deliberately excludes Positioning,
@@ -488,7 +1297,7 @@ n_eligible = len(df_eligible)
 _coverage_pct = (n_eligible / n_in_scope) if n_in_scope else 0
 
 st.markdown(
-    f"**{region_label} · {category.title()}** &nbsp;·&nbsp; "
+    f"**{region_label} · {_category_label(category)}** &nbsp;·&nbsp; "
     f"{n_in_scope:,} products in scope &nbsp;·&nbsp; {n_eligible:,} products plotted"
 )
 st.caption(f"{_coverage_pct:.1%} of products in scope have usable values for both selected axes.")
@@ -544,7 +1353,7 @@ else:
     )
 
 # ── Build the scatter (WebGL — required at this row count) ─────────────────
-def _nova_label(v) -> str:
+def _product_map_nova_label(v) -> str:
     try:
         iv = int(v)
         return f"NOVA {iv}" if iv in (1, 2, 3, 4) else "Not determined"
@@ -605,7 +1414,7 @@ customdata = np.stack([
     df_display["product_name"].astype(str),
     df_display[x_col].astype(float),
     df_display[y_col].astype(float),
-    df_display["nova_group"].map(_nova_label),
+    df_display["nova_group"].map(_product_map_nova_label),
     df_display["nutriscore_grade"].map(_nutriscore_label),
 ], axis=-1) if len(df_display) else np.empty((0, 8))
 
@@ -614,7 +1423,7 @@ hover_template = (
     "Brand: %{customdata[2]}<br>"
     "Company: %{customdata[1]}<br>"
     f"Region: {region_label}<br>"
-    f"Category: {category.title()}<br>"
+    f"Category: {_category_label(category)}<br>"
     f"{x_label}: " + "%{x:.2f}<br>"
     f"{y_label}: " + "%{y:.2f}<br>"
     "NOVA: %{customdata[6]}<br>"
@@ -680,12 +1489,10 @@ if not _points:
 else:
     _cd = _points[0].get("customdata")
     if _cd:
-        barcode, comp, brand, name, xv, yv, nova_lbl, ns_lbl = _cd
-        detail_cols = st.columns(6)
-        detail_cols[0].markdown(f"**Company**\n\n{comp}")
-        detail_cols[1].markdown(f"**Brand**\n\n{brand}")
-        detail_cols[2].markdown(f"**Product**\n\n{name}")
-        detail_cols[3].markdown(f"**{x_label}**\n\n{float(xv):.2f}")
-        detail_cols[4].markdown(f"**{y_label}**\n\n{float(yv):.2f}")
-        detail_cols[5].markdown(f"**NOVA / Nutri-Score**\n\n{nova_lbl} / {ns_lbl}")
-        st.caption(f"Barcode: {barcode}")
+        barcode = str(_cd[0])
+        selected_rows = df_display[df_display["barcode"].astype(str) == barcode]
+        if selected_rows.empty:
+            st.caption(f"Selected barcode: {barcode}")
+        else:
+            _render_product_detail(selected_rows.iloc[0])
+            st.caption(f"Barcode: {barcode}")

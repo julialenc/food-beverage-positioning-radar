@@ -10,10 +10,9 @@ patterns → inspect products → understand the methodology → read project
 background. This order is locked by the feedback review (23 Jun 2026).
 
 IMPORTANT — default page:
-search_page currently carries default=True (Option B, confirmed 23 Jun
-2026). Once pages/overview.py is fully built, move default=True to
-overview_page and remove it from search_page. Doing it now would make
-the empty Market Overview scaffold the first thing users see.
+Market Overview carries default=True because the MVP landing flow starts
+with the high-level country-category views, then lets users inspect
+individual products in Product Explorer.
 """
 
 import streamlit as st
@@ -24,8 +23,8 @@ st.set_page_config(
     layout="wide",
 )
 
-overview_page     = st.Page("pages/overview.py",     title="Market Overview",  icon="📊")
-search_page       = st.Page("pages/search.py",       title="Product Explorer", icon="🔍", default=True)
+overview_page     = st.Page("pages/overview.py",     title="Market Overview",  icon="📊", default=True)
+search_page       = st.Page("pages/search.py",       title="Product Explorer", icon="🔍")
 methodology_page  = st.Page("pages/methodology.py",  title="Methodology",      icon="🧭")
 about_page        = st.Page("pages/about.py",        title="About",            icon="ℹ️")
 

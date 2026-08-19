@@ -61,6 +61,7 @@ _CLAIM_NAMES: dict[str, str] = {
 _ALL_COLS: dict[str, tuple] = {
     "Category":              ("query_category",     True),
     "Brand":                 ("primary_brand",      True),
+    "Company / owner":       ("company",            True),
     "Product":               ("product_name",       True),
     "Energy, kcal/100g":     ("_energy",            True),
     "Protein, g/100 kcal":   ("_protein_is",        True),
@@ -371,8 +372,7 @@ _COUNTRY_REGION = {
 with st.sidebar:
     st.subheader("Filters")
     text = st.text_input("Search product or brand")
-    options          = db.get_filter_options()
-    company_brand_map = db.get_company_brand_map()
+    options = db.get_filter_options()
 
     # 1. Category
     categories = st.multiselect("Category", options["query_category"])
@@ -392,40 +392,29 @@ with st.sidebar:
     selected_region_codes = [region_label_to_code[l] for l in selected_region_labels]
 
     # 3. Company / owner
-    all_companies     = sorted(company_brand_map.keys())
+    all_companies = db.get_company_options()
+    company_options = all_companies.copy()
+    if db.COMPANY_OTHER_LABEL not in company_options:
+        company_options.append(db.COMPANY_OTHER_LABEL)
     selected_companies = st.multiselect(
         "Company / owner",
-        all_companies + [db.COMPANY_OTHER_LABEL],
+        company_options,
         help=(
-            "Filter by parent company. Selecting a company pre-fills the "
-            "Brand dropdown. 'Other / not mapped' shows unmatched brands."
+            "Filter by resolved parent company. Market-scoped brands use "
+            "the selected market when possible; unresolved cases appear as "
+            "Manual review or Other / not mapped."
         ),
     )
-    other_selected = db.COMPANY_OTHER_LABEL in selected_companies
-    real_companies  = [c for c in selected_companies if c != db.COMPANY_OTHER_LABEL]
 
-    # 4. Brand (dependent on Company + Category)
-    if real_companies and not other_selected:
-        company_pool = sorted({b for c in real_companies for b in company_brand_map.get(c, [])})
-        brand_selection = st.multiselect(
-            "Brand", company_pool,
-            help="Brands belonging to the selected company.",
-        )
-        selected_company_brands: list[str] = brand_selection if brand_selection else company_pool
-        exclude_company_brands: list[str]  = []
-        direct_brands: list[str]           = []
-    elif other_selected:
-        all_mapped = [b for bl in company_brand_map.values() for b in bl]
-        selected_company_brands = []
-        exclude_company_brands  = all_mapped
-        direct_brands = st.multiselect(
-            "Brand", db.get_brand_options(tuple(categories)),
-            help="Select from brands not mapped to any company.",
-        )
-    else:
-        selected_company_brands = []
-        exclude_company_brands  = []
-        direct_brands = st.multiselect("Brand", db.get_brand_options(tuple(categories)))
+    # 4. Brand
+    direct_brands = st.multiselect(
+        "Brand",
+        db.get_brand_options(tuple(categories)),
+        help=(
+            "Optional brand filter. If Company / owner is also selected, "
+            "the brand filter narrows within resolved company ownership."
+        ),
+    )
 
     # 5. Positioning (vision-analyzed products only)
     pos_codes_raw   = db.get_positioning_options()
@@ -441,7 +430,7 @@ with st.sidebar:
         pos_labels_unique,
         help=(
             "Filter by claims detected on pack by OCR/LLM. Only applies to "
-            "vision-analyzed products (~5,200 in this dataset). "
+            "vision-analyzed products. "
             "Selecting multiple claims shows products with ANY of them."
         ),
     )
@@ -463,6 +452,7 @@ with st.sidebar:
         "style='cursor:help; color:#8A8F8A;'>ℹ️</span>",
         unsafe_allow_html=True,
     )
+    energy_status = st.selectbox("Energy, kcal/100g", _STATUS_OPTS)
     protein_status = st.selectbox("Protein, g/100 kcal", _STATUS_OPTS)
     fibre_status   = st.selectbox("Fibre, g/100 kcal",   _STATUS_OPTS)
     satfat_status  = st.selectbox("Saturated fat, g/100 kcal", _STATUS_OPTS)
@@ -492,10 +482,9 @@ with st.sidebar:
     # column selector moved to main area above table
 
 # ── Query ─────────────────────────────────────────────────────────────────────
-total = db.count_products(
+total = db.count_products_resolved(
     text, categories, direct_brands,
-    selected_company_brands, exclude_company_brands,
-    selected_region_codes, selected_pos_codes,
+    selected_companies, selected_region_codes, selected_pos_codes,
     nova_choices, selected_nutriscore,
 )
 
@@ -503,10 +492,9 @@ if total == 0:
     st.warning("No products match these filters.")
     st.stop()
 
-results = db.search_products(
+results = db.search_products_resolved(
     text, categories, direct_brands,
-    selected_company_brands, exclude_company_brands,
-    selected_region_codes, selected_pos_codes,
+    selected_companies, selected_region_codes, selected_pos_codes,
     nova_choices, selected_nutriscore,
     limit=1000,
 )
@@ -557,6 +545,7 @@ display_df["_satfat_per_kcal"]  = _satfat / _kcal.where(_kcal > 0) * 100
 display_df["_sugars_per_kcal"]  = _sugars / _kcal.where(_kcal > 0) * 100
 
 # ── Apply post-query status filters ──────────────────────────────────────────
+display_df = _apply_status_filter(display_df, "energy_kcal", "energy_kcal", energy_status)
 display_df = _apply_status_filter(display_df, "_protein_per_kcal", "protein_per_kcal", protein_status)
 display_df = _apply_status_filter(display_df, "_fiber_per_kcal",   "fiber_per_kcal",   fibre_status)
 display_df = _apply_status_filter(display_df, "_satfat_per_kcal",  "satfat_per_kcal",  satfat_status)
@@ -630,6 +619,7 @@ for col_name in selected_col_names:
 export_cols = {
     "query_category":     "Category",
     "primary_brand":      "Brand",
+    "company":            "Company / owner",
     "product_name":       "Product",
     "energy_kcal":        "Energy, kcal/100g",
     "_protein_per_kcal":  "Protein, g/100 kcal",
@@ -640,6 +630,7 @@ export_cols = {
     "nutriscore_grade":   "Nutri-Score",
     "_positioning":       "Positioning (pack claims)",
 }
+
 export_df = (
     display_df[[c for c in export_cols if c in display_df.columns]]
     .rename(columns=export_cols)
@@ -649,7 +640,7 @@ st.download_button(
     "Download visible rows as CSV", csv_bytes,
     file_name="food_positioning_radar_filtered_products.csv",
     mime="text/csv",
-    help="Exports numeric values (no emoji) for analysis in Excel or Python.",
+    help="Exports the rows currently loaded in the table, capped for page performance.",
 )
 st.caption(
     "Source data: Open Food Facts (ODbL). Export for analysis — please attribute."
@@ -659,6 +650,7 @@ st.caption(
 col_rename = {
     "query_category":     "Category",
     "primary_brand":      "Brand",
+    "company":            "Company / owner",
     "product_name":       "Product",
     "_energy":            "Energy, kcal/100g",
     "_nova_str":          "NOVA",

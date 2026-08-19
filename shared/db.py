@@ -18,6 +18,7 @@ REGION_MAP_PATH  = REPO_ROOT / "data" / "country_region_mapping.csv"
 
 DOWNLOAD_SCOPE_REGIONS = {"FRANCE", "UK_IE", "US_CANADA"}
 COMPANY_OTHER_LABEL    = "Other / not mapped to a company"
+COMPANY_MANUAL_REVIEW_LABEL = "Manual review"
 
 
 def database_exists() -> bool:
@@ -32,19 +33,206 @@ def get_connection() -> sqlite3.Connection:
 
 
 @st.cache_data(show_spinner=False)
-def get_company_brand_map() -> dict[str, list[str]]:
+def get_company_mapping_rows() -> list[dict[str, str]]:
     import csv
-    from collections import defaultdict
-    mapping: dict[str, list[str]] = defaultdict(list)
     if not COMPANY_MAP_PATH.exists():
-        return {}
+        return []
+    rows: list[dict[str, str]] = []
     with open(COMPANY_MAP_PATH, encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
             company = row.get("parent_company", "").strip()
-            brand   = row.get("primary_brand_db", "").strip()
-            if company and brand:
-                mapping[company].append(brand)
-    return dict(mapping)
+            brand = row.get("primary_brand_db", "").strip()
+            if not company or not brand:
+                continue
+            rows.append({
+                "parent_company": company,
+                "primary_brand_db": brand,
+                "brand_norm": _normalize_brand(brand),
+                "status": (row.get("ownership_resolution_status", "").strip().lower()
+                           or "direct"),
+                "country_tags_include": row.get("country_tags_include", "").strip(),
+                "country_tags_exclude": row.get("country_tags_exclude", "").strip(),
+                "region_codes_include": row.get("region_codes_include", "").strip(),
+            })
+    return rows
+
+
+@st.cache_data(show_spinner=False)
+def get_company_brand_map() -> dict[str, list[str]]:
+    """Company -> brand list for the Product Explorer sidebar.
+
+    This is intentionally conservative: scoped/manual-review duplicate
+    ownership keys are not exposed as ordinary company-brand pairs here,
+    because Product Explorer currently passes only selected brand strings
+    back into the SQL filter, not the company context needed to resolve
+    market-scoped ownership. Row-level ownership resolution is handled by
+    resolve_company_owner() and get_market_products().
+    """
+    from collections import defaultdict
+    mapping: dict[str, set[str]] = defaultdict(set)
+    for brand_rows in get_company_mapping_index().values():
+        brand = brand_rows[0]["primary_brand_db"]
+        direct_rows = [
+            r for r in brand_rows
+            if r["status"] == "direct"
+            and r["parent_company"].lower() != COMPANY_MANUAL_REVIEW_LABEL.lower()
+        ]
+        scoped_or_review = [
+            r for r in brand_rows
+            if r["status"] in {"market_scoped", "manual_review"}
+            or r["parent_company"].lower() == COMPANY_MANUAL_REVIEW_LABEL.lower()
+        ]
+
+        if not scoped_or_review and len(direct_rows) == 1:
+            mapping[direct_rows[0]["parent_company"]].add(brand)
+        elif scoped_or_review:
+            mapping[COMPANY_MANUAL_REVIEW_LABEL].add(brand)
+
+    return {company: sorted(brands) for company, brands in mapping.items()}
+
+
+@st.cache_data(show_spinner=False)
+def get_company_mapping_index() -> dict[str, list[dict[str, str]]]:
+    from collections import defaultdict
+    by_brand: dict[str, list[dict[str, str]]] = defaultdict(list)
+    for row in get_company_mapping_rows():
+        by_brand[row["brand_norm"]].append(row)
+    return dict(by_brand)
+
+
+@st.cache_data(show_spinner=False)
+def get_company_options() -> list[str]:
+    return sorted({row["parent_company"] for row in get_company_mapping_rows()})
+
+
+def _split_scope_values(value: str) -> list[str]:
+    return [v.strip() for v in str(value or "").split("|") if v.strip()]
+
+
+def _any_token_match(source_value: str, tokens: list[str]) -> bool:
+    if not tokens:
+        return False
+    source_tokens = {v.strip().lower() for v in str(source_value or "").split("|") if v.strip()}
+    return any(token.lower() in source_tokens for token in tokens)
+
+
+def _row_scope_matches(row: dict[str, str], countries: str, region_codes: str) -> bool:
+    include_regions = _split_scope_values(row.get("region_codes_include", ""))
+    include_countries = _split_scope_values(row.get("country_tags_include", ""))
+    exclude_countries = _split_scope_values(row.get("country_tags_exclude", ""))
+
+    # A market-scoped row with no structured scope is a documented caveat,
+    # not a resolvable rule. Keep it out of automatic attribution.
+    if not include_regions and not include_countries:
+        return False
+    if exclude_countries and _any_token_match(countries, exclude_countries):
+        return False
+
+    region_ok = _any_token_match(region_codes, include_regions)
+    country_ok = _any_token_match(countries, include_countries)
+    return region_ok or country_ok
+
+
+def resolve_company_owner(brand: str, countries: str = "",
+                          region_codes: str = "") -> str:
+    """Resolve brand ownership for one product row.
+
+    This follows docs/BRAND_COMPANY_MAPPING.md's priority order: scoped
+    rows are evaluated first, manual-review rows are used as fallbacks,
+    direct rows are used only when there is no scoped conflict.
+    """
+    brand_norm = _normalize_brand(brand or "")
+    if not brand_norm:
+        return COMPANY_OTHER_LABEL
+
+    rows = get_company_mapping_index().get(brand_norm, [])
+    if not rows:
+        return COMPANY_OTHER_LABEL
+
+    scoped = [r for r in rows if r["status"] == "market_scoped"]
+    manual = [
+        r for r in rows
+        if r["status"] == "manual_review"
+        or r["parent_company"].lower() == COMPANY_MANUAL_REVIEW_LABEL.lower()
+    ]
+    direct = [
+        r for r in rows
+        if r["status"] == "direct"
+        and r["parent_company"].lower() != COMPANY_MANUAL_REVIEW_LABEL.lower()
+    ]
+
+    if scoped:
+        matches = [r for r in scoped if _row_scope_matches(r, countries, region_codes)]
+        companies = sorted({r["parent_company"] for r in matches})
+        if len(companies) == 1:
+            return companies[0]
+        return COMPANY_MANUAL_REVIEW_LABEL if manual or scoped else COMPANY_OTHER_LABEL
+
+    if len(direct) == 1:
+        return direct[0]["parent_company"]
+    if len(direct) > 1 or manual:
+        return COMPANY_MANUAL_REVIEW_LABEL
+    return COMPANY_OTHER_LABEL
+
+
+def _resolution_region_context(row_region_codes: str,
+                               selected_region_codes: Optional[list[str]]) -> str:
+    selected = [code for code in (selected_region_codes or []) if code]
+    if len(selected) == 1:
+        return selected[0]
+    if len(selected) > 1:
+        return "|".join(selected)
+    return row_region_codes or ""
+
+
+def add_resolved_company(
+    df: pd.DataFrame,
+    selected_region_codes: Optional[list[str]] = None,
+) -> pd.DataFrame:
+    """Return a copy with resolver-derived company / owner attribution."""
+    out = df.copy()
+    if out.empty:
+        out["company"] = pd.Series(dtype="object")
+        return out
+
+    selected = [code for code in (selected_region_codes or []) if code]
+    if len(selected) == 1:
+        out["_resolution_region_context"] = selected[0]
+    elif len(selected) > 1:
+        out["_resolution_region_context"] = "|".join(selected)
+    else:
+        out["_resolution_region_context"] = out.get("observed_market_region_codes", "")
+
+    key_cols = ["primary_brand", "countries", "_resolution_region_context"]
+    unique_keys = out[key_cols].drop_duplicates()
+    resolved = {
+        tuple(row): resolve_company_owner(
+            row[0],
+            countries=row[1],
+            region_codes=row[2],
+        )
+        for row in unique_keys.itertuples(index=False, name=None)
+    }
+    out["company"] = [
+        resolved.get((brand, countries, region_ctx), COMPANY_OTHER_LABEL)
+        for brand, countries, region_ctx in out[key_cols].itertuples(index=False, name=None)
+    ]
+    out = out.drop(columns=["_resolution_region_context"])
+    return out
+
+
+def filter_products_by_company(
+    df: pd.DataFrame,
+    company_names: Optional[list[str]],
+    selected_region_codes: Optional[list[str]] = None,
+) -> pd.DataFrame:
+    """Filter products by resolved company / owner label."""
+    selected = {c for c in (company_names or []) if c}
+    if not selected:
+        return add_resolved_company(df, selected_region_codes)
+
+    resolved = add_resolved_company(df, selected_region_codes)
+    return resolved[resolved["company"].isin(selected)]
 
 
 @st.cache_data(show_spinner=False)
@@ -151,7 +339,7 @@ def _qmarks(values: list) -> str:
 
 
 def _normalize_brand(b: str) -> str:
-    return b.lower().replace("-", " ")
+    return str(b or "").strip().lower().replace("-", " ")
 
 
 def _build_where(
@@ -254,23 +442,76 @@ def search_products(
     positioning_codes: Optional[list[str]] = None,
     nova_groups: Optional[list[int]] = None,
     nutriscore_grades: Optional[list[str]] = None,
-    limit: int = 1000,
+    limit: Optional[int] = 1000,
 ) -> pd.DataFrame:
     conn = get_connection()
     where_sql, params = _build_where(
         text, categories, brands, company_brands, exclude_company_brands,
         region_codes, positioning_codes, nova_groups, nutriscore_grades
     )
+    limit_sql = "LIMIT ?" if limit is not None else ""
+    query_params = [*params, limit] if limit is not None else params
     df = pd.read_sql_query(f"""
         SELECT p.*, a.*
         FROM products p
         LEFT JOIN product_analysis a ON a.barcode = p.barcode
         {where_sql}
         ORDER BY p.product_name ASC
-        LIMIT ?
-    """, conn, params=[*params, limit])
+        {limit_sql}
+    """, conn, params=query_params)
     df = df.loc[:, ~df.columns.duplicated()]
     return df
+
+
+def count_products_resolved(
+    text: str = "",
+    categories: Optional[list[str]] = None,
+    brands: Optional[list[str]] = None,
+    company_names: Optional[list[str]] = None,
+    region_codes: Optional[list[str]] = None,
+    positioning_codes: Optional[list[str]] = None,
+    nova_groups: Optional[list[int]] = None,
+    nutriscore_grades: Optional[list[str]] = None,
+) -> int:
+    if not company_names:
+        return count_products(
+            text, categories, brands, None, None,
+            region_codes, positioning_codes, nova_groups, nutriscore_grades,
+        )
+    df = search_products(
+        text, categories, brands, None, None,
+        region_codes, positioning_codes, nova_groups, nutriscore_grades,
+        limit=None,
+    )
+    return len(filter_products_by_company(df, company_names, region_codes))
+
+
+def search_products_resolved(
+    text: str = "",
+    categories: Optional[list[str]] = None,
+    brands: Optional[list[str]] = None,
+    company_names: Optional[list[str]] = None,
+    region_codes: Optional[list[str]] = None,
+    positioning_codes: Optional[list[str]] = None,
+    nova_groups: Optional[list[int]] = None,
+    nutriscore_grades: Optional[list[str]] = None,
+    limit: Optional[int] = 1000,
+) -> pd.DataFrame:
+    if not company_names:
+        df = search_products(
+            text, categories, brands, None, None,
+            region_codes, positioning_codes, nova_groups, nutriscore_grades,
+            limit=limit,
+        )
+        return add_resolved_company(df, region_codes)
+
+    df = search_products(
+        text, categories, brands, None, None,
+        region_codes, positioning_codes, nova_groups, nutriscore_grades,
+        limit=None,
+    )
+    filtered = filter_products_by_company(df, company_names, region_codes)
+    return filtered.head(limit) if limit is not None else filtered
 
 
 @st.cache_data(show_spinner=False, ttl=600)
@@ -290,7 +531,9 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
     """
     conn = get_connection()
     df = pd.read_sql_query("""
-        SELECT barcode, product_name, primary_brand, primary_country,
+        SELECT barcode, product_name, primary_brand, primary_country, image_url,
+               countries, observed_market_region_codes,
+               ingredients_text, completeness_score,
                energy_kcal, fat_100g, saturated_fat_100g, carbs_100g,
                sugars_100g, fiber_100g, protein_100g, salt_100g,
                nova_group, nutriscore_grade
@@ -315,15 +558,18 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
     df["satfat_per_kcal"]  = (df["saturated_fat_100g"] / kcal * 100).where(valid_energy)
     df["sugars_per_kcal"]  = (df["sugars_100g"]        / kcal * 100).where(valid_energy)
 
-    # Company: derived from primary_brand via the company/brand mapping,
-    # same convention as Product Explorer's Company filter.
-    brand_to_company: dict[str, str] = {}
-    for company, brands in get_company_brand_map().items():
-        for b in brands:
-            brand_to_company[_normalize_brand(b)] = company
-    df["company"] = df["primary_brand"].map(
-        lambda b: brand_to_company.get(_normalize_brand(b), COMPANY_OTHER_LABEL)
-    )
+    # Company / owner: resolved by distinct brand/country keys so large
+    # market bases do not pay a resolver call for every product row.
+    key_cols = ["primary_brand", "countries"]
+    unique_keys = df[key_cols].drop_duplicates()
+    resolved = {
+        tuple(row): resolve_company_owner(row[0], countries=row[1], region_codes=region_code)
+        for row in unique_keys.itertuples(index=False, name=None)
+    }
+    df["company"] = [
+        resolved.get((brand, countries), COMPANY_OTHER_LABEL)
+        for brand, countries in df[key_cols].itertuples(index=False, name=None)
+    ]
 
     return df
 
