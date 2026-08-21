@@ -10,9 +10,11 @@ https://github.com/julialenc/food-beverage-positioning-radar/tree/main
 **Local working directory:**  
 `C:\Users\julia\food-beverage-positioning-radar`
 
-**Current checkpoint:** 20 August 2026. The Streamlit MVP has just been
-cleaned and frozen. The next workstream is data quality review, starting with
-Open Food Facts category contamination.
+**Current checkpoint:** 21 August 2026. The Streamlit MVP has been cleaned and
+frozen. France Snacks, France Cereals, US/Canada Snacks, US/Canada Cereals,
+UK/Ireland Snacks, and UK/Ireland Cereals are locked for MVP category-cleanup
+purposes. The next workstream is data-quality review beyond category
+contamination.
 
 ---
 
@@ -241,20 +243,26 @@ These are the next credibility risks to handle.
 
 ### Category contamination
 
-**Cereals contamination is diagnosed but not fixed.** OFF parent category
-`en:cereals-and-their-products` pulls in pasta, bread, flour, rusks, and
-related products. This affects live category figures and historical cereals
-release interpretation.
+France Snacks, France Cereals, US/Canada Snacks, US/Canada Cereals,
+UK/Ireland Snacks, and UK/Ireland Cereals have been reviewed and cleaned for
+MVP Streamlit use. The cleanup was applied to the app's market scope using
+`observed_market_region_codes`, not only `primary_country`, because products
+with another primary country can still be observed in a selected market through
+OFF country tags.
 
-Known fix direction:
+The shared future-ingestion rule source is `pipeline/category_rules.py`.
+`pipeline/bootstrap.py` and `pipeline/ingest.py` both use it, so bulk and
+incremental runs no longer diverge on category assignment.
 
-1. Update `_EXCLUDE_FROM_CEREALS` in `pipeline/bootstrap.py`.
-2. Add an explicit DB cleanup pass because `load.py` upsert will not revisit
-   products absent from a newly filtered CSV.
-3. Document the finding in `docs/OBSERVATIONS.md`.
+Operational review definitions:
 
-**Snacks contamination by noodles is also suspected.** The exact OFF tags need
-to be inspected before updating `_EXCLUDE_FROM_SNACKS`.
+- Snacks: see `docs/SNACK_CATEGORY_CLEANUP.md`.
+- Cereals: see `docs/CEREAL_CATEGORY_CLEANUP.md`.
+
+Category quality is now locked across the MVP market-category combinations
+that were reviewed in August 2026. Future bulk or incremental ingestion should
+still be checked against `pipeline/category_rules.py` and the documented
+cleanup definitions before publication.
 
 ### Other known issues
 
@@ -346,11 +354,9 @@ pack_claims_found = "..." -> actual claims pipe-separated
 
 Start the next workstream from data quality, not Streamlit:
 
-1. Inspect real OFF tags for snacks/noodle contamination.
-2. Review `pipeline/bootstrap.py` category exclusion lists for cereals and
-   snacks.
-3. Plan the companion cleanup pass for already-loaded DB rows so contaminated
-   records do not remain under stale `query_category` values.
+1. Review nutrition outliers and plausibility rules.
+2. Review easy-win brand/company mapping gaps.
+3. Decide when to run a fresh OFF bulk download using shared category rules.
 
 Do not begin another UI redesign unless Julia explicitly reopens Streamlit.
 

@@ -83,16 +83,167 @@ The most important current issues are:
 
 - **Cereals contamination:** `en:cereals-and-their-products` includes pasta,
   bread, flour, rusks, breadsticks, puff pastry, and related grain products.
-  Current cereals release figures are therefore contaminated and should be
-  interpreted with that caveat.
+  It can also pull in cereal bars. For this project, `cereals` means dry
+  breakfast cereal products only: granola, muesli, oats/porridge, flakes,
+  choco balls, and similar pack formats. Cereal bars and snack bars belong in
+  `snacks`, not `cereals`. Current cereals release figures are therefore
+  contaminated and should be interpreted with that caveat.
 - **Snacks contamination:** noodles and related products appear to contaminate
-  snacks. The exact Open Food Facts tags still need to be inspected before
-  final exclusion rules are changed.
+  snacks. This is narrower than cereals contamination because many bread,
+  flour, tortilla, and breadstick terms are legitimate snack products
+  (gingerbread, shortbread, tortilla chips, breadstick snack packs).
 
 Fixing category contamination requires two steps: update category exclusion
 logic in `bootstrap.py`, then explicitly clean or reclassify existing database
 rows. A re-bootstrap alone does not revisit contaminated rows that disappear
 from the newly filtered input.
+
+As of the August 2026 category-rules cleanup, bulk and incremental ingestion
+share the same rules in `pipeline/category_rules.py`. Cereals exclusions are
+intentionally broad for pasta, noodles, bread, flour, rusks, breadsticks,
+tortillas/wraps, dough, puff pastry, rice, grain staples, bakery staples, and
+meal components because these products inherit broad grain parent tags but do
+not fit the project's breakfast-cereal definition. Cereal-bar and snack-bar
+tags are explicitly routed to `snacks` before broad cereal assignment.
+
+The public Euromonitor product coverage for snacks is used as the formal
+external anchor: "Confectionery, Ice Cream, Savoury Snacks, Sweet Biscuits,
+Snack Bars and Fruit Snacks" (MarketResearch.com listing for Euromonitor
+International, `https://www.marketresearch.com/Euromonitor-International-v746/Snacks-38022421/`).
+Mintel's detailed snack taxonomy is not publicly available in full, but public
+Mintel materials and CPG expert interviews support a similar commercial
+snacking frame. Snacks exclusions are intentionally narrower than cereals
+exclusions: true snack-format cues such as chips, crisps, crackers, candy,
+snack bars, snack pots, snacking packs, and apéro/party-snack formats can
+override meal-like words. Pasta/noodle/dumpling wording is excluded from
+snacks only when no clear snack-format cue is present.
+
+For MVP, all milk-related products remain in `dairies`: milk, hard cheese,
+yogurt, drinkable yogurt, flan, mousse, dairy desserts, and similar products.
+Some dairy products may function as snacks, especially small yogurts or dairy
+dessert packs, but the current app uses one primary analytical category. A
+future version may add a separate snacking-occasion flag or allow
+double-assignment, so small dairy snacks can appear in both `dairies` and a
+holistic snacking view without weakening the dairy base.
+
+See `docs/SNACK_CATEGORY_CLEANUP.md` for the operational review rules used to
+classify snack, not-snack, and manual-review rows during category cleanup.
+See `docs/CEREAL_CATEGORY_CLEANUP.md` for the operational breakfast-cereal
+definition and route-to-snacks/not-cereal rules.
+
+As of 20 August 2026, France Snacks and France Cereals are locked for MVP
+category-cleanup purposes. The France cleanup was applied to the same market
+scope used by Streamlit: products where `observed_market_region_codes`
+includes `FRANCE`. This is broader than `primary_country = France`; products
+whose primary country is Belgium, Canada, Austria, or another market may still
+belong to the France observed market if Open Food Facts country tags place
+them there. Final France Cereals checks confirmed that bread/pain, pasta,
+sandwich, pizza, flour/farine, couscous, polenta, potatoes, and savoury
+chips/crisps no longer remain in the France Cereals view. Remaining `bar`,
+`toast`, and `chips` search hits are reviewed breakfast-cereal contexts such
+as toasted muesli, Barnhouse/Barbara's cereal products, Schoko Chips, Zimt
+Chips, and chocolate cereal chips.
+
+US/Canada Snacks are also locked for MVP category-cleanup purposes as of 20
+August 2026. The cleanup used the Streamlit market scope where
+`observed_market_region_codes` includes `US_CANADA`. Final checks confirmed
+that coleslaw, dinner kits, chicken/tuna/couscous salad kits, instant soup,
+matzo ball soup mix, and similar meal or cooking-component residues no longer
+remain in US/Canada Snacks. Remaining `soup`, `salad`, `lunch`, and `dinner`
+search hits are reviewed snack contexts such as soup/oyster crackers,
+soup-flavoured chips/popcorn/crisps, Saladitas/crackers, snackable salad-bar
+formats, and dinner mints. One US/Canada Snacks product was excluded because it
+could not be classified from product metadata and had no pack image.
+
+UK/Ireland Snacks are locked for MVP category-cleanup purposes as of 20 August
+2026. The cleanup used the Streamlit market scope where
+`observed_market_region_codes` includes `UK_IE`. Final review kept chocolate,
+confectionery, biscuits, cookies, wafers, shortbread, sweet bakery-snack
+formats such as panettone, pandoro, Belgian buns, churros, profiteroles, choux
+buns and many croissants, snack bars, cereal/protein bars, crisps/chips,
+crackers, popcorn, tortilla chips, rice cakes, pork scratchings/crackling,
+jerky-style snacks, and snack-format flavour cues. It removed coleslaw,
+sausage rolls, pork pies, scotch eggs, garlic bread, mini pizzas, sandwiches,
+wraps, pakora, samosas, onigiri, meal kits, sauces, spreads, dips, cooking
+mixes, prepared meats, and prepared meal components where no clear packaged
+snack-format override was present. The applied cleanup removed 280 UK/Ireland
+rows from the snacks analytical base and kept 29 initially flagged edge cases
+as snacks after review.
+
+US/Canada Cereals are locked for MVP category-cleanup purposes as of 21 August
+2026. The cleanup used the Streamlit market scope where
+`observed_market_region_codes` includes `US_CANADA`. Final review kept loose
+granola, muesli, oatmeal, hot cereal, flakes, puffs, loops, cereal clusters,
+and Cheerios/Rice Krispies/Cinnamon Toast Crunch-style breakfast-cereal
+products in `cereals`; routed bars, biscuits, cookies, bites, crackers,
+chips/crisps, and rice cakes to `snacks`; and removed pizza crusts,
+pancake/waffle mixes, flour, polenta, soups, salads, sauces/toppings, tahini,
+and meal/staple formats from the cereals analytical base. The applied cleanup
+routed 1,994 US/Canada rows from `cereals` to `snacks` and removed 251 rows
+from `cereals`.
+
+A follow-up potato/fries residue pass on 21 August 2026 reviewed US/Canada and
+France cereal rows whose product names included potatoes, pommes de terre,
+fries/frites, hash browns, or tater tots. It kept 3 explicit breakfast-cereal
+exceptions (`Kashi Organic Cereal Sweet Potato Sunshine` and sweet potato
+granola), routed 1 potato-skins snack product to `snacks`, and removed 337
+potato/fries meal-staple rows from `cereals`. A follow-up spelling-variant
+check removed 4 additional `potatoe`/`potatos` residues from US/Canada
+Cereals.
+
+A subsequent bar/pancake/waffle residue pass on 21 August 2026 reviewed
+US/Canada and France cereal rows whose product names included bar, trail mix,
+pancake, or waffle cues. It kept 15 explicit breakfast-cereal or oatmeal
+formats, routed 4 trail-mix or CLIF-style energy-food rows to `snacks`, and
+removed 11 pancake, waffle, syrup, mix, or actual prepared-product rows from
+`cereals`.
+
+The final US/Canada cereals residue pass on 21 August 2026 reviewed remaining
+cookie, waffle, fried/fri, potato misspelling, pancake, hash, and bar cues. It
+kept Cookie Crisp/cookie-bites/cheerios cookie-flavour cereal, waffle-flavour
+cereal products, Oats Overnight/oatmeal products, and the externally confirmed
+Friendly Harvest crispy rice and wheat flakes cereal; routed 2 rice-cake or
+breakfast-cookie/snack-format rows to `snacks`; and removed 6 beans, bread
+mix, hot dog bun, pork panko, breakfast hash, and mashed-potato rows from
+`cereals`.
+
+A final US/Canada bar/waffle residual pass on 21 August 2026 corrected the
+`bar` rule to avoid treating brand names as product-format evidence. It kept
+43 Barbara's, Picky Bars, Larabar Renola / grain-free granola, CLIF loose
+granola, waffle-cereal, cereal-bites, and hot-cereal rows as `cereals`, and
+routed 10 Larabar fruit/nut bars or fruit/nut-bite snack formats from
+`cereals` to `snacks`.
+
+After a final website/image audit, US/Canada Cereals routed 5 additional rows
+from `cereals` to `snacks`: all remaining CLIF/CLIFF rows, because the brand is
+snack/sports-occasion positioned, plus Oats Overnight Homestyle Waffles and
+Magic Spoon Maple Waffle. Remaining Larabar, Picky Bars, trail, waffle, and
+Barbara's search hits were reviewed as breakfast cereal, oatmeal/hot cereal,
+or loose granola contexts.
+
+UK/Ireland Cereals are locked for MVP category-cleanup purposes as of 21
+August 2026. The cleanup used the Streamlit market scope where
+`observed_market_region_codes` includes `UK_IE`. Final review kept breakfast
+cereal, muesli, loose granola, oats, porridge, flakes, puffs, clusters,
+hoops/loops in breakfast-cereal format, Weetabix-style wheat biscuits, and
+Coco Pops/Rice Krispies/Frosties-style products in `cereals`; routed crisps,
+bagged snack chips, crackers, popcorn, popadoms, snack bars, cereal bars,
+flapjacks, cookies, sweet bakery snacks, and rice/cereal cakes to `snacks`;
+and removed potatoes, frozen chips/fries, wedges, hash browns, mash, tahini,
+oils, semolina, couscous, rice/grain staples, bread, toast, English muffins,
+waffles, wraps, pizza, sauces, and meal/preparation products from the cereals
+analytical base. For UK-specific wording, Walkers French Fries and similar
+small bagged crisps-style products route to `snacks`, while frozen chips,
+crinkle-cut chips, potato wedges, fries, and meal-side potato formats are
+`not_cereal`. The applied cleanup routed 872 UK/Ireland rows from `cereals` to
+`snacks` and removed 421 rows from `cereals`.
+
+A final UK/Ireland toast/muesli residue pass on 21 August 2026 kept 175 rows
+as `cereals`, including muesli, loose granola, toasted flakes, and toasted
+oats; routed 1 muesli breakfast-bounty snack-format row to `snacks`; and
+removed 11 sesame-oil, toastie/sandwich-toastie, and crisp-toast dry-bread
+replacement rows from `cereals`, including 3 sesame-oil duplicate residues
+caught by a final exact-term check.
 
 ### OBS-006 - Use canonical tags where available
 

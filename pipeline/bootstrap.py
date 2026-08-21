@@ -35,29 +35,13 @@ from pathlib import Path
 import pandas as pd
 import requests
 
+from category_rules import CATEGORY_MAP, assign_category, matches_country
+
 # ── Configuration ─────────────────────────────────────────────────────────────
 
 OFF_CSV_URL = (
     "https://static.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz"
 )
-
-# Countries to include — matched against the countries_tags field.
-# OFF crowdsources country tags from contributors, not from barcode prefixes.
-# A product gets tagged with a country when a contributor in that country
-# enters it. This is the correct signal for "sold in this market."
-TARGET_COUNTRIES = {"en:france", "en:united-kingdom", "en:united-states"}
-
-# Category priority mapping: first match wins.
-# Dairies checked first because dairy products often also appear in snacks/
-# beverages and we want the most specific classification.
-CATEGORY_MAP = [
-    ("dairies",   ["en:dairies", "en:dairy-products",
-                   "en:fermented-milk-products", "en:dairy"]),
-    ("cereals",   ["en:cereals-and-their-products",
-                   "en:breakfast-cereals", "en:cereals"]),
-    ("snacks",    ["en:snacks", "en:sweet-snacks", "en:salty-snacks"]),
-    ("beverages", ["en:beverages", "en:drinks", "en:plant-based-beverages"]),
-]
 
 CHUNK_SIZE = 50_000  # rows per chunk — ~200 MB RAM peak per chunk
 
@@ -148,104 +132,6 @@ def download_if_needed() -> None:
     print(f"\n  Download complete: {GZ_PATH.stat().st_size/1_048_576:.0f} MB\n")
 
 
-# ── Filter helpers ─────────────────────────────────────────────────────────────
-
-# Tags that confirm a product is a genuine snack chip
-# — checked first, before any exclusion rules
-_PROTECT_AS_SNACKS = {
-    "en:tortilla-chips", "en:corn-chips", "en:crisps",
-    "en:chips-and-crackers",
-}
-
-# Tags that exclude a product from snacks even when en:snacks is present.
-# Covers pasta, plain tortillas/wraps, and identifiable pizza products.
-_EXCLUDE_FROM_SNACKS = {
-    # Pasta
-    "en:gnocchi", "en:potato-gnocchi", "en:cooked-gnocchis",
-    "en:tortellini", "en:tortellini-ricotta-spinach",
-    "en:ravioli", "en:cheese-ravioli", "en:fresh-ravioli",
-    "en:ravioli-with-vegetables",
-    "en:pastas", "en:fresh-pasta",
-    # Tortillas (not chips — protected above)
-    "en:tortillas", "en:flour-tortillas", "en:corn-tortillas",
-    # Pizza
-    "en:pizzas", "en:frozen-pizzas", "en:frozen-pizzas-and-pies",
-    "en:mini-appetizer-pizzas", "en:pizza-with-ham-and-cheese",
-    "en:vegetable-pizza",
-}
-
-# Tags that exclude a product from cereals even when
-# en:cereals-and-their-products is present. That OFF tag is a broad parent
-# category covering far more than breakfast cereal: OFF's categories_tags
-# field carries a product's full ancestor chain, so e.g. Barilla Spaghetti
-# inherits en:cereals-and-their-products the same way a box of cornflakes
-# does (verified directly against the raw OFF export — see
-# docs/OBSERVATIONS.md OBS-028).
-#
-# Scope: "cereal" = what a CPG manufacturer (Nestlé, Kellogg's, General
-# Mills) would put in a cereal aisle — muesli, granola, cooking oats, corn
-# flakes, sugary breakfast cereals, etc. Cereal bars are excluded from this
-# definition too (they belong in snacks) but that overlap isn't addressed
-# by this rule.
-#
-# en:cereal-based-drinks conceptually belongs in beverages (with other
-# plant-based "milks"), but moving it there is a reclassification, not a
-# simple exclusion — deferred to a future pass. For now it's excluded here
-# like everything else in this set. See docs/OBSERVATIONS.md OBS-028.
-_EXCLUDE_FROM_CEREALS = {
-    # Bread
-    "en:breads",
-    # Pasta and semolina (pasta-making wheat product, not breakfast cereal)
-    "en:cereal-pastas", "en:cereal-semolinas",
-    # Rice
-    "en:rices", "en:precooked-rices",
-    # Dough / pastry
-    "en:pie-dough", "en:puff-pastry-molds-for-vol-au-vent", "en:brick-sheets",
-    # Batter mixes
-    "en:dosa-batter-mixes", "en:idly-batter-mixes", "en:pancake-mixes",
-    # Canned goods (canned corn and similar)
-    "en:canned-cereals",
-    # Belongs in beverages — deferred reclassification, excluded for now
-    "en:cereal-based-drinks",
-    # Other grain-derived, non-breakfast-cereal products
-    "en:seitan", "en:rice-paper", "en:groats",
-}
-
-
-def assign_category(cats_val) -> str | None:
-    """Return the first matching query_category, or None to exclude.
-    For snacks: tortilla chips are explicitly protected; pasta, plain
-    tortillas, and pizza products are excluded even when en:snacks is
-    present in their OFF category tags.
-    For cereals: bread, pasta, rice, dough/pastry, batter mixes, canned
-    goods, cereal-based drinks, seitan, rice paper, and groats are
-    excluded even when en:cereals-and-their-products is present — see
-    _EXCLUDE_FROM_CEREALS above and docs/OBSERVATIONS.md OBS-028."""
-    if not isinstance(cats_val, str) or not cats_val:
-        return None
-    tags = cats_val.lower()
-    for label, match_tags in CATEGORY_MAP:
-        if any(t in tags for t in match_tags):
-            if label == "snacks":
-                if any(p in tags for p in _PROTECT_AS_SNACKS):
-                    return "snacks"
-                if any(ex in tags for ex in _EXCLUDE_FROM_SNACKS):
-                    return None
-            if label == "cereals":
-                if any(ex in tags for ex in _EXCLUDE_FROM_CEREALS):
-                    return None
-            return label
-    return None
-
-
-def matches_country(countries_val) -> bool:
-    """True if any target country tag appears in the product's countries_tags."""
-    if not isinstance(countries_val, str) or not countries_val:
-        return False
-    tags = countries_val.lower()
-    return any(c in tags for c in TARGET_COUNTRIES)
-
-
 def comma_to_pipe(val) -> str:
     """Convert comma-separated OFF tag list to pipe-separated."""
     if not isinstance(val, str) or not val:
@@ -266,9 +152,13 @@ def process_chunk(chunk: pd.DataFrame) -> pd.DataFrame:
     chunk = chunk.copy()
 
     # Category assignment
-    chunk["query_category"] = chunk.get(
-        "categories_tags", pd.Series(dtype=str)
-    ).apply(assign_category)
+    chunk["query_category"] = chunk.apply(
+        lambda row: assign_category(
+            row.get("categories_tags", ""),
+            row.get("product_name", ""),
+        ),
+        axis=1,
+    )
     chunk = chunk[chunk["query_category"].notna()]
     if chunk.empty:
         return pd.DataFrame()

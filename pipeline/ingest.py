@@ -18,6 +18,8 @@ import json
 import os
 from datetime import datetime
 
+from category_rules import assign_category
+
 # ── Configuration ────────────────────────────────────────────────────────────
 
 USER_AGENT = "FoodBeveragePositioningRadar/1.0 (github.com/julialenc/food-beverage-positioning-radar)"
@@ -46,6 +48,7 @@ FIELDS = ",".join([
     "nutriments",
     "nutriscore_grade",
     "nova_group",
+    "categories_tags",
     "countries_tags",
     "labels_tags",
     "quantity",
@@ -205,12 +208,18 @@ def fetch_category(category: str,
 
 # ── Flatten ───────────────────────────────────────────────────────────────────
 
-def flatten_product(product: dict, category: str) -> dict:
+def flatten_product(product: dict, category: str) -> dict | None:
     """
     Flatten a single product dict into a row suitable for a DataFrame.
     Nutriments are a nested dict — we extract the key macros only.
     """
     nutriments = product.get("nutriments", {})
+    assigned_category = assign_category(
+        product.get("categories_tags", []),
+        product.get("product_name", ""),
+    )
+    if assigned_category is None:
+        return None
 
     return {
         # identifiers
@@ -221,7 +230,7 @@ def flatten_product(product: dict, category: str) -> dict:
         "packaging":            product.get("packaging", ""),
 
         # categorisation
-        "query_category":       category,
+        "query_category":       assigned_category,
         "off_categories":       product.get("categories", ""),
         "countries":            "|".join(product.get("countries_tags", [])),
         "labels":               "|".join(product.get("labels_tags", [])),
@@ -294,7 +303,13 @@ def main():
         products = fetch_category(category)
         save_raw(products, category, timestamp)
 
-        rows = [flatten_product(p, category) for p in products]
+        rows = [
+            row for p in products
+            if (row := flatten_product(p, category)) is not None
+        ]
+        excluded = len(products) - len(rows)
+        if excluded:
+            print(f"  Excluded {excluded:,} products that do not fit shared category rules")
         all_rows.extend(rows)
         print()
 
