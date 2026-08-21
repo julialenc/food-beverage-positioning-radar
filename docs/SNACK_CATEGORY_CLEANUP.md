@@ -91,6 +91,14 @@ to biscuit format, not a meal sandwich.
 
 Snack-format wording can override meal-like words.
 
+Texture words are not snack-format signals by themselves. Do not classify a
+product as `snack` only because the name contains weak attributes such as
+`crisp`, `crispy`, `crunchy`, `creamy`, `baked`, `golden`, or similar texture
+and preparation words. These words count as snack evidence only in a clear
+snack-format phrase such as `crisps`, `chips`, `crackers`, `crispy snack`,
+`baked snack crackers`, or `crunchy snack mix`. Meal-format nouns override
+texture adjectives.
+
 Examples:
 
 ```text
@@ -100,6 +108,10 @@ Bebeto Spaghetti Candy -> snack
 Goldfish baked snack crackers, macaroni & cheese flavour -> snack
 Vegetable Gyoza Snack Pot -> snack
 Apero mix 24 pieces -> snack
+Garlic & mozzarella filled in-fry gnocchi - crisp & creamy -> not_snack
+Crispy chicken meal -> not_snack
+Crispy coated snack crackers -> snack
+Potato crisps -> snack
 ```
 
 ## Classify As Not Snack

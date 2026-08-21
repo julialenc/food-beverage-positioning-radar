@@ -70,7 +70,7 @@ _BREAKFAST_CEREAL_NAME_RE = re.compile(
 _SNACK_POSITIVE_NAME_RE = re.compile(
     r"\b(chocolate|candy|candies|sweets?|gumm(?:y|ies)|jell(?:y|ies)|"
     r"licori[cs]e|marshmallows?|nougat|caramels?|toffees?|lollipops?|"
-    r"chewing\s+gum|ice\s*cream|sorbets?|crisps?|chips?|crackers?|"
+    r"chewing\s+gum|ice\s*cream|sorbets?|crisps|chips?|crackers?|"
     r"baked\s+snack\s+crackers?|sticks?|pretzels?|popcorn|rice\s+cakes?|"
     r"pork\s+scratchings?|crackling|jerky|snack\s+pot|snacks?|snacking|"
     r"ap[eé]ro|apero|party\s+snacks?|biscuits?|cookies?|wafers?|"
@@ -85,7 +85,8 @@ _SNACK_EXCLUDE_NAME_RE = re.compile(
     r"noodles?|dumplings?|gyoza|shumai|dim\s*sum|bao|banh\s+bao|"
     r"sausage\s+rolls?|pork\s+pies?|scotch\s+eggs?|quiches?|"
     r"sandwich(?:es)?|wraps?|baguette\s+sandwich|pain\s+surprise|"
-    r"coleslaw|salads?|meal\s+kits?|lunch\s+kits?|dinner\s+kits?|"
+    r"coleslaw|salads?|meal\s+kits?|lunch\s+kits?|lunch\s+kitz|"
+    r"dinner\s+kits?|"
     r"onigiri|pakora|samosas?|matzo\s+ball|soup\s+mix|cooking\s+mix|"
     r"bread|buns?|rolls?|garlic\s+bread|pizza|dips?|sauces?|"
     r"dressings?|spreads?|toppings?|seasonings?|prepared\s+meals?)\b",
@@ -96,7 +97,7 @@ _CEREAL_ROUTE_TO_SNACKS_NAME_RE = re.compile(
     r"\b(cereal\s+bars?|granola\s+bars?|snack\s+bars?|protein\s+bars?|"
     r"energy\s+bars?|fruit\s+(?:and\s+)?nut\s+bars?|nut\s+bars?|"
     r"fruit\s+bars?|muesli\s+bars?|breakfast\s+bars?|flapjacks?|"
-    r"rice\s+cakes?|crackers?|crisps?|bagged\s+chips?|potato\s+skins?|"
+    r"rice\s+cakes?|crackers?|crisps|bagged\s+chips?|potato\s+skins?|"
     r"breakfast\s+cookies?|muesli\s+breakfast\s+bounties|"
     r"snack\s+bites?|fruit\s+and\s+nut\s+bites?)\b",
     re.IGNORECASE,
@@ -148,6 +149,7 @@ _EXCLUDE_FROM_SNACKS = {
     "en:sandwiches", "en:wraps", "en:salads", "en:meal-kits",
     "en:prepared-meals", "en:cooking-mixes", "en:soup-mixes",
     "en:breads", "en:dips", "en:sauces", "en:toppings",
+    "en:prepared-salads", "en:coleslaw",
 }
 
 # Tags that exclude a product from cereals even when
@@ -255,6 +257,17 @@ def _is_not_snack(tagset: set[str], name: str) -> bool:
 def _assign_snack(tagset: set[str], name: str) -> str | None:
     # Specific snack formats win over meal-like flavour words only when the
     # snack format is explicit.
+    if re.search(r"\b(lunch\s+kit[sz]?|dinner\s+kits?|coleslaw|salad\s+kit)\b", name, re.IGNORECASE):
+        return None
+    if _is_not_snack(tagset, name) and not re.search(
+        r"\b(candy|candies|chips?|crisps|crackers?|snack\s+pot|"
+        r"snack\s+crackers?|baked\s+snack\s+crackers?|ap[eé]ro|apero|"
+        r"biscuits?|cookies?|wafers?|belgian\s+buns?|croissants?|"
+        r"panettone|pandoro|churros?|profiteroles?|choux\s+buns?)\b",
+        name,
+        re.IGNORECASE,
+    ):
+        return None
     if _is_snack_positive(tagset, name):
         return "snacks"
     if _is_not_snack(tagset, name):
@@ -289,6 +302,8 @@ def _is_not_cereal(tagset: set[str], name: str) -> bool:
 def _assign_cereal(tagset: set[str], name: str) -> str | None:
     if _is_cereal_route_to_snacks(tagset, name):
         return "snacks"
+    if _is_not_cereal(tagset, name) and not _CEREAL_FORMAT_OVERRIDE_NAME_RE.search(name):
+        return None
     if _is_cereal_positive(tagset, name):
         return "cereals"
     if _is_not_cereal(tagset, name):
