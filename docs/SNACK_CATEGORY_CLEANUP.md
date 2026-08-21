@@ -7,8 +7,11 @@ professionals normally define the category. This project keeps products that
 fit a packaged-snacks category definition and removes meal products, prepared
 foods, bakery deli products, cooking ingredients, and category noise.
 
-MVP cleanup status as of 20 August 2026: France Snacks, US/Canada Snacks, and
+MVP cleanup status as of 21 August 2026: France Snacks, US/Canada Snacks, and
 UK/Ireland Snacks are locked for Streamlit use.
+
+These are MVP category-scope rules for the current Streamlit markets, not a
+universal snack taxonomy.
 
 Use the project definition:
 
@@ -37,9 +40,26 @@ not_snack
 Use `???` only when product name and available metadata are genuinely
 ambiguous and image review is needed.
 
+Use `???` during manual review only. For final MVP cleanup output, unresolved
+`???` rows should be converted to `not_snack` and excluded from the snacks
+analytical base unless image review confirms snack format.
+
 If a product cannot be classified from product name, brand, category metadata,
 or pack image, exclude it from the analytical base rather than preserving a
 low-evidence assignment.
+
+## Execution Order
+
+When multiple cues are present, apply rules in this order:
+
+1. Identify clear category-format positives.
+2. Apply explicit route rules.
+3. Apply clear exclusion rules.
+4. Apply documented override rules.
+5. If still ambiguous, assign `???` for manual review.
+
+For snacks, snack-format override can win over meal-like words only when the
+product clearly signals snack format.
 
 ## Keep As Snack
 

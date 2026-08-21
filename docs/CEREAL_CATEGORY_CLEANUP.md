@@ -12,6 +12,9 @@ flour.
 MVP cleanup status as of 21 August 2026: France Cereals, US/Canada Cereals,
 and UK/Ireland Cereals are locked for Streamlit use.
 
+These are MVP category-scope rules for the current Streamlit markets, not a
+universal cereal taxonomy.
+
 ## Decision Rule
 
 Use these cleanup decisions:
@@ -22,6 +25,18 @@ Use these cleanup decisions:
 - `not_cereal` = bread, toast, biscottes, flour, rice, pasta, pizza, meal
   products, flatbreads, couscous, polenta, potatoes, pancake/waffle mixes,
   sauces, toppings, and other non-breakfast meal staples.
+
+## Execution Order
+
+When multiple cues are present, apply rules in this order:
+
+1. Identify clear category-format positives.
+2. Apply explicit route rules.
+3. Apply clear exclusion rules.
+4. Apply documented override rules.
+5. If still ambiguous, assign `???` for manual review.
+
+For cereals, breakfast-cereal format can win over flavour or ingredient noise.
 
 ## Keep As Cereal
 
@@ -124,8 +139,8 @@ only when sold as loose, bowl, or breakfast-cereal formats.
 Use these review values in cereal cleanup files:
 
 ```text
-keep_cereal
+cereal
 route_to_snacks
 not_cereal
-manual_review
+???
 ```
