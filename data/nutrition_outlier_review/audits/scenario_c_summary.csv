@@ -1,0 +1,4 @@
+﻿scenario,definition,total_records,records_reincluded_vs_current,excluded_records,excluded_pct,included_for_market_overview_calculations,included_pct
+Scenario A,current rules,378835,0,19635,5.18,359200,94.82
+Scenario B,re-include small_absolute_kcal_gap,378835,5624,14011,3.7,364824,96.3
+Scenario C,re-include small_absolute_kcal_gap + beverage_energy_not_captured_by_macros,378835,11061,8574,2.26,370261,97.74

@@ -1,0 +1,48 @@
+﻿output_file,review_decision,parent_company,ownership_resolution_status,rows,review_product_count
+manual_review,manual review,Manual review / complex ownership,manual_review,3953,55239
+upsert_ready,map to Carrefour,Carrefour,direct,204,4993
+upsert_ready,map to Système U,Système U,direct,33,4553
+upsert_ready,map to Auchan,Auchan,direct,53,4431
+upsert_ready,map to PepsiCo,PepsiCo,direct,253,3202
+upsert_ready,map to E.Leclerc,E.Leclerc,direct,54,3032
+upsert_ready,map to Groupe Casino,Groupe Casino,direct,29,1999
+upsert_ready,map to Monoprix,Monoprix,direct,19,1448
+upsert_ready,map to The Coca-Cola Company,The Coca-Cola Company,direct,166,1365
+upsert_ready,map to Lidl,Lidl,direct,118,1059
+upsert_ready,approve proposed,Danone,direct,24,1036
+upsert_ready,map to Tesco,Tesco,direct,66,1033
+upsert_ready,map to Aldi,Aldi,direct,97,1001
+upsert_ready,map to Danone,Danone,direct,81,991
+upsert_ready,map to Nestlé,Nestlé,direct,204,890
+upsert_ready,map to Sainsbury's,Sainsbury's,direct,58,883
+upsert_ready,map to Lindt & Sprüngli,Lindt & Sprüngli,direct,75,853
+upsert_ready,map to Les Mousquetaires / Intermarché,Les Mousquetaires / Intermarché,direct,23,839
+upsert_ready,map to Lactalis,Lactalis,direct,51,796
+upsert_ready,map to Wegmans,Wegmans,direct,14,738
+upsert_ready,map to Mondelēz International,Mondelēz International,direct,141,682
+upsert_ready,map to Bel Group,Bel Group,direct,60,506
+upsert_ready,approve proposed,The Hershey Company,market_scoped,29,390
+upsert_ready,approve proposed,Mondelēz International,market_scoped,38,308
+upsert_ready,approve proposed,Suntory Beverage & Food,market_scoped,22,308
+upsert_ready,map to Savencia,Savencia,direct,29,244
+upsert_ready,approve proposed,Nestlé,market_scoped,44,196
+upsert_ready,approve proposed,Monster Beverage Corp,direct,23,140
+upsert_ready,approve proposed,General Mills,market_scoped,15,128
+upsert_ready,approve proposed,Keurig Dr Pepper,market_scoped,17,121
+upsert_ready,approve proposed,PepsiCo,market_scoped,15,101
+upsert_ready,approve proposed,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,21,91
+upsert_ready,approve proposed,Danone (Dannon in US),direct,9,87
+upsert_ready,map to Kettle Brand / Campbell Soup Company,Kettle Brand / Campbell Soup Company,direct,6,81
+upsert_ready,map to Coop,Coop,direct,31,79
+upsert_ready,approve proposed,The Coca-Cola Company,market_scoped,8,38
+upsert_ready,approve proposed,Kraft Heinz,market_scoped,4,36
+upsert_ready,approve proposed,Monster Beverage Corp (Coca-Cola 20% stake / exclusive distrib),direct,6,34
+upsert_ready,approve proposed,Cereal Partners Worldwide,market_scoped,12,24
+upsert_ready,approve proposed,Smarties Candy Company,market_scoped,1,15
+upsert_ready,map to Ferrero,Ferrero,direct,3,14
+upsert_ready,approve proposed,Associated British Foods,market_scoped,3,8
+upsert_ready,approve proposed,Ferrero,market_scoped,4,7
+upsert_ready,map to Mars,Mars,direct,5,6
+upsert_ready,map to The Hershey Company,The Hershey Company,direct,2,4
+upsert_ready,approve proposed,Froneri,market_scoped,1,2
+upsert_ready,approve proposed,Mars,market_scoped,2,2

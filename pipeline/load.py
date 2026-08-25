@@ -55,6 +55,7 @@ Known limitation:
 """
 
 import argparse
+import csv
 import pandas as pd
 import sqlite3
 import os
@@ -67,6 +68,15 @@ ROOT       = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 DB_DIR     = os.path.join(ROOT, "database")
 DB_PATH    = os.path.join(DB_DIR, "positioning_radar.db")
+COMPANY_MAP_PATH = os.path.join(ROOT, "data", "reference", "company_brand_mapping.csv")
+MANUAL_REVIEW_REPLACEMENT_PATH = os.path.join(
+    ROOT,
+    "data",
+    "brand_mapping_review",
+    "manual_review_company_replacement_proposals.csv",
+)
+COMPANY_OTHER_LABEL = "Other / not mapped to a company"
+COMPANY_MANUAL_REVIEW_LABEL = "Manual review"
 
 
 # ── Schema ────────────────────────────────────────────────────────────────────
@@ -77,6 +87,18 @@ CREATE TABLE IF NOT EXISTS products (
     product_name                 TEXT,
     brands                       TEXT,
     primary_brand                 TEXT,
+    off_brands_raw                TEXT,
+    off_brand_tokens              TEXT,
+    legacy_primary_brand          TEXT,
+    brand_entity_raw              TEXT,
+    brand_entity_source           TEXT,
+    normalized_brand              TEXT,
+    brand_family                  TEXT,
+    brand_alias_source            TEXT,
+    brand_alias_review_status     TEXT,
+    resolved_company              TEXT,
+    company_ownership_resolution_status TEXT,
+    company_mapping_source        TEXT,
     quantity                     TEXT,
     packaging                    TEXT,
     query_category                TEXT,
@@ -105,6 +127,29 @@ CREATE TABLE IF NOT EXISTS products (
     ingested_at                   TEXT,      -- when this row was loaded by us
     image_url                    TEXT       -- front-of-pack image URL, used
                                              -- for pack-image claim extraction
+    ,
+    energy_kcal_off_raw           REAL,
+    fat_100g_off_raw              REAL,
+    saturated_fat_100g_off_raw    REAL,
+    carbs_100g_off_raw            REAL,
+    sugars_100g_off_raw           REAL,
+    fiber_100g_off_raw            REAL,
+    protein_100g_off_raw          REAL,
+    salt_100g_off_raw             REAL,
+    nutrition_quality_status      TEXT,
+    outlier_type                  TEXT,
+    include_in_product_table      INTEGER,
+    include_in_aggregates         INTEGER,
+    include_in_charts             INTEGER,
+    nutrition_quality_reason      TEXT,
+    energy_kcal_missing           INTEGER,
+    fat_100g_missing              INTEGER,
+    saturated_fat_100g_missing    INTEGER,
+    carbs_100g_missing            INTEGER,
+    sugars_100g_missing           INTEGER,
+    fiber_100g_missing            INTEGER,
+    protein_100g_missing          INTEGER,
+    salt_100g_missing             INTEGER
 );
 """
 
@@ -263,16 +308,43 @@ CREATE TABLE IF NOT EXISTS market_trend_weekly (
 );
 """
 
+DDL_CATEGORY_REGION_AVERAGES = """
+CREATE TABLE IF NOT EXISTS category_region_averages (
+    snapshot                 TEXT NOT NULL,
+    query_category           TEXT NOT NULL,
+    region                   TEXT NOT NULL,
+    energy_kcal              REAL,
+    protein_per_kcal         REAL,
+    fiber_per_kcal           REAL,
+    satfat_per_kcal          REAL,
+    sugars_per_kcal          REAL,
+    sugars_100g              REAL,
+    salt_100g                REAL,
+    PRIMARY KEY (snapshot, query_category, region)
+);
+"""
+
 
 DDL_INDEXES = [
     "CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brands);",
     "CREATE INDEX IF NOT EXISTS idx_products_primary_brand ON products(primary_brand);",
+    "CREATE INDEX IF NOT EXISTS idx_products_normalized_brand ON products(normalized_brand);",
+    "CREATE INDEX IF NOT EXISTS idx_products_resolved_company ON products(resolved_company);",
+    "CREATE INDEX IF NOT EXISTS idx_products_ingested_at ON products(ingested_at);",
     "CREATE INDEX IF NOT EXISTS idx_products_category ON products(query_category);",
     "CREATE INDEX IF NOT EXISTS idx_products_country ON products(primary_country);",
     "CREATE INDEX IF NOT EXISTS idx_products_nova ON products(nova_group);",
     "CREATE INDEX IF NOT EXISTS idx_products_modified ON products(last_modified_t);",
+    "CREATE INDEX IF NOT EXISTS idx_products_snapshot_category ON products(ingested_at, query_category);",
+    "CREATE INDEX IF NOT EXISTS idx_products_snapshot_company ON products(ingested_at, resolved_company);",
+    "CREATE INDEX IF NOT EXISTS idx_products_snapshot_category_company ON products(ingested_at, query_category, resolved_company);",
+    "CREATE INDEX IF NOT EXISTS idx_products_snapshot_category_brand ON products(ingested_at, query_category, normalized_brand, primary_brand);",
+    "CREATE INDEX IF NOT EXISTS idx_products_snapshot_nutriscore ON products(ingested_at, nutriscore_grade);",
+    "CREATE INDEX IF NOT EXISTS idx_products_snapshot_product_name ON products(ingested_at, product_name);",
     "CREATE INDEX IF NOT EXISTS idx_analysis_score ON product_analysis(composition_marker_score);",
     "CREATE INDEX IF NOT EXISTS idx_analysis_band ON product_analysis(composition_marker_band);",
+    "CREATE INDEX IF NOT EXISTS idx_analysis_claim_source ON product_analysis(claim_source);",
+    "CREATE INDEX IF NOT EXISTS idx_category_region_averages_snapshot ON category_region_averages(snapshot);",
 ]
 
 
@@ -307,10 +379,65 @@ def init_db(conn):
     cursor.execute(DDL_WEEKLY_BRAND_SUMMARY)
     cursor.execute(DDL_INGESTION_LOG)
     cursor.execute(DDL_MARKET_TREND_WEEKLY)
+    cursor.execute(DDL_CATEGORY_REGION_AVERAGES)
+    conn.commit()
+    migrate_products_schema(conn)
     for idx_sql in DDL_INDEXES:
         cursor.execute(idx_sql)
     conn.commit()
     print(f"  Database initialised: {DB_PATH}")
+
+
+PRODUCT_COLUMN_TYPES = {
+    "off_brands_raw": "TEXT",
+    "off_brand_tokens": "TEXT",
+    "legacy_primary_brand": "TEXT",
+    "brand_entity_raw": "TEXT",
+    "brand_entity_source": "TEXT",
+    "normalized_brand": "TEXT",
+    "brand_family": "TEXT",
+    "brand_alias_source": "TEXT",
+    "brand_alias_review_status": "TEXT",
+    "resolved_company": "TEXT",
+    "company_ownership_resolution_status": "TEXT",
+    "company_mapping_source": "TEXT",
+    "energy_kcal_off_raw": "REAL",
+    "fat_100g_off_raw": "REAL",
+    "saturated_fat_100g_off_raw": "REAL",
+    "carbs_100g_off_raw": "REAL",
+    "sugars_100g_off_raw": "REAL",
+    "fiber_100g_off_raw": "REAL",
+    "protein_100g_off_raw": "REAL",
+    "salt_100g_off_raw": "REAL",
+    "nutrition_quality_status": "TEXT",
+    "outlier_type": "TEXT",
+    "include_in_product_table": "INTEGER",
+    "include_in_aggregates": "INTEGER",
+    "include_in_charts": "INTEGER",
+    "nutrition_quality_reason": "TEXT",
+    "energy_kcal_missing": "INTEGER",
+    "fat_100g_missing": "INTEGER",
+    "saturated_fat_100g_missing": "INTEGER",
+    "carbs_100g_missing": "INTEGER",
+    "sugars_100g_missing": "INTEGER",
+    "fiber_100g_missing": "INTEGER",
+    "protein_100g_missing": "INTEGER",
+    "salt_100g_missing": "INTEGER",
+}
+
+
+def migrate_products_schema(conn):
+    """Add product columns introduced after the original SQLite schema."""
+    cursor = conn.cursor()
+    existing = {row[1] for row in cursor.execute("PRAGMA table_info(products)")}
+    added = []
+    for column, column_type in PRODUCT_COLUMN_TYPES.items():
+        if column not in existing:
+            cursor.execute(f"ALTER TABLE products ADD COLUMN {column} {column_type}")
+            added.append(column)
+    conn.commit()
+    if added:
+        print(f"  Products schema migrated: added {len(added)} columns")
 
 
 def safe_val(val):
@@ -330,10 +457,310 @@ def safe_val(val):
     return val
 
 
+def _normalize_brand(value):
+    import re
+    import unicodedata
+
+    text = str(value or "").strip().lower()
+    text = unicodedata.normalize("NFKD", text)
+    text = text.encode("ascii", errors="ignore").decode("ascii")
+    text = text.replace("&", " and ")
+    text = re.sub(r"['`´’]", "", text)
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _normalize_review_key(value):
+    import re
+    import unicodedata
+
+    text = str(value or "").strip().lower()
+    text = unicodedata.normalize("NFKD", text)
+    text = text.encode("ascii", errors="ignore").decode("ascii")
+    text = text.replace("&", " and ")
+    text = re.sub(r"['`´’]", "", text)
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _split_scope_values(value):
+    return [v.strip() for v in str(value or "").split("|") if v.strip()]
+
+
+def _any_token_match(source_value, tokens):
+    if not tokens:
+        return False
+    source_tokens = {
+        v.strip().lower()
+        for v in str(source_value or "").split("|")
+        if v.strip()
+    }
+    return any(token.lower() in source_tokens for token in tokens)
+
+
+def _row_scope_matches(row, countries, region_codes):
+    include_regions = _split_scope_values(row.get("region_codes_include", ""))
+    exclude_regions = _split_scope_values(row.get("region_codes_exclude", ""))
+    include_countries = _split_scope_values(row.get("country_tags_include", ""))
+    exclude_countries = _split_scope_values(row.get("country_tags_exclude", ""))
+
+    if not include_regions and not include_countries:
+        return False
+    if exclude_regions and _any_token_match(region_codes, exclude_regions):
+        return False
+    if exclude_countries and _any_token_match(countries, exclude_countries):
+        return False
+
+    return (
+        _any_token_match(region_codes, include_regions)
+        or _any_token_match(countries, include_countries)
+    )
+
+
+def load_company_mapping_index():
+    if not os.path.exists(COMPANY_MAP_PATH):
+        return {}
+
+    by_brand = {}
+    with open(COMPANY_MAP_PATH, encoding="utf-8-sig", newline="") as f:
+        for row in csv.DictReader(f):
+            company = (row.get("parent_company") or "").strip()
+            brand = (row.get("primary_brand_db") or "").strip()
+            if not company or not brand:
+                continue
+            record = {
+                "parent_company": company,
+                "status": (
+                    (row.get("ownership_resolution_status") or "").strip().lower()
+                    or "direct"
+                ),
+                "country_tags_include": (row.get("country_tags_include") or "").strip(),
+                "country_tags_exclude": (row.get("country_tags_exclude") or "").strip(),
+                "region_codes_include": (row.get("region_codes_include") or "").strip(),
+                "region_codes_exclude": (row.get("region_codes_exclude") or "").strip(),
+            }
+            by_brand.setdefault(_normalize_brand(brand), []).append(record)
+    return by_brand
+
+
+def resolve_company_owner_for_load(brand, countries, region_codes, mapping_index):
+    brand_norm = _normalize_brand(brand)
+    if not brand_norm:
+        return COMPANY_OTHER_LABEL
+
+    rows = mapping_index.get(brand_norm, [])
+    if not rows:
+        return COMPANY_OTHER_LABEL
+
+    scoped = [
+        r for r in rows
+        if r["status"] in {"market_scoped", "licensed_or_partnered"}
+        and (
+            r.get("region_codes_include")
+            or r.get("country_tags_include")
+            or r.get("region_codes_exclude")
+            or r.get("country_tags_exclude")
+        )
+    ]
+    manual = [
+        r for r in rows
+        if r["status"] == "manual_review"
+        or r["parent_company"].lower() == COMPANY_MANUAL_REVIEW_LABEL.lower()
+    ]
+    direct = [
+        r for r in rows
+        if r["status"] in {
+            "direct",
+            "recently_demerged",
+            "recently_sold_or_spun_off",
+            "licensed_or_partnered",
+        }
+        and r["parent_company"].lower() != COMPANY_MANUAL_REVIEW_LABEL.lower()
+    ]
+
+    if scoped:
+        matches = [
+            r for r in scoped
+            if _row_scope_matches(r, countries, region_codes)
+        ]
+        companies = sorted({r["parent_company"] for r in matches})
+        if len(companies) == 1:
+            return companies[0]
+        return COMPANY_MANUAL_REVIEW_LABEL if manual or scoped else COMPANY_OTHER_LABEL
+
+    direct_companies = sorted({r["parent_company"] for r in direct})
+    if len(direct_companies) == 1:
+        return direct_companies[0]
+    if len(direct_companies) > 1 or manual:
+        return COMPANY_MANUAL_REVIEW_LABEL
+    return COMPANY_OTHER_LABEL
+
+
+def load_manual_review_replacement_proposals():
+    if not os.path.exists(MANUAL_REVIEW_REPLACEMENT_PATH):
+        return {}
+
+    proposals = {}
+    with open(MANUAL_REVIEW_REPLACEMENT_PATH, encoding="utf-8-sig", newline="") as f:
+        for row in csv.DictReader(f):
+            proposed = (row.get("proposed_company_owner") or "").strip()
+            action = (row.get("proposed_action") or "").strip()
+            if action != "map_to_company" or not proposed:
+                continue
+            key = (
+                _normalize_review_key(row.get("normalized_brand", "")),
+                str(row.get("query_category", "") or "").strip(),
+                str(row.get("primary_country", "") or "").strip(),
+                str(row.get("observed_market_region_codes", "") or "").strip(),
+            )
+            proposals[key] = {
+                "company": proposed,
+                "reason": (row.get("proposal_reason") or "").strip(),
+            }
+    return proposals
+
+
+def resolve_manual_review_replacement(
+    brand,
+    category,
+    primary_country,
+    region_codes,
+    proposals,
+):
+    """Return visible launch owner plus backend status/source for Manual Review rows."""
+    brand_key = _normalize_review_key(brand)
+    country = str(primary_country or "").strip()
+    regions = str(region_codes or "").strip()
+    proposal_key = (brand_key, str(category or "").strip(), country, regions)
+
+    if proposal_key in proposals:
+        return (
+            proposals[proposal_key]["company"],
+            "mapped_from_manual_review_replacement",
+            "manual_review_company_replacement_proposals",
+        )
+
+    if "cadbury" in brand_key:
+        company = (
+            "The Hershey Company"
+            if country == "United States"
+            else "Mondelēz International"
+        )
+        return (
+            company,
+            "market_scoped",
+            "manual_review_company_replacement_rule_cadbury",
+        )
+
+    if "kellogg" in brand_key:
+        company = (
+            "Ferrero / WK Kellogg"
+            if country in {"United States", "Canada"} or regions == "US_CANADA"
+            else "Mars / Kellanova"
+        )
+        return (
+            company,
+            "recently_changed_market_scoped",
+            "manual_review_company_replacement_rule_kellogg",
+        )
+
+    if brand_key == "lipton" or brand_key.startswith("lipton "):
+        return (
+            "LIPTON Teas and Infusions / Pepsi Lipton channel-scoped",
+            "licensed_or_partnered_manual_review",
+            "manual_review_company_replacement_rule_lipton",
+        )
+
+    return (
+        COMPANY_OTHER_LABEL,
+        "manual_review",
+        "manual_review_company_replacement_fallback_other",
+    )
+
+
+def add_resolved_company_column(df):
+    """Precompute company ownership once so Streamlit can filter in SQL."""
+    mapping_index = load_company_mapping_index()
+    manual_review_proposals = load_manual_review_replacement_proposals()
+    display_brand = (
+        df.get("normalized_brand", pd.Series(index=df.index, dtype="object"))
+        .fillna("")
+        .astype(str)
+        .str.strip()
+    )
+    legacy_brand = (
+        df.get("primary_brand", pd.Series(index=df.index, dtype="object"))
+        .fillna("")
+        .astype(str)
+        .str.strip()
+    )
+    brand_values = display_brand.where(display_brand != "", legacy_brand)
+    countries = df.get("countries", pd.Series("", index=df.index)).fillna("").astype(str)
+    regions = (
+        df.get("observed_market_region_codes", pd.Series("", index=df.index))
+        .fillna("")
+        .astype(str)
+    )
+
+    key_df = pd.DataFrame({
+        "brand": brand_values,
+        "countries": countries,
+        "regions": regions,
+    }).drop_duplicates()
+
+    resolved = {
+        (row.brand, row.countries, row.regions): resolve_company_owner_for_load(
+            row.brand,
+            row.countries,
+            row.regions,
+            mapping_index,
+        )
+        for row in key_df.itertuples(index=False)
+    }
+    df["resolved_company"] = [
+        resolved.get((brand, country, region), COMPANY_OTHER_LABEL)
+        for brand, country, region in zip(brand_values, countries, regions)
+    ]
+    df["company_ownership_resolution_status"] = "resolved_from_company_brand_mapping"
+    df["company_mapping_source"] = "company_brand_mapping.csv"
+
+    manual_mask = df["resolved_company"].eq(COMPANY_MANUAL_REVIEW_LABEL)
+    if manual_mask.any():
+        replacements = [
+            resolve_manual_review_replacement(
+                brand,
+                category,
+                country,
+                region,
+                manual_review_proposals,
+            )
+            for brand, category, country, region in zip(
+                brand_values[manual_mask],
+                df.loc[manual_mask, "query_category"],
+                df.loc[manual_mask, "primary_country"],
+                regions[manual_mask],
+            )
+        ]
+        df.loc[manual_mask, "resolved_company"] = [item[0] for item in replacements]
+        df.loc[manual_mask, "company_ownership_resolution_status"] = [
+            item[1] for item in replacements
+        ]
+        df.loc[manual_mask, "company_mapping_source"] = [
+            item[2] for item in replacements
+        ]
+    return df
+
+
 # ── Products table ────────────────────────────────────────────────────────────
 
 PRODUCT_COLS = [
-    "barcode", "product_name", "brands", "primary_brand", "quantity", "packaging",
+    "barcode", "product_name", "brands", "primary_brand",
+    "off_brands_raw", "off_brand_tokens", "legacy_primary_brand",
+    "brand_entity_raw", "brand_entity_source", "normalized_brand",
+    "brand_family", "brand_alias_source", "brand_alias_review_status",
+    "resolved_company", "company_ownership_resolution_status",
+    "company_mapping_source",
+    "quantity", "packaging",
     "query_category", "off_categories", "countries", "primary_country",
     "observed_market_region_codes",
     "labels", "ingredients_text", "additives_tags",
@@ -342,6 +769,15 @@ PRODUCT_COLS = [
     "nutriscore_grade", "nova_group", "completeness_score",
     "ingredients_lang", "ingredient_analysis_eligible", "created_t",
     "last_modified_t", "image_url",
+    "energy_kcal_off_raw", "fat_100g_off_raw", "saturated_fat_100g_off_raw",
+    "carbs_100g_off_raw", "sugars_100g_off_raw", "fiber_100g_off_raw",
+    "protein_100g_off_raw", "salt_100g_off_raw",
+    "nutrition_quality_status", "outlier_type",
+    "include_in_product_table", "include_in_aggregates", "include_in_charts",
+    "nutrition_quality_reason",
+    "energy_kcal_missing", "fat_100g_missing", "saturated_fat_100g_missing",
+    "carbs_100g_missing", "sugars_100g_missing", "fiber_100g_missing",
+    "protein_100g_missing", "salt_100g_missing",
 ]
 
 def load_products(df, conn, timestamp):
@@ -441,6 +877,10 @@ def load_product_analysis(df, conn, timestamp):
     updated  = 0
 
     analysis_cols_to_load = [c for c in ANALYSIS_COLS if c in df.columns]
+    non_key_analysis_cols = [c for c in analysis_cols_to_load if c != "barcode"]
+    if not non_key_analysis_cols:
+        print("  Product analysis: skipped; input has no analysis columns")
+        return 0, 0
 
     for _, row in df.iterrows():
         cursor.execute(
@@ -571,6 +1011,105 @@ def compute_weekly_brand_summary(df, conn, timestamp):
     print(f"  Weekly brand summary: {rows_inserted} brand/category rows inserted")
 
 
+def compute_category_region_averages(df, conn, timestamp):
+    """Precompute Product Explorer reference averages for fast first load."""
+    required = {"query_category", "primary_country", "energy_kcal"}
+    missing = required - set(df.columns)
+    if missing:
+        print(
+            "  Category-region averages: skipped; missing columns "
+            f"{', '.join(sorted(missing))}"
+        )
+        return
+
+    work = df.copy()
+    brand_source = (
+        work["normalized_brand"]
+        if "normalized_brand" in work.columns
+        else work.get("primary_brand", "")
+    )
+    fallback_brand = work.get("primary_brand", "")
+    brand = brand_source.fillna("").astype(str).str.strip()
+    fallback = fallback_brand.fillna("").astype(str).str.strip()
+    brand = brand.where(brand != "", fallback)
+    brand_ok = brand.notna() & ~brand.str.lower().isin(["unknown", "", "nan"])
+    work = work[brand_ok].copy()
+
+    country_region = {
+        "France": "FRANCE",
+        "United Kingdom": "UK_IE",
+        "Great Britain": "UK_IE",
+        "Ireland": "UK_IE",
+        "England": "UK_IE",
+        "Scotland": "UK_IE",
+        "United States": "US_CANADA",
+        "Canada": "US_CANADA",
+    }
+    work["region"] = work["primary_country"].map(country_region).fillna("OTHER")
+
+    numeric_cols = [
+        "energy_kcal",
+        "protein_100g",
+        "fiber_100g",
+        "saturated_fat_100g",
+        "sugars_100g",
+        "salt_100g",
+    ]
+    for col in numeric_cols:
+        if col in work.columns:
+            work[col] = pd.to_numeric(work[col], errors="coerce")
+        else:
+            work[col] = pd.NA
+
+    work = work[work["energy_kcal"].notna() & (work["energy_kcal"] > 0)].copy()
+    kcal = work["energy_kcal"]
+    work["protein_per_kcal"] = work["protein_100g"] / kcal * 100
+    work["fiber_per_kcal"] = work["fiber_100g"] / kcal * 100
+    work["satfat_per_kcal"] = work["saturated_fat_100g"] / kcal * 100
+    work["sugars_per_kcal"] = work["sugars_100g"] / kcal * 100
+
+    metrics = [
+        "energy_kcal",
+        "protein_per_kcal",
+        "fiber_per_kcal",
+        "satfat_per_kcal",
+        "sugars_per_kcal",
+        "sugars_100g",
+        "salt_100g",
+    ]
+
+    rows = []
+    grouped_frames = [
+        work.groupby(["query_category", "region"], dropna=False),
+        work.assign(region="ALL").groupby(["query_category", "region"], dropna=False),
+    ]
+    for grouped in grouped_frames:
+        for (category, region), group in grouped:
+            values = {}
+            for metric in metrics:
+                valid = group[metric].dropna()
+                values[metric] = float(valid.mean()) if len(valid) >= 10 else None
+            rows.append((timestamp, str(category), str(region), *[values[m] for m in metrics]))
+
+    cursor = conn.cursor()
+    cursor.execute(
+        "DELETE FROM category_region_averages WHERE snapshot = ?",
+        (timestamp,),
+    )
+    cursor.executemany(
+        """
+        INSERT OR REPLACE INTO category_region_averages (
+            snapshot, query_category, region, energy_kcal, protein_per_kcal,
+            fiber_per_kcal, satfat_per_kcal, sugars_per_kcal, sugars_100g,
+            salt_100g
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        rows,
+    )
+    conn.commit()
+    print(f"  Category-region averages: {len(rows)} rows inserted")
+
+
 # ── Ingestion log ─────────────────────────────────────────────────────────────
 
 def log_run(conn, timestamp, source, input_file, rows_in,
@@ -599,6 +1138,14 @@ def main():
         help="Data source for this run, recorded in ingestion_log "
              "(default: api). Use bulk_export for full OFF bulk-export runs."
     )
+    parser.add_argument(
+        "--input",
+        help="Optional explicit CSV to load. Use this for clean_*.csv product-only refreshes."
+    )
+    parser.add_argument(
+        "--products-only", action="store_true",
+        help="Only load/update products. Leaves product_analysis and weekly_brand_summary unchanged."
+    )
     args = parser.parse_args()
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -607,10 +1154,12 @@ def main():
     print(f"Source: {args.source}")
 
     # ── Load analyzed CSV ─────────────────────────────────────────────────────
-    input_path = find_latest_analyzed(SAMPLE_DIR)
+    input_path = args.input or find_latest_analyzed(SAMPLE_DIR)
     print(f"\n  Input file: {os.path.basename(input_path)}")
     df = pd.read_csv(input_path, encoding="utf-8-sig")
     print(f"  Rows: {len(df)}")
+    print("  Resolving company / owner labels...")
+    df = add_resolved_company_column(df)
 
     # ── Connect to SQLite ─────────────────────────────────────────────────────
     os.makedirs(DB_DIR, exist_ok=True)
@@ -627,14 +1176,22 @@ def main():
         p_ins, p_upd = load_products(df, conn, timestamp)
         print(f"  Products: {p_ins} inserted, {p_upd} updated")
 
-        # ── Load product analysis ─────────────────────────────────────────────
-        print(f"\n  Loading product_analysis table...")
-        a_ins, a_upd = load_product_analysis(df, conn, timestamp)
-        print(f"  Product analysis: {a_ins} inserted, {a_upd} updated")
+        print(f"\n  Computing category-region averages...")
+        compute_category_region_averages(df, conn, timestamp)
 
-        # ── Compute weekly brand summary ──────────────────────────────────────
-        print(f"\n  Computing weekly brand summary...")
-        compute_weekly_brand_summary(df, conn, timestamp)
+        if args.products_only:
+            a_ins, a_upd = 0, 0
+            print("\n  Product analysis: skipped (--products-only)")
+            print("  Weekly brand summary: skipped (--products-only)")
+        else:
+            # ── Load product analysis ─────────────────────────────────────────
+            print(f"\n  Loading product_analysis table...")
+            a_ins, a_upd = load_product_analysis(df, conn, timestamp)
+            print(f"  Product analysis: {a_ins} inserted, {a_upd} updated")
+
+            # ── Compute weekly brand summary ──────────────────────────────────
+            print(f"\n  Computing weekly brand summary...")
+            compute_weekly_brand_summary(df, conn, timestamp)
 
         # ── Log the run ───────────────────────────────────────────────────────
         log_run(

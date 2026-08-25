@@ -20,3 +20,5 @@ database/*.db-wal
 llm_sampling_design_log.md
 market_overview_phase_documentation.md
 notes_data_quality_local.md
+AGENTS.md
+docs/ONBOARDING.md

@@ -1,0 +1,18 @@
+Food & Beverage Positioning Radar
+Copyright 2026 Julia Lenc
+
+This repository contains software, methodology documentation, data-cleaning
+rules, Streamlit interface code, and analytical pipeline code for the Food &
+Beverage Positioning Radar project.
+
+The project code and original documentation are licensed under the Apache
+License, Version 2.0. See LICENSE.
+
+Product data is sourced from Open Food Facts and remains subject to the Open
+Database License (ODbL). Required data attribution:
+
+Data from Open Food Facts - https://world.openfoodfacts.org
+
+If you use or redistribute this project, retain this NOTICE file and credit:
+
+Food & Beverage Positioning Radar by Julia Lenc

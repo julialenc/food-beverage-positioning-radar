@@ -1,0 +1,104 @@
+﻿summary_level,alias_review_decision,category,country_or_market,cluster_count,product_count
+alias_review_decision,approve_alias,,,2863,59176
+alias_review_decision,defer_to_top_down_portfolio_mapping,,,102,4307
+alias_review_decision,manual_review_parent_brand_mix,,,88,1344
+alias_review_decision,manual_review_private_label_line,,,100,12272
+alias_review_decision,manual_review_repeated_prefix,,,440,14214
+alias_review_decision,manual_review_store_format,,,4,52
+alias_review_decision,reject_generic_alias,,,34,937
+category,approve_alias,snacks,,1265,23911
+category,approve_alias,beverages,,878,17582
+category,approve_alias,dairies,,540,14554
+category,approve_alias,cereals,,180,3129
+category,defer_to_top_down_portfolio_mapping,snacks,,38,1422
+category,defer_to_top_down_portfolio_mapping,dairies,,19,1405
+category,defer_to_top_down_portfolio_mapping,beverages,,37,1275
+category,defer_to_top_down_portfolio_mapping,cereals,,8,205
+category,manual_review_parent_brand_mix,snacks,,35,690
+category,manual_review_parent_brand_mix,cereals,,24,324
+category,manual_review_parent_brand_mix,beverages,,26,253
+category,manual_review_parent_brand_mix,dairies,,3,77
+category,manual_review_private_label_line,snacks,,36,5544
+category,manual_review_private_label_line,dairies,,31,4148
+category,manual_review_private_label_line,beverages,,19,2186
+category,manual_review_private_label_line,cereals,,14,394
+category,manual_review_repeated_prefix,snacks,,190,6150
+category,manual_review_repeated_prefix,dairies,,94,4143
+category,manual_review_repeated_prefix,beverages,,135,3179
+category,manual_review_repeated_prefix,cereals,,21,742
+category,manual_review_store_format,snacks,,2,33
+category,manual_review_store_format,dairies,,2,19
+category,reject_generic_alias,dairies,,11,371
+category,reject_generic_alias,beverages,,8,254
+category,reject_generic_alias,snacks,,11,248
+category,reject_generic_alias,cereals,,4,64
+country_or_market,approve_alias,,France,1340,28704
+country_or_market,approve_alias,,United States,1140,26219
+country_or_market,approve_alias,,United Kingdom,204,3002
+country_or_market,approve_alias,,Belgium,88,873
+country_or_market,approve_alias,,Ireland,15,81
+country_or_market,approve_alias,,Canada,13,59
+country_or_market,approve_alias,,Australia,12,48
+country_or_market,approve_alias,,Germany,18,46
+country_or_market,approve_alias,,Finland,1,38
+country_or_market,approve_alias,,Austria,7,37
+country_or_market,approve_alias,,Bulgaria,4,16
+country_or_market,approve_alias,,Bolivia,3,9
+country_or_market,approve_alias,,Mexico,2,9
+country_or_market,approve_alias,,Denmark,2,7
+country_or_market,approve_alias,,Italy,1,7
+country_or_market,approve_alias,,Algeria,3,5
+country_or_market,approve_alias,,Poland,1,3
+country_or_market,approve_alias,,Afghanistan,2,2
+country_or_market,approve_alias,,Costa Rica,1,2
+country_or_market,approve_alias,,Czech Republic,2,2
+country_or_market,approve_alias,,Greece,1,2
+country_or_market,approve_alias,,Isle Of Man,1,2
+country_or_market,approve_alias,,Morocco,1,2
+country_or_market,approve_alias,,China,1,1
+country_or_market,defer_to_top_down_portfolio_mapping,,France,51,3375
+country_or_market,defer_to_top_down_portfolio_mapping,,United States,11,458
+country_or_market,defer_to_top_down_portfolio_mapping,,United Kingdom,11,328
+country_or_market,defer_to_top_down_portfolio_mapping,,Belgium,15,99
+country_or_market,defer_to_top_down_portfolio_mapping,,Canada,3,17
+country_or_market,defer_to_top_down_portfolio_mapping,,Australia,3,11
+country_or_market,defer_to_top_down_portfolio_mapping,,Algeria,1,3
+country_or_market,defer_to_top_down_portfolio_mapping,,Bolivia,1,3
+country_or_market,defer_to_top_down_portfolio_mapping,,Ireland,1,3
+country_or_market,defer_to_top_down_portfolio_mapping,,Andorra,1,2
+country_or_market,defer_to_top_down_portfolio_mapping,,Chile,1,2
+country_or_market,defer_to_top_down_portfolio_mapping,,Denmark,1,2
+country_or_market,defer_to_top_down_portfolio_mapping,,Finland,1,2
+country_or_market,defer_to_top_down_portfolio_mapping,,Hungary,1,2
+country_or_market,manual_review_parent_brand_mix,,France,44,846
+country_or_market,manual_review_parent_brand_mix,,United States,16,241
+country_or_market,manual_review_parent_brand_mix,,United Kingdom,6,144
+country_or_market,manual_review_parent_brand_mix,,Belgium,10,53
+country_or_market,manual_review_parent_brand_mix,,Australia,1,17
+country_or_market,manual_review_parent_brand_mix,,Canada,3,13
+country_or_market,manual_review_parent_brand_mix,,Ireland,2,11
+country_or_market,manual_review_parent_brand_mix,,French Polynesia,1,7
+country_or_market,manual_review_parent_brand_mix,,Mexico,2,6
+country_or_market,manual_review_parent_brand_mix,,India,2,4
+country_or_market,manual_review_parent_brand_mix,,Italy,1,2
+country_or_market,manual_review_private_label_line,,France,59,9957
+country_or_market,manual_review_private_label_line,,United Kingdom,25,2100
+country_or_market,manual_review_private_label_line,,United States,8,171
+country_or_market,manual_review_private_label_line,,Belgium,3,25
+country_or_market,manual_review_private_label_line,,Ireland,4,16
+country_or_market,manual_review_private_label_line,,Germany,1,3
+country_or_market,manual_review_repeated_prefix,,France,227,8546
+country_or_market,manual_review_repeated_prefix,,United States,157,3970
+country_or_market,manual_review_repeated_prefix,,United Kingdom,37,1295
+country_or_market,manual_review_repeated_prefix,,Belgium,9,332
+country_or_market,manual_review_repeated_prefix,,Australia,3,36
+country_or_market,manual_review_repeated_prefix,,Algeria,1,11
+country_or_market,manual_review_repeated_prefix,,Austria,2,8
+country_or_market,manual_review_repeated_prefix,,Croatia,1,8
+country_or_market,manual_review_repeated_prefix,,Ireland,2,5
+country_or_market,manual_review_repeated_prefix,,Bulgaria,1,3
+country_or_market,manual_review_store_format,,France,4,52
+country_or_market,reject_generic_alias,,France,25,656
+country_or_market,reject_generic_alias,,United States,4,249
+country_or_market,reject_generic_alias,,United Kingdom,3,26
+country_or_market,reject_generic_alias,,Belgium,2,6

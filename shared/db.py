@@ -11,6 +11,8 @@ from typing import Optional
 import pandas as pd
 import streamlit as st
 
+from shared.beverage_segments import beverage_view_segment
+
 REPO_ROOT        = Path(__file__).resolve().parent.parent
 DB_PATH          = REPO_ROOT / "database" / "positioning_radar.db"
 COMPANY_MAP_PATH = REPO_ROOT / "data" / "reference" / "company_brand_mapping.csv"
@@ -19,6 +21,10 @@ REGION_MAP_PATH  = REPO_ROOT / "data" / "country_region_mapping.csv"
 DOWNLOAD_SCOPE_REGIONS = {"FRANCE", "UK_IE", "US_CANADA"}
 COMPANY_OTHER_LABEL    = "Other / not mapped to a company"
 COMPANY_MANUAL_REVIEW_LABEL = "Manual review"
+PRODUCT_BRAND_SQL = "COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_brand)"
+PRODUCT_BRAND_SQL_UNALIASED = "COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand)"
+CURRENT_PRODUCT_SQL = "p.ingested_at = (SELECT MAX(ingested_at) FROM products)"
+CURRENT_PRODUCT_SQL_UNALIASED = "ingested_at = (SELECT MAX(ingested_at) FROM products)"
 
 
 def database_exists() -> bool:
@@ -53,6 +59,7 @@ def get_company_mapping_rows() -> list[dict[str, str]]:
                 "country_tags_include": row.get("country_tags_include", "").strip(),
                 "country_tags_exclude": row.get("country_tags_exclude", "").strip(),
                 "region_codes_include": row.get("region_codes_include", "").strip(),
+                "region_codes_exclude": row.get("region_codes_exclude", "").strip(),
             })
     return rows
 
@@ -74,17 +81,26 @@ def get_company_brand_map() -> dict[str, list[str]]:
         brand = brand_rows[0]["primary_brand_db"]
         direct_rows = [
             r for r in brand_rows
-            if r["status"] == "direct"
+            if r["status"] in {
+                "direct",
+                "recently_demerged",
+                "recently_sold_or_spun_off",
+                "licensed_or_partnered",
+            }
             and r["parent_company"].lower() != COMPANY_MANUAL_REVIEW_LABEL.lower()
         ]
         scoped_or_review = [
             r for r in brand_rows
-            if r["status"] in {"market_scoped", "manual_review"}
+            if r["status"] in {
+                "market_scoped",
+                "manual_review",
+            }
             or r["parent_company"].lower() == COMPANY_MANUAL_REVIEW_LABEL.lower()
         ]
 
-        if not scoped_or_review and len(direct_rows) == 1:
-            mapping[direct_rows[0]["parent_company"]].add(brand)
+        direct_companies = sorted({r["parent_company"] for r in direct_rows})
+        if not scoped_or_review and len(direct_companies) == 1:
+            mapping[direct_companies[0]].add(brand)
         elif scoped_or_review:
             mapping[COMPANY_MANUAL_REVIEW_LABEL].add(brand)
 
@@ -102,7 +118,11 @@ def get_company_mapping_index() -> dict[str, list[dict[str, str]]]:
 
 @st.cache_data(show_spinner=False)
 def get_company_options() -> list[str]:
-    return sorted({row["parent_company"] for row in get_company_mapping_rows()})
+    return sorted({
+        row["parent_company"]
+        for row in get_company_mapping_rows()
+        if row["parent_company"] != COMPANY_MANUAL_REVIEW_LABEL
+    })
 
 
 def _split_scope_values(value: str) -> list[str]:
@@ -118,12 +138,15 @@ def _any_token_match(source_value: str, tokens: list[str]) -> bool:
 
 def _row_scope_matches(row: dict[str, str], countries: str, region_codes: str) -> bool:
     include_regions = _split_scope_values(row.get("region_codes_include", ""))
+    exclude_regions = _split_scope_values(row.get("region_codes_exclude", ""))
     include_countries = _split_scope_values(row.get("country_tags_include", ""))
     exclude_countries = _split_scope_values(row.get("country_tags_exclude", ""))
 
     # A market-scoped row with no structured scope is a documented caveat,
     # not a resolvable rule. Keep it out of automatic attribution.
     if not include_regions and not include_countries:
+        return False
+    if exclude_regions and _any_token_match(region_codes, exclude_regions):
         return False
     if exclude_countries and _any_token_match(countries, exclude_countries):
         return False
@@ -149,7 +172,16 @@ def resolve_company_owner(brand: str, countries: str = "",
     if not rows:
         return COMPANY_OTHER_LABEL
 
-    scoped = [r for r in rows if r["status"] == "market_scoped"]
+    scoped = [
+        r for r in rows
+        if r["status"] in {"market_scoped", "licensed_or_partnered"}
+        and (
+            r.get("region_codes_include")
+            or r.get("country_tags_include")
+            or r.get("region_codes_exclude")
+            or r.get("country_tags_exclude")
+        )
+    ]
     manual = [
         r for r in rows
         if r["status"] == "manual_review"
@@ -157,7 +189,12 @@ def resolve_company_owner(brand: str, countries: str = "",
     ]
     direct = [
         r for r in rows
-        if r["status"] == "direct"
+        if r["status"] in {
+            "direct",
+            "recently_demerged",
+            "recently_sold_or_spun_off",
+            "licensed_or_partnered",
+        }
         and r["parent_company"].lower() != COMPANY_MANUAL_REVIEW_LABEL.lower()
     ]
 
@@ -168,9 +205,10 @@ def resolve_company_owner(brand: str, countries: str = "",
             return companies[0]
         return COMPANY_MANUAL_REVIEW_LABEL if manual or scoped else COMPANY_OTHER_LABEL
 
-    if len(direct) == 1:
-        return direct[0]["parent_company"]
-    if len(direct) > 1 or manual:
+    direct_companies = sorted({r["parent_company"] for r in direct})
+    if len(direct_companies) == 1:
+        return direct_companies[0]
+    if len(direct_companies) > 1 or manual:
         return COMPANY_MANUAL_REVIEW_LABEL
     return COMPANY_OTHER_LABEL
 
@@ -221,6 +259,17 @@ def add_resolved_company(
     return out
 
 
+def _apply_display_brand(df: pd.DataFrame) -> pd.DataFrame:
+    """Expose normalized_brand through primary_brand for UI compatibility."""
+    if df.empty or "primary_brand" not in df.columns or "normalized_brand" not in df.columns:
+        return df
+    normalized = df["normalized_brand"].astype("string").str.strip()
+    df["primary_brand"] = normalized.where(normalized.notna() & (normalized != ""), df["primary_brand"])
+    if "resolved_company" in df.columns:
+        df["company"] = df["resolved_company"]
+    return df
+
+
 def filter_products_by_company(
     df: pd.DataFrame,
     company_names: Optional[list[str]],
@@ -265,12 +314,14 @@ def get_filter_options() -> dict[str, list]:
     queries = {
         "query_category": """
             SELECT DISTINCT query_category FROM products
-            WHERE query_category IS NOT NULL AND TRIM(query_category) != ''
+            WHERE ingested_at = (SELECT MAX(ingested_at) FROM products)
+              AND query_category IS NOT NULL AND TRIM(query_category) != ''
             ORDER BY 1
         """,
         "nutriscore_grade": """
             SELECT DISTINCT LOWER(nutriscore_grade) FROM products
-            WHERE nutriscore_grade IS NOT NULL AND TRIM(nutriscore_grade) != ''
+            WHERE ingested_at = (SELECT MAX(ingested_at) FROM products)
+              AND nutriscore_grade IS NOT NULL AND TRIM(nutriscore_grade) != ''
             ORDER BY 1
         """,
     }
@@ -293,15 +344,21 @@ def get_brand_options(categories: tuple[str, ...] = ()) -> list[str]:
         if categories:
             placeholders = ",".join("?" for _ in categories)
             rows = conn.execute(f"""
-                SELECT DISTINCT primary_brand FROM products
-                WHERE primary_brand IS NOT NULL AND TRIM(primary_brand) != ''
+                SELECT DISTINCT {PRODUCT_BRAND_SQL_UNALIASED} AS primary_brand
+                FROM products
+                WHERE {CURRENT_PRODUCT_SQL_UNALIASED}
+                AND {PRODUCT_BRAND_SQL_UNALIASED} IS NOT NULL
+                AND TRIM({PRODUCT_BRAND_SQL_UNALIASED}) != ''
                 AND query_category IN ({placeholders})
                 ORDER BY 1
             """, list(categories)).fetchall()
         else:
             rows = conn.execute("""
-                SELECT DISTINCT primary_brand FROM products
-                WHERE primary_brand IS NOT NULL AND TRIM(primary_brand) != ''
+                SELECT DISTINCT COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand) AS primary_brand
+                FROM products
+                WHERE ingested_at = (SELECT MAX(ingested_at) FROM products)
+                AND COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand) IS NOT NULL
+                AND TRIM(COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand)) != ''
                 ORDER BY 1
             """).fetchall()
         # Filter out brands with no letter — handles Unicode (é, ñ, etc.)
@@ -339,7 +396,16 @@ def _qmarks(values: list) -> str:
 
 
 def _normalize_brand(b: str) -> str:
-    return str(b or "").strip().lower().replace("-", " ")
+    import re
+    import unicodedata
+
+    text = str(b or "").strip().lower()
+    text = unicodedata.normalize("NFKD", text)
+    text = text.encode("ascii", errors="ignore").decode("ascii")
+    text = text.replace("&", " and ")
+    text = re.sub(r"['`´’]", "", text)
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def _build_where(
@@ -348,6 +414,7 @@ def _build_where(
     brands: Optional[list[str]],
     company_brands: Optional[list[str]],
     exclude_company_brands: Optional[list[str]],
+    company_names: Optional[list[str]],
     region_codes: Optional[list[str]],
     positioning_codes: Optional[list[str]],
     nova_groups: Optional[list[int]],
@@ -357,9 +424,10 @@ def _build_where(
     params: list = []
 
     # Permanent: exclude no-brand and unknown-brand products
+    clauses.append(CURRENT_PRODUCT_SQL)
     clauses.append(
-        "p.primary_brand IS NOT NULL"
-        " AND TRIM(LOWER(p.primary_brand)) NOT IN ('unknown', '', 'nan')"
+        f"{PRODUCT_BRAND_SQL} IS NOT NULL"
+        f" AND TRIM(LOWER({PRODUCT_BRAND_SQL})) NOT IN ('unknown', '', 'nan')"
     )
 
     if text:
@@ -370,20 +438,29 @@ def _build_where(
         clauses.append(f"p.query_category IN ({_qmarks(categories)})")
         params.extend(categories)
     if brands:
-        clauses.append(f"p.primary_brand IN ({_qmarks(brands)})")
+        brand_marks = _qmarks(brands)
+        clauses.append(
+            f"(p.normalized_brand IN ({brand_marks}) "
+            f"OR ((p.normalized_brand IS NULL OR TRIM(p.normalized_brand) = '') "
+            f"AND p.primary_brand IN ({brand_marks})))"
+        )
+        params.extend(brands)
         params.extend(brands)
     if company_brands:
         normalized = [_normalize_brand(b) for b in company_brands]
         clauses.append(
-            f"LOWER(REPLACE(p.primary_brand, '-', ' ')) IN ({_qmarks(normalized)})"
+            f"LOWER(REPLACE({PRODUCT_BRAND_SQL}, '-', ' ')) IN ({_qmarks(normalized)})"
         )
         params.extend(normalized)
     if exclude_company_brands:
         normalized = [_normalize_brand(b) for b in exclude_company_brands]
         clauses.append(
-            f"LOWER(REPLACE(p.primary_brand, '-', ' ')) NOT IN ({_qmarks(normalized)})"
+            f"LOWER(REPLACE({PRODUCT_BRAND_SQL}, '-', ' ')) NOT IN ({_qmarks(normalized)})"
         )
         params.extend(normalized)
+    if company_names:
+        clauses.append(f"p.resolved_company IN ({_qmarks(company_names)})")
+        params.extend(company_names)
     if region_codes:
         region_clause = " OR ".join(
             "p.observed_market_region_codes LIKE ?" for _ in region_codes
@@ -414,6 +491,7 @@ def count_products(
     brands: Optional[list[str]] = None,
     company_brands: Optional[list[str]] = None,
     exclude_company_brands: Optional[list[str]] = None,
+    company_names: Optional[list[str]] = None,
     region_codes: Optional[list[str]] = None,
     positioning_codes: Optional[list[str]] = None,
     nova_groups: Optional[list[int]] = None,
@@ -422,12 +500,17 @@ def count_products(
     conn = get_connection()
     where_sql, params = _build_where(
         text, categories, brands, company_brands, exclude_company_brands,
-        region_codes, positioning_codes, nova_groups, nutriscore_grades
+        company_names, region_codes, positioning_codes, nova_groups,
+        nutriscore_grades
+    )
+    join_sql = (
+        "LEFT JOIN product_analysis a ON a.barcode = p.barcode"
+        if positioning_codes else ""
     )
     return conn.execute(f"""
         SELECT COUNT(*)
         FROM products p
-        LEFT JOIN product_analysis a ON a.barcode = p.barcode
+        {join_sql}
         {where_sql}
     """, params).fetchone()[0]
 
@@ -438,6 +521,7 @@ def search_products(
     brands: Optional[list[str]] = None,
     company_brands: Optional[list[str]] = None,
     exclude_company_brands: Optional[list[str]] = None,
+    company_names: Optional[list[str]] = None,
     region_codes: Optional[list[str]] = None,
     positioning_codes: Optional[list[str]] = None,
     nova_groups: Optional[list[int]] = None,
@@ -447,19 +531,45 @@ def search_products(
     conn = get_connection()
     where_sql, params = _build_where(
         text, categories, brands, company_brands, exclude_company_brands,
-        region_codes, positioning_codes, nova_groups, nutriscore_grades
+        company_names, region_codes, positioning_codes, nova_groups,
+        nutriscore_grades
     )
     limit_sql = "LIMIT ?" if limit is not None else ""
     query_params = [*params, limit] if limit is not None else params
     df = pd.read_sql_query(f"""
-        SELECT p.*, a.*
+        SELECT
+            p.barcode,
+            p.product_name,
+            p.brands,
+            p.primary_brand,
+            p.normalized_brand,
+            p.resolved_company,
+            p.quantity,
+            p.query_category,
+            p.primary_country,
+            p.observed_market_region_codes,
+            p.image_url,
+            p.ingredients_text,
+            p.energy_kcal,
+            p.fat_100g,
+            p.saturated_fat_100g,
+            p.carbs_100g,
+            p.sugars_100g,
+            p.fiber_100g,
+            p.protein_100g,
+            p.salt_100g,
+            p.nutriscore_grade,
+            p.nova_group,
+            p.completeness_score,
+            a.pack_claims_found,
+            a.claim_source
         FROM products p
         LEFT JOIN product_analysis a ON a.barcode = p.barcode
         {where_sql}
-        ORDER BY p.product_name ASC
         {limit_sql}
     """, conn, params=query_params)
     df = df.loc[:, ~df.columns.duplicated()]
+    df = _apply_display_brand(df)
     return df
 
 
@@ -475,15 +585,13 @@ def count_products_resolved(
 ) -> int:
     if not company_names:
         return count_products(
-            text, categories, brands, None, None,
+            text, categories, brands, None, None, None,
             region_codes, positioning_codes, nova_groups, nutriscore_grades,
         )
-    df = search_products(
-        text, categories, brands, None, None,
+    return count_products(
+        text, categories, brands, None, None, company_names,
         region_codes, positioning_codes, nova_groups, nutriscore_grades,
-        limit=None,
     )
-    return len(filter_products_by_company(df, company_names, region_codes))
 
 
 def search_products_resolved(
@@ -499,19 +607,18 @@ def search_products_resolved(
 ) -> pd.DataFrame:
     if not company_names:
         df = search_products(
-            text, categories, brands, None, None,
+            text, categories, brands, None, None, None,
             region_codes, positioning_codes, nova_groups, nutriscore_grades,
             limit=limit,
         )
-        return add_resolved_company(df, region_codes)
+        return df
 
     df = search_products(
-        text, categories, brands, None, None,
+        text, categories, brands, None, None, company_names,
         region_codes, positioning_codes, nova_groups, nutriscore_grades,
-        limit=None,
+        limit=limit,
     )
-    filtered = filter_products_by_company(df, company_names, region_codes)
-    return filtered.head(limit) if limit is not None else filtered
+    return df
 
 
 @st.cache_data(show_spinner=False, ttl=600)
@@ -531,8 +638,14 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
     """
     conn = get_connection()
     df = pd.read_sql_query("""
-        SELECT barcode, product_name, primary_brand, primary_country, image_url,
+        SELECT barcode, product_name,
+               COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand) AS primary_brand,
+               primary_brand AS legacy_primary_brand,
+               normalized_brand, brand_entity_raw, brand_entity_source,
+               primary_country, image_url,
                countries, observed_market_region_codes,
+               resolved_company,
+               off_categories,
                ingredients_text, completeness_score,
                energy_kcal, fat_100g, saturated_fat_100g, carbs_100g,
                sugars_100g, fiber_100g, protein_100g, salt_100g,
@@ -540,8 +653,9 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
         FROM products
         WHERE query_category = ?
           AND observed_market_region_codes LIKE ?
-          AND primary_brand IS NOT NULL
-          AND TRIM(LOWER(primary_brand)) NOT IN ('unknown', '', 'nan')
+          AND ingested_at = (SELECT MAX(ingested_at) FROM products)
+          AND COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand) IS NOT NULL
+          AND TRIM(LOWER(COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand))) NOT IN ('unknown', '', 'nan')
     """, conn, params=[category, f"%{region_code}%"])
 
     for col in ["energy_kcal", "fat_100g", "saturated_fat_100g", "carbs_100g",
@@ -558,18 +672,24 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
     df["satfat_per_kcal"]  = (df["saturated_fat_100g"] / kcal * 100).where(valid_energy)
     df["sugars_per_kcal"]  = (df["sugars_100g"]        / kcal * 100).where(valid_energy)
 
-    # Company / owner: resolved by distinct brand/country keys so large
-    # market bases do not pay a resolver call for every product row.
-    key_cols = ["primary_brand", "countries"]
-    unique_keys = df[key_cols].drop_duplicates()
-    resolved = {
-        tuple(row): resolve_company_owner(row[0], countries=row[1], region_codes=region_code)
-        for row in unique_keys.itertuples(index=False, name=None)
-    }
-    df["company"] = [
-        resolved.get((brand, countries), COMPANY_OTHER_LABEL)
-        for brand, countries in df[key_cols].itertuples(index=False, name=None)
-    ]
+    if category == "beverages":
+        df["beverage_view_segment"] = [
+            beverage_view_segment(category, name, off_categories)
+            for name, off_categories in df[
+                ["product_name", "off_categories"]
+            ].itertuples(index=False, name=None)
+        ]
+    else:
+        df["beverage_view_segment"] = "not_beverage"
+
+    if "resolved_company" in df.columns:
+        company = df["resolved_company"].astype("string").str.strip()
+        df["company"] = company.where(
+            company.notna() & (company != ""),
+            COMPANY_OTHER_LABEL,
+        )
+    else:
+        df["company"] = COMPANY_OTHER_LABEL
 
     return df
 
@@ -630,54 +750,36 @@ def get_category_region_averages() -> dict:
                  satfat_per_kcal, sugars_per_kcal
     """
     conn = get_connection()
-    df = pd.read_sql_query("""
-        SELECT query_category, primary_country,
-               energy_kcal, protein_100g, fiber_100g,
-               saturated_fat_100g, sugars_100g, salt_100g
-        FROM products
-        WHERE primary_brand IS NOT NULL
-          AND TRIM(LOWER(primary_brand)) NOT IN ('unknown', '', 'nan')
-          AND energy_kcal IS NOT NULL
-          AND CAST(energy_kcal AS REAL) > 0
-    """, conn)
-
-    _COUNTRY_REGION = {
-        'France': 'FRANCE',
-        'United Kingdom': 'UK_IE', 'Great Britain': 'UK_IE',
-        'Ireland': 'UK_IE', 'England': 'UK_IE', 'Scotland': 'UK_IE',
-        'United States': 'US_CANADA', 'Canada': 'US_CANADA',
-    }
-    df['region'] = df['primary_country'].map(_COUNTRY_REGION).fillna('OTHER')
-
-    for col in ['energy_kcal', 'protein_100g', 'fiber_100g',
-                'saturated_fat_100g', 'sugars_100g', 'salt_100g']:
-        df[col] = pd.to_numeric(df[col], errors='coerce')
-
-    kcal = df['energy_kcal']
-    df['protein_per_kcal'] = df['protein_100g']       / kcal * 100
-    df['fiber_per_kcal']   = df['fiber_100g']         / kcal * 100
-    df['satfat_per_kcal']  = df['saturated_fat_100g'] / kcal * 100
-    df['sugars_per_kcal']  = df['sugars_100g']        / kcal * 100
-
     metrics = ['energy_kcal', 'protein_per_kcal', 'fiber_per_kcal',
                'satfat_per_kcal', 'sugars_per_kcal',
                'sugars_100g', 'salt_100g']
     result: dict = {}
+    try:
+        snapshot = conn.execute(
+            "SELECT MAX(snapshot) FROM category_region_averages"
+        ).fetchone()[0]
+        if snapshot is None:
+            return {}
+        rows = conn.execute(
+            """
+            SELECT query_category, region, energy_kcal, protein_per_kcal,
+                   fiber_per_kcal, satfat_per_kcal, sugars_per_kcal,
+                   sugars_100g, salt_100g
+            FROM category_region_averages
+            WHERE snapshot = ?
+            """,
+            (snapshot,),
+        ).fetchall()
+    except Exception as exc:
+        print(f"[get_category_region_averages] lookup failed: {exc}")
+        return {}
 
-    for (cat, region), grp in df.groupby(['query_category', 'region']):
-        avgs = {}
-        for m in metrics:
-            valid = grp[m].dropna()
-            if len(valid) >= 10:
-                avgs[m] = float(valid.mean())
-        result[(str(cat), str(region))] = avgs
-
-    for cat, grp in df.groupby('query_category'):
-        avgs = {}
-        for m in metrics:
-            valid = grp[m].dropna()
-            if len(valid) >= 10:
-                avgs[m] = float(valid.mean())
-        result[(str(cat), 'ALL')] = avgs
+    for row in rows:
+        cat, region = str(row[0]), str(row[1])
+        result[(cat, region)] = {
+            metric: float(value)
+            for metric, value in zip(metrics, row[2:])
+            if value is not None
+        }
 
     return result

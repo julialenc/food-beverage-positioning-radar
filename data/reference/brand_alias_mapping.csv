@@ -2832,3 +2832,82 @@ kellog\'s,kellogg's,punctuation,1,1367,high,confirm,escaped apostrophe
 kellogg s,kellogg's,punctuation,1,1367,high,confirm,missing apostrophe
 kellogg sales co,kellogg's,geo_suffix,1,1367,high,confirm,suffix: sales co
 kellogg uk,kellogg's,geo_suffix,1,1367,high,confirm,suffix: uk
+Lay’s,Lay’s,top9_prefix_orphan_review,867,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Reese's,Reese's,top9_prefix_orphan_review,212,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Fitness,Fitness,top9_prefix_orphan_review,59,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Blédina,Blédina,top9_prefix_orphan_review,44,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Chips Ahoy!,Chips Ahoy!,top9_prefix_orphan_review,43,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+pepsico,Pepsi,top9_prefix_orphan_review,34,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+wylers light,Wyler's,top9_prefix_orphan_review,24,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Hépar,Hépar,top9_prefix_orphan_review,15,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Mövenpick,Mövenpick,top9_prefix_orphan_review,14,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+pepsi cola,Pepsi,top9_prefix_orphan_review,11,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Dr Pepper,Dr Pepper,top9_prefix_orphan_review,9,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+alprose,Alpro,top9_prefix_orphan_review,8,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+munchies,Munch,top9_prefix_orphan_review,8,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Cheerios,Cheerios,top9_prefix_orphan_review,7,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+booster,Boost,top9_prefix_orphan_review,7,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+cadburys,Cadbury,top9_prefix_orphan_review,7,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+cliff bar,Clif,top9_prefix_orphan_review,6,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+munchos,Munch,top9_prefix_orphan_review,6,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+7UP,7UP,top9_prefix_orphan_review,6,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Schweppes,Schweppes,top9_prefix_orphan_review,6,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+pepsico inc,Pepsi,top9_prefix_orphan_review,6,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+munchee,Munch,top9_prefix_orphan_review,5,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+milos tea company inc,Milo,top9_prefix_orphan_review,5,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Nestlé Pure Life,Nestlé Pure Life,top9_prefix_orphan_review,5,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+cliff,Clif,top9_prefix_orphan_review,4,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+la vie en herbes,La Vie,top9_prefix_orphan_review,4,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+munch bunch,Munch,top9_prefix_orphan_review,4,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Wyler's,Wyler's,top9_prefix_orphan_review,3,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+fitnessboutique,Fitness,top9_prefix_orphan_review,3,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Hellmann's,Hellmann's,top9_prefix_orphan_review,2,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+boost ball,Boost,top9_prefix_orphan_review,2,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Cow & Gate,Cow & Gate,top9_prefix_orphan_review,2,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+quaker oats so simple,Quaker Oats,top9_prefix_orphan_review,2,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+triscuits,Triscuit,top9_prefix_orphan_review,2,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+diet coke plus,Diet Coke,top9_prefix_orphan_review,2,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+danonedanette,Danone,top9_prefix_orphan_review,2,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+maggie lyon,Maggi,top9_prefix_orphan_review,2,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+caprisun electrolytes,Capri Sun,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+coca cola hbc romania,Coca-Cola,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+aeroshot,Aero,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Stouffer's,Stouffer's,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+boost energy,Boost,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+Extrême,Extrême,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+carnation breakfast essentials,Carnation,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+cliff bar and company,Clif,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+cocacola company,Coca-Cola,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+gerber biscuits,Gerber,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+gerber graduates,Gerber,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+garden of life inc,Garden of Life,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+fitness boutique,Fitness,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+fitness and health,Fitness,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+fritos lay,Fritos,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+essentia water inc,Essentia,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+essentia hydroboost,Essentia,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+munchy seeds,Munch,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+munchkin milkmakers,Munch,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+munchkin,Munch,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+munchkin milk makers,Munch,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+movenpick of switzerland,Mövenpick,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+milorando,Milo,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+milola,Milo,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+monster energy drink,Monster Energy,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+monster energy limited,Monster Energy,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+monster energy monster,Monster Energy,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+mikado and go,Mikado,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+mikova,Miko,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+milkamondelez,Milka,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+nutricia multi fibre 1 0 kcal,Nutricia,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+oreos thins,Oreo,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+oreos,Oreo,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+pepsico france,Pepsi,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+pepsi cola jamaica bottling company,Pepsi,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+nesquiknestle,Nesquik,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+s pellegrino essenza,S.Pellegrino,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+schweppesorangina schweppes,Schweppes,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+ritzz,Ritz,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+swedish fish brand,Swedish Fish,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+triscuit minis,Triscuit,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.
+tropicoco,Tropico,top9_prefix_orphan_review,1,,reviewed,confirm,Manually reviewed Top 9 brand-prefix orphan cleanup.

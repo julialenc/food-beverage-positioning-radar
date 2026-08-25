@@ -352,6 +352,13 @@ components.render_header(
     "Product Explorer",
     "Search products, filter by positioning signals, and inspect the evidence behind each product.",
 )
+st.warning(
+    "BETA version. This launch build uses Open Food Facts data and "
+    "rule-based cleaning and mapping layers. Some records may remain "
+    "incomplete or imperfect. Page refreshes and large filter changes may "
+    "take up to 90 seconds.",
+    icon="ℹ️",
+)
 
 if not db.database_exists():
     st.info(
@@ -371,18 +378,32 @@ _COUNTRY_REGION = {
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.subheader("Filters")
+    st.caption(
+        "Initial load may take around 60-90 seconds. Brand-only filtering can "
+        "also take around 1-2 minutes; selecting Company / owner first usually "
+        "makes filtering faster."
+    )
     text = st.text_input("Search product or brand")
     options = db.get_filter_options()
 
     # 1. Category
-    categories = st.multiselect("Category", options["query_category"])
+    default_categories = ["snacks"] if "snacks" in options["query_category"] else []
+    categories = st.multiselect(
+        "Category",
+        options["query_category"],
+        default=default_categories,
+    )
 
     # 2. Market / region
     region_options      = db.get_region_options()
     region_label_to_code = {label: code for code, label in region_options}
+    default_region_labels = [
+        label for code, label in region_options if code == "FRANCE"
+    ][:1]
     selected_region_labels = st.multiselect(
         "Market / region",
         [label for _, label in region_options],
+        default=default_region_labels,
         help=(
             "Filters to products sold in this market. Only markets with "
             "full-coverage downloads are shown. Current scope: France, "
@@ -402,7 +423,7 @@ with st.sidebar:
         help=(
             "Filter by resolved parent company. Market-scoped brands use "
             "the selected market when possible; unresolved cases appear as "
-            "Manual review or Other / not mapped."
+            "Other / not mapped."
         ),
     )
 
@@ -480,6 +501,13 @@ with st.sidebar:
     )
 
     # column selector moved to main area above table
+
+if selected_companies and (not categories or not selected_region_codes):
+    st.info(
+        "Select at least one category and one market / region before filtering "
+        "by company / owner."
+    )
+    st.stop()
 
 # ── Query ─────────────────────────────────────────────────────────────────────
 total = db.count_products_resolved(

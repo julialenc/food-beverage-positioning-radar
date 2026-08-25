@@ -1,0 +1,27 @@
+retailer_banner,raw_brand_pattern,canonical_brand,brand_level,market_scope,category_scope,action,notes
+Carrefour,simpl,Simpl,private_label_brand,France,food_beverage,confirm,budget tier
+Carrefour,carrefour simpl,Simpl,private_label_brand,France,food_beverage,confirm,budget tier with retailer prefix
+Carrefour,carrefour discount,Simpl,private_label_brand,France,food_beverage,manual_review,old budget line; review before full confirmation
+Carrefour,carrefour classic,Carrefour Classic,private_label_line,France,food_beverage,confirm,core everyday line
+Carrefour,carrefour extra,Carrefour Extra,private_label_line,France,food_beverage,confirm,mid-premium line
+Carrefour,carrefour bio,Carrefour Bio,private_label_line,France,food_beverage,confirm,organic line
+Carrefour,carrefour selection,Carrefour Sélection,private_label_line,France,food_beverage,confirm,premium line
+Carrefour,carrefour sélection,Carrefour Sélection,private_label_line,France,food_beverage,confirm,premium line with accent
+Carrefour,reflets de france,Reflets de France,private_label_brand,France,food_beverage,confirm,regional heritage line
+Carrefour,carrefour reflets de france,Reflets de France,private_label_brand,France,food_beverage,confirm,regional heritage line with retailer prefix
+Carrefour,filiere qualite carrefour,Filière Qualité Carrefour,private_label_line,France,food_beverage,confirm,traceability quality line
+Carrefour,filière qualité carrefour,Filière Qualité Carrefour,private_label_line,France,food_beverage,confirm,traceability quality line with accents
+Carrefour,carrefour filiere qualite carrefour,Filière Qualité Carrefour,private_label_line,France,food_beverage,confirm,traceability quality line with retailer prefix
+Carrefour,carrefour filière qualité carrefour,Filière Qualité Carrefour,private_label_line,France,food_beverage,confirm,traceability quality line with accents and retailer prefix
+Carrefour,fqc,Filière Qualité Carrefour,private_label_line,France,food_beverage,manual_review,abbreviation; confirm only if examples clearly match Carrefour quality line
+Carrefour,carrefour sensation vegetal,Carrefour Sensation VÉGÉtal,private_label_line,France,food_beverage,confirm,plant-based line
+Carrefour,carrefour sensation végétal,Carrefour Sensation VÉGÉtal,private_label_line,France,food_beverage,confirm,plant-based line with accents
+Carrefour,carrefour sensation,Carrefour Sensation,private_label_line,France,food_beverage,confirm,flavour innovation line
+Carrefour,carrefour light,Carrefour Light,private_label_line,France,food_beverage,confirm,dietary line
+Carrefour,carrefour original,Carrefour Original,private_label_line,France,food_beverage,confirm,traditional/authentic line
+Carrefour,my carrefour baby,My Carrefour Baby,private_label_line,France,food_beverage,confirm,baby range
+Carrefour,my carrefour baby 0%,My Carrefour Baby 0%,private_label_line,France,food_beverage,confirm,baby range 0 percent variant
+Carrefour,carrefour baby,My Carrefour Baby,private_label_line,France,food_beverage,manual_review,baby range; confirm examples
+Carrefour,carrefour kids,Carrefour Kids,private_label_line,France,food_beverage,confirm,kids food and hygiene line
+Carrefour,carrefour companino,Carrefour Companino,private_label_line,France,food_beverage,confirm,pet care line
+Carrefour,companino,Carrefour Companino,private_label_line,France,food_beverage,confirm,pet care line without retailer prefix

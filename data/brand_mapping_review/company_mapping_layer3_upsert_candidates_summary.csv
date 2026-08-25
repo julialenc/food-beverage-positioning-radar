@@ -1,0 +1,51 @@
+﻿review_decision,parent_company,ownership_resolution_status,candidate_action,candidate_rows,review_product_count
+manual review,Manual review / complex ownership,manual_review,append_candidate,3953,55239
+map to Carrefour,Carrefour,direct,append_candidate,204,4993
+map to Système U,Système U,direct,append_candidate,33,4553
+map to Auchan,Auchan,direct,append_candidate,53,4431
+map to PepsiCo,PepsiCo,direct,append_candidate,253,3202
+map to E.Leclerc,E.Leclerc,direct,append_candidate,54,3032
+map to Groupe Casino,Groupe Casino,direct,append_candidate,29,1999
+map to Monoprix,Monoprix,direct,append_candidate,19,1448
+map to The Coca-Cola Company,The Coca-Cola Company,direct,append_candidate,166,1365
+map to Lidl,Lidl,direct,append_candidate,118,1059
+approve proposed,Danone,direct,append_candidate,24,1036
+map to Tesco,Tesco,direct,append_candidate,66,1033
+map to Aldi,Aldi,direct,append_candidate,97,1001
+map to Danone,Danone,direct,append_candidate,81,991
+map to Nestlé,Nestlé,direct,append_candidate,204,890
+map to Sainsbury's,Sainsbury's,direct,append_candidate,58,883
+map to Lindt & Sprüngli,Lindt & Sprüngli,direct,append_candidate,75,853
+map to Les Mousquetaires / Intermarché,Les Mousquetaires / Intermarché,direct,append_candidate,23,839
+map to Lactalis,Lactalis,direct,append_candidate,51,796
+map to Wegmans,Wegmans,direct,append_candidate,14,738
+map to Mondelēz International,Mondelēz International,direct,append_candidate,141,682
+map to Bel Group,Bel Group,direct,append_candidate,60,506
+approve proposed,The Hershey Company,direct,append_candidate,29,390
+approve proposed,Mondelēz International,direct,append_candidate,38,308
+approve proposed,Suntory Beverage & Food,direct,append_candidate,22,308
+map to Savencia,Savencia,direct,append_candidate,29,244
+approve proposed,Nestlé,direct,append_candidate,44,196
+approve proposed,Monster Beverage Corp,direct,append_candidate,23,140
+approve proposed,General Mills,direct,possible_update_existing,8,112
+approve proposed,PepsiCo,direct,append_candidate,15,101
+approve proposed,Keurig Dr Pepper,direct,possible_update_existing,6,99
+approve proposed,Capri Sun Group / Coca-Cola Europacific Partners,direct,append_candidate,21,91
+approve proposed,Danone (Dannon in US),direct,append_candidate,9,87
+map to Kettle Brand / Campbell Soup Company,Kettle Brand / Campbell Soup Company,direct,append_candidate,6,81
+map to Coop,Coop,direct,append_candidate,31,79
+approve proposed,The Coca-Cola Company,direct,append_candidate,8,38
+approve proposed,Kraft Heinz,direct,possible_update_existing,2,34
+approve proposed,Monster Beverage Corp (Coca-Cola 20% stake / exclusive distrib),direct,append_candidate,6,34
+approve proposed,Cereal Partners Worldwide,direct,append_candidate,12,24
+approve proposed,Keurig Dr Pepper,direct,append_candidate,11,22
+approve proposed,General Mills,direct,append_candidate,7,16
+approve proposed,Smarties Candy Company,direct,append_candidate,1,15
+map to Ferrero,Ferrero,direct,append_candidate,3,14
+approve proposed,Associated British Foods,direct,append_candidate,3,8
+approve proposed,Ferrero,direct,append_candidate,4,7
+map to Mars,Mars,direct,append_candidate,5,6
+map to The Hershey Company,The Hershey Company,direct,append_candidate,2,4
+approve proposed,Kraft Heinz,direct,append_candidate,2,2
+approve proposed,Froneri,direct,append_candidate,1,2
+approve proposed,Mars,direct,append_candidate,2,2

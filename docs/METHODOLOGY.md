@@ -21,14 +21,159 @@ Product data is sourced from Open Food Facts (OFF), an open, crowdsourced
 database licensed under the Open Database License (ODbL). See
 `docs/LIMITATIONS.md` for coverage, quality, and licensing details.
 
+The project code and documentation are licensed separately from the OFF data.
+Open Food Facts source data remains subject to ODbL attribution and share-alike
+requirements.
+
+## Data preparation and governance
+
+The app does not present raw Open Food Facts rows directly. It applies
+documented preparation layers for category scope, nutrition quality,
+brand/entity cleanup, company routing, and app-specific chart readability.
+These layers add derived fields and flags; they should not be read as editing
+or correcting the OFF source.
+
+Core data-governance rules:
+
+- Raw OFF values are preserved where the pipeline creates raw provenance fields,
+  especially for nutrition (`*_off_raw`) and brand evidence (`off_brands_raw`).
+- Missing values remain missing. `NULL` is not zero.
+- Products are not silently deleted from the database because a value is
+  incomplete or suspicious.
+- Product Explorer can show imperfect but useful product records.
+- Market Overview calculations and charts use stricter inclusion flags so that
+  aggregate views are not distorted by records that are unsuitable for
+  summary analysis.
+
+## Category cleanup
+
+Open Food Facts category tags are rich but can be noisy. The project therefore
+uses deterministic category-cleanup rules before products enter the Streamlit
+MVP scopes. The reviewed launch categories are snacks, cereals, dairy, and
+beverages across the MVP regions France, UK & Ireland, and US & Canada.
+
+Snacks and cereals received detailed manual review during August 2026. Their
+cleanup rules are documented in `docs/SNACK_CATEGORY_CLEANUP.md` and
+`docs/CEREAL_CATEGORY_CLEANUP.md`, and implemented through shared category
+rules used by both bulk and incremental ingestion. Category cleanup is based on
+product/category evidence, not on nutrition values or claim outcomes.
+
+Category cleanup does not claim to produce a perfect retail taxonomy. It
+creates a defensible analytical base for the MVP views and preserves source
+evidence for future review.
+
+## Nutrition quality and outlier treatment
+
+Nutrition quality governance decides whether each product record is suitable
+for product-level display, aggregate calculations, and charts. The goal is not
+to correct Open Food Facts data. The goal is to preserve raw source values and
+add flags that control analytical use.
+
+Implemented launch checks include:
+
+- hard impossibility checks, such as negative nutrients, nutrients above
+  100g/100g, impossible macro mass balance, sugars greater than carbohydrates,
+  saturated fat greater than total fat, and biologically impossible energy
+  values;
+- per-100 kcal nutrient-density checks, which catch values that may look
+  plausible per 100g but cannot be reconciled with reported energy;
+- energy-macro consistency checks comparing reported kcal with kcal calculated
+  from fat, protein, and carbohydrates;
+- Scenario C2 safeguards, which avoid over-excluding low-energy beverages and
+  small absolute kcal gaps while keeping material food gaps and unsafe
+  high-energy beverage exceptions out of aggregate views;
+- distributional plausibility review, which summarizes category tails before
+  turning stable patterns into deterministic rules.
+
+The current app treatment is:
+
+- records with hard data-quality errors are excluded from Product Explorer,
+  Market Overview calculations, and Market Overview charts;
+- records with material energy-macro inconsistency can remain visible at
+  product level but are excluded from Market Overview calculations and charts;
+- genuine but chart-distorting tails can remain visible in Product Explorer
+  while being excluded from aggregate charts when a documented rule exists;
+- valid records remain eligible for Market Overview calculations and charts.
+
+Within-brand nutrition plausibility checks, such as unusually low or high
+values compared with comparable products from the same brand, are not yet fully
+implemented in the launch MVP and are planned for a later governance update.
+
+The final launch exclusion rate from Market Overview calculations is
+approximately 3.02%, accepted after audit because the criteria are explicit and
+raw source values remain traceable. See
+`docs/NUTRITION_OUTLIER_GOVERNANCE.md` and
+`data/nutrition_outlier_review/audits/` for the detailed governance record.
+
+## Brand, brand-family, and company mapping
+
+Brand and company fields are handled as separate layers. This separation is
+important because Open Food Facts brand strings often mix consumer-facing
+brands, parent companies, retailer banners, private-label lines, legal
+entities, and noisy contributor text.
+
+The launch pipeline distinguishes:
+
+```text
+off_brands_raw      = raw OFF brand evidence
+brand_entity_raw    = conservative extracted consumer-facing brand entity
+normalized_brand    = cleaned brand or stable brand line used by Streamlit
+brand_family        = optional broader umbrella for useful roll-ups
+resolved_company    = directional company / owner routing used for filtering and navigation
+```
+
+The app should prefer `normalized_brand` for brand display when available.
+`primary_brand` remains a legacy compatibility/provenance field and should not
+be interpreted as the final brand layer.
+
+Company / owner is a directional reporting filter, not a legal ownership
+audit. Some brands require market-specific or channel-specific routing, such as
+KitKat, Cadbury, Kellogg's, Lipton, Capri Sun, and Cheerios. Where the project
+cannot safely resolve ownership, the launch app uses a neutral visible company
+value such as `Other / not mapped to a company`; `Manual review` is retained
+only as backend status where needed, not as a visible company/owner.
+
+Carrefour private-label mapping was tested as a curated pilot. Carrefour lines
+such as `Carrefour Bio`, `Carrefour Classic`, `Carrefour Sélection`,
+`Reflets de France`, and `Simpl` remain brand-level entities and are mapped to
+Carrefour only at the company layer.
+
+Top 9 strategic company portfolio routing and strict prefix-orphan cleanup were
+used to reduce obvious missing company assignments. These rules are
+conservative: false merges are treated as worse than leaving a brand unresolved.
+See `docs/BRAND_COMPANY_MAPPING.md` for the full mapping workflow, known
+regional exceptions, and audit outputs.
+
+## Beverage segmentation
+
+Beverages are split in Market Overview into practical MVP view segments:
+
+```text
+ready_to_drink_beverages
+beverage_preparations_and_alcohol
+unknown_beverage_segment
+not_beverage
+```
+
+This split exists for chart readability and comparability. Ready-to-drink
+water, soda, juice, iced tea, kombucha, and plant drinks should not be mixed
+uncritically with syrups, concentrates, powders, tea bags, coffee capsules,
+alcohol, meal-replacement shakes, and other preparation-based or
+alcohol-adjacent products.
+
+The beverage classifier is rule-based and MVP-level. Unknown beverage records
+are work in progress and should not be interpreted as a separate market
+segment.
+
 ## Pack-image claim extraction process
 
 A sampled subset of image-eligible products has undergone front-of-pack image
-analysis. Across the current US/UK and France analytical releases, the project
-contains 17,127 valid front-of-pack observations. Azure AI Vision's Read API
-performs OCR on the product image, and the extracted text is passed to Azure
-OpenAI's `gpt-4.1-nano` deployment for structured claim extraction. Total OCR
-and LLM cost for the US, UK, and France runs was approximately 20 CHF.
+analysis. As of the August 2026 launch build, the current US/UK and France
+analytical releases contain 17,127 valid front-of-pack observations. Azure AI
+Vision's Read API performs OCR on the product image, and the extracted text is
+passed to Azure OpenAI's `gpt-4.1-nano` deployment for structured claim
+extraction. Total OCR and LLM cost for the US, UK, and France launch runs was
+approximately 20 CHF.
 
 The sampled releases are designed to study claim territories within an
 image-eligible Open Food Facts sampling frame. They are not retail-sales
@@ -53,16 +198,18 @@ release record, extraction validator, and OCR/LLM limitations.
 Each metric below states what it measures and what it explicitly does not
 measure.
 
-### Claim taxonomy
-**Status:** Implemented
-**What it measures:** Groups detected positioning into five categories —
-functional, free-from / reduced-content, natural/organic, other positioning,
-or no claim identified — and a secondary sub-category (e.g. protein, gut
-health, no added sugar, heritage). Where a valid front-pack observation exists,
-the taxonomy is sourced from OCR/LLM pack-image extraction (`claim_source` =
-`vision`). Where no valid pack observation exists, a fallback classification
-may rely on product-name, label, and ingredient-derived signals
-(`claim_source` = `ingredient_text_only`). Stored category codes
+### Positioning signals / claim taxonomy
+**Status:** Implemented in the pipeline; Streamlit MVP displays vision-based
+positioning signals only.
+**What it measures:** For products with valid front-pack OCR/LLM extraction,
+the tool identifies visible positioning signals such as protein, fibre,
+vitamins and minerals, no added / reduced sugar, organic, plant-based,
+heritage, sustainability, and other front-pack claim territories.
+
+The underlying pipeline may retain legacy or fallback classification fields for
+internal QA and historical compatibility. However, ingredient-derived or
+product-name-derived fallback signals must not be presented as confirmed
+front-of-pack observations in the Streamlit MVP. Stored category codes
 (`FUNCTIONAL`, `FREE_OF`, etc.) are not display-ready — see
 `docs/UI_LABELS.md` for the canonical code-to-label mapping used by the
 Streamlit app.
@@ -236,27 +383,33 @@ exports remain useful for QA and product-level inspection at each pipeline
 stage; `db_summary.py` outputs are the final aggregate reporting layer used by
 the Streamlit analytical board and any downstream analysis.
 
-## Brand and company mapping
-
-Brand strings in the source data are normalized and mapped to parent
-companies for company-level filtering and aggregation. See
-`docs/BRAND_COMPANY_MAPPING.md` for the mapping methodology and coverage.
-Pattern metrics are computed at product level and aggregated primarily at
-brand/category level. Company-level views may be used as roll-ups, but
-should be interpreted cautiously because company portfolios are
-heterogeneous (see `docs/ADR.md`).
-
 ## Known limitations of current methodology
 
 See `docs/LIMITATIONS.md` for the full catalogue of known limitations
-affecting interpretation, including coverage gaps, context limitations (such
-as sports nutrition products), and extraction quality caveats. Current
-methodology caveats that materially affect interpretation include:
+affecting interpretation, including coverage gaps, context limitations,
+mapping caveats, and extraction quality caveats. Current methodology caveats
+that materially affect interpretation include:
 
-- **Open Food Facts category contamination:** the current cereals release
-  figures include pasta, bread, flour, rusks, breadsticks, and puff pastry
-  products; snacks contamination by noodles is also under review. These are
-  source taxonomy and filtering issues, not claim-extraction failures.
+- **Open Food Facts source variability:** OFF is crowdsourced. Product names,
+  brands, categories, countries, images, and nutrition values can be incomplete,
+  inconsistent, duplicated, outdated, or entered at different levels of detail.
+- **Observed records, not market share:** product counts are observed OFF
+  records in the selected base. They are not sales-weighted, shelf-weighted, or
+  representative of retail distribution.
+- **Category cleanup is launch-scoped:** snacks and cereals were reviewed in
+  detail for MVP. Remaining category noise can still exist, especially outside
+  the reviewed launch scopes or in edge product forms.
+- **Nutrition flags are governance rules, not corrections:** products can be
+  excluded from aggregates because their nutrition values are unsuitable for
+  summary analysis, but the project does not claim to know which source field is
+  wrong in every case.
+- **Brand/company mapping is directional:** company filters are launch-stage
+  routing aids. Market-specific licensing, recent ownership changes,
+  private-label complexity, and noisy OFF brand strings mean the company field
+  should not be read as a legal ownership guarantee.
+- **Beverage segmentation is MVP-level:** ready-to-drink and
+  preparation/alcohol segments are designed to protect charts from incomparable
+  product forms. The classifier is not a final beverage taxonomy.
 - **OCR and pack-design limitations:** OCR quality degrades on dark packs,
   angled or cropped images, small thumbnails, and highly stylized typography.
 - **Panel-classification residual error:** some valid front packs are likely

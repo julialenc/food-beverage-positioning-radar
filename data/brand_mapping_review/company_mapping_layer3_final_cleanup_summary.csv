@@ -1,0 +1,9 @@
+﻿metric,value
+ready_rows_before,2173
+kellogg_rows_moved_to_manual,14
+cadbury_direct_rows_corrected,9
+ready_rows_after_kellogg_move,2159
+deduped_ready_rows,1648
+manual_review_rows_after_kellogg_move,3967
+remaining_ready_kellogg_rows,0
+remaining_ready_cadbury_direct_rows,0

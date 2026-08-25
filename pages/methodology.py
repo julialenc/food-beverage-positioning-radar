@@ -24,7 +24,8 @@ components.render_header(
 st.markdown(
     """
 This app shows structured observations about packaged food and beverage
-products. It does not produce product verdicts.
+products. This beta MVP uses Open Food Facts data, rule-based cleaning, and
+documented mapping layers. It does not produce product verdicts.
 
 The app combines two types of evidence:
 
@@ -191,6 +192,12 @@ Nutrition values are sourced from Open Food Facts where available. The app may
 show fields such as energy, protein, fibre, sugars, saturated fat, salt,
 carbohydrates, and fat.
 
+The app preserves raw Open Food Facts nutrition values and adds governance
+flags for aggregate analysis. Product Explorer can show imperfect but useful
+records. Market Overview calculations and charts exclude records with
+implemented hard data-quality flags, material energy/macronutrient
+inconsistencies, or documented chart-distorting outlier rules where available.
+
 **Nutri-Score** and **NOVA group** are external reference classifications
 sourced from Open Food Facts. They are not created by this project and should
 not be read as this tool's own product judgment.
@@ -246,22 +253,21 @@ front-of-pack observation.
 """
 )
 
-st.markdown("### 11. Claim Area And Claim Focus")
+st.markdown("### 11. Positioning Signals")
 st.markdown(
     """
-The app groups detected product communication into a broad **Claim area** and
-a more specific **Claim focus**.
+The app groups front-pack communication into practical **Positioning** labels.
 
-Examples of Claim area include functional and benefit-led claims,
-free-from / reduced-content claims, natural or organic positioning, other
-positioning cues, or no claim identified.
+Examples include protein, fibre, vitamins and minerals, no added / reduced
+sugar, organic, plant-based, sustainability, heritage, or other visible
+pack-positioning signals.
 
-Examples of Claim focus include protein, fibre, vitamins, no added / reduced
-sugar, organic, sustainability, or heritage.
+These labels are based on OCR and LLM extraction from analyzed front-pack
+images where available. They do not assess whether a claim is legally valid,
+substantiated, misleading, or compliant.
 
-These labels describe product communication detected in the dataset. They do
-not assess whether a claim is legally valid, substantiated, misleading, or
-compliant.
+If a product is not vision-analyzed, the app shows it as **Not tested** rather
+than assuming that no claim exists.
 """
 )
 
@@ -272,8 +278,11 @@ Brand names from Open Food Facts are normalized to make filtering easier.
 Some brands map clearly to one company or owner. Others depend on market,
 licensing, product type, or recent ownership changes.
 
-For market-specific brands, the app uses scoped mapping rules where possible.
-Cases that cannot be resolved safely are marked as **Manual review**.
+Brand handling is separated into three layers: raw Open Food Facts brand
+evidence, normalized consumer-facing brand, and company / owner mapping. For
+market-specific brands, the app uses scoped mapping rules where possible.
+Cases that cannot be resolved safely are shown as **Other / not mapped** in
+the app, while backend review status is preserved for audit.
 
 Company filters are navigational roll-ups. They help users explore
 portfolios, but the strongest analytical unit remains the product, brand,
@@ -281,7 +290,22 @@ category, and market / region.
 """
 )
 
-st.markdown("### 13. Market / Region Filter")
+st.markdown("### 13. Beverage View Segment")
+st.markdown(
+    """
+For Market Overview, beverages are split into practical MVP segments so that
+ready-to-drink products are not mixed with syrups, concentrates, powders,
+tea bags, coffee capsules, alcohol, and similar preparation-based or
+alcohol-related products in the same nutrition charts.
+
+The beverage segment classifier is rule-based and intended for launch-stage
+chart readability, not as a final beverage taxonomy. Unknown beverage records
+are work in progress and should not be interpreted as a separate market
+segment.
+"""
+)
+
+st.markdown("### 14. Market / Region Filter")
 st.markdown(
     """
 Market / region is derived from Open Food Facts country tags.
@@ -294,7 +318,7 @@ multiple country tags for the same product.
 """
 )
 
-st.markdown("### 14. How To Interpret The App")
+st.markdown("### 15. How To Interpret The App")
 st.markdown(
     """
 Use the app to explore patterns, compare products, identify claim territories,
@@ -306,7 +330,7 @@ Interpretation remains with the user.
 """
 )
 
-st.markdown("### 15. Known Limitations")
+st.markdown("### 16. Known Limitations")
 st.markdown(
     """
 Important current limitations:
@@ -320,10 +344,11 @@ Important current limitations:
 - OCR quality varies by image quality, pack design, language, and layout.
 - Pack-communication evidence is not representative of the full Open Food
   Facts product base.
-- Some category contamination is known, especially in cereals and snacks, and
-  is being cleaned.
+- The reviewed MVP category scopes have been cleaned, but residual source
+  category noise may remain.
 - Company ownership can be market-specific, license-specific, or
   product-type-specific.
+- Beverage segmentation is MVP-ready but not a final beverage taxonomy.
 - Market / region tags are directional and based on Open Food Facts country
   tags.
 - Missing values are not zero and should not be interpreted as absence.

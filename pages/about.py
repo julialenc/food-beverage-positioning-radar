@@ -28,6 +28,11 @@ st.markdown(
 Food & Beverage Positioning Radar helps users explore packaged food and
 beverage products from two sides:
 
+This is a **beta MVP**. It uses Open Food Facts data plus documented cleaning,
+nutrition-quality, brand-normalization, and company-mapping layers. Some
+records may remain incomplete, imperfect, or unresolved at the source-data
+level.
+
 **What the product is**  
 Ingredients, nutrition values, processing indicators, Nutri-Score, NOVA
 classification, company / brand mapping, market / region tags, and nutrition

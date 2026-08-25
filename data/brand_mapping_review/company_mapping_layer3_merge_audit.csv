@@ -1,0 +1,1619 @@
+﻿merge_action,normalized_brand,parent_company,ownership_resolution_status,category_scope,region_codes_include,review_product_count,review_decision,candidate_action
+appended_new,u,Système U,direct,beverages,FRANCE,1953,map to Système U,append_candidate
+appended_new,auchan,Auchan,direct,dairies,FRANCE,1519,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,snacks,FRANCE,1380,map to Auchan,append_candidate
+appended_new,u,Système U,direct,snacks,FRANCE,1341,map to Système U,append_candidate
+appended_new,auchan,Auchan,direct,beverages,FRANCE,1108,map to Auchan,append_candidate
+appended_new,u,Système U,direct,dairies,FRANCE,957,map to Système U,append_candidate
+appended_new,carrefour,Carrefour,direct,dairies,FRANCE,875,map to Carrefour,append_candidate
+appended_new,marque repere,E.Leclerc,direct,beverages,FRANCE,783,map to E.Leclerc,append_candidate
+appended_new,danone,Danone,direct,dairies,FRANCE,782,approve proposed,append_candidate
+appended_new,paturages,Les Mousquetaires / Intermarché,direct,dairies,FRANCE,749,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,carrefour,Carrefour,direct,snacks,FRANCE,731,map to Carrefour,append_candidate
+appended_new,casino,Groupe Casino,direct,dairies,FRANCE,634,map to Groupe Casino,append_candidate
+appended_new,casino,Groupe Casino,direct,beverages,FRANCE,607,map to Groupe Casino,append_candidate
+appended_new,casino,Groupe Casino,direct,snacks,FRANCE,598,map to Groupe Casino,append_candidate
+appended_new,marque repere,E.Leclerc,direct,snacks,FRANCE,555,map to E.Leclerc,append_candidate
+appended_new,monoprix,Monoprix,direct,dairies,FRANCE,547,map to Monoprix,append_candidate
+appended_new,leclerc,E.Leclerc,direct,snacks,FRANCE,464,map to E.Leclerc,append_candidate
+appended_new,carrefour,Carrefour,direct,beverages,FRANCE,441,map to Carrefour,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE,441,map to Lindt & Sprüngli,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,US_CANADA,418,map to PepsiCo,append_candidate
+appended_new,e.leclerc,E.Leclerc,direct,snacks,FRANCE,409,map to E.Leclerc,append_candidate
+appended_new,président,Lactalis,direct,dairies,FRANCE,404,map to Lactalis,append_candidate
+appended_new,Reflets de France,Carrefour,direct,dairies,FRANCE,388,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE,350,map to Carrefour,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,FRANCE,346,map to PepsiCo,append_candidate
+appended_new,carrefour,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE,342,map to Carrefour,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE,336,map to The Coca-Cola Company,append_candidate
+appended_new,monoprix,Monoprix,direct,snacks,FRANCE,333,map to Monoprix,append_candidate
+appended_new,marque repere,E.Leclerc,direct,dairies,FRANCE,293,map to E.Leclerc,append_candidate
+appended_new,wegmans,Wegmans,direct,snacks,US_CANADA,290,map to Wegmans,append_candidate
+appended_new,Activia,Danone,direct,dairies,FRANCE,281,map to Danone,append_candidate
+appended_new,tesco,Tesco,direct,snacks,UK_IE,261,map to Tesco,append_candidate
+appended_new,monoprix,Monoprix,direct,beverages,FRANCE,256,map to Monoprix,append_candidate
+appended_new,lidl,Lidl,direct,snacks,FRANCE,250,map to Lidl,append_candidate
+appended_new,leclerc,E.Leclerc,direct,dairies,FRANCE,249,map to E.Leclerc,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,UK_IE,244,map to PepsiCo,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,dairies,UK_IE,232,map to Sainsbury's,append_candidate
+appended_new,tesco,Tesco,direct,dairies,UK_IE,230,map to Tesco,append_candidate
+appended_new,carrefour,Carrefour,direct,snacks,BENELUX|FRANCE,229,map to Carrefour,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,US_CANADA,218,map to PepsiCo,append_candidate
+appended_new,Gatorade,PepsiCo,direct,beverages,US_CANADA,210,map to PepsiCo,append_candidate
+appended_new,lactel,Lactalis,direct,dairies,FRANCE,204,map to Lactalis,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,snacks,UK_IE,199,map to Sainsbury's,append_candidate
+appended_new,Schweppes,Suntory Beverage & Food,market_scoped,beverages,FRANCE,187,approve proposed,append_candidate
+appended_new,carrefour,Carrefour,direct,dairies,FRANCE|SOUTHERN_EUROPE,175,map to Carrefour,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,FRANCE,173,map to Nestlé,append_candidate
+appended_new,Danette,Danone,direct,dairies,FRANCE,170,map to Danone,append_candidate
+appended_new,wegmans,Wegmans,direct,dairies,US_CANADA,168,map to Wegmans,append_candidate
+appended_new,Cadbury,The Hershey Company,market_scoped,snacks,US_CANADA,160,approve proposed,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE,157,map to The Coca-Cola Company,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,snacks,UK_IE,153,approve proposed,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,dairies,FRANCE,152,map to Carrefour,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,US_CANADA,147,map to Lindt & Sprüngli,append_candidate
+appended_new,aldi,Aldi,direct,snacks,UK_IE,147,map to Aldi,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,US_CANADA,144,map to PepsiCo,append_candidate
+appended_new,monoprix gourmet,Monoprix,direct,dairies,FRANCE,142,map to Monoprix,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,beverages,UK_IE,142,map to Sainsbury's,append_candidate
+appended_new,aldi,Aldi,direct,snacks,FRANCE,139,map to Aldi,append_candidate
+appended_new,lidl,Lidl,direct,dairies,FRANCE,138,map to Lidl,append_candidate
+appended_new,u,Système U,direct,cereals,FRANCE,137,map to Système U,append_candidate
+appended_new,wegmans,Wegmans,direct,beverages,US_CANADA,132,map to Wegmans,append_candidate
+appended_new,tesco,Tesco,direct,beverages,UK_IE,124,map to Tesco,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,US_CANADA,120,map to PepsiCo,append_candidate
+appended_new,la vache qui rit,Bel Group,direct,dairies,FRANCE,119,map to Bel Group,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,US_CANADA,118,map to Mondelēz International,append_candidate
+appended_new,lidl,Lidl,direct,snacks,UK_IE,118,map to Lidl,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,FRANCE,116,map to PepsiCo,append_candidate
+appended_new,Ruffles,PepsiCo,direct,snacks,US_CANADA,115,map to PepsiCo,append_candidate
+appended_new,aldi,Aldi,direct,dairies,UK_IE,115,map to Aldi,append_candidate
+updated_existing,Cheerios,General Mills,market_scoped,cereals,US_CANADA,112,approve proposed,possible_update_existing
+appended_new,lidl,Lidl,direct,beverages,FRANCE,111,map to Lidl,append_candidate
+appended_new,Volvic,Danone,direct,beverages,FRANCE,107,map to Danone,append_candidate
+appended_new,quaker,PepsiCo,direct,snacks,US_CANADA,104,map to PepsiCo,append_candidate
+appended_new,carrefour,Carrefour,direct,dairies,BENELUX|FRANCE,103,map to Carrefour,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,US_CANADA,101,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola Light,The Coca-Cola Company,direct,beverages,FRANCE,96,map to The Coca-Cola Company,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,snacks,FRANCE,96,approve proposed,append_candidate
+appended_new,aldi,Aldi,direct,dairies,FRANCE,94,map to Aldi,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE|DACH,91,map to Lindt & Sprüngli,append_candidate
+appended_new,e.leclerc,E.Leclerc,direct,dairies,FRANCE,91,map to E.Leclerc,append_candidate
+appended_new,st môret,Savencia,direct,dairies,FRANCE,91,map to Savencia,append_candidate
+appended_new,kiri,Bel Group,direct,dairies,FRANCE,91,map to Bel Group,append_candidate
+appended_new,lidl,Lidl,direct,dairies,UK_IE,90,map to Lidl,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,FRANCE,90,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,FRANCE,89,map to PepsiCo,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE,86,map to Mondelēz International,append_candidate
+appended_new,boursin,Bel Group,direct,dairies,FRANCE,86,map to Bel Group,append_candidate
+appended_new,KitKat,The Hershey Company,market_scoped,snacks,US_CANADA,84,approve proposed,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,UK_IE,81,map to The Coca-Cola Company,append_candidate
+appended_new,auchan,Auchan,direct,cereals,FRANCE,81,map to Auchan,append_candidate
+appended_new,Tostitos,PepsiCo,direct,snacks,US_CANADA,81,map to PepsiCo,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,snacks,FRANCE,81,map to Carrefour,append_candidate
+appended_new,tartare,Savencia,direct,dairies,FRANCE,79,map to Savencia,append_candidate
+appended_new,danone,Danone,direct,dairies,FRANCE|SOUTHERN_EUROPE,77,approve proposed,append_candidate
+appended_new,Volvic,Danone,direct,beverages,FRANCE|DACH,77,map to Danone,append_candidate
+updated_existing,Dr Pepper,Keurig Dr Pepper,market_scoped,beverages,US_CANADA,75,approve proposed,possible_update_existing
+appended_new,président,Lactalis,direct,dairies,US_CANADA,75,map to Lactalis,append_candidate
+appended_new,7UP,PepsiCo,market_scoped,beverages,FRANCE,74,approve proposed,append_candidate
+appended_new,kettle brand,Kettle Brand / Campbell Soup Company,direct,snacks,US_CANADA,74,map to Kettle Brand / Campbell Soup Company,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,FRANCE,74,map to Nestlé,append_candidate
+appended_new,Mountain Dew,PepsiCo,direct,beverages,US_CANADA,71,map to PepsiCo,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,beverages,FRANCE,70,map to Carrefour,append_candidate
+appended_new,SodaStream,PepsiCo,direct,beverages,FRANCE,69,map to PepsiCo,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,FRANCE,68,map to Bel Group,append_candidate
+appended_new,marque repere,E.Leclerc,direct,cereals,FRANCE,68,map to E.Leclerc,append_candidate
+appended_new,danone,Danone,direct,dairies,BENELUX|FRANCE,67,approve proposed,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,FRANCE,66,approve proposed,append_candidate
+appended_new,Actimel,Danone,direct,dairies,FRANCE,65,map to Danone,append_candidate
+appended_new,aldi,Aldi,direct,beverages,UK_IE,65,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,dairies,US_CANADA,63,map to Aldi,append_candidate
+appended_new,Fuze Tea,The Coca-Cola Company,direct,beverages,FRANCE,63,map to The Coca-Cola Company,append_candidate
+appended_new,carrefour,Carrefour,direct,cereals,FRANCE|SOUTHERN_EUROPE,62,map to Carrefour,append_candidate
+appended_new,aldi,Aldi,direct,snacks,US_CANADA,61,map to Aldi,append_candidate
+appended_new,wegmans,Wegmans,direct,cereals,US_CANADA,60,map to Wegmans,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,snacks,FRANCE,59,approve proposed,append_candidate
+appended_new,casino,Groupe Casino,direct,cereals,FRANCE,59,map to Groupe Casino,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,UK_IE,58,map to PepsiCo,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,FRANCE,58,map to Mondelēz International,append_candidate
+appended_new,la laitiere,Nestlé,direct,dairies,FRANCE,58,map to Nestlé,append_candidate
+appended_new,carrefour,Carrefour,direct,beverages,BENELUX|FRANCE,57,map to Carrefour,append_candidate
+appended_new,lidl,Lidl,direct,beverages,UK_IE,56,map to Lidl,append_candidate
+appended_new,tesco,Tesco,direct,cereals,UK_IE,52,map to Tesco,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE,52,map to Carrefour,append_candidate
+appended_new,tesco,Tesco,direct,snacks,FRANCE|UK_IE,52,map to Tesco,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,snacks,FRANCE|UK_IE,50,map to Sainsbury's,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,FRANCE,50,approve proposed,append_candidate
+appended_new,tesco,Tesco,direct,beverages,FRANCE|UK_IE,49,map to Tesco,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|DACH,49,map to The Coca-Cola Company,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,cereals,UK_IE,48,map to Sainsbury's,append_candidate
+appended_new,danone,Danone (Dannon in US),direct,dairies,US_CANADA,48,approve proposed,append_candidate
+appended_new,auchan bio,Auchan,direct,beverages,FRANCE,48,map to Auchan,append_candidate
+appended_new,Ritz,Mondelēz International,direct,snacks,US_CANADA,47,map to Mondelēz International,append_candidate
+appended_new,tesco,Tesco,direct,dairies,FRANCE|UK_IE,46,map to Tesco,append_candidate
+appended_new,auchan,Auchan,direct,snacks,FRANCE|SOUTHERN_EUROPE,46,map to Auchan,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,UK_IE,45,map to PepsiCo,append_candidate
+appended_new,tesco finest,Tesco,direct,snacks,UK_IE,45,map to Tesco,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,US_CANADA,45,map to Mondelēz International,append_candidate
+appended_new,Reflets de France,Carrefour,direct,beverages,FRANCE,45,map to Carrefour,append_candidate
+appended_new,auchan bio,Auchan,direct,dairies,FRANCE,45,map to Auchan,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,UK_IE,44,map to Lindt & Sprüngli,append_candidate
+appended_new,danone,Danone,direct,dairies,UK_IE,44,approve proposed,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,US_CANADA,44,map to The Coca-Cola Company,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,UK_IE,43,approve proposed,append_candidate
+appended_new,Schweppes,Suntory Beverage & Food,market_scoped,beverages,BENELUX|FRANCE,42,approve proposed,append_candidate
+appended_new,Chocapic,Nestlé,direct,cereals,FRANCE,41,map to Nestlé,append_candidate
+appended_new,auchan bio,Auchan,direct,snacks,FRANCE,40,map to Auchan,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,UK_IE,40,map to PepsiCo,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,beverages,FRANCE|UK_IE,40,map to Sainsbury's,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE,40,map to Carrefour,append_candidate
+appended_new,aldi,Aldi,direct,beverages,FRANCE,39,map to Aldi,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,BENELUX|FRANCE,38,map to PepsiCo,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|US_CANADA,37,map to Mondelēz International,append_candidate
+appended_new,aldi,Aldi,direct,beverages,US_CANADA,36,map to Aldi,append_candidate
+appended_new,wegmans organic,Wegmans,direct,beverages,US_CANADA,35,map to Wegmans,append_candidate
+appended_new,u bio,Système U,direct,dairies,FRANCE,35,map to Système U,append_candidate
+appended_new,Activia,Danone,direct,dairies,US_CANADA,35,map to Danone,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,FRANCE,35,map to The Coca-Cola Company,append_candidate
+appended_new,Reflets de France,Carrefour,direct,snacks,FRANCE,34,map to Carrefour,append_candidate
+updated_existing,Capri Sun,Kraft Heinz,market_scoped,beverages,US_CANADA,34,approve proposed,possible_update_existing
+appended_new,Toblerone,Mondelēz International,direct,snacks,FRANCE,34,map to Mondelēz International,append_candidate
+appended_new,Activia,Danone,direct,dairies,UK_IE,34,map to Danone,append_candidate
+appended_new,monoprix gourmet,Monoprix,direct,snacks,FRANCE,34,map to Monoprix,append_candidate
+appended_new,tesco,Tesco,direct,cereals,FRANCE|UK_IE,33,map to Tesco,append_candidate
+appended_new,casino bio,Groupe Casino,direct,beverages,FRANCE,33,map to Groupe Casino,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp (Coca-Cola 20% stake / exclusive distrib),direct,beverages,US_CANADA,32,approve proposed,append_candidate
+appended_new,auchan,Auchan,direct,beverages,FRANCE|SOUTHERN_EUROPE,31,map to Auchan,append_candidate
+appended_new,monoprix bio,Monoprix,direct,beverages,FRANCE,31,map to Monoprix,append_candidate
+appended_new,Smarties,Nestlé,market_scoped,snacks,FRANCE,31,approve proposed,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,UK_IE,29,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE,29,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,US_CANADA,29,map to The Coca-Cola Company,append_candidate
+appended_new,carrefour,Carrefour,direct,cereals,FRANCE,29,map to Carrefour,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,FRANCE,27,map to PepsiCo,append_candidate
+appended_new,tesco finest,Tesco,direct,dairies,UK_IE,27,map to Tesco,append_candidate
+appended_new,u bio,Système U,direct,beverages,FRANCE,27,map to Système U,append_candidate
+appended_new,SodaStream,PepsiCo,direct,beverages,FRANCE|DACH,27,map to PepsiCo,append_candidate
+appended_new,sainsburys taste the difference,Sainsbury's,direct,snacks,UK_IE,27,map to Sainsbury's,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,cereals,FRANCE,27,map to Carrefour,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,dairies,FRANCE|UK_IE,27,map to Sainsbury's,append_candidate
+appended_new,u saveurs,Système U,direct,dairies,FRANCE,27,map to Système U,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,US_CANADA,26,map to PepsiCo,append_candidate
+appended_new,leclerc,E.Leclerc,direct,beverages,FRANCE,26,map to E.Leclerc,append_candidate
+appended_new,le rustique,Savencia,direct,dairies,FRANCE,26,map to Savencia,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,UK_IE,26,map to Nestlé,append_candidate
+appended_new,auchan,Auchan,direct,dairies,FRANCE|SOUTHERN_EUROPE,26,map to Auchan,append_candidate
+appended_new,danone,Danone (Dannon in US),direct,dairies,FRANCE|US_CANADA,26,approve proposed,append_candidate
+appended_new,monoprix,Monoprix,direct,cereals,FRANCE,25,map to Monoprix,append_candidate
+appended_new,Simpl,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE,25,map to Carrefour,append_candidate
+appended_new,lidl,Lidl,direct,dairies,US_CANADA,24,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,snacks,FRANCE|DACH,24,map to Lidl,append_candidate
+appended_new,président,Lactalis,direct,dairies,FRANCE|SOUTHERN_EUROPE,24,map to Lactalis,append_candidate
+updated_existing,Schweppes,Keurig Dr Pepper,market_scoped,beverages,US_CANADA,24,approve proposed,possible_update_existing
+appended_new,Schweppes,Suntory Beverage & Food,market_scoped,beverages,FRANCE|DACH,24,approve proposed,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE|SOUTHERN_EUROPE,23,map to Lindt & Sprüngli,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,dairies,FRANCE,23,map to Carrefour,append_candidate
+appended_new,monoprix bio,Monoprix,direct,snacks,FRANCE,23,map to Monoprix,append_candidate
+appended_new,carrefour,Carrefour,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE,23,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE,23,map to Carrefour,append_candidate
+appended_new,aldi,Aldi,direct,snacks,FRANCE|DACH,23,map to Aldi,append_candidate
+appended_new,Schweppes,Suntory Beverage & Food,market_scoped,beverages,FRANCE|SOUTHERN_EUROPE,23,approve proposed,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,FRANCE,23,map to Nestlé,append_candidate
+appended_new,carrefour le marche,Carrefour,direct,snacks,FRANCE,22,map to Carrefour,append_candidate
+appended_new,paturages,Les Mousquetaires / Intermarché,direct,dairies,BENELUX|FRANCE,22,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,dairies,FRANCE|SOUTHERN_EUROPE,22,map to Carrefour,append_candidate
+appended_new,monoprix bio,Monoprix,direct,dairies,FRANCE,22,map to Monoprix,append_candidate
+appended_new,danonino,Danone,direct,dairies,FRANCE,22,map to Danone,append_candidate
+appended_new,lidl,Lidl,direct,snacks,US_CANADA,22,map to Lidl,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,FRANCE|DACH,22,map to Nestlé,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,snacks,FRANCE|UK_IE,21,approve proposed,append_candidate
+appended_new,Carrefour Sélection,Carrefour,direct,beverages,FRANCE,21,map to Carrefour,append_candidate
+appended_new,Quaker Oats,PepsiCo,direct,cereals,US_CANADA,20,map to PepsiCo,append_candidate
+appended_new,Rolo,The Hershey Company,market_scoped,snacks,US_CANADA,20,approve proposed,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,dairies,BENELUX|FRANCE,20,map to Carrefour,append_candidate
+appended_new,Gatorade,PepsiCo,direct,beverages,FRANCE|US_CANADA,20,map to PepsiCo,append_candidate
+appended_new,Nesquik,Nestlé,direct,cereals,FRANCE,20,map to Nestlé,append_candidate
+appended_new,wegmans organic,Wegmans,direct,dairies,US_CANADA,20,map to Wegmans,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,FRANCE|SOUTHERN_EUROPE,19,map to Nestlé,append_candidate
+appended_new,lidl,Lidl,direct,dairies,FRANCE|DACH,19,map to Lidl,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,snacks,UK_IE,19,approve proposed,append_candidate
+appended_new,danone,Danone,direct,dairies,FRANCE|DACH,19,approve proposed,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,dairies,UK_IE,19,approve proposed,append_candidate
+appended_new,Activia,Danone,direct,dairies,BENELUX|FRANCE,19,map to Danone,append_candidate
+appended_new,casino bio,Groupe Casino,direct,dairies,FRANCE,19,map to Groupe Casino,append_candidate
+appended_new,Carrefour Sélection,Carrefour,direct,snacks,FRANCE,19,map to Carrefour,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,UK_IE,19,map to Mondelēz International,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE|DACH,19,map to The Coca-Cola Company,append_candidate
+appended_new,coop naturaplan,Coop,direct,dairies,FRANCE|DACH,19,map to Coop,append_candidate
+appended_new,lidl,Lidl,direct,beverages,FRANCE|DACH,18,map to Lidl,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,FRANCE|US_CANADA,18,map to PepsiCo,append_candidate
+appended_new,président,Lactalis,direct,dairies,FRANCE|DACH,18,map to Lactalis,append_candidate
+appended_new,Schweppes,Suntory Beverage & Food,market_scoped,beverages,UK_IE,18,approve proposed,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,cereals,FRANCE|UK_IE,18,map to Sainsbury's,append_candidate
+appended_new,aldi,Aldi,direct,cereals,US_CANADA,18,map to Aldi,append_candidate
+appended_new,boursin,Bel Group,direct,dairies,US_CANADA,18,map to Bel Group,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,US_CANADA,17,map to Bel Group,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE,17,map to The Coca-Cola Company,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,cereals,FRANCE|SOUTHERN_EUROPE,17,map to Carrefour,append_candidate
+appended_new,Fitness,Nestlé,direct,cereals,FRANCE,17,map to Nestlé,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,UK_IE,17,map to PepsiCo,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|SOUTHERN_EUROPE,17,map to Mondelēz International,append_candidate
+appended_new,Gatorade,PepsiCo,direct,beverages,FRANCE,17,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,BENELUX|FRANCE,17,map to PepsiCo,append_candidate
+appended_new,u bio,Système U,direct,snacks,FRANCE,17,map to Système U,append_candidate
+appended_new,lidl,Lidl,direct,beverages,US_CANADA,17,map to Lidl,append_candidate
+appended_new,sainsburys taste the difference,Sainsbury's,direct,dairies,UK_IE,17,map to Sainsbury's,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,BENELUX|FRANCE,17,map to Nestlé,append_candidate
+appended_new,lion,Nestlé,direct,snacks,FRANCE,17,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,FRANCE|DACH,16,map to Nestlé,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,FRANCE|SOUTHERN_EUROPE,16,map to PepsiCo,append_candidate
+appended_new,lidl,Lidl,direct,cereals,FRANCE,16,map to Lidl,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE,16,map to Carrefour,append_candidate
+appended_new,aldi,Aldi,direct,cereals,FRANCE,16,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,dairies,FRANCE|DACH,15,map to Aldi,append_candidate
+appended_new,Smarties,Smarties Candy Company,market_scoped,snacks,US_CANADA,15,approve proposed,append_candidate
+appended_new,carrefour,Carrefour,direct,dairies,BENELUX|FRANCE|SOUTHERN_EUROPE,15,map to Carrefour,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,FRANCE|UK_IE,15,map to PepsiCo,append_candidate
+appended_new,casino bio,Groupe Casino,direct,snacks,FRANCE,15,map to Groupe Casino,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,US_CANADA,15,map to Nestlé,append_candidate
+appended_new,danone,Danone,direct,beverages,FRANCE,15,approve proposed,append_candidate
+appended_new,auchan,Auchan,direct,cereals,FRANCE|SOUTHERN_EUROPE,15,map to Auchan,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,FRANCE|DACH,14,map to Bel Group,append_candidate
+appended_new,Activia,Danone,direct,dairies,FRANCE|SOUTHERN_EUROPE,14,map to Danone,append_candidate
+appended_new,leclerc,E.Leclerc,direct,snacks,US_CANADA,14,map to E.Leclerc,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,FRANCE|DACH,14,map to PepsiCo,append_candidate
+appended_new,Actimel,Danone,direct,dairies,UK_IE,14,map to Danone,append_candidate
+appended_new,tesco,Tesco,direct,dairies,FRANCE,14,map to Tesco,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,FRANCE|DACH,14,approve proposed,append_candidate
+appended_new,wegmans organic,Wegmans,direct,cereals,US_CANADA,13,map to Wegmans,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,FRANCE|UK_IE,13,map to Nestlé,append_candidate
+appended_new,Danette,Danone,direct,dairies,BENELUX|FRANCE,13,map to Danone,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|UK_IE,13,map to The Coca-Cola Company,append_candidate
+appended_new,aldi,Aldi,direct,cereals,UK_IE,13,map to Aldi,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,FRANCE|SOUTHERN_EUROPE,13,map to Mondelēz International,append_candidate
+appended_new,aldi,Aldi,direct,snacks,BENELUX|FRANCE,13,map to Aldi,append_candidate
+appended_new,Dr Pepper,The Coca-Cola Company,market_scoped,beverages,UK_IE,13,approve proposed,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,FRANCE|SOUTHERN_EUROPE,13,map to PepsiCo,append_candidate
+appended_new,paturage,Les Mousquetaires / Intermarché,direct,dairies,FRANCE,13,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,Dr Pepper,The Coca-Cola Company,market_scoped,beverages,FRANCE,13,approve proposed,append_candidate
+appended_new,aldi,Aldi,direct,beverages,FRANCE|DACH,13,map to Aldi,append_candidate
+appended_new,lion,Nestlé,direct,cereals,FRANCE,13,map to Nestlé,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,FRANCE|SOUTHERN_EUROPE,13,map to PepsiCo,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|DACH,13,map to Mondelēz International,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE,13,map to The Coca-Cola Company,append_candidate
+appended_new,Fuze Tea,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE,13,map to The Coca-Cola Company,append_candidate
+appended_new,Carrefour Sélection,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE,13,map to Carrefour,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|US_CANADA,12,map to The Coca-Cola Company,append_candidate
+appended_new,monoprix gourmet,Monoprix,direct,beverages,FRANCE,12,map to Monoprix,append_candidate
+appended_new,carrefour market,Carrefour,direct,dairies,FRANCE,12,map to Carrefour,append_candidate
+appended_new,lindt excellence,Lindt & Sprüngli,direct,snacks,FRANCE,12,map to Lindt & Sprüngli,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,FRANCE|SOUTHERN_EUROPE,12,map to Nestlé,append_candidate
+appended_new,light and free,Danone,direct,dairies,FRANCE,12,map to Danone,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,UK_IE,12,map to Mondelēz International,append_candidate
+appended_new,7UP,PepsiCo,market_scoped,beverages,UK_IE,12,approve proposed,append_candidate
+appended_new,7UP,Keurig Dr Pepper,market_scoped,beverages,US_CANADA,12,approve proposed,append_candidate
+appended_new,Nesquik,Nestlé,direct,snacks,FRANCE,12,map to Nestlé,append_candidate
+appended_new,Diet Coke,The Coca-Cola Company,direct,beverages,US_CANADA,12,map to The Coca-Cola Company,append_candidate
+appended_new,wegmans organic,Wegmans,direct,snacks,US_CANADA,12,map to Wegmans,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,FRANCE|US_CANADA,12,map to Mondelēz International,append_candidate
+appended_new,tesco,Tesco,direct,snacks,FRANCE,12,map to Tesco,append_candidate
+appended_new,boursin,Bel Group,direct,dairies,BENELUX|FRANCE,11,map to Bel Group,append_candidate
+appended_new,Volvic,Danone,direct,beverages,FRANCE|UK_IE,11,map to Danone,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH,11,map to The Coca-Cola Company,append_candidate
+appended_new,crunch,Nestlé,direct,cereals,FRANCE,11,map to Nestlé,append_candidate
+appended_new,coop naturaplan,Coop,direct,snacks,FRANCE|DACH,11,map to Coop,append_candidate
+appended_new,paturages comtois,Les Mousquetaires / Intermarché,direct,dairies,FRANCE,11,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,SodaStream,PepsiCo,direct,beverages,US_CANADA,11,map to PepsiCo,append_candidate
+appended_new,Simpl,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE,11,map to Carrefour,append_candidate
+appended_new,Ruffles,PepsiCo,direct,snacks,FRANCE,11,map to PepsiCo,append_candidate
+appended_new,Mountain Dew,PepsiCo,direct,beverages,FRANCE,11,map to PepsiCo,append_candidate
+appended_new,Carrefour Extra,Carrefour,direct,dairies,FRANCE,11,map to Carrefour,append_candidate
+appended_new,aldi einkauf gmbh and compagnie ohg,Aldi,direct,dairies,FRANCE,11,map to Aldi,append_candidate
+appended_new,aldi specially selected,Aldi,direct,snacks,UK_IE,11,map to Aldi,append_candidate
+appended_new,tesco,Tesco,direct,beverages,FRANCE,11,map to Tesco,append_candidate
+appended_new,Carrefour Kids,Carrefour,direct,beverages,FRANCE,10,map to Carrefour,append_candidate
+appended_new,lidl,Lidl,direct,snacks,FRANCE|SOUTHERN_EUROPE,10,map to Lidl,append_candidate
+appended_new,Cheerios,Cereal Partners Worldwide,market_scoped,cereals,FRANCE,10,approve proposed,append_candidate
+appended_new,Carrefour Sélection,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE,10,map to Carrefour,append_candidate
+appended_new,nestle dessert,Nestlé,direct,snacks,FRANCE,10,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,dairies,FRANCE,10,map to Nestlé,append_candidate
+appended_new,lidl,Lidl,direct,cereals,US_CANADA,10,map to Lidl,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,FRANCE|DACH,10,map to PepsiCo,append_candidate
+appended_new,lidl,Lidl,direct,cereals,UK_IE,10,map to Lidl,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,FRANCE|SOUTHERN_EUROPE,10,approve proposed,append_candidate
+appended_new,kiri,Bel Group,direct,dairies,FRANCE|DACH,10,map to Bel Group,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,BENELUX|FRANCE,10,map to PepsiCo,append_candidate
+appended_new,e.leclerc,E.Leclerc,direct,beverages,FRANCE,10,map to E.Leclerc,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE,9,map to Carrefour,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,DACH|FRANCE,9,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE|UK_IE,9,map to Lindt & Sprüngli,append_candidate
+appended_new,Fuze Tea,The Coca-Cola Company,direct,beverages,FRANCE|DACH,9,map to The Coca-Cola Company,append_candidate
+appended_new,Nesquik,Nestlé,direct,dairies,US_CANADA,9,map to Nestlé,append_candidate
+appended_new,auchan bio,Auchan,direct,cereals,FRANCE,9,map to Auchan,append_candidate
+appended_new,Coca-Cola Light,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE,9,map to The Coca-Cola Company,append_candidate
+appended_new,tesco,Tesco,direct,snacks,US_CANADA,9,map to Tesco,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,beverages,UK_IE,9,approve proposed,append_candidate
+appended_new,aldi,Aldi,direct,dairies,BENELUX|FRANCE,9,map to Aldi,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,BENELUX|FRANCE,9,map to Mondelēz International,append_candidate
+appended_new,quaker,PepsiCo,direct,snacks,FRANCE,9,map to PepsiCo,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,UK_IE,9,map to Bel Group,append_candidate
+appended_new,président,Lactalis,direct,dairies,FRANCE|UK_IE,9,map to Lactalis,append_candidate
+appended_new,Simpl,Carrefour,direct,dairies,BENELUX|FRANCE,9,map to Carrefour,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,FRANCE|DACH,9,map to The Coca-Cola Company,append_candidate
+appended_new,crunch,Nestlé,direct,snacks,FRANCE,9,map to Nestlé,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE,9,map to The Coca-Cola Company,append_candidate
+appended_new,Carrefour Sélection,Carrefour,direct,dairies,FRANCE,9,map to Carrefour,append_candidate
+appended_new,Chocapic,Nestlé,direct,snacks,FRANCE,9,map to Nestlé,append_candidate
+appended_new,Carrefour Original,Carrefour,direct,dairies,FRANCE,9,map to Carrefour,append_candidate
+appended_new,u saveurs,Système U,direct,snacks,FRANCE,9,map to Système U,append_candidate
+appended_new,Gatorade,PepsiCo,direct,snacks,US_CANADA,9,map to PepsiCo,append_candidate
+appended_new,danone,Danone,direct,dairies,FRANCE|UK_IE,9,approve proposed,append_candidate
+appended_new,tartare,Savencia,direct,dairies,FRANCE|DACH,9,map to Savencia,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,US_CANADA,9,map to Mondelēz International,append_candidate
+appended_new,Volvic,Danone,direct,beverages,BENELUX|FRANCE,9,map to Danone,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,beverages,FRANCE,8,map to Carrefour,append_candidate
+appended_new,Actimel,Danone,direct,dairies,FRANCE|SOUTHERN_EUROPE,8,map to Danone,append_candidate
+appended_new,Carrefour Original,Carrefour,direct,snacks,BENELUX|FRANCE,8,map to Carrefour,append_candidate
+appended_new,Activia,Danone,direct,dairies,FRANCE|DACH,8,map to Danone,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,FRANCE|SOUTHERN_EUROPE,8,map to PepsiCo,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,FRANCE|DACH,8,map to Mondelēz International,append_candidate
+appended_new,Simpl,Carrefour,direct,dairies,FRANCE,8,map to Carrefour,append_candidate
+appended_new,carrefour discount,Carrefour,direct,snacks,FRANCE,8,map to Carrefour,append_candidate
+appended_new,paturages,Les Mousquetaires / Intermarché,direct,dairies,FRANCE|SOUTHERN_EUROPE,8,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,coop naturaplan,Coop,direct,beverages,FRANCE|DACH,8,map to Coop,append_candidate
+appended_new,u,Système U,direct,beverages,FRANCE|DACH,8,map to Système U,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE|US_CANADA,8,map to Lindt & Sprüngli,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,snacks,FRANCE|DACH,8,approve proposed,append_candidate
+appended_new,Carrefour Kids,Carrefour,direct,dairies,FRANCE,8,map to Carrefour,append_candidate
+appended_new,hipro,Danone,direct,dairies,FRANCE,8,map to Danone,append_candidate
+appended_new,Reflets de France,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE,8,map to Carrefour,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,cereals,BENELUX|FRANCE|SOUTHERN_EUROPE,8,map to Carrefour,append_candidate
+appended_new,danone,Danone,direct,dairies,BENELUX|FRANCE|DACH,8,approve proposed,append_candidate
+appended_new,monoprix bio origines,Monoprix,direct,beverages,FRANCE,8,map to Monoprix,append_candidate
+appended_new,le rustique,Savencia,direct,dairies,FRANCE|DACH,8,map to Savencia,append_candidate
+appended_new,lidl,Lidl,direct,beverages,FRANCE|SOUTHERN_EUROPE,8,map to Lidl,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,snacks,FRANCE,8,map to Carrefour,append_candidate
+appended_new,Nesquik,Nestlé,direct,dairies,FRANCE,8,map to Nestlé,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,US_CANADA|FRANCE,7,map to Lindt & Sprüngli,append_candidate
+appended_new,marque repere,E.Leclerc,direct,snacks,FRANCE|DACH,7,map to E.Leclerc,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE|SOUTHERN_EUROPE|DACH,7,map to Lindt & Sprüngli,append_candidate
+appended_new,Carrefour Extra,Carrefour,direct,snacks,FRANCE,7,map to Carrefour,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,beverages,FRANCE,7,approve proposed,append_candidate
+appended_new,tesco,Tesco,direct,snacks,UK_IE|US_CANADA,7,map to Tesco,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,BENELUX|FRANCE|DACH,7,map to Mondelēz International,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,FRANCE|UK_IE,7,map to Mondelēz International,append_candidate
+appended_new,Volvic,Danone,direct,beverages,UK_IE,7,map to Danone,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,US_CANADA,7,map to Nestlé,append_candidate
+appended_new,lidl,Lidl,direct,dairies,FRANCE|UK_IE,7,map to Lidl,append_candidate
+appended_new,Carrefour Extra,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE,7,map to Carrefour,append_candidate
+appended_new,auchan,Auchan,direct,dairies,FRANCE|DACH,7,map to Auchan,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,snacks,BENELUX|FRANCE,7,map to Carrefour,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,BENELUX|FRANCE,7,map to PepsiCo,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,BENELUX|FRANCE,7,approve proposed,append_candidate
+appended_new,Simpl,Carrefour,direct,beverages,FRANCE,7,map to Carrefour,append_candidate
+appended_new,Ritz,Mondelēz International,direct,snacks,FRANCE,7,map to Mondelēz International,append_candidate
+appended_new,Ruffles,PepsiCo,direct,snacks,FRANCE|SOUTHERN_EUROPE,7,map to PepsiCo,append_candidate
+appended_new,président,Lactalis,direct,dairies,BENELUX|FRANCE,7,map to Lactalis,append_candidate
+appended_new,danone,Danone (Dannon in US),direct,beverages,US_CANADA,7,approve proposed,append_candidate
+appended_new,paturages intermarche,Les Mousquetaires / Intermarché,direct,dairies,FRANCE,7,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,Ovaltine,Nestlé,market_scoped,beverages,US_CANADA,7,approve proposed,append_candidate
+appended_new,Simpl,Carrefour,direct,snacks,BENELUX|FRANCE,6,map to Carrefour,append_candidate
+appended_new,paturages,Les Mousquetaires / Intermarché,direct,beverages,FRANCE,6,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE|UK_IE,6,map to The Coca-Cola Company,append_candidate
+appended_new,Carrefour Sensation,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE,6,map to Carrefour,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,beverages,BENELUX|FRANCE,6,map to Carrefour,append_candidate
+appended_new,carrefour baby,Carrefour,direct,dairies,FRANCE,6,map to Carrefour,append_candidate
+appended_new,Tostitos,PepsiCo,direct,dairies,US_CANADA,6,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,FRANCE|UK_IE,6,map to PepsiCo,append_candidate
+appended_new,Ritz,Mondelēz International,direct,snacks,FRANCE|US_CANADA,6,map to Mondelēz International,append_candidate
+appended_new,Schweppes,Suntory Beverage & Food,market_scoped,beverages,FRANCE|UK_IE,6,approve proposed,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE,6,map to The Coca-Cola Company,append_candidate
+appended_new,Cheerios,General Mills,market_scoped,snacks,US_CANADA,6,approve proposed,append_candidate
+appended_new,Reflets de France,Carrefour,direct,dairies,FRANCE|SOUTHERN_EUROPE,6,map to Carrefour,append_candidate
+appended_new,lactel,Lactalis,direct,dairies,BENELUX|FRANCE,6,map to Lactalis,append_candidate
+appended_new,lactel,Lactalis,direct,dairies,FRANCE|DACH,6,map to Lactalis,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,snacks,FRANCE|SOUTHERN_EUROPE,6,approve proposed,append_candidate
+appended_new,Häagen-Dazs,General Mills,market_scoped,snacks,FRANCE,6,approve proposed,append_candidate
+appended_new,kettle brand,Kettle Brand / Campbell Soup Company,direct,snacks,FRANCE|US_CANADA,6,map to Kettle Brand / Campbell Soup Company,append_candidate
+appended_new,Ovaltine,Associated British Foods,market_scoped,beverages,FRANCE,6,approve proposed,append_candidate
+appended_new,sainsburys taste the difference,Sainsbury's,direct,beverages,UK_IE,6,map to Sainsbury's,append_candidate
+appended_new,marque repere,E.Leclerc,direct,beverages,FRANCE|DACH,6,map to E.Leclerc,append_candidate
+appended_new,Fitness,Nestlé,direct,snacks,FRANCE,6,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,BENELUX|FRANCE,6,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,FRANCE|DACH,6,map to Nestlé,append_candidate
+appended_new,leclerc,E.Leclerc,direct,snacks,US_CANADA|FRANCE,6,map to E.Leclerc,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,DACH|US_CANADA,6,map to PepsiCo,append_candidate
+appended_new,u,Système U,direct,dairies,FRANCE|DACH,6,map to Système U,append_candidate
+appended_new,auchan,Auchan,direct,dairies,BENELUX|FRANCE,6,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,dairies,FRANCE|BENELUX,6,map to Auchan,append_candidate
+appended_new,u bio,Système U,direct,cereals,FRANCE,5,map to Système U,append_candidate
+appended_new,aldi,Aldi,direct,snacks,DACH|US_CANADA,5,map to Aldi,append_candidate
+appended_new,Aero,Nestlé,direct,snacks,UK_IE,5,map to Nestlé,append_candidate
+appended_new,quaker,PepsiCo,direct,snacks,FRANCE|US_CANADA,5,map to PepsiCo,append_candidate
+appended_new,lactel,Lactalis,direct,beverages,FRANCE,5,map to Lactalis,append_candidate
+appended_new,carrefour,Carrefour,direct,dairies,FRANCE|DACH,5,map to Carrefour,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|UK_IE,5,map to Mondelēz International,append_candidate
+appended_new,carrefour,Carrefour,direct,beverages,FRANCE|DACH,5,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,cereals,BENELUX|FRANCE|SOUTHERN_EUROPE,5,map to Carrefour,append_candidate
+appended_new,tesco finest,Tesco,direct,beverages,UK_IE,5,map to Tesco,append_candidate
+appended_new,carrefour,Carrefour,direct,cereals,BENELUX|FRANCE,5,map to Carrefour,append_candidate
+appended_new,light and free,Danone,direct,dairies,UK_IE,5,map to Danone,append_candidate
+appended_new,Nesquik,Nestlé,direct,cereals,FRANCE|DACH,5,map to Nestlé,append_candidate
+appended_new,lidl,Lidl,direct,snacks,FRANCE|UK_IE,5,map to Lidl,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,snacks,SOUTHERN_EUROPE|UK_IE,5,approve proposed,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,snacks,FRANCE|SOUTHERN_EUROPE,5,approve proposed,append_candidate
+appended_new,carrefour discount,Carrefour,direct,dairies,FRANCE,5,map to Carrefour,append_candidate
+appended_new,carrefour le marche,Carrefour,direct,dairies,FRANCE,5,map to Carrefour,append_candidate
+appended_new,kiri,Bel Group,direct,dairies,BENELUX|FRANCE|DACH,5,map to Bel Group,append_candidate
+appended_new,Fuze Tea,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE,5,map to The Coca-Cola Company,append_candidate
+appended_new,la vache qui rit,Bel Group,direct,dairies,BENELUX|FRANCE,5,map to Bel Group,append_candidate
+appended_new,kiri,Bel Group,direct,dairies,BENELUX|FRANCE,5,map to Bel Group,append_candidate
+appended_new,la vache qui rit,Bel Group,direct,dairies,FRANCE|DACH,5,map to Bel Group,append_candidate
+appended_new,carrefour,Carrefour,direct,snacks,FRANCE|DACH,5,map to Carrefour,append_candidate
+appended_new,tesco,Tesco,direct,dairies,UK_IE|US_CANADA,5,map to Tesco,append_candidate
+appended_new,carrefour market,Carrefour,direct,snacks,FRANCE,5,map to Carrefour,append_candidate
+appended_new,Carrefour Kids,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE,5,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,dairies,US_CANADA,5,map to Carrefour,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,FRANCE|US_CANADA,5,map to Mondelēz International,append_candidate
+appended_new,le rustique,Savencia,direct,dairies,BENELUX|FRANCE,5,map to Savencia,append_candidate
+appended_new,président,Lactalis,direct,dairies,NORDICS|FRANCE,5,map to Lactalis,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE,5,map to The Coca-Cola Company,append_candidate
+appended_new,st môret,Savencia,direct,dairies,FRANCE|DACH,5,map to Savencia,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,UK_IE,5,map to The Coca-Cola Company,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,cereals,UK_IE|US_CANADA,5,map to Sainsbury's,append_candidate
+appended_new,carrefour discount,Carrefour,direct,beverages,FRANCE,5,map to Carrefour,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,DACH|UK_IE,5,map to PepsiCo,append_candidate
+appended_new,président,Lactalis,direct,dairies,UK_IE,5,map to Lactalis,append_candidate
+appended_new,marque repere,E.Leclerc,direct,snacks,FRANCE|SOUTHERN_EUROPE,5,map to E.Leclerc,append_candidate
+appended_new,marque repere,E.Leclerc,direct,dairies,FRANCE|DACH,5,map to E.Leclerc,append_candidate
+appended_new,monoprix bio,Monoprix,direct,cereals,FRANCE,5,map to Monoprix,append_candidate
+appended_new,Carrefour Extra,Carrefour,direct,dairies,FRANCE|SOUTHERN_EUROPE,5,map to Carrefour,append_candidate
+appended_new,Cheerios,Cereal Partners Worldwide,market_scoped,cereals,UK_IE,5,approve proposed,append_candidate
+appended_new,Carrefour Kids,Carrefour,direct,snacks,FRANCE,5,map to Carrefour,append_candidate
+appended_new,Carrefour Sensation,Carrefour,direct,beverages,FRANCE,5,map to Carrefour,append_candidate
+appended_new,Carrefour Sensation,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE,5,map to Carrefour,append_candidate
+appended_new,auchan,Auchan,direct,beverages,BENELUX|FRANCE,5,map to Auchan,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,US_CANADA|FRANCE,5,map to PepsiCo,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,dairies,FRANCE|SOUTHERN_EUROPE,5,map to Carrefour,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,UK_IE|US_CANADA,5,map to PepsiCo,append_candidate
+appended_new,7UP,PepsiCo,market_scoped,beverages,FRANCE|SOUTHERN_EUROPE,5,approve proposed,append_candidate
+appended_new,Dr Pepper,The Coca-Cola Company,market_scoped,beverages,BENELUX|FRANCE,5,approve proposed,append_candidate
+appended_new,st môret,Savencia,direct,dairies,BENELUX|FRANCE,5,map to Savencia,append_candidate
+appended_new,Actimel,Danone,direct,dairies,FRANCE|DACH,5,map to Danone,append_candidate
+appended_new,Actimel,Danone,direct,dairies,BENELUX|FRANCE,5,map to Danone,append_candidate
+appended_new,Actimel,Danone,direct,beverages,FRANCE|DACH,5,map to Danone,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,FRANCE|UK_IE,5,map to PepsiCo,append_candidate
+appended_new,u,Système U,direct,snacks,FRANCE|DACH,4,map to Système U,append_candidate
+appended_new,Schweppes,Suntory Beverage & Food,market_scoped,beverages,BENELUX|FRANCE|DACH,4,approve proposed,append_candidate
+appended_new,Activia,Danone,direct,dairies,US_CANADA|FRANCE,4,map to Danone,append_candidate
+appended_new,Dr Pepper,The Coca-Cola Company,market_scoped,beverages,FRANCE|DACH,4,approve proposed,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,NORDICS|FRANCE,4,map to The Coca-Cola Company,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,BENELUX|FRANCE,4,approve proposed,append_candidate
+appended_new,lidl,Lidl,direct,snacks,FRANCE|DACH|SOUTHERN_EUROPE,4,map to Lidl,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE,4,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola Light,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE,4,map to The Coca-Cola Company,append_candidate
+appended_new,leclerc,E.Leclerc,direct,cereals,FRANCE,4,map to E.Leclerc,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,US_CANADA|FRANCE,4,map to The Coca-Cola Company,append_candidate
+appended_new,lindt excellence,Lindt & Sprüngli,direct,snacks,US_CANADA|FRANCE,4,map to Lindt & Sprüngli,append_candidate
+appended_new,leclerc,E.Leclerc,direct,dairies,US_CANADA,4,map to E.Leclerc,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,DACH|UK_IE,4,map to Lindt & Sprüngli,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,DACH|US_CANADA,4,map to PepsiCo,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,SOUTHERN_EUROPE|UK_IE,4,map to Lindt & Sprüngli,append_candidate
+appended_new,danone,Danone,direct,dairies,DACH|FRANCE,4,approve proposed,append_candidate
+appended_new,danonino,Danone,direct,dairies,FRANCE|DACH,4,map to Danone,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,FRANCE|SOUTHERN_EUROPE|UK_IE,4,map to PepsiCo,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,cereals,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,4,map to Carrefour,append_candidate
+appended_new,Carrefour Original,Carrefour,direct,snacks,FRANCE,4,map to Carrefour,append_candidate
+appended_new,lidl deluxe,Lidl,direct,snacks,UK_IE,4,map to Lidl,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,FRANCE|SOUTHERN_EUROPE|DACH,4,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,BENELUX|FRANCE,4,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE,4,map to Nestlé,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,snacks,DACH|UK_IE,4,approve proposed,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,FRANCE|DACH,4,approve proposed,append_candidate
+appended_new,aldi snackrite,Aldi,direct,snacks,UK_IE,4,map to Aldi,append_candidate
+appended_new,auchan collection,Auchan,direct,dairies,FRANCE,4,map to Auchan,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,FRANCE|BENELUX,4,map to Nestlé,append_candidate
+appended_new,tesco finest,Tesco,direct,snacks,FRANCE|UK_IE,4,map to Tesco,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,beverages,FRANCE,4,map to Sainsbury's,append_candidate
+appended_new,tesco finest,Tesco,direct,snacks,FRANCE,4,map to Tesco,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,snacks,UK_IE|US_CANADA,4,map to Sainsbury's,append_candidate
+appended_new,Mountain Dew,PepsiCo,direct,beverages,FRANCE|US_CANADA,4,map to PepsiCo,append_candidate
+appended_new,auchan mmm,Auchan,direct,dairies,FRANCE,4,map to Auchan,append_candidate
+appended_new,aldi specially selected,Aldi,direct,dairies,UK_IE,4,map to Aldi,append_candidate
+appended_new,Reflets de France,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE,4,map to Carrefour,append_candidate
+appended_new,Quality Street,Nestlé,direct,snacks,FRANCE|UK_IE,4,map to Nestlé,append_candidate
+appended_new,Tostitos,PepsiCo,direct,snacks,US_CANADA|FRANCE,4,map to PepsiCo,append_candidate
+appended_new,coop prix garantie,Coop,direct,beverages,FRANCE|DACH,4,map to Coop,append_candidate
+appended_new,casino,Groupe Casino,direct,snacks,FRANCE|DACH,4,map to Groupe Casino,append_candidate
+appended_new,président,Lactalis,direct,dairies,BENELUX|FRANCE|DACH,4,map to Lactalis,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,4,map to The Coca-Cola Company,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,US_CANADA|FRANCE,4,map to The Coca-Cola Company,append_candidate
+appended_new,auchan,Auchan,direct,snacks,FRANCE|BENELUX,4,map to Auchan,append_candidate
+appended_new,Carrefour Sensation,Carrefour,direct,dairies,FRANCE,4,map to Carrefour,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,UK_IE,4,approve proposed,append_candidate
+appended_new,hipro,Danone,direct,dairies,BENELUX|FRANCE,4,map to Danone,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,UK_IE,4,map to Mondelēz International,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,FRANCE|DACH|US_CANADA,4,map to Mondelēz International,append_candidate
+appended_new,sainsburys so organic,Sainsbury's,direct,dairies,UK_IE,4,map to Sainsbury's,append_candidate
+appended_new,Danette,Danone,direct,dairies,FRANCE|DACH,4,map to Danone,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,dairies,BENELUX|FRANCE|SOUTHERN_EUROPE,4,map to Carrefour,append_candidate
+appended_new,Fitness,Nestlé,direct,snacks,FRANCE|SOUTHERN_EUROPE,4,map to Nestlé,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,SOUTHERN_EUROPE|US_CANADA,4,map to Mondelēz International,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE,4,map to Carrefour,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,DACH|UK_IE,3,approve proposed,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|NORDICS,3,map to The Coca-Cola Company,append_candidate
+appended_new,lidl,Lidl,direct,snacks,BENELUX|FRANCE,3,map to Lidl,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,FRANCE|SOUTHERN_EUROPE,3,map to Nestlé,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE|DACH,3,map to The Coca-Cola Company,append_candidate
+appended_new,lidl,Lidl,direct,beverages,FRANCE|UK_IE,3,map to Lidl,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,SOUTHERN_EUROPE|UK_IE,3,map to The Coca-Cola Company,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,beverages,FRANCE|UK_IE,3,approve proposed,append_candidate
+appended_new,Mountain Dew,PepsiCo,direct,beverages,DACH|US_CANADA,3,map to PepsiCo,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|DACH|UK_IE,3,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola Light,The Coca-Cola Company,direct,beverages,FRANCE|DACH,3,map to The Coca-Cola Company,append_candidate
+appended_new,lindt excellence,Lindt & Sprüngli,direct,snacks,UK_IE,3,map to Lindt & Sprüngli,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,NORDICS|FRANCE,3,map to Nestlé,append_candidate
+appended_new,lidl sondey,Lidl,direct,snacks,FRANCE,3,map to Lidl,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,BENELUX|FRANCE|DACH,3,map to Nestlé,append_candidate
+appended_new,light and free,Danone,direct,dairies,FRANCE|US_CANADA,3,map to Danone,append_candidate
+appended_new,lidl,Lidl,direct,snacks,DACH|UK_IE,3,map to Lidl,append_candidate
+appended_new,u de nos regions,Système U,direct,dairies,FRANCE,3,map to Système U,append_candidate
+appended_new,auchan mmm,Auchan,direct,snacks,FRANCE,3,map to Auchan,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE,3,map to Nestlé,append_candidate
+appended_new,tesco free from,Tesco,direct,cereals,UK_IE,3,map to Tesco,append_candidate
+appended_new,sainsburys basics,Sainsbury's,direct,snacks,UK_IE,3,map to Sainsbury's,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,BENELUX|FRANCE|DACH,3,map to Nestlé,append_candidate
+appended_new,sainsburys freefrom,Sainsbury's,direct,snacks,UK_IE,3,map to Sainsbury's,append_candidate
+appended_new,Chocapic,Nestlé,direct,cereals,FRANCE|SOUTHERN_EUROPE,3,map to Nestlé,append_candidate
+appended_new,Aero,Nestlé,direct,dairies,UK_IE,3,map to Nestlé,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,beverages,SOUTHERN_EUROPE|UK_IE,3,map to Sainsbury's,append_candidate
+appended_new,quaker,PepsiCo,direct,snacks,US_CANADA|FRANCE,3,map to PepsiCo,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,BENELUX|FRANCE|DACH,3,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,3,map to Nestlé,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,FRANCE|UK_IE|US_CANADA,3,map to Mondelēz International,append_candidate
+appended_new,aldi harvest morn,Aldi,direct,cereals,UK_IE,3,map to Aldi,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,FRANCE|SOUTHERN_EUROPE,3,map to Bel Group,append_candidate
+appended_new,aldi bio,Aldi,direct,cereals,FRANCE,3,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,snacks,FRANCE|UK_IE,3,map to Aldi,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,DACH|BENELUX|FRANCE|SOUTHERN_EUROPE|UK_IE,3,map to The Coca-Cola Company,append_candidate
+appended_new,carrefour,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE|DACH,3,map to Carrefour,append_candidate
+appended_new,boursin,Bel Group,direct,dairies,BENELUX|FRANCE|DACH,3,map to Bel Group,append_candidate
+appended_new,after eight,Nestlé,direct,snacks,FRANCE,3,map to Nestlé,append_candidate
+appended_new,cadbury dairy milk,The Hershey Company,market_scoped,snacks,US_CANADA,3,map to The Hershey Company,append_candidate
+appended_new,tesco finest,Tesco,direct,dairies,FRANCE,3,map to Tesco,append_candidate
+appended_new,tesco everyday value,Tesco,direct,beverages,UK_IE,3,map to Tesco,append_candidate
+appended_new,lidl,Lidl,direct,cereals,FRANCE|UK_IE,3,map to Lidl,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,DACH|US_CANADA,3,map to Lindt & Sprüngli,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,BENELUX|FRANCE,3,map to Mondelēz International,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,BENELUX|FRANCE|DACH,3,map to PepsiCo,append_candidate
+appended_new,kiri,Bel Group,direct,dairies,FRANCE|SOUTHERN_EUROPE,3,map to Bel Group,append_candidate
+appended_new,la laitiere,Nestlé,direct,dairies,BENELUX|FRANCE,3,map to Nestlé,append_candidate
+appended_new,Volvic,Danone,direct,beverages,FRANCE|DACH|UK_IE,3,map to Danone,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,FRANCE|BENELUX,3,map to PepsiCo,append_candidate
+appended_new,aldi,Aldi,direct,beverages,DACH|UK_IE,3,map to Aldi,append_candidate
+appended_new,carrefour,Carrefour,direct,dairies,BENELUX|FRANCE|DACH,3,map to Carrefour,append_candidate
+appended_new,le marche carrefour,Carrefour,direct,snacks,FRANCE,3,map to Carrefour,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,snacks,FRANCE,3,map to The Coca-Cola Company,append_candidate
+appended_new,Carrefour Extra,Carrefour,direct,dairies,BENELUX|FRANCE,3,map to Carrefour,append_candidate
+appended_new,Filière Qualité Carrefour,Carrefour,direct,dairies,FRANCE,3,map to Carrefour,append_candidate
+appended_new,danone,Danone (Dannon in US),direct,dairies,BENELUX|FRANCE|US_CANADA,3,approve proposed,append_candidate
+appended_new,Cheerios,Cereal Partners Worldwide,market_scoped,snacks,FRANCE,3,approve proposed,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,FRANCE|DACH,3,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,FRANCE|US_CANADA,3,map to PepsiCo,append_candidate
+appended_new,carrefour veggie,Carrefour,direct,beverages,FRANCE,3,map to Carrefour,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,BENELUX|FRANCE|DACH,3,map to PepsiCo,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,snacks,BENELUX|FRANCE,3,approve proposed,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,FRANCE|SOUTHERN_EUROPE,3,map to Mondelēz International,append_candidate
+appended_new,lion,Nestlé,direct,beverages,FRANCE,3,map to Nestlé,append_candidate
+appended_new,lion,Nestlé,direct,cereals,BENELUX|FRANCE,3,map to Nestlé,append_candidate
+appended_new,le rustique,Savencia,direct,dairies,BENELUX|FRANCE|DACH,3,map to Savencia,append_candidate
+appended_new,président,Lactalis,direct,snacks,FRANCE,3,map to Lactalis,append_candidate
+appended_new,carrefour city,Carrefour,direct,snacks,FRANCE,3,map to Carrefour,append_candidate
+appended_new,danone,Danone,direct,dairies,FRANCE|BENELUX,3,approve proposed,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,snacks,FRANCE|DACH,3,approve proposed,append_candidate
+appended_new,Gatorade,PepsiCo,direct,beverages,US_CANADA|FRANCE,3,map to PepsiCo,append_candidate
+appended_new,la vache qui rit,Bel Group,direct,dairies,BENELUX|FRANCE|DACH,3,map to Bel Group,append_candidate
+appended_new,Carrefour Kids,Carrefour,direct,cereals,FRANCE,3,map to Carrefour,append_candidate
+appended_new,Carrefour Kids,Carrefour,direct,dairies,FRANCE|SOUTHERN_EUROPE,3,map to Carrefour,append_candidate
+appended_new,e.leclerc,E.Leclerc,direct,snacks,US_CANADA,3,map to E.Leclerc,append_candidate
+appended_new,monoprix ptit prix,Monoprix,direct,snacks,FRANCE,3,map to Monoprix,append_candidate
+appended_new,coop prix garantie,Coop,direct,dairies,FRANCE|DACH,3,map to Coop,append_candidate
+appended_new,coop qualite and prix,Coop,direct,beverages,FRANCE|DACH,3,map to Coop,append_candidate
+appended_new,crunch,Nestlé,direct,snacks,FRANCE|SOUTHERN_EUROPE,3,map to Nestlé,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,dairies,US_CANADA,3,map to Sainsbury's,append_candidate
+appended_new,casino,Groupe Casino,direct,dairies,FRANCE|DACH,3,map to Groupe Casino,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,snacks,SOUTHERN_EUROPE|UK_IE,3,map to Sainsbury's,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,snacks,FRANCE,3,map to Sainsbury's,append_candidate
+appended_new,SodaStream,PepsiCo,direct,beverages,DACH|UK_IE,3,map to PepsiCo,append_candidate
+appended_new,Smarties,Nestlé,market_scoped,snacks,UK_IE,3,approve proposed,append_candidate
+appended_new,casino bio,Groupe Casino,direct,cereals,FRANCE,3,map to Groupe Casino,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH|UK_IE,3,map to The Coca-Cola Company,append_candidate
+appended_new,Quality Street,Nestlé,direct,snacks,UK_IE,3,map to Nestlé,append_candidate
+appended_new,Quaker Oats,PepsiCo,direct,snacks,US_CANADA,3,map to PepsiCo,append_candidate
+appended_new,Quaker Oats,PepsiCo,direct,cereals,UK_IE,3,map to PepsiCo,append_candidate
+appended_new,Quaker Oats,PepsiCo,direct,cereals,FRANCE,3,map to PepsiCo,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH,3,map to The Coca-Cola Company,append_candidate
+appended_new,casino,Groupe Casino,direct,beverages,FRANCE|DACH,3,map to Groupe Casino,append_candidate
+appended_new,auchan,Auchan,direct,snacks,FRANCE|DACH,3,map to Auchan,append_candidate
+appended_new,paturages,Les Mousquetaires / Intermarché,direct,dairies,BENELUX|FRANCE|DACH,3,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,casino delices,Groupe Casino,direct,snacks,FRANCE,3,map to Groupe Casino,append_candidate
+appended_new,tesco,Tesco,direct,snacks,DACH|UK_IE,3,map to Tesco,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,FRANCE|UK_IE,3,approve proposed,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,BENELUX|FRANCE|DACH,3,approve proposed,append_candidate
+appended_new,Carrefour Sensation,Carrefour,direct,snacks,FRANCE,3,map to Carrefour,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE,3,map to Carrefour,append_candidate
+appended_new,coop naturaplan,Coop,direct,cereals,FRANCE|DACH,3,map to Coop,append_candidate
+appended_new,paturages,Les Mousquetaires / Intermarché,direct,snacks,FRANCE,3,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,Activia,Danone,direct,dairies,DACH|FRANCE,3,map to Danone,append_candidate
+appended_new,quaker,PepsiCo,direct,snacks,BENELUX|FRANCE,3,map to PepsiCo,append_candidate
+appended_new,Activia,Danone,direct,dairies,FRANCE|US_CANADA,3,map to Danone,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,FRANCE|DACH,3,map to Mondelēz International,append_candidate
+appended_new,wegmans food markets,Wegmans,direct,snacks,US_CANADA,2,map to Wegmans,append_candidate
+appended_new,u,Système U,direct,dairies,FRANCE|SOUTHERN_EUROPE,2,map to Système U,append_candidate
+appended_new,u,Système U,direct,snacks,FRANCE|SOUTHERN_EUROPE,2,map to Système U,append_candidate
+appended_new,auchan bio,Auchan,direct,beverages,FRANCE|SOUTHERN_EUROPE,2,map to Auchan,append_candidate
+appended_new,Actimel,Danone,direct,beverages,UK_IE,2,map to Danone,append_candidate
+appended_new,Mountain Dew,PepsiCo,direct,beverages,FRANCE|DACH,2,map to PepsiCo,append_candidate
+appended_new,Mountain Dew,PepsiCo,direct,beverages,FRANCE|SOUTHERN_EUROPE,2,map to PepsiCo,append_candidate
+appended_new,Activia,Danone,direct,dairies,BENELUX|FRANCE|SOUTHERN_EUROPE,2,map to Danone,append_candidate
+appended_new,Activia,Danone,direct,dairies,FRANCE|DACH|SOUTHERN_EUROPE,2,map to Danone,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,2,map to The Coca-Cola Company,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,SOUTHERN_EUROPE|US_CANADA,2,map to PepsiCo,append_candidate
+appended_new,aldi sun quench,Aldi,direct,beverages,UK_IE,2,map to Aldi,append_candidate
+appended_new,auchan,Auchan,direct,beverages,FRANCE|DACH,2,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,snacks,FRANCE|UK_IE,2,map to Auchan,append_candidate
+appended_new,auchan baby,Auchan,direct,dairies,FRANCE,2,map to Auchan,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE|UK_IE,2,map to The Coca-Cola Company,append_candidate
+appended_new,paturages,Les Mousquetaires / Intermarché,direct,dairies,BENELUX|FRANCE|SOUTHERN_EUROPE,2,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,paturages,Les Mousquetaires / Intermarché,direct,dairies,FRANCE|DACH,2,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,paturages,Les Mousquetaires / Intermarché,direct,dairies,US_CANADA,2,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,paturages bio,Les Mousquetaires / Intermarché,direct,dairies,FRANCE,2,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,Simpl,Carrefour,direct,snacks,FRANCE,2,map to Carrefour,append_candidate
+appended_new,coop naturaplan bio,Coop,direct,dairies,FRANCE|DACH,2,map to Coop,append_candidate
+appended_new,Ruffles,PepsiCo,direct,dairies,US_CANADA,2,map to PepsiCo,append_candidate
+appended_new,casino delices,Groupe Casino,direct,beverages,FRANCE,2,map to Groupe Casino,append_candidate
+appended_new,casino delices,Groupe Casino,direct,dairies,FRANCE,2,map to Groupe Casino,append_candidate
+appended_new,casino famili,Groupe Casino,direct,cereals,FRANCE,2,map to Groupe Casino,append_candidate
+appended_new,casino famili,Groupe Casino,direct,snacks,FRANCE,2,map to Groupe Casino,append_candidate
+appended_new,casino saveurs dailleurs,Groupe Casino,direct,snacks,FRANCE,2,map to Groupe Casino,append_candidate
+appended_new,coop fine food,Coop,direct,snacks,FRANCE|DACH,2,map to Coop,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,cereals,BENELUX|FRANCE,2,map to Carrefour,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,FRANCE|US_CANADA,2,map to PepsiCo,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,SOUTHERN_EUROPE|UK_IE,2,map to PepsiCo,append_candidate
+appended_new,monoprix ptit prix,Monoprix,direct,dairies,FRANCE,2,map to Monoprix,append_candidate
+appended_new,paturage des monts du lyonnais,Les Mousquetaires / Intermarché,direct,dairies,FRANCE,2,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE,2,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE|UK_IE,2,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE|DACH,2,map to The Coca-Cola Company,append_candidate
+appended_new,Schweppes,Suntory Beverage & Food,market_scoped,beverages,DACH|FRANCE,2,approve proposed,append_candidate
+appended_new,coop naturaplan bio,Coop,direct,snacks,FRANCE|DACH,2,map to Coop,append_candidate
+appended_new,coop qualite and prix,Coop,direct,snacks,FRANCE|DACH,2,map to Coop,append_candidate
+appended_new,crunch,Nestlé,direct,cereals,BENELUX|FRANCE,2,map to Nestlé,append_candidate
+appended_new,Ritz,Mondelēz International,direct,snacks,DACH|US_CANADA,2,map to Mondelēz International,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,dairies,DACH|UK_IE,2,map to Sainsbury's,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,dairies,FRANCE,2,map to Sainsbury's,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,dairies,UK_IE|US_CANADA,2,map to Sainsbury's,append_candidate
+appended_new,Simpl,Carrefour,direct,dairies,FRANCE|SOUTHERN_EUROPE,2,map to Carrefour,append_candidate
+appended_new,Smarties,Nestlé,market_scoped,snacks,FRANCE|DACH,2,approve proposed,append_candidate
+appended_new,SodaStream,PepsiCo,direct,beverages,BENELUX|FRANCE,2,map to PepsiCo,append_candidate
+appended_new,SodaStream,PepsiCo,direct,beverages,BENELUX|FRANCE|DACH,2,map to PepsiCo,append_candidate
+appended_new,st môret,Savencia,direct,dairies,BENELUX|FRANCE|DACH,2,map to Savencia,append_candidate
+appended_new,tartare,Savencia,direct,dairies,BENELUX|FRANCE,2,map to Savencia,append_candidate
+appended_new,Quaker Oats,PepsiCo,direct,cereals,FRANCE|UK_IE,2,map to PepsiCo,append_candidate
+appended_new,Quaker Oats,PepsiCo,direct,cereals,FRANCE|US_CANADA,2,map to PepsiCo,append_candidate
+appended_new,Ritz,Mondelēz International,direct,snacks,UK_IE|US_CANADA,2,map to Mondelēz International,append_candidate
+appended_new,Quality Street,Nestlé,direct,snacks,FRANCE,2,map to Nestlé,append_candidate
+appended_new,crunch,Nestlé,direct,snacks,US_CANADA,2,map to Nestlé,append_candidate
+appended_new,Fitness,Nestlé,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE,2,map to Nestlé,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,FRANCE|DACH|SOUTHERN_EUROPE,2,map to Mondelēz International,append_candidate
+appended_new,SodaStream,PepsiCo,direct,beverages,FRANCE|DACH|NORDICS,2,map to PepsiCo,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,FRANCE|US_CANADA,2,map to The Coca-Cola Company,append_candidate
+appended_new,carrefour,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE|DACH,2,map to Carrefour,append_candidate
+appended_new,président,Lactalis,direct,dairies,BENELUX|FRANCE|SOUTHERN_EUROPE,2,map to Lactalis,append_candidate
+appended_new,président,Lactalis,direct,dairies,BENELUX|FRANCE|UK_IE,2,map to Lactalis,append_candidate
+appended_new,président,Lactalis,direct,dairies,FRANCE|DACH|SOUTHERN_EUROPE,2,map to Lactalis,append_candidate
+appended_new,Fitness,Nestlé,direct,cereals,BENELUX|FRANCE|DACH,2,map to Nestlé,append_candidate
+appended_new,Fitness,Nestlé,direct,cereals,BENELUX|FRANCE|SOUTHERN_EUROPE,2,map to Nestlé,append_candidate
+appended_new,Fitness,Nestlé,direct,cereals,FRANCE|DACH,2,map to Nestlé,append_candidate
+appended_new,Fitness,Nestlé,direct,cereals,FRANCE|SOUTHERN_EUROPE,2,map to Nestlé,append_candidate
+appended_new,marque repere,E.Leclerc,direct,cereals,FRANCE|DACH,2,map to E.Leclerc,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,US_CANADA|FRANCE,2,map to PepsiCo,append_candidate
+appended_new,Carrefour Extra,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE,2,map to Carrefour,append_candidate
+appended_new,Chocapic,Nestlé,direct,cereals,BENELUX|FRANCE|DACH,2,map to Nestlé,append_candidate
+appended_new,danone,Danone,direct,dairies,US_CANADA|FRANCE,2,approve proposed,append_candidate
+appended_new,e.leclerc,E.Leclerc,direct,dairies,US_CANADA,2,map to E.Leclerc,append_candidate
+appended_new,danone,Danone,direct,dairies,BENELUX|FRANCE|SOUTHERN_EUROPE,2,approve proposed,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH|UK_IE,2,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE,2,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,BENELUX|UK_IE,2,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,DACH|UK_IE,2,map to The Coca-Cola Company,append_candidate
+appended_new,carrefour filiere qualite,Carrefour,direct,beverages,BENELUX|FRANCE,2,map to Carrefour,append_candidate
+appended_new,tesco,Tesco,direct,cereals,FRANCE,2,map to Tesco,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,dairies,BENELUX|FRANCE,2,map to Carrefour,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,dairies,BENELUX|FRANCE|SOUTHERN_EUROPE,2,map to Carrefour,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|DACH|US_CANADA,2,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|NORDICS,2,map to Mondelēz International,append_candidate
+appended_new,kiri,Bel Group,direct,dairies,DACH|FRANCE,2,map to Bel Group,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,NORDICS|FRANCE|SOUTHERN_EUROPE,2,map to Mondelēz International,append_candidate
+appended_new,Carrefour Kids,Carrefour,direct,dairies,BENELUX|FRANCE,2,map to Carrefour,append_candidate
+appended_new,Carrefour Sensation,Carrefour,direct,dairies,BENELUX|FRANCE,2,map to Carrefour,append_candidate
+appended_new,Gatorade,PepsiCo,direct,beverages,FRANCE|DACH,2,map to PepsiCo,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,snacks,FRANCE|DACH|SOUTHERN_EUROPE,2,approve proposed,append_candidate
+updated_existing,Häagen-Dazs,Froneri,market_scoped,dairies,US_CANADA,2,approve proposed,append_candidate
+appended_new,marque repere,E.Leclerc,direct,beverages,BENELUX|FRANCE,2,map to E.Leclerc,append_candidate
+appended_new,selection carrefour,Carrefour,direct,beverages,FRANCE,2,map to Carrefour,append_candidate
+appended_new,carrefour market,Carrefour,direct,beverages,FRANCE,2,map to Carrefour,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,FRANCE|SOUTHERN_EUROPE|US_CANADA,2,map to Mondelēz International,append_candidate
+appended_new,Tostitos,PepsiCo,direct,snacks,FRANCE,2,map to PepsiCo,append_candidate
+appended_new,Tostitos,PepsiCo,direct,snacks,FRANCE|US_CANADA,2,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,SOUTHERN_EUROPE|UK_IE,2,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,2,map to PepsiCo,append_candidate
+appended_new,lion,Nestlé,direct,snacks,BENELUX|FRANCE,2,map to Nestlé,append_candidate
+appended_new,lion,Nestlé,direct,snacks,FRANCE|DACH,2,map to Nestlé,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,snacks,FRANCE|BENELUX,2,approve proposed,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,SOUTHERN_EUROPE|UK_IE,2,approve proposed,append_candidate
+appended_new,le rustique,Savencia,direct,dairies,UK_IE,2,map to Savencia,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,DACH|UK_IE,2,map to Mondelēz International,append_candidate
+appended_new,la laitiere,Nestlé,direct,dairies,FRANCE|DACH,2,map to Nestlé,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,FRANCE|DACH,2,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,FRANCE|DACH|SOUTHERN_EUROPE,2,map to PepsiCo,append_candidate
+appended_new,Dr Pepper,The Coca-Cola Company,market_scoped,beverages,FRANCE|UK_IE,2,approve proposed,append_candidate
+appended_new,perugina,Nestlé,direct,snacks,FRANCE,2,map to Nestlé,append_candidate
+appended_new,Volvic,Danone,direct,beverages,BENELUX|FRANCE|DACH,2,map to Danone,append_candidate
+appended_new,Volvic,Danone,direct,beverages,DACH|US_CANADA,2,map to Danone,append_candidate
+appended_new,Walkers,PepsiCo,direct,beverages,FRANCE,2,map to PepsiCo,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,DACH|UK_IE,2,map to PepsiCo,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,DACH|UK_IE|US_CANADA,2,map to PepsiCo,append_candidate
+appended_new,aldi,Aldi,direct,beverages,DACH|US_CANADA,2,map to Aldi,append_candidate
+appended_new,leclerc traiteur,E.Leclerc,direct,snacks,FRANCE,2,map to E.Leclerc,append_candidate
+appended_new,lidl,Lidl,direct,beverages,BENELUX|FRANCE,2,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,beverages,BENELUX|UK_IE,2,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,beverages,FRANCE|BENELUX,2,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,beverages,FRANCE|DACH|US_CANADA,2,map to Lidl,append_candidate
+appended_new,marque repere,E.Leclerc,direct,beverages,FRANCE|SOUTHERN_EUROPE,2,map to E.Leclerc,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,US_CANADA|FRANCE,2,map to PepsiCo,append_candidate
+appended_new,lindt excellence,Lindt & Sprüngli,direct,snacks,US_CANADA,2,map to Lindt & Sprüngli,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,FRANCE|DACH|UK_IE,2,map to PepsiCo,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,DACH|FRANCE,2,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,DACH|UK_IE,2,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,DACH|US_CANADA,2,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,NORDICS|FRANCE,2,map to The Coca-Cola Company,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,FRANCE|DACH|US_CANADA,2,map to PepsiCo,append_candidate
+appended_new,u,Système U,direct,beverages,BENELUX|FRANCE,2,map to Système U,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp (Coca-Cola 20% stake / exclusive distrib),direct,beverages,FRANCE|US_CANADA,2,approve proposed,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,NORDICS|UK_IE,2,map to PepsiCo,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE|DACH|SOUTHERN_EUROPE,2,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE|DACH|UK_IE,2,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE|DACH|US_CANADA,2,map to Lindt & Sprüngli,append_candidate
+appended_new,Nesquik,Nestlé,direct,dairies,FRANCE|SOUTHERN_EUROPE,2,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,snacks,FRANCE|SOUTHERN_EUROPE,2,map to Nestlé,append_candidate
+appended_new,lidl,Lidl,direct,dairies,DACH|UK_IE,2,map to Lidl,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,2,map to Nestlé,append_candidate
+appended_new,leclerc,E.Leclerc,direct,dairies,FRANCE|DACH,2,map to E.Leclerc,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,SOUTHERN_EUROPE|UK_IE,2,map to PepsiCo,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,UK_IE|US_CANADA,2,map to PepsiCo,append_candidate
+appended_new,aldi,Aldi,direct,dairies,FRANCE|UK_IE,2,map to Aldi,append_candidate
+appended_new,carrefour,Carrefour,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE,2,map to Carrefour,append_candidate
+appended_new,aldi,Aldi,direct,beverages,BENELUX|FRANCE,2,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,beverages,BENELUX|FRANCE|DACH,2,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,snacks,FRANCE|US_CANADA,2,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,cereals,BENELUX|FRANCE,2,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,cereals,FRANCE|DACH,2,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,cereals,FRANCE|SOUTHERN_EUROPE,2,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,dairies,DACH|UK_IE,2,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,dairies,DACH|US_CANADA,2,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,snacks,US_CANADA|FRANCE,2,map to Aldi,append_candidate
+appended_new,aldi bio,Aldi,direct,dairies,FRANCE,2,map to Aldi,append_candidate
+appended_new,aldi dairyfine,Aldi,direct,snacks,UK_IE,2,map to Aldi,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|NORDICS|FRANCE|DACH|SOUTHERN_EUROPE|UK_IE,2,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,DACH|BENELUX|FRANCE|SOUTHERN_EUROPE,2,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,DACH|BENELUX|FRANCE|SOUTHERN_EUROPE|NORDICS|UK_IE|US_CANADA,2,map to The Coca-Cola Company,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,FRANCE|UK_IE,2,approve proposed,append_candidate
+appended_new,light and free,Danone,direct,dairies,US_CANADA,2,map to Danone,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,BENELUX|FRANCE,2,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,DACH|BENELUX|FRANCE|SOUTHERN_EUROPE,2,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,DACH|FRANCE|UK_IE,2,map to Lindt & Sprüngli,append_candidate
+appended_new,Nescafé,Nestlé,direct,dairies,UK_IE,2,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,FRANCE|SOUTHERN_EUROPE|DACH,2,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,FRANCE|US_CANADA,2,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,NORDICS|FRANCE|DACH,2,map to Nestlé,append_candidate
+appended_new,lidl,Lidl,direct,snacks,SOUTHERN_EUROPE|UK_IE,2,map to Lidl,append_candidate
+appended_new,lidl dairy manor,Lidl,direct,dairies,UK_IE,2,map to Lidl,append_candidate
+appended_new,lidl deluxe,Lidl,direct,beverages,UK_IE,2,map to Lidl,append_candidate
+appended_new,lidl deluxe,Lidl,direct,dairies,UK_IE,2,map to Lidl,append_candidate
+appended_new,lidl milbona,Lidl,direct,dairies,FRANCE|DACH,2,map to Lidl,append_candidate
+appended_new,lidl snaktastic,Lidl,direct,snacks,UK_IE,2,map to Lidl,append_candidate
+appended_new,Nescafé,Nestlé,direct,dairies,FRANCE|SOUTHERN_EUROPE,2,map to Nestlé,append_candidate
+appended_new,Cheerios,Cereal Partners Worldwide,market_scoped,cereals,BENELUX|FRANCE|DACH,2,approve proposed,append_candidate
+appended_new,Cheerios,Cereal Partners Worldwide,market_scoped,cereals,FRANCE|UK_IE,2,approve proposed,append_candidate
+appended_new,Chocapic,Nestlé,direct,cereals,FRANCE|DACH,2,map to Nestlé,append_candidate
+appended_new,boursin,Bel Group,direct,dairies,FRANCE|DACH,2,map to Bel Group,append_candidate
+appended_new,boursin,Bel Group,direct,dairies,FRANCE|UK_IE,2,map to Bel Group,append_candidate
+appended_new,boursin,Bel Group,direct,dairies,UK_IE,2,map to Bel Group,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE,2,map to Carrefour,append_candidate
+appended_new,Carrefour Extra,Carrefour,direct,beverages,FRANCE,2,map to Carrefour,append_candidate
+appended_new,sainsburys basics,Sainsbury's,direct,dairies,UK_IE,2,map to Sainsbury's,append_candidate
+appended_new,sainsburys little ones,Sainsbury's,direct,snacks,UK_IE,2,map to Sainsbury's,append_candidate
+appended_new,sainsburys organic,Sainsbury's,direct,dairies,UK_IE,2,map to Sainsbury's,append_candidate
+appended_new,Carrefour Kids,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE,2,map to Carrefour,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE,2,map to Nestlé,append_candidate
+appended_new,tesco free from,Tesco,direct,snacks,UK_IE,2,map to Tesco,append_candidate
+appended_new,aldi,Aldi,direct,snacks,DACH|UK_IE,2,map to Aldi,append_candidate
+appended_new,auchan discount,Auchan,direct,dairies,FRANCE,2,map to Auchan,append_candidate
+appended_new,auchan gourmet,Auchan,direct,snacks,FRANCE,2,map to Auchan,append_candidate
+appended_new,auchan le patissier,Auchan,direct,snacks,FRANCE,2,map to Auchan,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,BENELUX|FRANCE,2,map to Bel Group,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,BENELUX|FRANCE|DACH,2,map to Bel Group,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,DACH|UK_IE,2,map to Bel Group,append_candidate
+appended_new,Activia,Danone,direct,dairies,BENELUX|FRANCE|DACH,2,map to Danone,append_candidate
+appended_new,auchan baby bio,Auchan,direct,snacks,FRANCE,2,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,dairies,FRANCE|UK_IE,2,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,dairies,FRANCE|US_CANADA,2,map to Auchan,append_candidate
+appended_new,wegmans,Wegmans,direct,dairies,FRANCE,2,map to Wegmans,append_candidate
+appended_new,u man cola,Système U,direct,beverages,FRANCE,2,map to Système U,append_candidate
+appended_new,u saveurs,Système U,direct,beverages,FRANCE,2,map to Système U,append_candidate
+appended_new,u saveur,Système U,direct,dairies,FRANCE,2,map to Système U,append_candidate
+appended_new,7UP,PepsiCo,market_scoped,beverages,BENELUX|FRANCE,2,approve proposed,append_candidate
+appended_new,yopro,Danone,direct,dairies,US_CANADA,1,map to Danone,append_candidate
+appended_new,7UP,PepsiCo,market_scoped,beverages,FRANCE|BENELUX,1,approve proposed,append_candidate
+appended_new,7UP,PepsiCo,market_scoped,beverages,FRANCE|DACH,1,approve proposed,append_candidate
+appended_new,7UP,PepsiCo,market_scoped,beverages,FRANCE|DACH|UK_IE,1,approve proposed,append_candidate
+appended_new,7UP,PepsiCo,market_scoped,beverages,FRANCE|SOUTHERN_EUROPE|UK_IE,1,approve proposed,append_candidate
+appended_new,7UP,PepsiCo,market_scoped,beverages,FRANCE|UK_IE,1,approve proposed,append_candidate
+appended_new,7UP,PepsiCo,market_scoped,beverages,FRANCE|UK_IE|SOUTHERN_EUROPE,1,approve proposed,append_candidate
+appended_new,Actimel,Danone,direct,dairies,FRANCE|DACH|SOUTHERN_EUROPE,1,map to Danone,append_candidate
+appended_new,u tout petits bio,Système U,direct,cereals,FRANCE,1,map to Système U,append_candidate
+appended_new,u v c d r,Système U,direct,beverages,FRANCE,1,map to Système U,append_candidate
+appended_new,Belvita,Mondelēz International,direct,dairies,FRANCE,1,map to Mondelēz International,append_candidate
+appended_new,Belvita,Mondelēz International,direct,cereals,FRANCE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Aero,Nestlé,direct,snacks,FRANCE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,u,Système U,direct,dairies,US_CANADA,1,map to Système U,append_candidate
+appended_new,u,Système U,direct,dairies,DACH|FRANCE,1,map to Système U,append_candidate
+appended_new,u,Système U,direct,cereals,FRANCE|DACH,1,map to Système U,append_candidate
+appended_new,u,Système U,direct,beverages,FRANCE|UK_IE,1,map to Système U,append_candidate
+appended_new,tesco value,Tesco,direct,dairies,UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco value,Tesco,direct,beverages,UK_IE,1,map to Tesco,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,beverages,FRANCE|SOUTHERN_EUROPE|UK_IE,1,approve proposed,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,beverages,FRANCE|SOUTHERN_EUROPE,1,approve proposed,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,beverages,FRANCE|DACH,1,approve proposed,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,UK_IE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,FRANCE|UK_IE|SOUTHERN_EUROPE,1,map to Mondelēz International,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,FRANCE|SOUTHERN_EUROPE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,FRANCE|SOUTHERN_EUROPE|UK_IE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,aldi mamia,Aldi,direct,snacks,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi gourmet,Aldi,direct,dairies,US_CANADA,1,map to Aldi,append_candidate
+appended_new,aldi golden bridge,Aldi,direct,cereals,US_CANADA,1,map to Aldi,append_candidate
+appended_new,aldi fit and active,Aldi,direct,snacks,US_CANADA,1,map to Aldi,append_candidate
+appended_new,aldi everyday essentials,Aldi,direct,snacks,DACH|UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi everyday essentials,Aldi,direct,dairies,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi everyday essentials,Aldi,direct,beverages,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi einkauf gmbh compagnieohg,Aldi,direct,snacks,FRANCE,1,map to Aldi,append_candidate
+appended_new,aldi einkauf gmbh and compagnie ohg,Aldi,direct,snacks,FRANCE,1,map to Aldi,append_candidate
+appended_new,aldi einkauf gmbh and compagnie ohg,Aldi,direct,dairies,BENELUX|FRANCE,1,map to Aldi,append_candidate
+appended_new,auchan bio,Auchan,direct,dairies,FRANCE|DACH,1,map to Auchan,append_candidate
+appended_new,auchan baby bio,Auchan,direct,dairies,FRANCE,1,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,snacks,FRANCE|BENELUX|SOUTHERN_EUROPE,1,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,dairies,US_CANADA,1,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,beverages,FRANCE|BENELUX,1,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,beverages,BENELUX|FRANCE|DACH,1,map to Auchan,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,FRANCE|DACH|SOUTHERN_EUROPE,1,map to Bel Group,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,DACH|FRANCE|SOUTHERN_EUROPE,1,map to Bel Group,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,1,map to Bel Group,append_candidate
+appended_new,auchan vendome,Auchan,direct,snacks,FRANCE,1,map to Auchan,append_candidate
+appended_new,auchan pur arabica degustation,Auchan,direct,beverages,FRANCE,1,map to Auchan,append_candidate
+appended_new,auchan pierre chanau,Auchan,direct,beverages,FRANCE,1,map to Auchan,append_candidate
+appended_new,auchan le fromager,Auchan,direct,dairies,FRANCE,1,map to Auchan,append_candidate
+appended_new,auchan gourmet,Auchan,direct,beverages,FRANCE,1,map to Auchan,append_candidate
+appended_new,auchan creme legere fluide 15,Auchan,direct,dairies,FRANCE,1,map to Auchan,append_candidate
+appended_new,auchan collection,Auchan,direct,beverages,FRANCE,1,map to Auchan,append_candidate
+appended_new,auchan bio solidaires pour soutenir nos producteurs,Auchan,direct,dairies,FRANCE,1,map to Auchan,append_candidate
+appended_new,auchan bio,Auchan,direct,snacks,FRANCE|SOUTHERN_EUROPE,1,map to Auchan,append_candidate
+appended_new,aldi own brand,Aldi,direct,dairies,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi milsani,Aldi,direct,dairies,FRANCE|BENELUX,1,map to Aldi,append_candidate
+appended_new,aldi milsactiv,Aldi,direct,dairies,FRANCE|DACH,1,map to Aldi,append_candidate
+appended_new,aldi meine kasetheke,Aldi,direct,dairies,FRANCE|DACH,1,map to Aldi,append_candidate
+appended_new,aldi dessert menu,Aldi,direct,snacks,UK_IE|US_CANADA,1,map to Aldi,append_candidate
+appended_new,aldi dessert menu,Aldi,direct,dairies,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi cold press,Aldi,direct,beverages,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi choceur milk hazlenut,Aldi,direct,snacks,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi brooklea,Aldi,direct,dairies,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi bon appetit,Aldi,direct,snacks,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi biscotto,Aldi,direct,snacks,FRANCE,1,map to Aldi,append_candidate
+appended_new,aldi bio,Aldi,direct,snacks,FRANCE,1,map to Aldi,append_candidate
+appended_new,aldi aqua vale,Aldi,direct,beverages,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi appetitos,Aldi,direct,snacks,US_CANADA,1,map to Aldi,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,US_CANADA|UK_IE,1,map to Bel Group,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,SOUTHERN_EUROPE|UK_IE,1,map to Bel Group,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,FRANCE|UK_IE|SOUTHERN_EUROPE,1,map to Bel Group,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,FRANCE|UK_IE,1,map to Bel Group,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,FRANCE|SOUTHERN_EUROPE|DACH|UK_IE,1,map to Bel Group,append_candidate
+appended_new,babybel,Bel Group,direct,dairies,FRANCE|NORDICS,1,map to Bel Group,append_candidate
+appended_new,aldi,Aldi,direct,snacks,SOUTHERN_EUROPE|UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,snacks,FRANCE|SOUTHERN_EUROPE,1,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,snacks,DACH|FRANCE,1,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,dairies,SOUTHERN_EUROPE|UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,dairies,FRANCE|US_CANADA,1,map to Aldi,append_candidate
+appended_new,cadbury dairy milk,Mondelēz International,market_scoped,snacks,UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,cadbury dairy milk,Mondelēz International,market_scoped,snacks,FRANCE,1,map to Mondelēz International,append_candidate
+appended_new,cadbury brunch,Mondelēz International,market_scoped,snacks,UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,cadbury bournville,Mondelēz International,market_scoped,snacks,UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,boursin,Bel Group,direct,dairies,US_CANADA|FRANCE,1,map to Bel Group,append_candidate
+appended_new,boursin,Bel Group,direct,dairies,BENELUX|SOUTHERN_EUROPE|UK_IE,1,map to Bel Group,append_candidate
+appended_new,boursin,Bel Group,direct,dairies,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to Bel Group,append_candidate
+appended_new,bon app carrefour,Carrefour,direct,dairies,FRANCE,1,map to Carrefour,append_candidate
+appended_new,babybel,Bel Group,direct,snacks,US_CANADA,1,map to Bel Group,append_candidate
+appended_new,aldi einkauf gmbh and compagnie ohg,Aldi,direct,beverages,FRANCE,1,map to Aldi,append_candidate
+appended_new,aldi diolomat,Aldi,direct,beverages,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,beverages,FRANCE|US_CANADA,1,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,beverages,FRANCE|UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,beverages,DACH|FRANCE,1,map to Aldi,append_candidate
+appended_new,agir carrefour,Carrefour,direct,beverages,FRANCE,1,map to Carrefour,append_candidate
+appended_new,after eight,Nestlé,direct,snacks,UK_IE,1,map to Nestlé,append_candidate
+appended_new,after eight,Nestlé,direct,snacks,FRANCE|SOUTHERN_EUROPE,1,map to Nestlé,append_candidate
+appended_new,after eight,Nestlé,direct,snacks,FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,after eight,Nestlé,direct,snacks,FRANCE|BENELUX|DACH,1,map to Nestlé,append_candidate
+appended_new,carrefour,Carrefour,direct,beverages,UK_IE,1,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,beverages,FRANCE|UK_IE,1,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,beverages,FRANCE|BENELUX,1,map to Carrefour,append_candidate
+appended_new,cadbury dairy milk fingers crossed,Mondelēz International,market_scoped,snacks,FRANCE|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,aldi,Aldi,direct,dairies,DACH|FRANCE,1,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,cereals,SOUTHERN_EUROPE|US_CANADA,1,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,cereals,FRANCE|NORDICS,1,map to Aldi,append_candidate
+appended_new,aldi,Aldi,direct,cereals,DACH|UK_IE,1,map to Aldi,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,FRANCE|SOUTHERN_EUROPE|DACH,1,map to Mondelēz International,append_candidate
+appended_new,carrefour,Carrefour,direct,snacks,FRANCE|BENELUX,1,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,dairies,SOUTHERN_EUROPE|US_CANADA,1,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,dairies,FRANCE|SOUTHERN_EUROPE|DACH,1,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,cereals,FRANCE|SOUTHERN_EUROPE|DACH,1,map to Carrefour,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,DACH|SOUTHERN_EUROPE|NORDICS|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,BENELUX|DACH|UK_IE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Volvic,Danone,direct,beverages,FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to Danone,append_candidate
+appended_new,Volvic,Danone,direct,beverages,BENELUX|FRANCE|UK_IE|DACH,1,map to Danone,append_candidate
+appended_new,Volvic,Danone,direct,beverages,BENELUX|FRANCE|DACH|UK_IE,1,map to Danone,append_candidate
+appended_new,after eight,Nestlé,direct,snacks,BENELUX|FRANCE,1,map to Nestlé,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,US_CANADA|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,US_CANADA|DACH|SOUTHERN_EUROPE,1,map to PepsiCo,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,SOUTHERN_EUROPE|DACH|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,Walkers,PepsiCo,direct,snacks,FRANCE|DACH|UK_IE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,carrefour le marche,Carrefour,direct,cereals,FRANCE,1,map to Carrefour,append_candidate
+appended_new,carrefour discount,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,carrefour discount,Carrefour,direct,snacks,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,carrefour discount,Carrefour,direct,dairies,FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,carrefour capsules,Carrefour,direct,beverages,FRANCE,1,map to Carrefour,append_candidate
+appended_new,carrefour biocarrefour,Carrefour,direct,dairies,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,carrefour biocarrefour,Carrefour,direct,cereals,FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,carrefour biocarrefour,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,snacks,US_CANADA|FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,snacks,US_CANADA|FRANCE,1,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,snacks,US_CANADA,1,map to Carrefour,append_candidate
+appended_new,carrefour,Carrefour,direct,snacks,SOUTHERN_EUROPE|US_CANADA,1,map to Carrefour,append_candidate
+appended_new,Volvic,Danone,direct,beverages,BENELUX|DACH|UK_IE,1,map to Danone,append_candidate
+appended_new,Tostitos,PepsiCo,direct,snacks,FRANCE|DACH|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,NORDICS|FRANCE|SOUTHERN_EUROPE|DACH,1,map to Mondelēz International,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,FRANCE|UK_IE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,FRANCE|DACH|UK_IE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,FRANCE|DACH|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,FRANCE|DACH|SOUTHERN_EUROPE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,DACH|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,DACH|FRANCE,1,map to Mondelēz International,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,BENELUX|NORDICS|FRANCE|DACH|SOUTHERN_EUROPE|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,Toblerone,Mondelēz International,direct,snacks,BENELUX|FRANCE,1,map to Mondelēz International,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,snacks,FRANCE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,NORDICS|FRANCE,1,map to The Coca-Cola Company,append_candidate
+appended_new,carrefour vrac bio,Carrefour,direct,cereals,FRANCE,1,map to Carrefour,append_candidate
+appended_new,carrefour selectioncarrefour,Carrefour,direct,snacks,FRANCE,1,map to Carrefour,append_candidate
+appended_new,carrefour market,Carrefour,direct,snacks,US_CANADA,1,map to Carrefour,append_candidate
+appended_new,carrefour market,Carrefour,direct,beverages,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,carrefour le marche filiere qualite carrefour,Carrefour,direct,dairies,FRANCE,1,map to Carrefour,append_candidate
+appended_new,carrefour le marche,Carrefour,direct,dairies,US_CANADA,1,map to Carrefour,append_candidate
+appended_new,Smarties,Nestlé,market_scoped,dairies,UK_IE,1,approve proposed,append_candidate
+appended_new,Smarties,Nestlé,market_scoped,dairies,FRANCE,1,approve proposed,append_candidate
+appended_new,Smarties,Nestlé,market_scoped,dairies,BENELUX|FRANCE,1,approve proposed,append_candidate
+appended_new,casino,Groupe Casino,direct,snacks,FRANCE|UK_IE,1,map to Groupe Casino,append_candidate
+appended_new,casino,Groupe Casino,direct,snacks,FRANCE|SOUTHERN_EUROPE,1,map to Groupe Casino,append_candidate
+appended_new,casino,Groupe Casino,direct,snacks,BENELUX|FRANCE,1,map to Groupe Casino,append_candidate
+appended_new,casino,Groupe Casino,direct,cereals,BENELUX|FRANCE,1,map to Groupe Casino,append_candidate
+appended_new,casino,Groupe Casino,direct,beverages,UK_IE,1,map to Groupe Casino,append_candidate
+appended_new,casino,Groupe Casino,direct,beverages,FRANCE|SOUTHERN_EUROPE,1,map to Groupe Casino,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,FRANCE|DACH|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Sprite,The Coca-Cola Company,direct,beverages,FRANCE|BENELUX,1,map to The Coca-Cola Company,append_candidate
+appended_new,SodaStream,PepsiCo,direct,dairies,FRANCE,1,map to PepsiCo,append_candidate
+appended_new,SodaStream,PepsiCo,direct,beverages,FRANCE|SOUTHERN_EUROPE,1,map to PepsiCo,append_candidate
+appended_new,SodaStream,PepsiCo,direct,beverages,FRANCE|DACH|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Simpl,Carrefour,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,Simpl,Carrefour,direct,beverages,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,Schweppes,Suntory Beverage & Food,market_scoped,beverages,FRANCE|SOUTHERN_EUROPE|DACH,1,approve proposed,append_candidate
+appended_new,coop fine food,Coop,direct,dairies,FRANCE|DACH,1,map to Coop,append_candidate
+appended_new,coop fine food,Coop,direct,beverages,FRANCE|DACH,1,map to Coop,append_candidate
+appended_new,coop easter egg,Coop,direct,snacks,UK_IE,1,map to Coop,append_candidate
+appended_new,coop anglamark,Coop,direct,snacks,FRANCE,1,map to Coop,append_candidate
+appended_new,coop alsace lait,Coop,direct,dairies,FRANCE,1,map to Coop,append_candidate
+appended_new,classic carrefour,Carrefour,direct,dairies,FRANCE,1,map to Carrefour,append_candidate
+appended_new,classic carrefour,Carrefour,direct,beverages,FRANCE,1,map to Carrefour,append_candidate
+appended_new,casino ste fromagere de riom,Groupe Casino,direct,dairies,FRANCE,1,map to Groupe Casino,append_candidate
+appended_new,casino saveurs d ailleurs,Groupe Casino,direct,dairies,FRANCE,1,map to Groupe Casino,append_candidate
+appended_new,SodaStream,PepsiCo,direct,beverages,DACH|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,SodaStream,PepsiCo,direct,beverages,DACH|NORDICS|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,SodaStream,PepsiCo,direct,beverages,DACH|FRANCE,1,map to PepsiCo,append_candidate
+appended_new,Smarties,Nestlé,market_scoped,snacks,BENELUX|FRANCE|DACH,1,approve proposed,append_candidate
+appended_new,Ruffles,PepsiCo,direct,beverages,UK_IE,1,map to PepsiCo,append_candidate
+appended_new,Rolo,Nestlé,market_scoped,dairies,UK_IE,1,approve proposed,append_candidate
+appended_new,coop naturaplan bio,Coop,direct,cereals,FRANCE|DACH,1,map to Coop,append_candidate
+appended_new,coop naturaplan,Coop,direct,snacks,FRANCE,1,map to Coop,append_candidate
+appended_new,coop naturaplan,Coop,direct,dairies,US_CANADA,1,map to Coop,append_candidate
+appended_new,coop naturaplan,Coop,direct,dairies,FRANCE|DACH|US_CANADA,1,map to Coop,append_candidate
+appended_new,coop naturaplan,Coop,direct,dairies,FRANCE,1,map to Coop,append_candidate
+appended_new,coop naturaplan,Coop,direct,beverages,FRANCE,1,map to Coop,append_candidate
+appended_new,coop naturalplan,Coop,direct,snacks,FRANCE|DACH,1,map to Coop,append_candidate
+appended_new,coop laitiere,Coop,direct,dairies,FRANCE,1,map to Coop,append_candidate
+appended_new,coop jeune montagne,Coop,direct,dairies,FRANCE,1,map to Coop,append_candidate
+appended_new,coop irresistible,Coop,direct,snacks,UK_IE,1,map to Coop,append_candidate
+appended_new,coop honest value,Coop,direct,dairies,UK_IE,1,map to Coop,append_candidate
+appended_new,Simpl,Carrefour,direct,dairies,FRANCE|DACH,1,map to Carrefour,append_candidate
+appended_new,Simpl,Carrefour,direct,cereals,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,Simpl,Carrefour,direct,beverages,FRANCE|UK_IE,1,map to Carrefour,append_candidate
+appended_new,Ritz,Mondelēz International,direct,snacks,FRANCE|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,Ritz,Mondelēz International,direct,snacks,FRANCE|DACH|NORDICS|SOUTHERN_EUROPE,1,map to Mondelēz International,append_candidate
+appended_new,Ritz,Mondelēz International,direct,snacks,FRANCE|DACH,1,map to Mondelēz International,append_candidate
+appended_new,Ritz,Mondelēz International,direct,snacks,DACH|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,Ritz,Mondelēz International,direct,dairies,FRANCE,1,map to Mondelēz International,append_candidate
+appended_new,Ritz,Mondelēz International,direct,dairies,BENELUX|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Reflets de France,Carrefour,direct,snacks,US_CANADA|FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,crunch,Nestlé,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,1,map to Nestlé,append_candidate
+appended_new,crunch,Nestlé,direct,snacks,BENELUX|FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,crunch,Nestlé,direct,cereals,FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,coop tradicni kvalita,Coop,direct,snacks,US_CANADA,1,map to Coop,append_candidate
+appended_new,coop prix garantie,Coop,direct,snacks,FRANCE|DACH,1,map to Coop,append_candidate
+appended_new,coop prix garantie,Coop,direct,dairies,FRANCE,1,map to Coop,append_candidate
+appended_new,coop prix garantie,Coop,direct,cereals,FRANCE,1,map to Coop,append_candidate
+appended_new,Schweppes,Suntory Beverage & Food,market_scoped,beverages,FRANCE|DACH|SOUTHERN_EUROPE,1,approve proposed,append_candidate
+appended_new,Ruffles,PepsiCo,direct,snacks,DACH|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,NORDICS|FRANCE,1,map to PepsiCo,append_candidate
+appended_new,danone,Danone,direct,dairies,FRANCE|DACH|SOUTHERN_EUROPE,1,approve proposed,append_candidate
+appended_new,danone,Danone,direct,dairies,FRANCE|DACH|BENELUX,1,approve proposed,append_candidate
+appended_new,danone,Danone,direct,dairies,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,1,approve proposed,append_candidate
+appended_new,danone,Danone,direct,beverages,FRANCE|DACH,1,approve proposed,append_candidate
+appended_new,crunch,Nestlé,direct,snacks,UK_IE,1,map to Nestlé,append_candidate
+appended_new,crunch,Nestlé,direct,snacks,FRANCE|US_CANADA,1,map to Nestlé,append_candidate
+appended_new,Reflets de France,Carrefour,direct,snacks,FRANCE|DACH,1,map to Carrefour,append_candidate
+appended_new,Reflets de France,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE|US_CANADA,1,map to Carrefour,append_candidate
+appended_new,Reflets de France,Carrefour,direct,beverages,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,Quality Street,Nestlé,direct,snacks,FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,Quaker Oats,PepsiCo,direct,cereals,US_CANADA|FRANCE,1,map to PepsiCo,append_candidate
+appended_new,Rolo,Nestlé,market_scoped,dairies,SOUTHERN_EUROPE|UK_IE,1,approve proposed,append_candidate
+appended_new,Ritz,Mondelēz International,direct,snacks,US_CANADA|FRANCE|DACH,1,map to Mondelēz International,append_candidate
+appended_new,Ritz,Mondelēz International,direct,snacks,UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,Ritz,Mondelēz International,direct,snacks,FRANCE|UK_IE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,DACH|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,DACH|NORDICS|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,BENELUX|FRANCE|DACH|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,e.leclerc,E.Leclerc,direct,cereals,FRANCE,1,map to E.Leclerc,append_candidate
+appended_new,e leclerc fromage,E.Leclerc,direct,dairies,FRANCE,1,map to E.Leclerc,append_candidate
+appended_new,danone,Danone (Dannon in US),direct,dairies,FRANCE|SOUTHERN_EUROPE|US_CANADA,1,approve proposed,append_candidate
+appended_new,danone,Danone (Dannon in US),direct,beverages,FRANCE|US_CANADA,1,approve proposed,append_candidate
+appended_new,danone,Danone (Dannon in US),direct,beverages,FRANCE|BENELUX|US_CANADA,1,approve proposed,append_candidate
+appended_new,Quaker Oats,PepsiCo,direct,cereals,FRANCE|DACH|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Quaker Oats,PepsiCo,direct,cereals,DACH|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Quaker Oats,PepsiCo,direct,cereals,DACH|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,cereals,UK_IE,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,UK_IE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,SOUTHERN_EUROPE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,SOUTHERN_EUROPE|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,UK_IE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,NORDICS|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,NORDICS|FRANCE|UK_IE|BENELUX|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,kettle brand,Kettle Brand / Campbell Soup Company,direct,snacks,FRANCE|SOUTHERN_EUROPE|US_CANADA,1,map to Kettle Brand / Campbell Soup Company,append_candidate
+appended_new,hipro,Danone,direct,dairies,FRANCE|US_CANADA,1,map to Danone,append_candidate
+appended_new,hipro,Danone,direct,dairies,BENELUX|FRANCE|US_CANADA,1,map to Danone,append_candidate
+appended_new,groupe carrefour,Carrefour,direct,beverages,FRANCE,1,map to Carrefour,append_candidate
+appended_new,extra carrefour,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,e.leclerc,E.Leclerc,direct,dairies,FRANCE|DACH,1,map to E.Leclerc,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,FRANCE|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,FRANCE|SOUTHERN_EUROPE|DACH,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,FRANCE|NORDICS,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,FRANCE|DACH|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,FRANCE|DACH|NORDICS,1,map to PepsiCo,append_candidate
+appended_new,Pepsi,PepsiCo,direct,beverages,FRANCE|BENELUX,1,map to PepsiCo,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|SOUTHERN_EUROPE|DACH,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|DACH|SOUTHERN_EUROPE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|BENELUX,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,DACH|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,la vache qui rit,Bel Group,direct,dairies,FRANCE|SOUTHERN_EUROPE,1,map to Bel Group,append_candidate
+appended_new,la vache qui rit,Bel Group,direct,dairies,FRANCE|BENELUX,1,map to Bel Group,append_candidate
+appended_new,la laitiere,Nestlé,direct,dairies,FRANCE|DACH|US_CANADA,1,map to Nestlé,append_candidate
+appended_new,la laitiere,Nestlé,direct,dairies,BENELUX|FRANCE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,kiri,Bel Group,direct,snacks,US_CANADA,1,map to Bel Group,append_candidate
+appended_new,kiri,Bel Group,direct,dairies,US_CANADA,1,map to Bel Group,append_candidate
+appended_new,Ovaltine,Nestlé,market_scoped,snacks,US_CANADA,1,approve proposed,append_candidate
+appended_new,Ovaltine,Nestlé,market_scoped,dairies,US_CANADA,1,approve proposed,append_candidate
+appended_new,Ovaltine,Associated British Foods,market_scoped,snacks,FRANCE,1,approve proposed,append_candidate
+appended_new,Ovaltine,Associated British Foods,market_scoped,beverages,FRANCE|UK_IE,1,approve proposed,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,US_CANADA|FRANCE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,BENELUX|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,BENELUX|FRANCE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,dairies,FRANCE|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,dairies,FRANCE|DACH|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,cereals,SOUTHERN_EUROPE|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,cereals,FRANCE|DACH|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,cereals,DACH|FRANCE|NORDICS|SOUTHERN_EUROPE,1,map to Mondelēz International,append_candidate
+appended_new,le rustique,Savencia,direct,dairies,US_CANADA,1,map to Savencia,append_candidate
+appended_new,le rustique,Savencia,direct,dairies,FRANCE|SOUTHERN_EUROPE,1,map to Savencia,append_candidate
+appended_new,lactel,Lactalis,direct,dairies,US_CANADA,1,map to Lactalis,append_candidate
+appended_new,lactel,Lactalis,direct,dairies,FRANCE|SOUTHERN_EUROPE,1,map to Lactalis,append_candidate
+appended_new,lactel,Lactalis,direct,dairies,BENELUX|FRANCE|DACH,1,map to Lactalis,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,NORDICS|FRANCE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|UK_IE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|SOUTHERN_EUROPE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,FRANCE|SOUTHERN_EUROPE|UK_IE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,lidl,Lidl,direct,beverages,BENELUX|SOUTHERN_EUROPE|UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to Lidl,append_candidate
+appended_new,leclerc les croises,E.Leclerc,direct,dairies,FRANCE,1,map to E.Leclerc,append_candidate
+appended_new,leclerc jafaden,E.Leclerc,direct,beverages,FRANCE,1,map to E.Leclerc,append_candidate
+appended_new,leclerc fromager,E.Leclerc,direct,dairies,FRANCE,1,map to E.Leclerc,append_candidate
+appended_new,leclerc ets shoepfer,E.Leclerc,direct,dairies,FRANCE,1,map to E.Leclerc,append_candidate
+appended_new,leclerc boulangerie,E.Leclerc,direct,snacks,US_CANADA,1,map to E.Leclerc,append_candidate
+appended_new,leclerc,E.Leclerc,direct,beverages,UK_IE,1,map to E.Leclerc,append_candidate
+appended_new,leclerc,E.Leclerc,direct,beverages,FRANCE|DACH,1,map to E.Leclerc,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,DACH|FRANCE|US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,DACH|FRANCE|SOUTHERN_EUROPE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,DACH|BENELUX|NORDICS|FRANCE|SOUTHERN_EUROPE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,DACH|BENELUX|NORDICS|FRANCE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,DACH|BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,BENELUX|US_CANADA|NORDICS|FRANCE|DACH|SOUTHERN_EUROPE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,snacks,BENELUX|US_CANADA|FRANCE|DACH|SOUTHERN_EUROPE,1,map to Mondelēz International,append_candidate
+appended_new,Oreo,Mondelēz International,direct,beverages,US_CANADA,1,map to Mondelēz International,append_candidate
+appended_new,Nesquik,Nestlé,direct,snacks,FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,dairies,FRANCE|UK_IE|US_CANADA,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,dairies,BENELUX|FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,dairies,BENELUX|FRANCE,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,cereals,FRANCE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,cereals,FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,cereals,FRANCE|SOUTHERN_EUROPE|DACH,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,cereals,FRANCE|SOUTHERN_EUROPE,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,cereals,FRANCE|DACH|SOUTHERN_EUROPE,1,map to Nestlé,append_candidate
+appended_new,lidl,Lidl,direct,beverages,UK_IE|US_CANADA,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,beverages,UK_IE|BENELUX,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,beverages,FRANCE|US_CANADA,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,beverages,FRANCE|BENELUX|DACH,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,beverages,DACH|UK_IE,1,map to Lidl,append_candidate
+appended_new,Nesquik,Nestlé,direct,cereals,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,cereals,BENELUX|FRANCE,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,UK_IE,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,FRANCE|SOUTHERN_EUROPE|US_CANADA,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,Nesquik,Nestlé,direct,beverages,BENELUX|UK_IE,1,map to Nestlé,append_candidate
+appended_new,lidl,Lidl,direct,dairies,FRANCE|SOUTHERN_EUROPE,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,dairies,FRANCE|DACH|SOUTHERN_EUROPE,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,dairies,FRANCE|DACH|NORDICS|UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,dairies,DACH|US_CANADA,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,dairies,BENELUX|UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,dairies,BENELUX|NORDICS|FRANCE|DACH|SOUTHERN_EUROPE,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,dairies,BENELUX|NORDICS|FRANCE|DACH,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,cereals,UK_IE|US_CANADA,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,cereals,DACH|FRANCE,1,map to Lidl,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,dairies,BENELUX|NORDICS|FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,dairies,BENELUX|FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,NORDICS|FRANCE,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,FRANCE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,FRANCE|NORDICS|SOUTHERN_EUROPE,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,FRANCE|NORDICS,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,FRANCE|DACH|US_CANADA,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,FRANCE|DACH|UK_IE,1,map to Nestlé,append_candidate
+appended_new,lidl,Lidl,direct,snacks,FRANCE|DACH|SOUTHERN_EUROPE|UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,snacks,FRANCE|DACH|BENELUX,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,snacks,FRANCE|BENELUX,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,snacks,BENELUX|UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,dairies,UK_IE|US_CANADA,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,dairies,SOUTHERN_EUROPE|UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,dairies,NORDICS|UK_IE|SOUTHERN_EUROPE,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,dairies,NORDICS|FRANCE|DACH,1,map to Lidl,append_candidate
+appended_new,lidl flavita,Lidl,direct,beverages,UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl envia,Lidl,direct,dairies,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl emb 26368a,Lidl,direct,beverages,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl deluxe,Lidl,direct,cereals,UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl captain soif fraise,Lidl,direct,beverages,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl alpen feet,Lidl,direct,snacks,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,snacks,UK_IE|US_CANADA,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,snacks,NORDICS|FRANCE|DACH,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,snacks,NORDICS|FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,snacks,FRANCE|SOUTHERN_EUROPE|DACH,1,map to Lidl,append_candidate
+appended_new,lidl,Lidl,direct,snacks,FRANCE|DACH|UK_IE,1,map to Lidl,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,snacks,FRANCE,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,dairies,FRANCE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,dairies,FRANCE|SOUTHERN_EUROPE|DACH,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,dairies,FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,dairies,FRANCE,1,map to Nestlé,append_candidate
+appended_new,lidl saveur de nos region,Lidl,direct,dairies,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl rivercote,Lidl,direct,snacks,UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl preferred selection,Lidl,direct,snacks,US_CANADA,1,map to Lidl,append_candidate
+appended_new,lidl preferred selection,Lidl,direct,snacks,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl organic,Lidl,direct,snacks,US_CANADA,1,map to Lidl,append_candidate
+appended_new,lidl organic,Lidl,direct,snacks,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,1,map to Lidl,append_candidate
+appended_new,lidl naturista,Lidl,direct,beverages,UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl milbona,Lidl,direct,dairies,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl lord nelson,Lidl,direct,beverages,FRANCE|DACH,1,map to Lidl,append_candidate
+appended_new,lidl italiamo,Lidl,direct,snacks,UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl italiamo,Lidl,direct,snacks,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl italiamo,Lidl,direct,dairies,UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl italia,Lidl,direct,dairies,SOUTHERN_EUROPE|US_CANADA,1,map to Lidl,append_candidate
+appended_new,lidl freeway,Lidl,direct,beverages,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl france snc,Lidl,direct,beverages,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl france,Lidl,direct,snacks,FRANCE,1,map to Lidl,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,DACH|SOUTHERN_EUROPE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,BENELUX|NORDICS|FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,BENELUX|NORDICS|FRANCE,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,1,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,snacks,FRANCE,1,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,dairies,US_CANADA,1,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,dairies,FRANCE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,lidl stiftung and co kg,Lidl,direct,snacks,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl stiftung and co kg,Lidl,direct,dairies,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl stiftung and co kg,Lidl,direct,beverages,FRANCE|DACH,1,map to Lidl,append_candidate
+appended_new,lidl stiftung and co kg,Lidl,direct,beverages,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl sondey,Lidl,direct,snacks,FRANCE|DACH,1,map to Lidl,append_candidate
+appended_new,lidl solevita,Lidl,direct,beverages,FRANCE,1,map to Lidl,append_candidate
+appended_new,lidl snack day,Lidl,direct,snacks,FRANCE|DACH,1,map to Lidl,append_candidate
+appended_new,lidl simply,Lidl,direct,dairies,UK_IE,1,map to Lidl,append_candidate
+appended_new,lidl saveurs de nos regions,Lidl,direct,snacks,FRANCE,1,map to Lidl,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,1,map to Nestlé,append_candidate
+appended_new,Mountain Dew,PepsiCo,direct,beverages,UK_IE,1,map to PepsiCo,append_candidate
+appended_new,Mountain Dew,PepsiCo,direct,beverages,NORDICS|FRANCE|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,DACH|SOUTHERN_EUROPE|UK_IE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,DACH|BENELUX|NORDICS|FRANCE|UK_IE|SOUTHERN_EUROPE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,DACH|BENELUX|NORDICS|FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,BENELUX|US_CANADA|NORDICS|FRANCE|DACH|UK_IE|SOUTHERN_EUROPE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,dairies,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE|UK_IE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lidl uk,Lidl,direct,snacks,FRANCE,1,map to Lidl,append_candidate
+appended_new,Nescafé,Nestlé,direct,dairies,FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,UK_IE|US_CANADA,1,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,SOUTHERN_EUROPE|US_CANADA,1,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,FRANCE|US_CANADA,1,map to Nestlé,append_candidate
+appended_new,Nescafé Dolce Gusto,Nestlé,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,Mountain Dew,PepsiCo,direct,beverages,BENELUX|FRANCE,1,map to PepsiCo,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,US_CANADA|FRANCE,1,approve proposed,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,NORDICS|UK_IE,1,approve proposed,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,FRANCE|BENELUX,1,approve proposed,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,DACH|NORDICS|UK_IE,1,approve proposed,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,NORDICS|DACH|SOUTHERN_EUROPE|UK_IE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE|SOUTHERN_EUROPE|NORDICS,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE|SOUTHERN_EUROPE|DACH|UK_IE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE|DACH|SOUTHERN_EUROPE|UK_IE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,FRANCE|BENELUX|SOUTHERN_EUROPE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,DACH|US_CANADA,1,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,DACH|UK_IE,1,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,DACH|SOUTHERN_EUROPE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,DACH|FRANCE,1,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,DACH|BENELUX|FRANCE,1,map to Nestlé,append_candidate
+appended_new,Nescafé,Nestlé,direct,beverages,BENELUX|FRANCE|UK_IE,1,map to Nestlé,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,UK_IE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,FRANCE|NORDICS,1,map to PepsiCo,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,FRANCE|DACH|SOUTHERN_EUROPE,1,map to PepsiCo,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,FRANCE|DACH|NORDICS,1,map to PepsiCo,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,FRANCE|BENELUX,1,map to PepsiCo,append_candidate
+appended_new,lindt excellence,Lindt & Sprüngli,direct,snacks,NORDICS|FRANCE|SOUTHERN_EUROPE|DACH|UK_IE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt excellence,Lindt & Sprüngli,direct,snacks,FRANCE|US_CANADA,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt excellence,Lindt & Sprüngli,direct,snacks,FRANCE|DACH,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt excellence,Lindt & Sprüngli,direct,snacks,DACH|BENELUX|FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt excellence,Lindt & Sprüngli,direct,snacks,BENELUX|FRANCE|DACH|UK_IE|SOUTHERN_EUROPE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,UK_IE|US_CANADA,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,NORDICS|FRANCE|UK_IE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,NORDICS|FRANCE|DACH|UK_IE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,NORDICS|FRANCE|DACH,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,NORDICS|FRANCE|BENELUX|SOUTHERN_EUROPE|UK_IE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,lindt,Lindt & Sprüngli,direct,snacks,NORDICS|DACH|UK_IE,1,map to Lindt & Sprüngli,append_candidate
+appended_new,Lay's,PepsiCo,direct,snacks,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE|UK_IE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Lay's,PepsiCo,direct,dairies,US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Lay's,PepsiCo,direct,dairies,FRANCE,1,map to PepsiCo,append_candidate
+appended_new,Lay's,PepsiCo,direct,dairies,BENELUX|FRANCE,1,map to PepsiCo,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,snacks,NORDICS|FRANCE,1,approve proposed,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,snacks,DACH|FRANCE|SOUTHERN_EUROPE,1,approve proposed,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,snacks,DACH|FRANCE,1,approve proposed,append_candidate
+appended_new,lion,Nestlé,direct,snacks,FRANCE|DACH|BENELUX|SOUTHERN_EUROPE,1,map to Nestlé,append_candidate
+appended_new,lion,Nestlé,direct,snacks,FRANCE|BENELUX|SOUTHERN_EUROPE,1,map to Nestlé,append_candidate
+appended_new,lion,Nestlé,direct,snacks,BENELUX|NORDICS|FRANCE,1,map to Nestlé,append_candidate
+appended_new,lion,Nestlé,direct,cereals,FRANCE|US_CANADA,1,map to Nestlé,append_candidate
+appended_new,lion,Nestlé,direct,cereals,FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,lion,Nestlé,direct,cereals,DACH|FRANCE,1,map to Nestlé,append_candidate
+appended_new,lion,Nestlé,direct,beverages,US_CANADA,1,map to Nestlé,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,BENELUX|UK_IE,1,approve proposed,append_candidate
+appended_new,Monster Energy,Monster Beverage Corp,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE,1,approve proposed,append_candidate
+appended_new,Fuze Tea,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH,1,map to The Coca-Cola Company,append_candidate
+appended_new,marque repere delisse,E.Leclerc,direct,dairies,FRANCE,1,map to E.Leclerc,append_candidate
+appended_new,marque repere,E.Leclerc,direct,snacks,FRANCE|US_CANADA,1,map to E.Leclerc,append_candidate
+appended_new,marque repere,E.Leclerc,direct,snacks,FRANCE|DACH|SOUTHERN_EUROPE,1,map to E.Leclerc,append_candidate
+appended_new,lion,Nestlé,direct,snacks,NORDICS|FRANCE|DACH,1,map to Nestlé,append_candidate
+appended_new,lion,Nestlé,direct,snacks,FRANCE|NORDICS,1,map to Nestlé,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,snacks,BENELUX|NORDICS|FRANCE|SOUTHERN_EUROPE|UK_IE,1,approve proposed,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,dairies,FRANCE,1,approve proposed,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,cereals,UK_IE,1,approve proposed,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,cereals,FRANCE,1,approve proposed,append_candidate
+appended_new,KitKat,Nestlé,market_scoped,beverages,FRANCE,1,approve proposed,append_candidate
+appended_new,Häagen-Dazs,General Mills,market_scoped,snacks,BENELUX|FRANCE|DACH,1,approve proposed,append_candidate
+appended_new,Häagen-Dazs,General Mills,market_scoped,snacks,BENELUX|FRANCE,1,approve proposed,append_candidate
+appended_new,Häagen-Dazs,General Mills,market_scoped,dairies,FRANCE|DACH,1,approve proposed,append_candidate
+appended_new,Häagen-Dazs,General Mills,market_scoped,dairies,BENELUX|FRANCE|DACH,1,approve proposed,append_candidate
+appended_new,Gatorade,PepsiCo,direct,snacks,FRANCE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Fitness,Nestlé,direct,cereals,BENELUX|FRANCE,1,map to Nestlé,append_candidate
+appended_new,Fitness,Nestlé,direct,beverages,FRANCE,1,map to Nestlé,append_candidate
+appended_new,monoprix,Monoprix,direct,dairies,FRANCE|DACH,1,map to Monoprix,append_candidate
+appended_new,monoprix,Monoprix,direct,beverages,FRANCE|DACH,1,map to Monoprix,append_candidate
+appended_new,marque repere les croises,E.Leclerc,direct,dairies,FRANCE,1,map to E.Leclerc,append_candidate
+appended_new,marque repere leclerc jafaden,E.Leclerc,direct,beverages,US_CANADA,1,map to E.Leclerc,append_candidate
+appended_new,marque repere leclerc,E.Leclerc,direct,dairies,FRANCE,1,map to E.Leclerc,append_candidate
+appended_new,marque repere leclerc,E.Leclerc,direct,beverages,FRANCE,1,map to E.Leclerc,append_candidate
+appended_new,marque repere epi d or,E.Leclerc,direct,snacks,FRANCE,1,map to E.Leclerc,append_candidate
+appended_new,Gatorade,PepsiCo,direct,beverages,SOUTHERN_EUROPE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Gatorade,PepsiCo,direct,beverages,DACH|FRANCE,1,map to PepsiCo,append_candidate
+appended_new,Fuze Tea,The Coca-Cola Company,direct,beverages,US_CANADA,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fuze Tea,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE|DACH,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fuze Tea,The Coca-Cola Company,direct,beverages,DACH|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fuze Tea,The Coca-Cola Company,direct,beverages,DACH|FRANCE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fuze Tea,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE|US_CANADA,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE|US_CANADA,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE|NORDICS|SOUTHERN_EUROPE|US_CANADA,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE|DACH|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,FRANCE|DACH|BENELUX,1,map to The Coca-Cola Company,append_candidate
+appended_new,paturage,Les Mousquetaires / Intermarché,direct,dairies,BENELUX|FRANCE|DACH,1,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,paturage,Les Mousquetaires / Intermarché,direct,dairies,BENELUX|FRANCE,1,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,nestle dessert,Nestlé,direct,cereals,FRANCE,1,map to Nestlé,append_candidate
+appended_new,nestle dessert,Nestlé,direct,beverages,FRANCE,1,map to Nestlé,append_candidate
+appended_new,monoprix ptit prix,Monoprix,direct,beverages,FRANCE,1,map to Monoprix,append_candidate
+appended_new,monoprix gourmetmonoprix,Monoprix,direct,dairies,FRANCE,1,map to Monoprix,append_candidate
+appended_new,monoprix gourmet,Monoprix,direct,dairies,FRANCE|SOUTHERN_EUROPE,1,map to Monoprix,append_candidate
+appended_new,Fitness,Nestlé,direct,snacks,BENELUX|FRANCE,1,map to Nestlé,append_candidate
+appended_new,Fitness,Nestlé,direct,cereals,US_CANADA,1,map to Nestlé,append_candidate
+appended_new,Fitness,Nestlé,direct,cereals,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,1,map to Nestlé,append_candidate
+appended_new,Fitness,Nestlé,direct,cereals,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,1,map to Nestlé,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,DACH|BENELUX|FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,DACH|BENELUX|FRANCE|NORDICS,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,DACH|BENELUX|FRANCE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,BENELUX|NORDICS|FRANCE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|NORDICS|DACH,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH,1,map to The Coca-Cola Company,append_candidate
+appended_new,paturages comtois,Les Mousquetaires / Intermarché,direct,dairies,FRANCE|BENELUX,1,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,paturages bio intermarche,Les Mousquetaires / Intermarché,direct,dairies,FRANCE,1,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,paturages,Les Mousquetaires / Intermarché,direct,dairies,UK_IE,1,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,paturages,Les Mousquetaires / Intermarché,direct,dairies,FRANCE|US_CANADA,1,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,paturages,Les Mousquetaires / Intermarché,direct,dairies,FRANCE|BENELUX,1,map to Les Mousquetaires / Intermarché,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,NORDICS|FRANCE|SOUTHERN_EUROPE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,NORDICS|FRANCE|DACH,1,map to The Coca-Cola Company,append_candidate
+appended_new,président,Lactalis,direct,dairies,FRANCE|US_CANADA,1,map to Lactalis,append_candidate
+appended_new,président,Lactalis,direct,dairies,FRANCE|NORDICS,1,map to Lactalis,append_candidate
+appended_new,président,Lactalis,direct,dairies,FRANCE|DACH|UK_IE,1,map to Lactalis,append_candidate
+appended_new,président,Lactalis,direct,dairies,DACH|BENELUX|FRANCE,1,map to Lactalis,append_candidate
+appended_new,président,Lactalis,direct,dairies,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,1,map to Lactalis,append_candidate
+appended_new,président,Lactalis,direct,dairies,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE|UK_IE,1,map to Lactalis,append_candidate
+appended_new,président,Lactalis,direct,dairies,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,1,map to Lactalis,append_candidate
+appended_new,produit carrefour,Carrefour,direct,beverages,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,perugina,Nestlé,direct,snacks,US_CANADA,1,map to Nestlé,append_candidate
+appended_new,perugina,Nestlé,direct,snacks,UK_IE,1,map to Nestlé,append_candidate
+appended_new,perugina,Nestlé,direct,snacks,FRANCE|SOUTHERN_EUROPE,1,map to Nestlé,append_candidate
+appended_new,perugina,Nestlé,direct,dairies,FRANCE|SOUTHERN_EUROPE,1,map to Nestlé,append_candidate
+appended_new,Dr Pepper,The Coca-Cola Company,market_scoped,beverages,NORDICS|FRANCE,1,approve proposed,append_candidate
+appended_new,Dr Pepper,Keurig Dr Pepper,market_scoped,snacks,US_CANADA,1,approve proposed,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,FRANCE|NORDICS,1,map to PepsiCo,append_candidate
+appended_new,Fanta,The Coca-Cola Company,direct,beverages,DACH|SOUTHERN_EUROPE|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,1,map to PepsiCo,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to PepsiCo,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,BENELUX|FRANCE|NORDICS,1,map to PepsiCo,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,1,map to PepsiCo,append_candidate
+appended_new,Doritos,PepsiCo,direct,dairies,UK_IE,1,map to PepsiCo,append_candidate
+appended_new,Doritos,PepsiCo,direct,dairies,FRANCE,1,map to PepsiCo,append_candidate
+appended_new,Diet Coke,The Coca-Cola Company,direct,beverages,UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Danette,Danone,direct,dairies,FRANCE|UK_IE,1,map to Danone,append_candidate
+appended_new,Danette,Danone,direct,dairies,FRANCE|BENELUX,1,map to Danone,append_candidate
+appended_new,quaker,PepsiCo,direct,beverages,US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,président,Lactalis,direct,dairies,US_CANADA|FRANCE|DACH,1,map to Lactalis,append_candidate
+appended_new,président,Lactalis,direct,dairies,NORDICS|UK_IE,1,map to Lactalis,append_candidate
+appended_new,président,Lactalis,direct,dairies,NORDICS|FRANCE|UK_IE,1,map to Lactalis,append_candidate
+appended_new,président,Lactalis,direct,dairies,NORDICS|FRANCE|SOUTHERN_EUROPE,1,map to Lactalis,append_candidate
+appended_new,président,Lactalis,direct,dairies,NORDICS|FRANCE|BENELUX|SOUTHERN_EUROPE,1,map to Lactalis,append_candidate
+appended_new,Coca-Cola Light,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola Light,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,snacks,US_CANADA,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,dairies,FRANCE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,US_CANADA|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,UK_IE|US_CANADA,1,map to The Coca-Cola Company,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,FRANCE|DACH|SOUTHERN_EUROPE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,DACH|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,DACH|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,DACH|FRANCE|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,DACH|FRANCE,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,BENELUX|FRANCE|DACH,1,map to PepsiCo,append_candidate
+appended_new,Doritos,PepsiCo,direct,snacks,DACH|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|NORDICS|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,quaker,PepsiCo,direct,snacks,BENELUX|FRANCE|DACH,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,dairies,US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,US_CANADA|UK_IE,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,FRANCE|UK_IE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,FRANCE|SOUTHERN_EUROPE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,cereals,FRANCE|SOUTHERN_EUROPE|DACH,1,map to PepsiCo,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,SOUTHERN_EUROPE|US_CANADA,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,NORDICS|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,NORDICS|FRANCE|DACH|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|SOUTHERN_EUROPE|DACH|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|DACH|SOUTHERN_EUROPE|US_CANADA,1,map to The Coca-Cola Company,append_candidate
+appended_new,Danette,Danone,direct,dairies,BENELUX|FRANCE|DACH,1,map to Danone,append_candidate
+appended_new,Coca-Cola Light,The Coca-Cola Company,direct,beverages,FRANCE|NORDICS,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola Light,The Coca-Cola Company,direct,beverages,DACH|BENELUX|FRANCE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Chocapic,Nestlé,direct,snacks,FRANCE|SOUTHERN_EUROPE,1,map to Nestlé,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,cereals,FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,cereals,FRANCE|DACH|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,beverages,US_CANADA,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,beverages,DACH|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,beverages,BENELUX|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsbury s,Sainsbury's,direct,dairies,UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,quaker,PepsiCo,direct,snacks,UK_IE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,snacks,UK_IE,1,map to PepsiCo,append_candidate
+appended_new,quaker,PepsiCo,direct,snacks,SOUTHERN_EUROPE|US_CANADA,1,map to PepsiCo,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|DACH|BENELUX,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,FRANCE|BENELUX,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,DACH|FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,DACH|BENELUX|US_CANADA|FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,DACH|BENELUX|FRANCE|SOUTHERN_EUROPE|NORDICS,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,DACH|BENELUX|FRANCE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Cheerios,Cereal Partners Worldwide,market_scoped,cereals,FRANCE|DACH,1,approve proposed,append_candidate
+appended_new,Cheerios,Cereal Partners Worldwide,market_scoped,cereals,DACH|FRANCE|UK_IE,1,approve proposed,append_candidate
+appended_new,Carrefour Sélection,Carrefour,direct,snacks,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Sélection,Carrefour,direct,dairies,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,snacks,FRANCE|NORDICS,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,dairies,SOUTHERN_EUROPE|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,cereals,US_CANADA,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,cereals,SOUTHERN_EUROPE|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE|NORDICS,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|NORDICS,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE|UK_IE|US_CANADA,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE|UK_IE,1,map to The Coca-Cola Company,append_candidate
+appended_new,Coca-Cola,The Coca-Cola Company,direct,beverages,BENELUX|FRANCE|DACH|SOUTHERN_EUROPE|NORDICS,1,map to The Coca-Cola Company,append_candidate
+appended_new,Chocapic,Nestlé,direct,snacks,FRANCE|SOUTHERN_EUROPE|DACH,1,map to Nestlé,append_candidate
+appended_new,Carrefour Extra,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE|BENELUX,1,map to Carrefour,append_candidate
+appended_new,sainsburys so organic,Sainsbury's,direct,beverages,UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys house,Sainsbury's,direct,beverages,UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys freefrom,Sainsbury's,direct,cereals,UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys free from,Sainsbury's,direct,snacks,UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys free from,Sainsbury's,direct,cereals,FRANCE|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys be good to yourself,Sainsbury's,direct,dairies,UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys basics,Sainsbury's,direct,beverages,UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys basic,Sainsbury's,direct,dairies,FRANCE|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys,Sainsbury's,direct,snacks,US_CANADA,1,map to Sainsbury's,append_candidate
+appended_new,Carrefour Sélection,Carrefour,direct,beverages,FRANCE|UK_IE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Sensation VÉGÉtal,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Sensation,Carrefour,direct,dairies,US_CANADA,1,map to Carrefour,append_candidate
+appended_new,Carrefour Sensation,Carrefour,direct,cereals,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Original,Carrefour,direct,snacks,FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Original,Carrefour,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,snacks,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,sainsburys taste the difference,Sainsbury's,direct,snacks,US_CANADA,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys taste the difference,Sainsbury's,direct,snacks,FRANCE|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys taste the difference,Sainsbury's,direct,snacks,FRANCE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys taste the difference,Sainsbury's,direct,dairies,UK_IE|US_CANADA,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys taste the difference,Sainsbury's,direct,dairies,FRANCE|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys taste the difference,Sainsbury's,direct,dairies,FRANCE|DACH|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys taste the difference,Sainsbury's,direct,cereals,UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys taste the difference,Sainsbury's,direct,beverages,US_CANADA,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys standard street co,Sainsbury's,direct,dairies,FRANCE|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys so organic,Sainsbury's,direct,cereals,UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,sainsburys so organic,Sainsbury's,direct,cereals,FRANCE|UK_IE,1,map to Sainsbury's,append_candidate
+appended_new,Carrefour Original,Carrefour,direct,beverages,FRANCE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Kids,Carrefour,direct,snacks,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Kids,Carrefour,direct,cereals,FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Kids,Carrefour,direct,beverages,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,beverages,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,snacks,UK_IE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,1,map to Carrefour,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,dairies,FRANCE|DACH,1,map to Carrefour,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,cereals,FRANCE|SOUTHERN_EUROPE|DACH,1,map to Carrefour,append_candidate
+appended_new,tesco,Tesco,direct,beverages,DACH|UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco,Tesco,direct,beverages,DACH|SOUTHERN_EUROPE|UK_IE,1,map to Tesco,append_candidate
+appended_new,tartare,Savencia,direct,dairies,UK_IE,1,map to Savencia,append_candidate
+appended_new,tartare,Savencia,direct,dairies,NORDICS|FRANCE,1,map to Savencia,append_candidate
+appended_new,tartare,Savencia,direct,dairies,FRANCE|SOUTHERN_EUROPE,1,map to Savencia,append_candidate
+appended_new,tartare,Savencia,direct,dairies,BENELUX|FRANCE|DACH,1,map to Savencia,append_candidate
+appended_new,st môret,Savencia,direct,dairies,FRANCE|BENELUX|DACH,1,map to Savencia,append_candidate
+appended_new,selection carrefour,Carrefour,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to Carrefour,append_candidate
+appended_new,selection carrefour,Carrefour,direct,dairies,FRANCE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Extra,Carrefour,direct,snacks,BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Extra,Carrefour,direct,dairies,BENELUX|US_CANADA|FRANCE|DACH,1,map to Carrefour,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,BENELUX|FRANCE|NORDICS|SOUTHERN_EUROPE,1,approve proposed,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,BENELUX|FRANCE|NORDICS,1,approve proposed,append_candidate
+appended_new,Cadbury,The Hershey Company,market_scoped,dairies,US_CANADA,1,approve proposed,append_candidate
+appended_new,tesco,Tesco,direct,dairies,DACH|UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco,Tesco,direct,cereals,US_CANADA,1,map to Tesco,append_candidate
+appended_new,tesco,Tesco,direct,beverages,UK_IE|US_CANADA,1,map to Tesco,append_candidate
+appended_new,tesco,Tesco,direct,beverages,SOUTHERN_EUROPE|UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco,Tesco,direct,beverages,FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco,Tesco,direct,beverages,FRANCE|DACH|UK_IE,1,map to Tesco,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,beverages,US_CANADA,1,map to Carrefour,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,beverages,FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to Carrefour,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,beverages,FRANCE|DACH,1,map to Carrefour,append_candidate
+appended_new,Carrefour Bio,Carrefour,direct,beverages,DACH|BENELUX|FRANCE,1,map to Carrefour,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,NORDICS|FRANCE|DACH,1,approve proposed,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,beverages,FRANCE|DACH,1,map to Carrefour,append_candidate
+appended_new,Carrefour Classic,Carrefour,direct,beverages,BENELUX|FRANCE|DACH,1,map to Carrefour,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,dairies,FRANCE|DACH|UK_IE,1,approve proposed,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,dairies,DACH|UK_IE,1,approve proposed,append_candidate
+appended_new,tesco finest,Tesco,direct,dairies,FRANCE|UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco finest,Tesco,direct,cereals,UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco finest,Tesco,direct,cereals,FRANCE|UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco camomile infusion tea,Tesco,direct,beverages,UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco,Tesco,direct,snacks,FRANCE|SOUTHERN_EUROPE,1,map to Tesco,append_candidate
+appended_new,tesco,Tesco,direct,snacks,FRANCE|DACH|UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco,Tesco,direct,snacks,BENELUX|UK_IE,1,map to Tesco,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,FRANCE|SOUTHERN_EUROPE,1,approve proposed,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,FRANCE|DACH|SOUTHERN_EUROPE,1,approve proposed,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,FRANCE|DACH|BENELUX,1,approve proposed,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,DACH|BENELUX|NORDICS|FRANCE|UK_IE|SOUTHERN_EUROPE,1,approve proposed,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,BENELUX|FRANCE|UK_IE,1,approve proposed,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,1,approve proposed,append_candidate
+appended_new,Capri Sun,Capri Sun Group / Coca-Cola Europacific Partners,market_scoped,beverages,BENELUX|FRANCE|SOUTHERN_EUROPE,1,approve proposed,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to Mondelēz International,append_candidate
+appended_new,tesco stores ltd,Tesco,direct,snacks,UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco peach and passionfruit flavoured sparkling water,Tesco,direct,beverages,UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco own label,Tesco,direct,dairies,UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco growers harvest,Tesco,direct,beverages,UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco growers harvest,Tesco,direct,beverages,DACH|UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco freefrom,Tesco,direct,snacks,UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco free from,Tesco,direct,snacks,FRANCE|UK_IE,1,map to Tesco,append_candidate
+appended_new,tesco finest earl grey tea,Tesco,direct,beverages,FRANCE,1,map to Tesco,append_candidate
+appended_new,tesco finest,Tesco,direct,snacks,UK_IE|US_CANADA,1,map to Tesco,append_candidate
+appended_new,tesco finest,Tesco,direct,snacks,FRANCE|SOUTHERN_EUROPE|UK_IE,1,map to Tesco,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,snacks,FRANCE|SOUTHERN_EUROPE|UK_IE,1,approve proposed,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,snacks,FRANCE|NORDICS,1,approve proposed,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,snacks,DACH|SOUTHERN_EUROPE|UK_IE,1,approve proposed,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,snacks,BENELUX|FRANCE|DACH,1,approve proposed,append_candidate
+appended_new,Cadbury,Mondelēz International,market_scoped,dairies,SOUTHERN_EUROPE|UK_IE,1,approve proposed,append_candidate
+appended_new,wegmans food mkts,Wegmans,direct,snacks,US_CANADA,1,map to Wegmans,append_candidate
+appended_new,u sans gluten,Système U,direct,snacks,FRANCE,1,map to Système U,append_candidate
+appended_new,u pane caldu,Système U,direct,snacks,FRANCE,1,map to Système U,append_candidate
+appended_new,u maraichers,Système U,direct,dairies,FRANCE,1,map to Système U,append_candidate
+appended_new,u lu,Système U,direct,snacks,US_CANADA,1,map to Système U,append_candidate
+appended_new,u cismonte,Système U,direct,dairies,FRANCE,1,map to Système U,append_candidate
+appended_new,u bleu blanc coeur,Système U,direct,dairies,FRANCE,1,map to Système U,append_candidate
+appended_new,Activia,Danone,direct,dairies,SOUTHERN_EUROPE|UK_IE,1,map to Danone,append_candidate
+appended_new,Activia,Danone,direct,dairies,DACH|SOUTHERN_EUROPE|US_CANADA,1,map to Danone,append_candidate
+appended_new,Activia,Danone,direct,dairies,BENELUX|UK_IE,1,map to Danone,append_candidate
+appended_new,Activia,Danone,direct,beverages,US_CANADA,1,map to Danone,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,FRANCE|NORDICS,1,map to Mondelēz International,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,FRANCE|DACH|SOUTHERN_EUROPE,1,map to Mondelēz International,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,DACH|FRANCE,1,map to Mondelēz International,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE|DACH,1,map to Mondelēz International,append_candidate
+appended_new,Belvita,Mondelēz International,direct,snacks,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to Mondelēz International,append_candidate
+appended_new,aldi uk,Aldi,direct,snacks,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi the deli,Aldi,direct,dairies,UK_IE,1,map to Aldi,append_candidate
+appended_new,aldi sud,Aldi,direct,snacks,FRANCE|DACH,1,map to Aldi,append_candidate
+appended_new,aldi specially selected,Aldi,direct,snacks,FRANCE,1,map to Aldi,append_candidate
+appended_new,aldi selection,Aldi,direct,dairies,US_CANADA,1,map to Aldi,append_candidate
+appended_new,aldi sans gluten,Aldi,direct,snacks,FRANCE,1,map to Aldi,append_candidate
+appended_new,aldi pfanner,Aldi,direct,beverages,FRANCE|DACH,1,map to Aldi,append_candidate
+appended_new,auchan,Auchan,direct,dairies,SOUTHERN_EUROPE|US_CANADA,1,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,dairies,FRANCE|BENELUX|SOUTHERN_EUROPE,1,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,dairies,DACH|US_CANADA,1,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,cereals,FRANCE|SOUTHERN_EUROPE|DACH,1,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,cereals,BENELUX|FRANCE|SOUTHERN_EUROPE,1,map to Auchan,append_candidate
+appended_new,auchan,Auchan,direct,beverages,FRANCE|US_CANADA,1,map to Auchan,append_candidate
+appended_new,wegmans italian classics,Wegmans,direct,dairies,US_CANADA,1,map to Wegmans,append_candidate
+appended_new,wegmans hi pro,Wegmans,direct,dairies,US_CANADA,1,map to Wegmans,append_candidate
+appended_new,wegmans greek,Wegmans,direct,dairies,US_CANADA,1,map to Wegmans,append_candidate

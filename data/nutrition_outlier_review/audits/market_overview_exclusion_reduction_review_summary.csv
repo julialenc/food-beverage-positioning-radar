@@ -1,0 +1,8 @@
+﻿review_priority_bucket,review_suggestion,nutrition_quality_status,records,records_pct_of_total_dataset,records_pct_of_excluded
+hard_error_keep_excluded,keep_excluded_by_default,data_quality_error,6026,1.59,30.69
+small_absolute_kcal_gap,candidate_for_possible_reinclusion,energy_macro_inconsistency,5624,1.48,28.64
+beverage_energy_not_captured_by_macros,candidate_for_rule_review,energy_macro_inconsistency,5437,1.44,27.69
+material_energy_macro_gap,manual_review,energy_macro_inconsistency,1707,0.45,8.69
+near_threshold_energy_macro_gap,candidate_for_threshold_review,energy_macro_inconsistency,553,0.15,2.82
+high_fiber_possible_formula_explanation,candidate_for_rule_review,energy_macro_inconsistency,280,0.07,1.43
+low_energy_beverage_formula_gap,manual_review,energy_macro_inconsistency,8,0.0,0.04

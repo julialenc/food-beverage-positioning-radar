@@ -1,0 +1,84 @@
+﻿section,company_mapping_source,company_ownership_resolution_status,resolved_company,brand,query_category,observed_market_region_codes,product_count
+owner_distribution,,,Other / not mapped to a company,,,,289113
+owner_distribution,,,Carrefour,,,,5742
+owner_distribution,,,Auchan,,,,4434
+owner_distribution,,,Nestlé,,,,4020
+owner_distribution,,,Coopérative U,,,,3486
+owner_distribution,,,Mondelēz International,,,,3090
+owner_distribution,,,Danone,,,,2947
+owner_distribution,,,Mars,,,,2726
+owner_distribution,,,PepsiCo,,,,2721
+owner_distribution,,,Lidl,,,,2685
+owner_distribution,,,E.Leclerc,,,,2515
+owner_distribution,,,General Mills,,,,2359
+owner_distribution,,,The Coca-Cola Company,,,,2165
+owner_distribution,,,Ferrero,,,,1787
+owner_distribution,,,Leader Price,,,,1692
+owner_distribution,,,Casino Group,,,,1628
+owner_distribution,,,Monoprix,,,,1460
+owner_distribution,,,Haribo,,,,1332
+owner_distribution,,,Ahold Delhaize,,,,1329
+owner_distribution,,,Lactalis,,,,1302
+owner_distribution,,,Lindt & Sprüngli,,,,1270
+owner_distribution,,,Cora,,,,1246
+owner_distribution,,,Marks & Spencer,,,,1244
+owner_distribution,,,Système U,,,,1076
+owner_distribution,,,Walmart / Great Value,,,,1051
+owner_distribution,,,Leclerc,,,,1034
+owner_distribution,,,Tesco,,,,1034
+owner_distribution,,,LIPTON Teas and Infusions / Pepsi Lipton channel-scoped,,,,1028
+owner_distribution,,,Aldi,,,,1002
+owner_distribution,,,Meijer,,,,936
+owner_distribution,,,Wawa,,,,913
+owner_distribution,,,Kroger,,,,896
+owner_distribution,,,Savencia,,,,892
+owner_distribution,,,Sainsbury's,,,,885
+owner_distribution,,,The Campbell's Company,,,,834
+owner_distribution,,,Intermarché / Les Mousquetaires,,,,789
+owner_distribution,,,Netto,,,,787
+owner_distribution,,,Hema,,,,786
+owner_distribution,,,Starbucks,,,,775
+owner_distribution,,,Belle France,,,,774
+top_other_brands,,,Other / not mapped to a company,unknown,snacks,US_CANADA,24959
+top_other_brands,,,Other / not mapped to a company,unknown,beverages,US_CANADA,15244
+top_other_brands,,,Other / not mapped to a company,unknown,dairies,FRANCE,14888
+top_other_brands,,,Other / not mapped to a company,unknown,snacks,FRANCE,14745
+top_other_brands,,,Other / not mapped to a company,unknown,beverages,FRANCE,12657
+top_other_brands,,,Other / not mapped to a company,unknown,dairies,US_CANADA,9613
+top_other_brands,,,Other / not mapped to a company,unknown,cereals,US_CANADA,2541
+top_other_brands,,,Other / not mapped to a company,unknown,snacks,UK_IE,1448
+top_other_brands,,,Other / not mapped to a company,unknown,beverages,UK_IE,971
+top_other_brands,,,Other / not mapped to a company,unknown,cereals,FRANCE,589
+top_other_brands,,,Other / not mapped to a company,unknown,dairies,UK_IE,481
+top_other_brands,,,Other / not mapped to a company,papa johns,beverages,US_CANADA,478
+top_other_brands,,,Other / not mapped to a company,tgi fridays,beverages,US_CANADA,472
+top_other_brands,,,Other / not mapped to a company,Lay’s,snacks,US_CANADA,418
+top_other_brands,,,Other / not mapped to a company,e leclerc,snacks,FRANCE,405
+top_other_brands,,,Other / not mapped to a company,trader joes,snacks,US_CANADA,388
+top_other_brands,,,Other / not mapped to a company,le fromager des halles,dairies,FRANCE,385
+top_other_brands,,,Other / not mapped to a company,Lay’s,snacks,FRANCE,346
+top_other_brands,,,Other / not mapped to a company,unknown,beverages,FRANCE|DACH,312
+top_other_brands,,,Other / not mapped to a company,perkins,beverages,US_CANADA,280
+top_other_brands,,,Other / not mapped to a company,envia,dairies,FRANCE,272
+top_other_brands,,,Other / not mapped to a company,galerie,snacks,US_CANADA,254
+top_other_brands,,,Other / not mapped to a company,kusmi tea,beverages,FRANCE,242
+top_other_brands,,,Other / not mapped to a company,paquito,beverages,FRANCE,242
+top_other_brands,,,Other / not mapped to a company,teisseire,beverages,FRANCE,221
+top_other_brands,,,Other / not mapped to a company,kfc,beverages,US_CANADA,220
+top_other_brands,,,Other / not mapped to a company,juraflore,dairies,FRANCE,219
+top_other_brands,,,Other / not mapped to a company,trader joes,dairies,US_CANADA,215
+top_other_brands,,,Other / not mapped to a company,candia,dairies,FRANCE,208
+top_other_brands,,,Other / not mapped to a company,lutti,snacks,FRANCE,207
+manual_replacement_source,manual_review_company_replacement_proposals,mapped_from_manual_review_replacement,Coopérative U,,,,3486
+manual_replacement_source,manual_review_company_replacement_proposals,mapped_from_manual_review_replacement,E.Leclerc,,,,2501
+manual_replacement_source,manual_review_company_replacement_proposals,mapped_from_manual_review_replacement,Casino Group,,,,1628
+manual_replacement_source,manual_review_company_replacement_rule_lipton,licensed_or_partnered_manual_review,LIPTON Teas and Infusions / Pepsi Lipton channel-scoped,,,,1028
+manual_replacement_source,manual_review_company_replacement_proposals,mapped_from_manual_review_replacement,Intermarché / Les Mousquetaires,,,,789
+manual_replacement_source,manual_review_company_replacement_proposals,mapped_from_manual_review_replacement,Starbucks,,,,775
+manual_replacement_source,manual_review_company_replacement_fallback_other,manual_review,Other / not mapped to a company,,,,135
+manual_replacement_source,manual_review_company_replacement_rule_cadbury,market_scoped,Mondelēz International,,,,130
+manual_replacement_source,manual_review_company_replacement_rule_kellogg,recently_changed_market_scoped,Mars / Kellanova,,,,92
+manual_replacement_source,manual_review_company_replacement_proposals,mapped_from_manual_review_replacement,Campbell Soup Company,,,,81
+manual_replacement_source,manual_review_company_replacement_proposals,mapped_from_manual_review_replacement,Cereal Partners Worldwide,,,,59
+manual_replacement_source,manual_review_company_replacement_proposals,mapped_from_manual_review_replacement,Nestlé,,,,12
+manual_replacement_source,manual_review_company_replacement_rule_kellogg,recently_changed_market_scoped,Ferrero / WK Kellogg,,,,11

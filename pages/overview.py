@@ -30,8 +30,14 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from shared import components, db
+from shared.beverage_segments import (
+    PREPARATION_ALCOHOL_SEGMENT,
+    READY_TO_DRINK_SEGMENT,
+    SEGMENT_LABELS,
+    UNKNOWN_BEVERAGE_SEGMENT,
+)
 
-_SNAPSHOT_LABEL = "July 2026"
+_SNAPSHOT_LABEL = "August 2026"
 _CATEGORY_LABELS = {
     "beverages": "Beverages",
     "cereals": "Cereals",
@@ -66,6 +72,18 @@ _REFERENCE_HELP = (
     "≈ within ±10% of selected country-category reference    "
     "↓ below selected country-category reference"
 )
+_BEVERAGE_SEGMENT_ALL_LABEL = "All beverages"
+_BEVERAGE_SEGMENT_CHOICES = [
+    _BEVERAGE_SEGMENT_ALL_LABEL,
+    SEGMENT_LABELS[READY_TO_DRINK_SEGMENT],
+    SEGMENT_LABELS[PREPARATION_ALCOHOL_SEGMENT],
+    SEGMENT_LABELS[UNKNOWN_BEVERAGE_SEGMENT],
+]
+_BEVERAGE_SEGMENT_BY_LABEL = {
+    SEGMENT_LABELS[READY_TO_DRINK_SEGMENT]: READY_TO_DRINK_SEGMENT,
+    SEGMENT_LABELS[PREPARATION_ALCOHOL_SEGMENT]: PREPARATION_ALCOHOL_SEGMENT,
+    SEGMENT_LABELS[UNKNOWN_BEVERAGE_SEGMENT]: UNKNOWN_BEVERAGE_SEGMENT,
+}
 
 
 def _category_label(category: str) -> str:
@@ -452,6 +470,13 @@ components.render_header(
         "distribution-weighted, or market-share estimates."
     ),
 )
+st.warning(
+    "BETA version. This launch build uses Open Food Facts data and "
+    "rule-based cleaning and mapping layers. Some records may remain "
+    "incomplete or imperfect. Page refreshes and large filter changes may "
+    "take up to 90 seconds.",
+    icon="ℹ️",
+)
 
 if not db.database_exists():
     st.info("No local database found yet — run the pipeline first (see docs/ONBOARDING.md).")
@@ -530,6 +555,11 @@ region_code_to_label = dict(region_options)
 category_options = db.get_filter_options()["query_category"]
 
 st.subheader("Select scope")
+st.caption(
+    "Initial load may take around 30-90 seconds because the app prepares the "
+    "selected country-category dataset for drill-down. After the first load, "
+    "filters are usually faster."
+)
 col_region, col_category, col_view = st.columns([1, 1, 1.35])
 with col_region:
     default_region_idx = (
@@ -570,11 +600,59 @@ with col_view:
 
 # ── Load the region x category population (cached; shared by all 3 sections) ─
 df_market = db.get_market_products(category, region_code)
+df_market_unsegmented = df_market
+selected_segment = None
+if category == "beverages":
+    st.subheader("Beverage view segment")
+    if st.session_state.get("mo_beverage_segment") not in _BEVERAGE_SEGMENT_CHOICES:
+        st.session_state["mo_beverage_segment"] = SEGMENT_LABELS[
+            READY_TO_DRINK_SEGMENT
+        ]
+    beverage_segment_label = st.selectbox(
+        "Beverage view segment",
+        _BEVERAGE_SEGMENT_CHOICES,
+        index=_BEVERAGE_SEGMENT_CHOICES.index(
+            st.session_state.get(
+                "mo_beverage_segment",
+                SEGMENT_LABELS[READY_TO_DRINK_SEGMENT],
+            )
+        ),
+        key="mo_beverage_segment",
+    )
+    st.caption(
+        "Beverages are split into ready-to-drink products and beverage "
+        "preparations / alcohol because these product forms are not directly "
+        "comparable in nutrition charts."
+    )
+    st.caption(
+        "Beverage segmentation is an MVP classification. In the MVP regions, "
+        "58,265 records are classified as ready-to-drink beverages, 39,886 as "
+        "beverage preparations / alcohol, and 11,218 remain unclassified. "
+        "Unknown beverage records are work in progress and should not be "
+        "interpreted as a separate market segment."
+    )
+    selected_segment = _BEVERAGE_SEGMENT_BY_LABEL.get(beverage_segment_label)
+    if selected_segment:
+        df_market = df_market[
+            df_market["beverage_view_segment"] == selected_segment
+        ].copy()
+else:
+    st.session_state["mo_beverage_segment"] = SEGMENT_LABELS[
+        READY_TO_DRINK_SEGMENT
+    ]
+
 selected_base = f"{region_label} · {_category_label(category)}"
+if category == "beverages" and selected_segment:
+    selected_base = f"{selected_base} · {beverage_segment_label}"
 st.caption(
     f"Current data snapshot: {_SNAPSHOT_LABEL} · "
     f"{len(df_market):,} products in selected scope"
 )
+if category == "beverages" and selected_segment:
+    st.caption(
+        f"Filtered from {len(df_market_unsegmented):,} beverages in the selected "
+        f"country / market."
+    )
 st.markdown(f"**Selected scope: {selected_base}**")
 
 if active_section == _BRAND_COMPARE_SECTION:
@@ -834,6 +912,7 @@ if active_section == _CATEGORY_REPORT_SECTION:
     company_counts = company_counts.sort_values(
         "company", key=lambda s: s.map(_company_sort_key)
     )
+
     company_groups: list[tuple[str, pd.DataFrame]] = [
         (company, drill_df[drill_df["company"] == company])
         for company in company_counts["company"]

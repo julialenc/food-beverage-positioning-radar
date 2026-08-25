@@ -3,8 +3,8 @@
 This document describes the core database tables currently documented for the
 project: `products`, `product_analysis`, `weekly_brand_summary`, and
 `ingestion_log`. It is the canonical reference for field meaning, expected
-values, and source for those tables. Some newer reporting and Streamlit
-precompute tables are noted at the end for a later schema-documentation pass.
+values, and source for those tables. Some newer reporting, audit, and Streamlit
+precompute outputs are noted at the end for a later schema-documentation pass.
 
 **Interpretation principle:** every field below is an analytical signal, not a
 verdict. Fields describe observed or derived attributes — claims, ingredients,
@@ -14,31 +14,56 @@ legal, illegal, good, or bad.
 
 ## Table: `products`
 
-One row per product (identified by barcode), sourced from Open Food Facts.
+One row per product (identified by barcode), sourced from Open Food Facts and
+enriched by the launch-stage cleaning, brand-normalization, company-mapping,
+and nutrition-quality governance layers.
+
+**Brand interpretation note:** `primary_brand` is now a legacy
+compatibility/provenance field. The current preferred app brand is
+`normalized_brand` when available. Company / owner is stored separately in
+`resolved_company`; manual review is a backend status, not a visible launch
+company name.
+
+**Nutrition interpretation note:** raw OFF nutrition values are preserved in
+the `*_off_raw` columns. Working nutrition columns and inclusion flags support
+the app and aggregate analysis, but source values should remain traceable.
 
 | Column | Type | Description |
 |---|---|---|
 | `barcode` | TEXT (primary key) | Product barcode (GTIN/EAN), the unique product identifier across all tables. |
 | `product_name` | TEXT | Product name as recorded in Open Food Facts. |
 | `brands` | TEXT | Raw brand string from Open Food Facts; may contain multiple comma-separated values (e.g. parent brand and sub-brand) exactly as entered by contributors. |
-| `primary_brand` | TEXT | A single normalized brand value derived from `brands` (first comma-separated token, lowercased, accent-stripped), used for brand-level filtering and aggregation throughout the pipeline. |
+| `primary_brand` | TEXT | Legacy compatibility/provenance brand field retained for older dependencies. It should not be treated as the preferred launch brand when `normalized_brand` is available. |
+| `off_brands_raw` | TEXT | Raw OFF brand evidence copied from `brands` before brand-entity extraction and alias normalization. |
+| `off_brand_tokens` | TEXT | Parsed OFF brand tokens used for brand-entity extraction and audit. |
+| `legacy_primary_brand` | TEXT | The previous first-token brand interpretation preserved for traceability and comparison with the new brand layer. |
+| `brand_entity_raw` | TEXT | Conservative consumer-facing brand entity selected before alias normalization. May come from OFF brand tokens, curated private-label mapping, top-company portfolio evidence, or controlled product-name recovery where explicitly approved. |
+| `brand_entity_source` | TEXT | Source/rule that selected `brand_entity_raw`, such as OFF-token fallback, curated Carrefour private-label mapping, mapped brand token, or controlled Nestlé product-name recovery. |
+| `normalized_brand` | TEXT | Preferred launch brand used by Streamlit where available. This is the cleaned consumer-facing brand or stable brand line after alias normalization; it is separate from parent-company ownership. |
+| `brand_family` | TEXT | Broader brand umbrella where useful for analysis, while keeping `normalized_brand` specific. Example: `Cadbury Dairy Milk` can have `brand_family = Cadbury`. |
+| `brand_alias_source` | TEXT | Source/rule for the alias-normalization decision, such as curated mechanical alias, top-company portfolio alias, curated Carrefour mapping, or fallback/no alias. |
+| `brand_alias_review_status` | TEXT | Review status for the alias-normalization decision, for example confirmed, manual-review, or unresolved depending on the relevant rule output. |
+| `resolved_company` | TEXT | Launch company / owner value used for Streamlit company filtering. This is a directional reporting owner, not a legal ownership guarantee. Unresolved launch rows should use a neutral value such as `Other / not mapped to a company`, not visible `Manual review`. |
+| `company_ownership_resolution_status` | TEXT | Backend ownership-routing status, such as `direct`, `market_scoped`, `licensed_or_partnered`, `recently_changed_market_scoped`, `mapped_from_manual_review_replacement`, or `manual_review`. This field preserves audit nuance even when the visible company is not `Manual review`. |
+| `company_mapping_source` | TEXT | Source/rule for the company mapping, such as reference mapping, top-company portfolio routing, manual-review replacement proposal, or no mapping match. |
 | `quantity` | TEXT | Pack size / quantity as recorded in Open Food Facts (e.g. "500g", "1.15L"). European decimal commas are normalized to periods. |
 | `packaging` | TEXT | Packaging material/type as recorded in Open Food Facts. |
 | `query_category` | TEXT | The category used when this product was retrieved from Open Food Facts during data collection (e.g. snacks, beverages, cereals). |
 | `off_categories` | TEXT | The full, raw category string as recorded in Open Food Facts, often containing multiple nested category tags. Used to refine `query_category`. |
 | `countries` | TEXT | Pipe-separated list of country tags as recorded in Open Food Facts. |
 | `primary_country` | TEXT | The first country extracted from `countries`. Reflects where the product was recorded in Open Food Facts, not necessarily where it is sold (see `docs/LIMITATIONS.md`). |
+| `observed_market_region_codes` | TEXT | Pipe-separated market-region codes derived from OFF country tags and `data/country_region_mapping.csv`. Used by Streamlit region filters and market-scoped ownership logic. |
 | `labels` | TEXT | Pipe-separated list of label/certification tags as recorded in Open Food Facts (e.g. organic, fair trade). |
 | `ingredients_text` | TEXT | Raw ingredients list as recorded in Open Food Facts, used as input for ingredient-based analysis. |
 | `additives_tags` | TEXT | Pipe-separated list of E-number additive tags, pre-parsed by Open Food Facts. |
-| `energy_kcal` | REAL | Energy per 100g (or 100ml for liquids), in kilocalories. Values above 900 are treated as data errors and set to null. |
-| `fat_100g` | REAL | Total fat per 100g/100ml. |
-| `saturated_fat_100g` | REAL | Saturated fat per 100g/100ml. |
-| `carbs_100g` | REAL | Total carbohydrates per 100g/100ml. |
-| `sugars_100g` | REAL | Sugars per 100g/100ml (subset of total carbohydrates). |
-| `fiber_100g` | REAL | Fibre per 100g/100ml. The most commonly missing nutrient in the source data, since fibre labelling is not mandatory in all markets. |
-| `protein_100g` | REAL | Protein per 100g/100ml. |
-| `salt_100g` | REAL | Salt per 100g/100ml. |
+| `energy_kcal` | REAL | Working energy per 100g (or 100ml for liquids), in kilocalories, used by the app and analysis after launch-stage cleaning/governance. See `energy_kcal_off_raw` for the preserved raw OFF value. |
+| `fat_100g` | REAL | Working total fat per 100g/100ml. See `fat_100g_off_raw` for the preserved raw OFF value. |
+| `saturated_fat_100g` | REAL | Working saturated fat per 100g/100ml. See `saturated_fat_100g_off_raw` for the preserved raw OFF value. |
+| `carbs_100g` | REAL | Working total carbohydrates per 100g/100ml. See `carbs_100g_off_raw` for the preserved raw OFF value. |
+| `sugars_100g` | REAL | Working sugars per 100g/100ml (subset of total carbohydrates). See `sugars_100g_off_raw` for the preserved raw OFF value. |
+| `fiber_100g` | REAL | Working fibre per 100g/100ml. Fibre is often missing in source data because labelling rules differ by market. See `fiber_100g_off_raw` for the preserved raw OFF value. |
+| `protein_100g` | REAL | Working protein per 100g/100ml. See `protein_100g_off_raw` for the preserved raw OFF value. |
+| `salt_100g` | REAL | Working salt per 100g/100ml. See `salt_100g_off_raw` for the preserved raw OFF value. |
 | `nutriscore_grade` | TEXT (A–E) | Nutri-Score letter grade as recorded in Open Food Facts, where available. The scale runs A to E, summarizing nutrition profile under the Nutri-Score system; it is a reference signal only and does not represent a product recommendation. |
 | `nova_group` | REAL (1–4) | NOVA processing classification as recorded in Open Food Facts. 1 = unprocessed/minimally processed, 4 = ultra-processed. A reference classification, not a standalone verdict. |
 | `completeness_score` | INTEGER (0–100) | Data-quality indicator: the percentage of eleven key fields (product name, brands, ingredients text, six nutrition values, Nutri-Score, NOVA group) that are populated for this product. Calculated as `round(filled_fields / 11 * 100)`. Reflects completeness of the source record, not the quality of the product itself. |
@@ -48,6 +73,33 @@ One row per product (identified by barcode), sourced from Open Food Facts.
 | `last_modified_t` | TEXT | Last modification timestamp in Open Food Facts, converted from Unix time. Used to identify products to re-pull on incremental updates. |
 | `ingested_at` | TEXT | When this row was loaded into this database. |
 | `image_url` | TEXT | Front-of-pack image URL from Open Food Facts. A placeholder value containing `/invalid/` indicates no real image is available; such rows are excluded before image-based analysis. |
+| `energy_kcal_off_raw` | REAL | Raw OFF energy value before nutrition-quality governance handling. |
+| `fat_100g_off_raw` | REAL | Raw OFF total fat value before nutrition-quality governance handling. |
+| `saturated_fat_100g_off_raw` | REAL | Raw OFF saturated fat value before nutrition-quality governance handling. |
+| `carbs_100g_off_raw` | REAL | Raw OFF carbohydrate value before nutrition-quality governance handling. |
+| `sugars_100g_off_raw` | REAL | Raw OFF sugars value before nutrition-quality governance handling. |
+| `fiber_100g_off_raw` | REAL | Raw OFF fibre value before nutrition-quality governance handling. |
+| `protein_100g_off_raw` | REAL | Raw OFF protein value before nutrition-quality governance handling. |
+| `salt_100g_off_raw` | REAL | Raw OFF salt value before nutrition-quality governance handling. |
+| `nutrition_quality_status` | TEXT | Launch nutrition-quality status, such as `valid`, `data_quality_error`, `energy_macro_inconsistency`, `genuine_outlier`, `category_scope_outlier`, or `manual_review`. |
+| `outlier_type` | TEXT | Optional grouped outlier type used for audit and downstream filtering. |
+| `include_in_product_table` | INTEGER (1/0) | Whether the product should be visible in product-level tables/Product Explorer. Hard data-quality errors are excluded; imperfect but useful records can remain visible. |
+| `include_in_aggregates` | INTEGER (1/0) | Whether the record is eligible for Market Overview aggregate calculations. Records with hard data-quality errors, material energy-macro inconsistency, or approved aggregate-exclusion outlier rules are excluded. |
+| `include_in_charts` | INTEGER (1/0) | Whether the record is eligible for Market Overview charts. This may be stricter than product-level visibility to avoid chart distortion. |
+| `nutrition_quality_reason` | TEXT | Semicolon-separated or rule-style reasons for the nutrition-quality status and inclusion flags. |
+| `energy_kcal_missing` | INTEGER (1/0) | Whether the source/working energy value is missing. Missing is not zero. |
+| `fat_100g_missing` | INTEGER (1/0) | Whether total fat is missing. Missing is not zero. |
+| `saturated_fat_100g_missing` | INTEGER (1/0) | Whether saturated fat is missing. Missing is not zero. |
+| `carbs_100g_missing` | INTEGER (1/0) | Whether carbohydrates are missing. Missing is not zero. |
+| `sugars_100g_missing` | INTEGER (1/0) | Whether sugars are missing. Missing is not zero. |
+| `fiber_100g_missing` | INTEGER (1/0) | Whether fibre is missing. Missing is not zero. |
+| `protein_100g_missing` | INTEGER (1/0) | Whether protein is missing. Missing is not zero. |
+| `salt_100g_missing` | INTEGER (1/0) | Whether salt is missing. Missing is not zero. |
+
+**Derived Streamlit/audit field:** `beverage_view_segment` is not part of the
+`products` table DDL. It is derived for beverage Market Overview filtering and
+audit outputs to separate ready-to-drink beverages from beverage preparations /
+alcohol and unknown beverage segments.
 
 ## Table: `product_analysis`
 
@@ -200,21 +252,21 @@ should instead reflect the full database snapshot, not a same-day-only
 guard. See `docs/ADR.md`.
 
 **Two changes from the prior schema, flagged for awareness:** the prior
-version grouped by the raw `brands` field rather than the normalized
-`primary_brand` used everywhere else in the pipeline, fragmenting brand
-totals inconsistently with every other aggregation; this table now groups by
-`primary_brand` instead. The prior version also included `high_score_count`
-(score ≥ 70) and `medium_score_count` (score 45–69) columns that were
-structurally impossible to populate, since the underlying score is capped at
-40 — these counting/bucketing columns are removed rather than re-thresholded,
-since count-based buckets read as verdict-adjacent regardless of the
-underlying bug.
+version grouped by the raw `brands` field rather than the legacy normalized
+`primary_brand`, fragmenting brand totals inconsistently with the historical
+pipeline. This table now groups by `primary_brand`, but launch Streamlit views
+prefer `products.normalized_brand` where available. The prior version also
+included `high_score_count` (score >= 70) and `medium_score_count` (score
+45-69) columns that were structurally impossible to populate, since the
+underlying score is capped at 40 — these counting/bucketing columns are removed
+rather than re-thresholded, since count-based buckets read as verdict-adjacent
+regardless of the underlying bug.
 
 | Column | Type | Description |
 |---|---|---|
 | `id` | INTEGER (primary key) | Auto-incrementing row identifier. |
 | `week_ending` | TEXT | ISO date marking the end of the aggregation period. |
-| `primary_brand` | TEXT | Normalized brand (see `products.primary_brand`). |
+| `primary_brand` | TEXT | Legacy normalized brand used by this early QA aggregation. For launch-facing brand views, prefer `products.normalized_brand` when available. |
 | `query_category` | TEXT | Product category for this aggregation row. |
 | `product_count` | INTEGER | Number of products included in this brand/category/week grouping. |
 | `avg_composition_marker_score` | REAL | Average `composition_marker_score` across products in this grouping. |
