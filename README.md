@@ -127,13 +127,16 @@ app.py                  Streamlit entry point
 pages/                  Streamlit pages
 shared/                 Shared UI and database helpers
 pipeline/               Data ingestion, cleaning, analysis, and loading scripts
-data/reference/         Curated reference mappings and lookup files
+data/reference/         Production reference mappings and lookup files
 database/               Local SQLite database and schema reference
 docs/                   Methodology, limitations, governance, and architecture docs
 ```
 
-The exact repository hierarchy may evolve during cleanup, but these are the
-main working areas of the project.
+The public repository keeps production reference inputs under `data/reference/`.
+Generated review CSVs, local pipeline samples, raw OFF downloads, and local
+SQLite databases are not part of the public data surface and can be regenerated
+when needed. The exact repository hierarchy may evolve during cleanup, but
+these are the main working areas of the project.
 
 ## Documentation
 
