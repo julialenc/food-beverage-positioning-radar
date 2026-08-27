@@ -15,6 +15,11 @@ pipeline/check_*.py
 pipeline/*.csv
 data/reference/brand_counts.csv
 data/reference/brand_coverage_report.csv
+data/reference/company_brand_mapping_pre_layer3_merge_*.csv
+data/reference/nestle_brand_portfolio_matrix.csv
+data/brand_mapping_review/*.csv
+data/nutrition_outlier_review/audits/*.csv
+data/nutrition_outlier_review/candidates/*.csv
 database/*.db-shm
 database/*.db-wal
 llm_sampling_design_log.md

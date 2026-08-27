@@ -69,12 +69,6 @@ SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 DB_DIR     = os.path.join(ROOT, "database")
 DB_PATH    = os.path.join(DB_DIR, "positioning_radar.db")
 COMPANY_MAP_PATH = os.path.join(ROOT, "data", "reference", "company_brand_mapping.csv")
-MANUAL_REVIEW_REPLACEMENT_PATH = os.path.join(
-    ROOT,
-    "data",
-    "brand_mapping_review",
-    "manual_review_company_replacement_proposals.csv",
-)
 COMPANY_OTHER_LABEL = "Other / not mapped to a company"
 COMPANY_MANUAL_REVIEW_LABEL = "Manual review"
 
@@ -596,49 +590,16 @@ def resolve_company_owner_for_load(brand, countries, region_codes, mapping_index
     return COMPANY_OTHER_LABEL
 
 
-def load_manual_review_replacement_proposals():
-    if not os.path.exists(MANUAL_REVIEW_REPLACEMENT_PATH):
-        return {}
-
-    proposals = {}
-    with open(MANUAL_REVIEW_REPLACEMENT_PATH, encoding="utf-8-sig", newline="") as f:
-        for row in csv.DictReader(f):
-            proposed = (row.get("proposed_company_owner") or "").strip()
-            action = (row.get("proposed_action") or "").strip()
-            if action != "map_to_company" or not proposed:
-                continue
-            key = (
-                _normalize_review_key(row.get("normalized_brand", "")),
-                str(row.get("query_category", "") or "").strip(),
-                str(row.get("primary_country", "") or "").strip(),
-                str(row.get("observed_market_region_codes", "") or "").strip(),
-            )
-            proposals[key] = {
-                "company": proposed,
-                "reason": (row.get("proposal_reason") or "").strip(),
-            }
-    return proposals
-
-
 def resolve_manual_review_replacement(
     brand,
     category,
     primary_country,
     region_codes,
-    proposals,
 ):
     """Return visible launch owner plus backend status/source for Manual Review rows."""
     brand_key = _normalize_review_key(brand)
     country = str(primary_country or "").strip()
     regions = str(region_codes or "").strip()
-    proposal_key = (brand_key, str(category or "").strip(), country, regions)
-
-    if proposal_key in proposals:
-        return (
-            proposals[proposal_key]["company"],
-            "mapped_from_manual_review_replacement",
-            "manual_review_company_replacement_proposals",
-        )
 
     if "cadbury" in brand_key:
         company = (
@@ -681,7 +642,6 @@ def resolve_manual_review_replacement(
 def add_resolved_company_column(df):
     """Precompute company ownership once so Streamlit can filter in SQL."""
     mapping_index = load_company_mapping_index()
-    manual_review_proposals = load_manual_review_replacement_proposals()
     display_brand = (
         df.get("normalized_brand", pd.Series(index=df.index, dtype="object"))
         .fillna("")
@@ -732,7 +692,6 @@ def add_resolved_company_column(df):
                 category,
                 country,
                 region,
-                manual_review_proposals,
             )
             for brand, category, country, region in zip(
                 brand_values[manual_mask],

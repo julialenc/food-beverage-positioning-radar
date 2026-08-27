@@ -76,25 +76,15 @@ The matrix is an input to company mapping. It should not be used as a blanket
 override without the conflict checks described in
 `docs/BRAND_COMPANY_MAPPING.md`.
 
-### `nestle_brand_portfolio_matrix.csv`
-
-Nestle-specific portfolio matrix retained for auditability from the first Top 9
-company review. Later Top 9 work is consolidated in
-`top_company_brand_portfolio_matrix.csv`.
-
 ### `brand_counts.csv` and `brand_coverage_report.csv`
 
 Brand coverage diagnostics used during mapping review. These are helpful for
 prioritizing cleanup but are not the app's final company / owner truth table.
 
-### `company_brand_mapping_pre_layer3_merge_20260824_205436.csv`
-
-Backup of `company_brand_mapping.csv` before the Layer 3 company-mapping merge.
-Retained for provenance and rollback comparison.
-
 ## Generated Outputs Elsewhere
 
-Most audit outputs are stored outside this folder:
+Most audit outputs are generated outside this folder and are treated as local
+review artifacts rather than production reference inputs:
 
 - `data/brand_mapping_review/` contains brand/entity/company review exports.
 - `data/nutrition_outlier_review/` contains nutrition-quality and outlier
@@ -102,8 +92,8 @@ Most audit outputs are stored outside this folder:
 - `data/sample/` contains pipeline sample outputs when generated locally.
 - `database/` contains the local SQLite database when built locally.
 
-Large or one-off review files should generally stay in the appropriate review
-folder rather than being added to `data/reference/`.
+Large or one-off review files should generally stay local, be regenerated from
+the relevant script when needed, and not be added to `data/reference/`.
 
 ## Reproducing From Scratch
 

@@ -102,8 +102,9 @@ implemented in the launch MVP and are planned for a later governance update.
 The final launch exclusion rate from Market Overview calculations is
 approximately 3.02%, accepted after audit because the criteria are explicit and
 raw source values remain traceable. See
-`docs/NUTRITION_OUTLIER_GOVERNANCE.md` and
-`data/nutrition_outlier_review/audits/` for the detailed governance record.
+`docs/NUTRITION_OUTLIER_GOVERNANCE.md` for the detailed governance record. The
+nutrition audit CSVs are generated locally by the governance scripts when
+review is needed.
 
 ## Brand, brand-family, and company mapping
 

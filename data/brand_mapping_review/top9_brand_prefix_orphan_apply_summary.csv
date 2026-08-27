@@ -1,9 +1,0 @@
-﻿review_decision,apply_to_mapping,review_rows,product_count,applied_by_script
-SCRIPT_METADATA,,purged_alias_rows=79; purged_company_rows=325; added_alias_rows=79; added_company_rows=325; applied_review_rows=378,1839,
-approve proposed,True,350,1759,True
-map to Cereal Partners Worldwide,True,22,68,True
-reject prefix match / map to Waitrose,True,17,66,False
-map to Mondelēz International,True,3,8,True
-map to General Mills,True,1,2,True
-map to Nestlé,True,2,2,True
-reject prefix match / keep Other,False,139,528,False

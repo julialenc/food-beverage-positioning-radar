@@ -1,7 +1,0 @@
-﻿metric,value
-backup_file,data\reference\company_brand_mapping_pre_layer3_merge_20260824_205436.csv
-rows_before,608
-upsert_ready_rows,1618
-updated_existing_rows,5
-appended_new_rows,1613
-rows_after,2221

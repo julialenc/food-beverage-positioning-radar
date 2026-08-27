@@ -126,7 +126,7 @@ mapping_reason
 review_note
 ```
 
-Output:
+Generated local audit output:
 
 ```text
 data/brand_mapping_review/brand_alias_suggestions_bottom_up.csv
@@ -506,15 +506,18 @@ data/brand_mapping_review/top_company_portfolio_match_audit.csv
 
 #### Nestlé portfolio source matrix
 
-As of 24 August 2026, the first top-down company portfolio matrix is:
+As of 24 August 2026, the first Nestlé-specific top-down portfolio matrix was
+used as an intermediate audit source for the Top 9 mapping build. The locked
+launch input is now consolidated in:
 
 ```text
-data/reference/nestle_brand_portfolio_matrix.csv
+data/reference/top_company_brand_portfolio_matrix.csv
 ```
 
-This file combines Nestlé's official Brands A-Z page with the project-provided
-regional exception matrix. It is a source/reference matrix for the Nestlé
-orphaned-brand check, not a direct overwrite of
+The Nestlé-specific intermediate file is no longer a production reference
+input. It combined Nestlé's official Brands A-Z page with the project-provided
+regional exception matrix for the first review pass, but launch routing is
+applied through the consolidated Top 9 matrix and
 `data/reference/company_brand_mapping.csv`.
 
 Rows from the official Nestlé source default to `Nestlé` unless a regional
@@ -614,10 +617,10 @@ The review scripts should follow this sequence:
    or unresolved.
 7. Group remaining unresolved normalized brands by product count.
 8. Review significant unresolved brands only.
-9. Export audit files.
+9. Export local audit files for review.
 ```
 
-Minimum useful columns across brand-mapping audit files:
+Minimum useful columns across generated brand-mapping audit files:
 
 ```text
 raw_brand
@@ -708,11 +711,9 @@ As of 25 August 2026, `Manual review` is treated as a backend ownership status,
 not as a user-facing company / owner label.
 
 During `pipeline/load.py`, rows that would otherwise resolve to
-`resolved_company = Manual review` are replaced for the launch app:
+`resolved_company = Manual review` are replaced for the launch app using
+deterministic fallback rules:
 
-- approved replacement proposals from
-  `data/brand_mapping_review/manual_review_company_replacement_proposals.csv`
-  become the proposed company owner;
 - Cadbury rows are routed by market to The Hershey Company in the United
   States and to Mondelēz International outside the United States;
 - Kellogg's rows are routed to `Ferrero / WK Kellogg` in the United States /

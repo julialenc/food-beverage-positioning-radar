@@ -82,7 +82,7 @@ Files changed:
 pipeline/nutrition_outliers/build_quality_flags.py
 pipeline/nutrition_outliers/validate_quality_flags.py
 docs/NUTRITION_OUTLIER_GOVERNANCE.md
-data/nutrition_outlier_review/audits/
+data/nutrition_outlier_review/audits/  (generated local audit outputs)
 ```
 
 This layer implements the audited treatment model after manual review of the
@@ -290,7 +290,7 @@ visuals.
 
 ### QA audit outputs
 
-The implemented script writes these files:
+The implemented script writes these local audit files when run:
 
 ```text
 data/nutrition_outlier_review/audits/hard_data_quality_errors.csv
@@ -308,8 +308,8 @@ The key QA metric is:
 % of products excluded from Market Overview calculations
 ```
 
-If this is materially above the 2-3% comfort range, the audit files must be
-reviewed before finalizing downstream app/database use.
+If this is materially above the 2-3% comfort range, the generated audit files
+must be reviewed before finalizing downstream app/database use.
 
 ### 2026-08-23 — Scenario C under review
 
