@@ -304,18 +304,25 @@ connected.
 
 ---
 
-### ADR-008 — Brand normalisation: primary_brand extraction
+### ADR-008 — Brand normalisation and company-owner routing
 
 **Date:** 20 May 2026
-**Status:** Active — mapping files maintained; scoped resolver pending
+**Status:** Active — launch architecture updated August 2026
 
-**Decision:** Extract `primary_brand` (first comma-separated token from
-the `brands` field, lowercased, accent-stripped) as a normalisation step.
-Brand-reference data is maintained in two layers:
-`data/reference/brand_alias_mapping.csv` maps observed brand variants to
-canonical brand strings, while `data/reference/company_brand_mapping.csv`
-maps canonical brands to direct, market-scoped, or manual-review ownership
-rows.
+**Decision:** Separate brand and company handling into distinct layers:
+
+1. preserve raw OFF brand evidence;
+2. extract the most useful consumer-facing brand entity;
+3. normalize spelling, punctuation, accents, and approved aliases;
+4. resolve company / owner as a directional navigation field.
+
+The legacy `primary_brand` field remains for compatibility, but the August
+2026 MVP pipeline also uses `off_brands_raw`, `off_brand_tokens`,
+`legacy_primary_brand`, `brand_entity_raw`, `brand_entity_source`,
+`normalized_brand`, `brand_family`, and `resolved_company`-style fields. This
+prevents brand entities such as `KitKat`, `Milka`, `Carrefour Bio`, or
+`Nescafe Dolce Gusto` from being flattened into parent companies or retailer
+banners too early.
 
 **Problem:** The OFF `brands` field is free-text, contributor-entered.
 The same company appears as multiple strings: `nestlé`, `nestle`,
@@ -323,36 +330,51 @@ The same company appears as multiple strings: `nestlé`, `nestle`,
 water brand). This makes brand-level aggregation inconsistent without
 normalisation (see OBS-014).
 
-**v1 fix:** `primary_brand` = first token, lowercased, accent-stripped
-(NFKD normalisation). Reduces fragmentation significantly at low effort.
+**Original v1 fix:** `primary_brand` = first token, lowercased,
+accent-stripped (NFKD normalisation). This reduced fragmentation at low
+effort, but it was not sufficient for launch because OFF often stores parent or
+company names where the product name or brand string clearly contains a more
+specific consumer-facing brand.
 
-**Company mapping:** `data/reference/company_brand_mapping.csv` currently
-contains 407 mapping rows across 101 parent-company values. It includes
-ownership-resolution metadata (`direct`, `market_scoped`, `manual_review`)
-so market-specific brands such as `cheerios`, `kellogg's`, and `kitkat` can
-be represented without false one-company attribution. All pattern metrics are
-computed at brand level; company-level views are navigational aggregations of
-brand-level results. The scoped ownership data is implemented in the CSV, but
-the Streamlit resolver logic is still pending. See
-`docs/BRAND_COMPANY_MAPPING.md` for mapping methodology and known
-complications.
+**Launch update:** `pipeline/clean.py` now applies a conservative layered
+approach:
+
+- controlled product-name recovery for high-confidence Nestle snack brands in
+  the reviewed France, UK/Ireland, and US/Canada cases;
+- Carrefour-only curated private-label normalization before generic alias
+  heuristics;
+- approved spelling and punctuation aliases such as `Kit Kat` / `KitKat`,
+  `Clif Bar` / `Clif`, and `Nescafe` / `Nescafe Dolce Gusto` handling;
+- a separate company-mapping resolver using
+  `data/reference/company_brand_mapping.csv`.
+
+**Company mapping:** `company_brand_mapping.csv` supports direct,
+market-scoped, licensed/partnered, recently changed, and review-required
+routing. Company / owner values are used for filtering and navigation, not for
+legal ownership certification or company-level scoring. Backend review status
+is preserved, but the Streamlit app must not display `Manual review` as a
+visible company / owner value; unresolved cases are shown as
+`Other / not mapped to a company` or a scoped company label.
+
+See `docs/BRAND_COMPANY_MAPPING.md` for the detailed launch governance.
 
 ---
 
-### ADR-009 — Category scope: snacks, beverages, cereals in v1
+### ADR-009 — Category scope: snacks, beverages, cereals, and dairy
 
 **Date:** 18 May 2026
-**Status:** Active — to be expanded with bulk export
+**Status:** Active — MVP scope updated August 2026
 
-**Decision:** Query three OFF categories in v1: snacks, beverages,
-cereals.
+**Decision:** The August 2026 MVP app focuses on four OFF-derived analytical
+categories: snacks, beverages, cereals, and dairy.
 
-**Rationale:** These three categories have the highest concentration of
+**Rationale:** These categories have a high concentration of
 functional, free-from, and organic/natural positioning claims in the
 dataset and cover the core use cases: protein bars, energy drinks,
-fortified breakfast cereals, plant-based drinks. They are also the
-categories most relevant to the primary audience (CPG professionals,
-insight managers, market analysts) described in the brief.
+fortified breakfast cereals, plant-based drinks, yogurts, dairy desserts, and
+related packaged products. They are also the categories most relevant to the
+primary audience (CPG professionals, insight managers, market analysts)
+described in the brief.
 
 **Known limitation:** OFF categories are contributor-assigned folksonomy
 tags, not a controlled vocabulary. Misclassification occurs (e.g. water
@@ -360,9 +382,11 @@ appearing in snacks). Category definitions are refined using the
 `off_categories` field, which contains the full nested OFF category
 hierarchy per product.
 
-**Planned expansion:** With the full bulk export, add dairy products and
-plant-based foods (growing claim territory, already partially covered
-via beverages). UK and US market filtering applied via `countries_tags`.
+**Launch update:** Category rules are now shared by bulk and incremental
+ingestion through `pipeline/category_rules.py`. MVP cleanup has reviewed and
+locked the main France, UK/Ireland, and US/Canada category bases used by the
+Streamlit app. Some non-MVP regions remain visible in source data but should
+not be over-interpreted as fully cleaned analytical markets.
 
 **UK/US rationale:** The current sample is French-dominant (69% FR
 language). UK and US markets show higher density of functional and
@@ -437,7 +461,9 @@ level. The `company_brand_mapping.csv` enables company-owner navigation and
 cautious roll-up views in Streamlit and downstream exports, but market-scoped
 ownership rows require region/country-aware resolver logic before they should
 be treated as fully resolved company attribution. All scoring, segmentation,
-and benchmark intersection detection runs at `primary_brand` level.
+and benchmark intersection detection should run at the brand/product/category
+level, using `normalized_brand` where available. `primary_brand` remains a
+legacy compatibility/provenance field.
 
 **Rationale:** Company portfolios are too heterogeneous for company-level
 metric averages to be meaningful (a conglomerate whose portfolio spans
@@ -664,7 +690,7 @@ pipeline steps.
 | No sales volume data | Cannot measure market share | Documented in `docs/LIMITATIONS.md` |
 | Brand fragmentation | Conglomerate aggregations need care | Company mapping in `data/reference/`; category filters recommended |
 | OFF category folksonomy | Some category misclassification | Refined using `off_categories` full hierarchy field |
-| Image-based analysis covers a subset | Front-of-pack claim coverage is incomplete for non-sampled products; fallback taxonomy may rely on product name, labels, and ingredient/name-derived signals | 17,127 valid front-of-pack observations across the current US/UK and France releases; use `release_run_id`, `claim_source`, and `pack_analysis_attempted` for coverage interpretation |
+| Image-based analysis covers a subset | Front-of-pack positioning coverage is incomplete for non-sampled products; Streamlit MVP displays vision-based positioning signals only | 17,127 valid front-of-pack observations across the current US/UK and France releases; use `release_run_id`, `claim_source`, and `pack_analysis_attempted` for coverage interpretation |
 | Sports nutrition context | Benchmark flags may reflect intended use, not unexpected profile | Documented in `docs/LIMITATIONS.md` |
 | Liquid/solid classification is a proxy | Energy-density heuristic may misclassify some formats | MVP approximation; flagged for review if benchmark flags become central |
 
@@ -685,7 +711,7 @@ extraction, segmentation), not a sequential release train.
 | v2 | Planned | Product segmentation and additional Streamlit market-overview views |
 | v3 | Complete | Vision pipeline and pack-image claim extraction; current US/UK and France releases contain 17,127 valid front-of-pack observations |
 | v3.5 | Planned | Prompt/model calibration and targeted future extraction tests, including English panel-context review and prompt-drift checks |
-| Production | Planned | Full OFF bulk export, weekly scheduler, Streamlit public deployment |
+| Production | MVP launch | Full OFF bulk export path, cleaned local SQLite database, and Streamlit public deployment path |
 
 ---
 
@@ -775,15 +801,22 @@ profile and prompt version. Scaling before validation would bake any
 taxonomy gaps or extraction errors into the full production dataset.
 
 **Known implication:** Products outside the smart sample have no
-vision-extracted claims. Their claim taxonomy is derived from
-ingredient lists and product names only (`claim_source =
-ingredient_text_only`). This is correctly surfaced in the app via the
-evidence caption in the product card and the `pack_analysis_attempted`
-flag. It is not a data quality failure — it is the intended state until
-full-scale extraction runs.
+vision-extracted front-pack claims. In the current Streamlit MVP, they should
+be shown as `Not tested` for positioning rather than assigned
+ingredient/name-derived front-pack claims.
+
+The underlying pipeline may retain ingredient/name-derived fallback fields for
+internal QA and historical compatibility, but these fallback signals must not
+be presented as confirmed front-of-pack observations.
 
 **Current release record:** See `docs/CLAIM_EXTRACTION.md` for the active
 release IDs, prompt versions, second-pass panel-context review, release
 denominators, and known extraction limitations.
 
 ---
+
+*This document is updated as new decisions are made.*
+*Last updated: August 2026 (current release scale, Streamlit-only MVP scope,
+legacy composite-score status, bulk bootstrap status, and launch brand/company
+routing reconciled with `docs/METHODOLOGY.md` and
+`docs/BRAND_COMPANY_MAPPING.md`).*

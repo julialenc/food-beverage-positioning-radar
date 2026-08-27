@@ -12,6 +12,14 @@ legal assessments, or market-share estimates. See `docs/METHODOLOGY.md` for
 metric definitions, `docs/LIMITATIONS.md` for interpretation caveats, and
 `docs/CLAIM_EXTRACTION.md` for the full OCR/LLM sampling and prompt history.
 
+**Launch documentation note:** this file is a durable observation register, not
+the controlling MVP methodology. For the August 2026 launch state, use
+`docs/METHODOLOGY.md`, `docs/LIMITATIONS.md`,
+`docs/BRAND_COMPANY_MAPPING.md`, and
+`docs/NUTRITION_OUTLIER_GOVERNANCE.md` as the current source of truth. Older
+observations are retained here for auditability when they explain why a
+pipeline decision was made.
+
 ---
 
 ## 1. Data quality and source caveats
@@ -67,10 +75,11 @@ and occasional contributor errors:
 - Some values are clear unit-entry errors, such as kcal/kJ confusion or
   sodium/salt confusion.
 
-Physically impossible values are capped to null where the pipeline has hard
-plausibility limits. More subtle errors, such as a product reporting a value
-several times higher than comparable brand/category peers, require future
-data-quality flagging rather than silent correction.
+Physically impossible values are flagged through nutrition-quality governance
+and excluded from normal aggregate use where appropriate. Raw OFF values remain
+preserved where provenance fields are available. More subtle errors, such as a
+product reporting a value several times higher than comparable brand/category
+peers, require future data-quality flagging rather than silent correction.
 
 ### OBS-005 - Category assignment needs active cleansing
 
@@ -86,16 +95,16 @@ The most important current issues are:
   It can also pull in cereal bars. For this project, `cereals` means dry
   breakfast cereal products only: granola, muesli, oats/porridge, flakes,
   choco balls, and similar pack formats. Cereal bars and snack bars belong in
-  `snacks`, not `cereals`. Current cereals release figures are therefore
-  contaminated and should be interpreted with that caveat.
+  `snacks`, not `cereals`. Earlier cereals release figures were therefore
+  contaminated and are retained here as context for the cleanup work.
 - **Snacks contamination:** noodles and related products appear to contaminate
   snacks. This is narrower than cereals contamination because many bread,
   flour, tortilla, and breadstick terms are legitimate snack products
   (gingerbread, shortbread, tortilla chips, breadstick snack packs).
 
-Fixing category contamination requires two steps: update category exclusion
-logic in `bootstrap.py`, then explicitly clean or reclassify existing database
-rows. A re-bootstrap alone does not revisit contaminated rows that disappear
+Fixing category contamination required two steps: updating category exclusion
+logic, then explicitly cleaning or reclassifying existing database rows. A
+re-bootstrap alone would not have revisited contaminated rows that disappeared
 from the newly filtered input.
 
 As of the August 2026 category-rules cleanup, bulk and incremental ingestion
@@ -118,18 +127,18 @@ snack bars, snack pots, snacking packs, and apéro/party-snack formats can
 override meal-like words. Pasta/noodle/dumpling wording is excluded from
 snacks only when no clear snack-format cue is present.
 
-For MVP, all milk-related products remain in `dairies`: milk, hard cheese,
-yogurt, drinkable yogurt, flan, mousse, dairy desserts, and similar products.
+For MVP, all milk-related products remain in the internal `dairies` category
+(displayed as Dairy in the app): milk, hard cheese, yogurt, drinkable yogurt,
+flan, mousse, dairy desserts, and similar products.
 Some dairy products may function as snacks, especially small yogurts or dairy
 dessert packs, but the current app uses one primary analytical category. A
 future version may add a separate snacking-occasion flag or allow
 double-assignment, so small dairy snacks can appear in both `dairies` and a
 holistic snacking view without weakening the dairy base.
 
-See `docs/SNACK_CATEGORY_CLEANUP.md` for the operational review rules used to
-classify snack, not-snack, and manual-review rows during category cleanup.
-See `docs/CEREAL_CATEGORY_CLEANUP.md` for the operational breakfast-cereal
-definition and route-to-snacks/not-cereal rules.
+See `docs/CATEGORY_CLEANUP.md` for the operational review rules used to
+classify snacks, cereals, route-to-snacks rows, and non-category rows during
+category cleanup.
 
 As of 20 August 2026, France Snacks and France Cereals are locked for MVP
 category-cleanup purposes. The France cleanup was applied to the same market
@@ -301,8 +310,9 @@ This distinction explains several design choices:
 - Ingredient-marker analysis must remain auditable and conservative.
 - Front-pack claim extraction comes from OCR/LLM image observation, not from
   ingredient inference.
-- Ingredient/name fallback may be used only when no valid pack observation
-  exists, and must be labelled as weaker evidence through `claim_source`.
+- Ingredient/name fallback may exist in internal or historical pipeline fields,
+  but the current Streamlit MVP should not present it as confirmed front-pack
+  evidence.
 
 The distinction is central to interpreting claim-benchmark intersections.
 

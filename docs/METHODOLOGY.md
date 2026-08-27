@@ -52,11 +52,11 @@ uses deterministic category-cleanup rules before products enter the Streamlit
 MVP scopes. The reviewed launch categories are snacks, cereals, dairy, and
 beverages across the MVP regions France, UK & Ireland, and US & Canada.
 
-Snacks and cereals received detailed manual review during August 2026. Their
-cleanup rules are documented in `docs/SNACK_CATEGORY_CLEANUP.md` and
-`docs/CEREAL_CATEGORY_CLEANUP.md`, and implemented through shared category
-rules used by both bulk and incremental ingestion. Category cleanup is based on
-product/category evidence, not on nutrition values or claim outcomes.
+Snacks and cereals received detailed manual review during August 2026. The
+category cleanup rules are documented in `docs/CATEGORY_CLEANUP.md` and
+implemented through shared category rules used by both bulk and incremental
+ingestion. Category cleanup is based on product/category evidence, not on
+nutrition values or claim outcomes.
 
 Category cleanup does not claim to produce a perfect retail taxonomy. It
 creates a defensible analytical base for the MVP views and preserves source

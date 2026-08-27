@@ -139,12 +139,13 @@ main working areas of the project.
 
 - `docs/METHODOLOGY.md` - metric definitions, evidence layers, and interpretation rules
 - `docs/LIMITATIONS.md` - source-data, licensing, and methodology limitations
+- `docs/CATEGORY_CLEANUP.md` - category cleanup and routing governance
 - `docs/BRAND_COMPANY_MAPPING.md` - brand normalization and company mapping governance
 - `docs/NUTRITION_OUTLIER_GOVERNANCE.md` - nutrition-quality and outlier-treatment rules
 - `docs/COLUMN_DESCRIPTIONS.md` - database/output field definitions
 - `docs/CLAIM_EXTRACTION.md` - OCR/LLM front-pack claim extraction methodology
 - `docs/ADR.md` - architecture decision records
-- `docs/ONBOARDING.md` - project handoff and working rules
+- `data/reference/README.md` - reference mapping files and provenance notes
 
 ## Data Source, License, And Attribution
 

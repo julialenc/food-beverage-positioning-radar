@@ -6,8 +6,7 @@ data, update the database, or write outputs. It checks whether
 category_rules.assign_category() matches the frozen MVP category-scope rules
 documented in:
 
-- docs/SNACK_CATEGORY_CLEANUP.md
-- docs/CEREAL_CATEGORY_CLEANUP.md
+- docs/CATEGORY_CLEANUP.md
 
 Run before a bulk bootstrap or incremental ingest rule change:
 

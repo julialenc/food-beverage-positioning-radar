@@ -1,49 +1,115 @@
 # Reference Data
 
-Small, hand-maintained reference files committed to the repository for
-reproducibility. These are **inputs and lookups** that the pipeline reads,
-as distinct from generated outputs (which live in `data/sample/` and
-`database/`, both gitignored).
+This folder contains curated reference inputs, launch mapping tables, and
+provenance files used by the Food & Beverage Positioning Radar pipeline.
 
-Region grouping for the Market / region filter is defined one level up,
-in `data/country_region_mapping.csv` — see the main `README.md` and the
-product brief's Market / region section.
+The files here are not raw Open Food Facts data. They are project-maintained
+lookups that support category routing, brand normalization, company / owner
+navigation, and audited launch fixes.
 
-## Files
+Region grouping for the Market / region filter is defined one level up in
+`data/country_region_mapping.csv`.
 
-### company_brand_mapping.csv
-407 mapping rows across 101 parent-company values, with category,
-HQ-country, notes, and ownership-resolution metadata. Used to support
-company-level navigation, scoped ownership resolution, and the Product
-Explorer's Company / owner filter; product-level analysis is always run at
-the brand level and rolled up, never computed at the company level. Schema
-and maintenance notes are documented in `docs/BRAND_COMPANY_MAPPING.md`.
-See `docs/ADR.md` ADR-007 for the storage rationale.
+## Launch Reference Files
 
-### brand_alias_mapping.csv
-Observed brand variants mapped to canonical brand strings. Confirmed rows
-are applied during cleaning in `pipeline/clean.py` before products are
-loaded into the database. This file is separate from parent-company mapping:
-alias changes can alter stored `products.primary_brand` values after
-re-cleaning/reloading, while company mapping changes affect owner filters and
-derived company labels.
+### `company_brand_mapping.csv`
 
-## Generated outputs (not stored here)
+Main company / owner routing table used by `pipeline/clean.py` and the
+Streamlit app. As of the August 2026 MVP launch build, it contains 2,546 rows
+across 127 parent-company values.
 
-These are produced by running the pipeline and are intentionally **not**
-committed (see `.gitignore` and `docs/ADR.md` ADR-010 for the data-flow
-contract):
+This file supports directional company / owner filtering. It is not a legal
+ownership audit. Market-scoped, licensed, recently changed, and manually
+reviewed ownership cases are represented through metadata fields such as
+`ownership_resolution_status`, `market_scope`, `region_codes_include`,
+`region_codes_exclude`, `brand_mapping_source`, `review_note`, and
+`needs_manual_review`.
 
-- `data/sample/smart_sample_<timestamp>.csv` — the priority image sample,
-  produced by `pipeline/smart_sample.py` (four-tier sampling; see ADR-010).
-- `data/sample/vision_results_<timestamp>.csv` — Azure Vision OCR plus
-  LLM claim-extraction results, produced by `pipeline/vision_extract.py`
-  and consumed by `pipeline/merge_scores.py --input`. `merge_scores.py` can
-  consume an explicitly selected results file when replaying or merging a
-  prior extraction run.
+Streamlit must not display `Manual review` as a visible company / owner value.
+Rows that still require review should use a mapped company or
+`Other / not mapped to a company` as the visible owner, with review status kept
+in metadata.
 
-## Reproducing from scratch
+Full governance notes are documented in `docs/BRAND_COMPANY_MAPPING.md`.
 
-Run the pipeline stages in order as documented in the main `README.md`.
-The vision-extraction stage calls a paid Azure service, so it is the one
-stage worth running deliberately rather than as part of an automatic loop.
+### `brand_alias_mapping.csv`
+
+Observed brand-string variants mapped to canonical brand strings.
+
+This file is part of the brand alias normalization layer. It should be read
+together with the newer extraction and private-label logic in
+`pipeline/clean.py`:
+
+1. preserve raw OFF brand evidence;
+2. extract a brand-level entity;
+3. normalize spelling, punctuation, and approved aliases;
+4. resolve company / owner separately.
+
+Alias mapping must not collapse consumer-facing brand lines into parent
+companies. For example, `KitKat` remains a brand entity and is routed to the
+appropriate company later.
+
+### `private_label_brand_mapping.csv`
+
+Curated private-label mapping reference. For the August 2026 MVP, this contains
+the Carrefour pilot only.
+
+The purpose is brand-level/private-label-line normalization, not parent-company
+assignment. For example, `Carrefour Bio`, `Carrefour Classic`,
+`Carrefour Sensation`, `Reflets de France`, and `Simpl` are preserved as
+brand-level entities before company routing.
+
+Do not expand this file to other retailers without the same step-by-step review
+process.
+
+### `top_company_brand_portfolio_matrix.csv`
+
+Top-company portfolio routing matrix used as an input for the August 2026 Top 9
+company review.
+
+This file supports the curated routing layer for Nestlé, PepsiCo,
+The Coca-Cola Company, Mondelēz International, Danone, Kraft Heinz,
+The Hershey Company, Starbucks, and selected Unilever / demerged / spun-off
+exceptions.
+
+The matrix is an input to company mapping. It should not be used as a blanket
+override without the conflict checks described in
+`docs/BRAND_COMPANY_MAPPING.md`.
+
+### `nestle_brand_portfolio_matrix.csv`
+
+Nestle-specific portfolio matrix retained for auditability from the first Top 9
+company review. Later Top 9 work is consolidated in
+`top_company_brand_portfolio_matrix.csv`.
+
+### `brand_counts.csv` and `brand_coverage_report.csv`
+
+Brand coverage diagnostics used during mapping review. These are helpful for
+prioritizing cleanup but are not the app's final company / owner truth table.
+
+### `company_brand_mapping_pre_layer3_merge_20260824_205436.csv`
+
+Backup of `company_brand_mapping.csv` before the Layer 3 company-mapping merge.
+Retained for provenance and rollback comparison.
+
+## Generated Outputs Elsewhere
+
+Most audit outputs are stored outside this folder:
+
+- `data/brand_mapping_review/` contains brand/entity/company review exports.
+- `data/nutrition_outlier_review/` contains nutrition-quality and outlier
+  review exports.
+- `data/sample/` contains pipeline sample outputs when generated locally.
+- `database/` contains the local SQLite database when built locally.
+
+Large or one-off review files should generally stay in the appropriate review
+folder rather than being added to `data/reference/`.
+
+## Reproducing From Scratch
+
+Run the pipeline stages in the order documented in the main `README.md`.
+
+The vision-extraction stage calls paid Azure services, so it should be run
+deliberately rather than as part of an automatic loop. Reference files in this
+folder are intended to make cleaning and company-routing decisions reproducible
+when the raw Open Food Facts data is refreshed.
