@@ -479,7 +479,10 @@ st.warning(
 )
 
 if not db.database_exists():
-    st.info("No local database found yet — run the pipeline first (see docs/ONBOARDING.md).")
+    st.info(
+        "No app database found yet. Run the pipeline or provide the public MVP "
+        "database artifact — see the README."
+    )
     st.stop()
 
 # ── Section navigation (left pane) ───────────────────────────────────────────

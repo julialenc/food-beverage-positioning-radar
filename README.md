@@ -118,7 +118,8 @@ streamlit run app.py
 ```
 
 Azure Vision and Azure OpenAI credentials are required only for the vision
-pipeline. The Streamlit app can run from the prepared local database.
+pipeline. The Streamlit app can run from the prepared local database or from
+the compressed public MVP database artifact included for deployment.
 
 ## Main Repository Areas
 
@@ -132,9 +133,10 @@ database/               Local SQLite database and schema reference
 docs/                   Methodology, limitations, governance, and architecture docs
 ```
 
-The public repository keeps production reference inputs under `data/reference/`.
-Generated review CSVs, local pipeline samples, raw OFF downloads, and local
-SQLite databases are not part of the public data surface and can be regenerated
+The public repository keeps production reference inputs under `data/reference/`
+and a compressed MVP Streamlit database artifact under `database/`. Generated
+review CSVs, local pipeline samples, raw OFF downloads, and full local SQLite
+build databases are not part of the public data surface and can be regenerated
 when needed. The exact repository hierarchy may evolve during cleanup, but
 these are the main working areas of the project.
 

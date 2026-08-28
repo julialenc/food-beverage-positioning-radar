@@ -4,7 +4,11 @@ Read-only SQLite access for the Streamlit app.
 
 from __future__ import annotations
 
+import gzip
+import os
+import shutil
 import sqlite3
+import tempfile
 from pathlib import Path
 from typing import Optional
 
@@ -14,7 +18,9 @@ import streamlit as st
 from shared.beverage_segments import beverage_view_segment
 
 REPO_ROOT        = Path(__file__).resolve().parent.parent
-DB_PATH          = REPO_ROOT / "database" / "positioning_radar.db"
+LOCAL_DB_PATH    = REPO_ROOT / "database" / "positioning_radar.db"
+PUBLIC_DB_PATH   = REPO_ROOT / "database" / "positioning_radar_public_mvp.db"
+PUBLIC_DB_GZ_PATH = REPO_ROOT / "database" / "positioning_radar_public_mvp.db.gz"
 COMPANY_MAP_PATH = REPO_ROOT / "data" / "reference" / "company_brand_mapping.csv"
 REGION_MAP_PATH  = REPO_ROOT / "data" / "country_region_mapping.csv"
 
@@ -27,13 +33,55 @@ CURRENT_PRODUCT_SQL = "p.ingested_at = (SELECT MAX(ingested_at) FROM products)"
 CURRENT_PRODUCT_SQL_UNALIASED = "ingested_at = (SELECT MAX(ingested_at) FROM products)"
 
 
+def _extracted_public_db_path() -> Path:
+    return Path(tempfile.gettempdir()) / "positioning_radar_public_mvp.db"
+
+
+def _extract_public_db_if_needed() -> Path:
+    extracted = _extracted_public_db_path()
+    gz_mtime = PUBLIC_DB_GZ_PATH.stat().st_mtime
+    needs_extract = (
+        not extracted.exists()
+        or extracted.stat().st_mtime < gz_mtime
+        or extracted.stat().st_size == 0
+    )
+    if needs_extract:
+        with gzip.open(PUBLIC_DB_GZ_PATH, "rb") as src:
+            with open(extracted, "wb") as dst:
+                shutil.copyfileobj(src, dst)
+        os.utime(extracted, (gz_mtime, gz_mtime))
+    return extracted
+
+
+def get_database_path() -> Path:
+    configured = os.environ.get("POSITIONING_RADAR_DB_PATH", "").strip()
+    if configured:
+        return Path(configured)
+    if LOCAL_DB_PATH.exists():
+        return LOCAL_DB_PATH
+    if PUBLIC_DB_PATH.exists():
+        return PUBLIC_DB_PATH
+    if PUBLIC_DB_GZ_PATH.exists():
+        return _extract_public_db_if_needed()
+    return LOCAL_DB_PATH
+
+
 def database_exists() -> bool:
-    return DB_PATH.exists()
+    return get_database_path().exists()
+
+
+def database_display_path() -> str:
+    path = get_database_path()
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
 
 
 @st.cache_resource(show_spinner=False)
 def get_connection() -> sqlite3.Connection:
-    conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True, check_same_thread=False)
+    db_path = get_database_path()
+    conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 

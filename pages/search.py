@@ -362,8 +362,8 @@ st.warning(
 
 if not db.database_exists():
     st.info(
-        "No local database found yet at `database/positioning_radar.db`. "
-        "Run the pipeline first — see the README."
+        "No app database found yet. Run the pipeline or provide the public MVP "
+        "database artifact — see the README."
     )
     st.stop()
 
