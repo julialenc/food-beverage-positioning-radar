@@ -22,6 +22,9 @@ LOCAL_DB_PATH    = REPO_ROOT / "database" / "positioning_radar.db"
 PUBLIC_DB_PATH   = REPO_ROOT / "database" / "positioning_radar_public_mvp.db"
 PUBLIC_DB_GZ_PATH = REPO_ROOT / "database" / "positioning_radar_public_mvp.db.gz"
 COMPANY_MAP_PATH = REPO_ROOT / "data" / "reference" / "company_brand_mapping.csv"
+PRODUCT_MAPPING_OVERRIDE_PATH = (
+    REPO_ROOT / "data" / "reference" / "reviewed_product_mapping_overrides.csv"
+)
 REGION_MAP_PATH  = REPO_ROOT / "data" / "country_region_mapping.csv"
 
 DOWNLOAD_SCOPE_REGIONS = {"FRANCE", "UK_IE", "US_CANADA"}
@@ -104,6 +107,7 @@ def get_company_mapping_rows() -> list[dict[str, str]]:
                 "brand_norm": _normalize_brand(brand),
                 "status": (row.get("ownership_resolution_status", "").strip().lower()
                            or "direct"),
+                "needs_manual_review": row.get("needs_manual_review", "").strip().lower(),
                 "country_tags_include": row.get("country_tags_include", "").strip(),
                 "country_tags_exclude": row.get("country_tags_exclude", "").strip(),
                 "region_codes_include": row.get("region_codes_include", "").strip(),
@@ -135,6 +139,7 @@ def get_company_brand_map() -> dict[str, list[str]]:
                 "recently_sold_or_spun_off",
                 "licensed_or_partnered",
             }
+            and r.get("needs_manual_review") != "yes"
             and r["parent_company"].lower() != COMPANY_MANUAL_REVIEW_LABEL.lower()
         ]
         scoped_or_review = [
@@ -143,6 +148,7 @@ def get_company_brand_map() -> dict[str, list[str]]:
                 "market_scoped",
                 "manual_review",
             }
+            or r.get("needs_manual_review") == "yes"
             or r["parent_company"].lower() == COMPANY_MANUAL_REVIEW_LABEL.lower()
         ]
 
@@ -171,6 +177,94 @@ def get_company_options() -> list[str]:
         for row in get_company_mapping_rows()
         if row["parent_company"] != COMPANY_MANUAL_REVIEW_LABEL
     })
+
+
+@st.cache_data(show_spinner=False)
+def get_reviewed_product_mapping_overrides() -> dict[str, list[dict[str, str]]]:
+    import csv
+    if not PRODUCT_MAPPING_OVERRIDE_PATH.exists():
+        return {}
+    overrides: dict[str, list[dict[str, str]]] = {}
+    with open(PRODUCT_MAPPING_OVERRIDE_PATH, encoding="utf-8-sig", newline="") as f:
+        for row in csv.DictReader(f):
+            status = row.get("status", "").strip().lower()
+            barcode = row.get("gtin", "").strip()
+            if status != "active" or not barcode:
+                continue
+            overrides.setdefault(barcode, []).append({
+                "region": row.get("region", "").strip(),
+                "brand": row.get("reviewed_brand", "").strip(),
+                "company": row.get("reviewed_company", "").strip(),
+                "category": row.get("reviewed_category", "").strip(),
+            })
+    return overrides
+
+
+def _reviewed_product_override_for_row(
+    barcode: str,
+    row_region_codes: str,
+    selected_region_codes: Optional[list[str]],
+    overrides: Optional[dict[str, list[dict[str, str]]]] = None,
+) -> Optional[dict[str, str]]:
+    if overrides is None:
+        overrides = get_reviewed_product_mapping_overrides()
+    candidates = overrides.get(str(barcode or "").strip()) or []
+    if not candidates:
+        return None
+    selected = [code for code in (selected_region_codes or []) if code]
+    context = set(selected) if selected else {
+        code.strip() for code in str(row_region_codes or "").split("|") if code.strip()
+    }
+    unscoped = None
+    for candidate in candidates:
+        region = candidate.get("region", "")
+        if not region:
+            unscoped = candidate
+            continue
+        if region in context:
+            return candidate
+    return unscoped
+
+
+def _apply_reviewed_product_overrides_for_display(
+    df: pd.DataFrame,
+    selected_region_codes: Optional[list[str]] = None,
+) -> pd.DataFrame:
+    if df.empty or "barcode" not in df.columns:
+        return df
+    out = df.copy()
+    overrides = get_reviewed_product_mapping_overrides()
+    if not overrides:
+        return out
+    row_regions = out.get("observed_market_region_codes", pd.Series("", index=out.index))
+    row_regions = row_regions.fillna("").astype(str)
+    for idx, barcode in out["barcode"].fillna("").astype(str).items():
+        override = _reviewed_product_override_for_row(
+            barcode,
+            row_regions.loc[idx],
+            selected_region_codes,
+            overrides,
+        )
+        if not override:
+            continue
+        category = override.get("category", "")
+        if "query_category" in out.columns:
+            if category == "OUT_OF_SCOPE":
+                out.at[idx, "query_category"] = None
+            elif category:
+                out.at[idx, "query_category"] = category
+        brand = override.get("brand", "")
+        if brand:
+            if "normalized_brand" in out.columns:
+                out.at[idx, "normalized_brand"] = brand
+            if "primary_brand" in out.columns:
+                out.at[idx, "primary_brand"] = brand
+        company = override.get("company", "")
+        if company:
+            out.at[idx, "company"] = company
+            if "resolved_company" in out.columns:
+                out.at[idx, "resolved_company"] = company
+    return out
 
 
 def _split_scope_values(value: str) -> list[str]:
@@ -223,6 +317,7 @@ def resolve_company_owner(brand: str, countries: str = "",
     scoped = [
         r for r in rows
         if r["status"] in {"market_scoped", "licensed_or_partnered"}
+        and r.get("needs_manual_review") != "yes"
         and (
             r.get("region_codes_include")
             or r.get("country_tags_include")
@@ -233,6 +328,7 @@ def resolve_company_owner(brand: str, countries: str = "",
     manual = [
         r for r in rows
         if r["status"] == "manual_review"
+        or r.get("needs_manual_review") == "yes"
         or r["parent_company"].lower() == COMPANY_MANUAL_REVIEW_LABEL.lower()
     ]
     direct = [
@@ -243,6 +339,7 @@ def resolve_company_owner(brand: str, countries: str = "",
             "recently_sold_or_spun_off",
             "licensed_or_partnered",
         }
+        and r.get("needs_manual_review") != "yes"
         and r["parent_company"].lower() != COMPANY_MANUAL_REVIEW_LABEL.lower()
     ]
 
@@ -304,7 +401,7 @@ def add_resolved_company(
         for brand, countries, region_ctx in out[key_cols].itertuples(index=False, name=None)
     ]
     out = out.drop(columns=["_resolution_region_context"])
-    return out
+    return _apply_reviewed_product_overrides_for_display(out, selected_region_codes)
 
 
 def _apply_display_brand(df: pd.DataFrame) -> pd.DataFrame:
@@ -636,10 +733,13 @@ def count_products_resolved(
             text, categories, brands, None, None, None,
             region_codes, positioning_codes, nova_groups, nutriscore_grades,
         )
-    return count_products(
-        text, categories, brands, None, None, company_names,
+    df = search_products(
+        text, categories, brands, None, None, None,
         region_codes, positioning_codes, nova_groups, nutriscore_grades,
+        limit=None,
     )
+    resolved = add_resolved_company(df, region_codes)
+    return int(resolved["company"].isin(company_names).sum())
 
 
 def search_products_resolved(
@@ -662,11 +762,15 @@ def search_products_resolved(
         return df
 
     df = search_products(
-        text, categories, brands, None, None, company_names,
+        text, categories, brands, None, None, None,
         region_codes, positioning_codes, nova_groups, nutriscore_grades,
-        limit=limit,
+        limit=None,
     )
-    return df
+    resolved = add_resolved_company(df, region_codes)
+    filtered = resolved[resolved["company"].isin(company_names)]
+    if limit is not None:
+        filtered = filtered.head(limit)
+    return filtered
 
 
 @st.cache_data(show_spinner=False, ttl=600)
@@ -677,8 +781,8 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
     used by Product Explorer, no separate analytical source).
 
     Returns raw per-100g/100ml nutrition fields plus derived per-100kcal
-    fields (protein/fiber/satfat/sugars), and a derived `company` column
-    from the company/brand mapping (COMPANY_OTHER_LABEL when unmapped).
+    fields (protein/fiber/satfat/sugars), and the materialized `company`
+    column from the current SQLite snapshot.
     Company/brand narrowing happens client-side on this cached frame,
     not via separate SQL calls, since a single region x category
     population is small enough to hold in memory (tens of thousands of
@@ -730,15 +834,10 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
     else:
         df["beverage_view_segment"] = "not_beverage"
 
-    if "resolved_company" in df.columns:
-        company = df["resolved_company"].astype("string").str.strip()
-        df["company"] = company.where(
-            company.notna() & (company != ""),
-            COMPANY_OTHER_LABEL,
-        )
-    else:
-        df["company"] = COMPANY_OTHER_LABEL
-
+    df = _apply_display_brand(df)
+    df = _apply_reviewed_product_overrides_for_display(df, [region_code])
+    if "query_category" in df.columns:
+        df = df[df["query_category"].fillna("").eq(category)].copy()
     return df
 
 

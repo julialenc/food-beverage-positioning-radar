@@ -1,7 +1,7 @@
 # Category Cleanup Governance
 
-**Status:** MVP launch governance  
-**Last updated:** August 2026
+**Status:** MVP launch governance — current  
+**Last updated:** September 2026
 
 This document defines how Open Food Facts category tags are converted into the
 Food & Beverage Positioning Radar analytical categories used by Streamlit.
@@ -17,7 +17,7 @@ records are comparable enough to appear in a given MVP category view.
 
 ## MVP Scope
 
-The August 2026 MVP focuses on these Streamlit categories:
+The launch MVP focuses on these Streamlit categories:
 
 ```text
 snacks
@@ -28,25 +28,49 @@ beverages
 
 The user-facing app displays `dairies` as **Dairy**.
 
-The main manually reviewed category bases are France, UK/Ireland, and
-US/Canada. Other observed regions may appear in source data, but they should
-not be treated as equally cleaned analytical markets unless explicitly reviewed.
+The launch analytical regions are France, UK/Ireland, and US/Canada. Other
+observed regions may appear in source data, but they should not be treated as
+equally cleaned analytical markets unless explicitly reviewed.
+
+Snacks and cereals received detailed manual category cleanup across all three
+launch regions and are locked for Streamlit use. The September 2026
+brand/company and regional-category orphan audits additionally exposed
+product-level category errors in France and US/Canada across cereals, dairies,
+snacks, and beverages. Those reviewed GTIN decisions are represented through
+the exact product-override layer and are authoritative for the affected
+products.
+
+This does **not** mean that every dairy and beverage record received the same
+full manual category census as snacks and cereals. It means that category
+issues discovered during the completed mapping audits were reviewed and
+implemented rather than left under an incorrect category.
 
 Category cleanup rules are implemented through shared category logic in
 `pipeline/category_rules.py` and consumed by bulk and incremental ingestion.
+Reviewed product-specific category corrections are stored in
+`data/reference/reviewed_product_mapping_overrides.csv`.
 
 ## General Principles
 
 1. Classify by product format and commercial use case, not only by ingredient.
 2. Keep the analytical category narrow enough for meaningful comparison.
 3. Route products to a better project category where possible.
-4. Exclude clear meal, cooking, ingredient, or category-noise records from the
-   analytical base when they are not comparable.
-5. Use manual review only when product name, category metadata, brand, and image
-   evidence do not support a clear deterministic decision.
+4. Exclude clear meal, cooking, ingredient, restaurant/menu, or category-noise
+   records from the analytical base when they are not comparable.
+5. Use exact reviewed GTIN overrides when product evidence is stronger than a
+   broad category rule.
+6. Do not generalize one product-level exception into a reusable category rule
+   unless the same rule is demonstrably safe for the wider product family.
+7. Use manual review only when product name, category metadata, brand, source
+   information, and available image evidence do not support a clear decision.
 
 Duplicate OFF category membership is normal. The project assigns one primary
 analytical category for MVP Streamlit use.
+
+`OUT_OF_SCOPE` is an analytical routing decision, not deletion of source data.
+A product assigned `OUT_OF_SCOPE` remains traceable in the underlying
+database/reference layer but must not appear anywhere in the app-facing
+four-category universe.
 
 ## Snacks
 
@@ -64,8 +88,9 @@ way a consumer might eat the product.
 Public citation anchor:
 `https://www.marketresearch.com/Euromonitor-International-v746/Snacks-38022421/`
 
-MVP cleanup status as of August 2026: France Snacks, UK/Ireland Snacks, and
-US/Canada Snacks are locked for Streamlit use.
+Launch cleanup status: France Snacks, UK/Ireland Snacks, and US/Canada Snacks
+are **LOCKED** for Streamlit use. September 2026 exact-product corrections found
+during the mapping/orphan audits are part of this locked launch state.
 
 ### Snack Review Values
 
@@ -136,7 +161,18 @@ Remove:
 - cooking mixes, sauces, seasonings, dips, dressings, and spreads when they are
   ingredients or accompaniments rather than finished snack products;
 - actual cheese or dairy components when the product is not clearly sold as a
-  packaged snack format.
+  packaged snack format;
+- cooking or pâtisserie chocolate when the product is explicitly sold as a
+  baking/cooking ingredient rather than as eating chocolate;
+- cake mixes and other baking preparations.
+
+Route a product **out of snacks but keep it in the Radar** when another launch
+category is clearly better. In particular:
+
+- cocoa mix, hot-chocolate spoons, and similar products whose primary use is to
+  prepare a drink route to `beverages`;
+- crunchy cheese bites or similar dairy products explicitly sold as
+  snacking/aperitif formats can route from `dairies` to `snacks`.
 
 Meal-format wording can override snack tags. Small pack size does not
 automatically make a product a snack.
@@ -180,8 +216,10 @@ usually with milk or yogurt, or prepared as hot cereal. The category is based on
 product format and commercial occasion, not simply on whether the product
 contains grains, cereal ingredients, oats, rice, wheat, or flour.
 
-MVP cleanup status as of August 2026: France Cereals, UK/Ireland Cereals, and
-US/Canada Cereals are locked for Streamlit use.
+Launch cleanup status: France Cereals, UK/Ireland Cereals, and US/Canada
+Cereals are **LOCKED** for Streamlit use. September 2026 exact-product
+corrections found during the mapping/orphan audits are part of this locked
+launch state.
 
 ### Cereal Review Values
 
@@ -268,20 +306,74 @@ loose-granola format.
 Granola, muesli, corn flakes, porridge, oats, and oatmeal belong in `cereals`
 only when sold as loose, bowl, or breakfast-cereal formats.
 
-## Dairy Interaction
+Savoury use can override cereal ingredients. A product containing oats,
+spelt, lentils, peas, or other grains is `not_cereal` when it is clearly sold
+as a savoury meal, accompaniment, galette preparation, or meal solution.
 
-For MVP, all milk-related products remain in the internal `dairies` category
-(displayed as Dairy in the app): milk, hard cheese, yogurt, drinkable yogurt,
-flan, mousse, dairy desserts, and similar products.
+Conversely, a granola-derived product that is explicitly reformatted and sold
+as bite-sized chips or another snack format should route to `snacks` rather
+than remain in `cereals`.
 
-Some dairy products may function as snacks, especially small yogurts or dairy
-dessert packs, but the current app uses one primary analytical category. A
-future version may add a separate snacking-occasion flag or allow
-double-assignment.
+## Dairies
 
-## Beverage Interaction
+For MVP, finished dairy products remain in the internal `dairies` category
+(displayed as **Dairy** in the app). This includes milk, hard and soft cheese,
+yogurt, drinkable yogurt, cultured dairy drinks, cream, butter, flan, mousse,
+finished dairy desserts, infant/growing-up milk products, and similar packaged
+dairy formats.
 
-Beverages use a separate MVP view segmentation layer documented in
+Drinkability alone does not make a dairy product a beverage. Products such as
+drinkable yogurt remain in `dairies` when dairy is the primary commercial
+format.
+
+Remove from `dairies` when the product is actually a different commercial
+format, for example:
+
+- cheese sauces and other cooking sauces;
+- preparations for crème brûlée, tiramisu, or similar desserts when sold as
+  preparations rather than finished dairy desserts;
+- macaroni-and-cheese, pasta-and-cheese, and other boxed meal solutions.
+
+Route to `snacks` when the product is explicitly reformatted and positioned as
+a finished snack, for example crunchy baked cheese bites sold for
+snacking/aperitif occasions.
+
+Some dairy products can function as snacks in real life, especially small
+yogurts or dairy dessert packs, but the current app uses one primary
+analytical category. A future version may add a separate snacking-occasion
+flag or allow double-assignment.
+
+## Beverages
+
+The beverage category contains packaged retail beverages and packaged products
+whose primary commercial use is to prepare a beverage. Depending on format,
+this can include:
+
+- ready-to-drink beverages;
+- syrups and concentrates;
+- tea and coffee preparations;
+- beverage powders;
+- hot-chocolate mixes and chocolate spoons intended to dissolve into a drink;
+- packaged alcoholic beverages.
+
+Packaged alcoholic beverages remain within `beverages` for the launch scope;
+alcohol-related format is handled by beverage segmentation rather than by
+automatic category exclusion.
+
+Restaurant/menu records are **not** packaged CPG beverage products and should
+not enter the Radar four-category universe. The September 2026 US/Canada audit
+showed that restaurant menu databases can leak large numbers of fountain
+drinks, restaurant coffees, cocktails, shakes, and similar menu observations
+into OFF-derived beverage pulls.
+
+Where a deterministic source/type discriminator exists, restaurant/menu records
+should be filtered upstream before category and orphan generation. If no safe
+source-level discriminator exists, use exact reviewed GTIN/product overrides.
+Do **not** create broad exclusions such as `Dunkin -> OUT_OF_SCOPE` or
+`Starbucks -> OUT_OF_SCOPE`, because the same restaurant brand can also appear
+on legitimate packaged retail products.
+
+Beverages also use a separate MVP view segmentation layer documented in
 `docs/NUTRITION_OUTLIER_GOVERNANCE.md` and implemented in
 `shared/beverage_segments.py`.
 
@@ -290,19 +382,40 @@ comparability. It separates ready-to-drink products from syrups, concentrates,
 powders, tea/coffee preparations, alcohol-related products, meal-replacement
 shakes, and unknown beverage records.
 
+## Reviewed Override Precedence
+
+The final analytical category follows this precedence:
+
+```text
+1. Region-scoped reviewed product category override
+2. Unscoped reviewed product category override
+3. Deterministic shared category-routing / exclusion rules
+4. Source/query category as fallback evidence
+```
+
+A reviewed product override can set one of the four launch categories or
+`OUT_OF_SCOPE`. Exact reviewed decisions do not automatically create reusable
+brand, keyword, or product-family rules.
+
 ## Execution Order
 
-When multiple cues are present, apply rules in this order:
+When reviewing a new product or designing a reusable rule:
 
-1. Identify clear category-format positives.
-2. Apply explicit route rules.
-3. Apply clear exclusion rules.
-4. Apply documented override rules.
-5. If still ambiguous, assign manual review.
+1. Identify obvious non-CPG/source contamination such as restaurant/menu
+   records when deterministic source evidence exists.
+2. Identify clear product-format positives.
+3. Apply explicit route rules to a better launch category.
+4. Apply clear exclusion rules for meals, cooking ingredients, preparations,
+   and other non-comparable formats.
+5. Apply any reviewed GTIN override as the final product-specific authority.
+6. If still ambiguous, assign manual review rather than infer from a weak word
+   or ingredient signal.
 
-For snacks, snack-format override can win over meal-like words only when the
+For snacks, snack-format evidence can win over meal-like words only when the
 product clearly signals snack format. For cereals, breakfast-cereal format can
-win over flavour or ingredient noise.
+win over flavour or ingredient noise. A weak descriptor such as `kettle`,
+`crispy`, `protein`, or `creamy` is never sufficient by itself to establish a
+category.
 
 ## Launch Notes
 
@@ -310,3 +423,11 @@ The original detailed snack and cereal cleanup notes were merged into this
 single governance file for the August 2026 launch documentation cleanup. The
 merge preserves the operational logic but gives category mapping one consistent
 documentation home.
+
+The September 2026 retailer/company and regional-category orphan audits added a
+second category-governance mechanism: exact reviewed product overrides for
+isolated category errors that should not become broad reusable taxonomy rules.
+The durable rules from those audits are incorporated above; detailed GTIN-level
+decisions remain in `data/reference/reviewed_product_mapping_overrides.csv` and
+the corresponding local review artifacts rather than being duplicated here as a
+worklog.

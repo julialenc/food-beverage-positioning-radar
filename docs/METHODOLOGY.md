@@ -1,153 +1,235 @@
 # Methodology
 
-This document defines how Food & Beverage Positioning Radar measures what it
-measures, and — just as importantly — what each metric does not measure. It
-exists so that no output from this tool is read as a verdict it was never
-designed to give. For exact field names and types, see
-`docs/COLUMN_DESCRIPTIONS.md`; this document explains the concepts behind them.
+This document explains what Food & Beverage Positioning Radar measures, how the
+main analytical layers are prepared, and what the outputs should not be
+interpreted to mean. For exact database fields and types, see
+`docs/COLUMN_DESCRIPTIONS.md`. Detailed governance is documented separately in
+the specialist files referenced below.
 
 ## Core principle
 
-This tool maps how packaged foods and beverages position themselves through
-claims, ingredients, nutrition, processing, and product design. It does not
-assess legal compliance, assign health verdicts, or recommend products to
-consumers. Benchmarks are reference points for comparison, not pass/fail
-judgments. Interpretation of any pattern shown here is the responsibility of
-the user.
+Food & Beverage Positioning Radar maps how packaged foods and beverages position
+themselves through claims, ingredients, nutrition, processing, and product
+design.
+
+It does **not** assess legal compliance, assign health verdicts, judge whether a
+product is good or bad, or recommend products to consumers. Benchmarks are
+reference points for comparison, not pass/fail judgments.
 
 ## Data source
 
-Product data is sourced from Open Food Facts (OFF), an open, crowdsourced
-database licensed under the Open Database License (ODbL). See
-`docs/LIMITATIONS.md` for coverage, quality, and licensing details.
+Product data comes from Open Food Facts (OFF), an open, crowdsourced database
+licensed under the Open Database License (ODbL).
 
-The project code and documentation are licensed separately from the OFF data.
-Open Food Facts source data remains subject to ODbL attribution and share-alike
-requirements.
+OFF provides broad, reproducible product coverage, but its records can be
+incomplete, duplicated, inconsistent, outdated, or uneven across markets and
+brands. Product counts therefore represent observed OFF records, not sales,
+market share, distribution, or shelf presence.
+
+See `docs/LIMITATIONS.md` for the full source, coverage, quality, and licensing
+caveats.
 
 ## Data preparation and governance
 
-The app does not present raw Open Food Facts rows directly. It applies
-documented preparation layers for category scope, nutrition quality,
-brand/entity cleanup, company routing, and app-specific chart readability.
-These layers add derived fields and flags; they should not be read as editing
-or correcting the OFF source.
+The app does not display raw OFF rows without preparation. The pipeline applies
+separate governance layers for:
 
-Core data-governance rules:
+1. analytical category scope;
+2. brand normalization and company routing;
+3. nutrition quality and outlier treatment;
+4. ingredient-based analysis;
+5. front-of-pack claim extraction;
+6. reporting and chart eligibility.
 
-- Raw OFF values are preserved where the pipeline creates raw provenance fields,
-  especially for nutrition (`*_off_raw`) and brand evidence (`off_brands_raw`).
-- Missing values remain missing. `NULL` is not zero.
-- Products are not silently deleted from the database because a value is
-  incomplete or suspicious.
-- Product Explorer can show imperfect but useful product records.
-- Market Overview calculations and charts use stricter inclusion flags so that
-  aggregate views are not distorted by records that are unsuitable for
-  summary analysis.
+These layers add derived fields, mappings, and inclusion flags. They do not
+rewrite the underlying OFF source evidence.
+
+Core rules:
+
+- preserve raw provenance where the pipeline provides raw fields, especially
+  nutrition (`*_off_raw`) and brand evidence (`off_brands_raw`);
+- keep missing values distinct from confirmed zeros;
+- prefer exact reviewed product evidence over broad inferred rules;
+- do not force uncertain classifications merely to make the dataset look
+  complete;
+- keep product-level display and aggregate/chart eligibility as separate
+  decisions.
+
+## Analytical scope
+
+Launch regions:
+
+```text
+FRANCE
+UK_IE
+US_CANADA
+```
+
+Launch categories:
+
+```text
+snacks
+cereals
+dairies
+beverages
+```
+
+The app displays `dairies` as **Dairy**.
+
+Products that clearly do not belong in any of the four analytical categories
+can receive a reviewed `OUT_OF_SCOPE` decision. This removes them from the
+app-facing four-category universe while preserving their source/provenance
+records.
 
 ## Category cleanup
 
-Open Food Facts category tags are rich but can be noisy. The project therefore
-uses deterministic category-cleanup rules before products enter the Streamlit
-MVP scopes. The reviewed launch categories are snacks, cereals, dairy, and
-beverages across the MVP regions France, UK & Ireland, and US & Canada.
+OFF category tags are contributor-assigned and can inherit broad or noisy parent
+categories. The Radar therefore classifies by **product format and commercial
+use case**, not simply by ingredient or source category tag.
 
-Snacks and cereals received detailed manual review during August 2026. The
-category cleanup rules are documented in `docs/CATEGORY_CLEANUP.md` and
-implemented through shared category rules used by both bulk and incremental
-ingestion. Category cleanup is based on product/category evidence, not on
-nutrition values or claim outcomes.
+The main category principles are:
 
-Category cleanup does not claim to produce a perfect retail taxonomy. It
-creates a defensible analytical base for the MVP views and preserves source
-evidence for future review.
+- `snacks` covers confectionery, ice cream/frozen snack desserts, savoury snacks,
+  sweet biscuits/bakery snacks, snack bars, cereal bars, and fruit snacks;
+- `cereals` means breakfast cereal formats such as flakes, muesli, granola,
+  porridge/oatmeal, puffs, clusters, and similar bowl/hot-cereal products;
+- cereal/snack bars belong in `snacks`, not `cereals`;
+- finished dairy products, including drinkable yogurt and cultured dairy
+  drinks, remain in `dairies`; drinkability alone does not make them beverages;
+- beverage preparations such as syrups, concentrates, tea/coffee preparations,
+  powders, and hot-chocolate products can remain in `beverages`;
+- clear meals, cooking ingredients, sauces, baking preparations, meal
+  components, and other non-comparable formats can be routed to
+  `OUT_OF_SCOPE`;
+- when another launch category is clearly better, a reviewed product can be
+  moved rather than removed.
 
-## Nutrition quality and outlier treatment
+Snacks and cereals received detailed manual category cleanup across France,
+UK/Ireland, and US/Canada. The September 2026 brand/company and regional orphan
+audits also identified exact category corrections across cereals, dairies,
+snacks, and beverages in France and US/Canada. Those GTIN-level decisions are
+authoritative for the affected products.
 
-Nutrition quality governance decides whether each product record is suitable
-for product-level display, aggregate calculations, and charts. The goal is not
-to correct Open Food Facts data. The goal is to preserve raw source values and
-add flags that control analytical use.
+Restaurant/menu observations are not packaged CPG products. Where a reliable
+source/type discriminator exists, they should be filtered before analytical
+category and orphan generation. Broad exclusions by restaurant brand are unsafe
+because the same brand can also appear on legitimate packaged retail products.
 
-Implemented launch checks include:
+See `docs/CATEGORY_CLEANUP.md` for the full category rules and override
+precedence.
 
-- hard impossibility checks, such as negative nutrients, nutrients above
-  100g/100g, impossible macro mass balance, sugars greater than carbohydrates,
-  saturated fat greater than total fat, and biologically impossible energy
-  values;
-- per-100 kcal nutrient-density checks, which catch values that may look
-  plausible per 100g but cannot be reconciled with reported energy;
-- energy-macro consistency checks comparing reported kcal with kcal calculated
-  from fat, protein, and carbohydrates;
-- Scenario C2 safeguards, which avoid over-excluding low-energy beverages and
-  small absolute kcal gaps while keeping material food gaps and unsafe
-  high-energy beverage exceptions out of aggregate views;
-- distributional plausibility review, which summarizes category tails before
-  turning stable patterns into deterministic rules.
+## Brand and company mapping
 
-The current app treatment is:
-
-- records with hard data-quality errors are excluded from Product Explorer,
-  Market Overview calculations, and Market Overview charts;
-- records with material energy-macro inconsistency can remain visible at
-  product level but are excluded from Market Overview calculations and charts;
-- genuine but chart-distorting tails can remain visible in Product Explorer
-  while being excluded from aggregate charts when a documented rule exists;
-- valid records remain eligible for Market Overview calculations and charts.
-
-Within-brand nutrition plausibility checks, such as unusually low or high
-values compared with comparable products from the same brand, are not yet fully
-implemented in the launch MVP and are planned for a later governance update.
-
-The final launch exclusion rate from Market Overview calculations is
-approximately 3.02%, accepted after audit because the criteria are explicit and
-raw source values remain traceable. See
-`docs/NUTRITION_OUTLIER_GOVERNANCE.md` for the detailed governance record. The
-nutrition audit CSVs are generated locally by the governance scripts when
-review is needed.
-
-## Brand, brand-family, and company mapping
-
-Brand and company fields are handled as separate layers. This separation is
-important because Open Food Facts brand strings often mix consumer-facing
-brands, parent companies, retailer banners, private-label lines, legal
-entities, and noisy contributor text.
+Brand and company are separate analytical entities.
 
 The launch pipeline distinguishes:
 
 ```text
 off_brands_raw      = raw OFF brand evidence
 brand_entity_raw    = conservative extracted consumer-facing brand entity
-normalized_brand    = cleaned brand or stable brand line used by Streamlit
+normalized_brand    = cleaned consumer-facing brand used for brand analysis
 brand_family        = optional broader umbrella for useful roll-ups
-resolved_company    = directional company / owner routing used for filtering and navigation
+resolved_company    = directional company / owner route used for filtering
 ```
 
 The app should prefer `normalized_brand` for brand display when available.
-`primary_brand` remains a legacy compatibility/provenance field and should not
-be interpreted as the final brand layer.
+`primary_brand` is retained for legacy compatibility/provenance.
 
-Company / owner is a directional reporting filter, not a legal ownership
-audit. Some brands require market-specific or channel-specific routing, such as
-KitKat, Cadbury, Kellogg's, Lipton, Capri Sun, and Cheerios. Where the project
-cannot safely resolve ownership, the launch app uses a neutral visible company
-value such as `Other / not mapped to a company`; `Manual review` is retained
-only as backend status where needed, not as a visible company/owner.
+### Brand principles
 
-Carrefour private-label mapping was tested as a curated pilot. Carrefour lines
-such as `Carrefour Bio`, `Carrefour Classic`, `Carrefour Sélection`,
-`Reflets de France`, and `Simpl` remain brand-level entities and are mapped to
-Carrefour only at the company layer.
+- preserve the most specific supported consumer-facing brand or meaningful
+  private-label line;
+- do not replace a brand with its parent company;
+- do not turn generic or collision-prone strings into reusable aliases without
+  strong evidence;
+- supplier, manufacturer, importer, distributor, bottler, co-packer, or
+  licensee information is evidence, not automatic proof of brand ownership.
 
-Top 9 strategic company portfolio routing and strict prefix-orphan cleanup were
-used to reduce obvious missing company assignments. These rules are
-conservative: false merges are treated as worse than leaving a brand unresolved.
-See `docs/BRAND_COMPANY_MAPPING.md` for the full mapping workflow, known
-regional exceptions, and audit outputs.
+### Company principles
+
+`resolved_company` is a directional navigation/reporting field, not a universal
+legal ownership register.
+
+Ownership can vary by region, market, product form, licensing arrangement,
+joint venture, or recent acquisition/divestiture. Project region is evidence,
+not proof of the product's actual market.
+
+When broad routing is unsafe, exact reviewed GTIN overrides take precedence.
+Where ownership cannot be established with sufficiently strong evidence, the
+product remains under:
+
+`Other / not mapped to a company`
+
+The project deliberately prefers a **false negative to a false-positive owner
+assignment**.
+
+### Launch mapping completion
+
+The launch mapping phase is complete and locked:
+
+- reviewed retailer/private-label portfolios are complete;
+- all nine priority manufacturer portfolios are locked after product-level
+  audit and regression validation;
+- the regional-category orphan review is complete across all launch regions.
+
+An orphan candidate was defined as a normalized brand still under
+`Other / not mapped to a company` with **at least 100 products within one
+specific region × category bucket**.
+
+France and US/Canada contained qualifying orphan candidates and were audited,
+implemented, and validated. UK/Ireland had no qualifying orphan candidates at
+that threshold.
+
+The final criterion is satisfied: no normalized brand with at least 100
+products in a single launch region-category remains under
+`Other / not mapped to a company` without reviewed resolution. Individual
+products can still remain under `Other` when ownership is genuinely ambiguous.
+
+See `docs/BRAND_COMPANY_MAPPING.md` for precedence, scoped ownership logic,
+reference files, and maintenance rules.
+
+## Nutrition quality and outlier treatment
+
+Nutrition-quality governance determines whether a record is suitable for:
+
+- product-level display;
+- aggregate calculations;
+- charts.
+
+The project does not overwrite OFF nutrition values. It preserves source values
+and adds quality/inclusion flags.
+
+Implemented launch checks include:
+
+- hard impossibility checks such as negative nutrient values, nutrients above
+  100g/100g, impossible macro mass balance, sugars above carbohydrates,
+  saturated fat above total fat, and impossible energy values;
+- per-100 kcal nutrient-density checks;
+- energy-versus-macro consistency checks;
+- Scenario C2 safeguards for low-energy beverages and small absolute kcal gaps;
+- distributional plausibility review before stable tail patterns become
+  deterministic rules.
+
+Current treatment:
+
+- hard data-quality errors are excluded from Product Explorer, aggregates, and
+  charts;
+- material energy-macro inconsistencies can remain visible at product level but
+  are excluded from aggregates and charts;
+- genuine but chart-distorting tails can remain visible in Product Explorer
+  while being excluded from charts when a documented rule exists.
+
+The final launch exclusion rate from Market Overview calculations is
+approximately **3.02%**.
+
+Within-brand nutrition plausibility checks are not yet fully implemented in the
+launch MVP.
+
+See `docs/NUTRITION_OUTLIER_GOVERNANCE.md` for the detailed rules.
 
 ## Beverage segmentation
 
-Beverages are split in Market Overview into practical MVP view segments:
+Beverages use a separate view-segmentation layer for chart comparability:
 
 ```text
 ready_to_drink_beverages
@@ -156,269 +238,198 @@ unknown_beverage_segment
 not_beverage
 ```
 
-This split exists for chart readability and comparability. Ready-to-drink
-water, soda, juice, iced tea, kombucha, and plant drinks should not be mixed
-uncritically with syrups, concentrates, powders, tea bags, coffee capsules,
-alcohol, meal-replacement shakes, and other preparation-based or
-alcohol-adjacent products.
+The segmentation prevents ready-to-drink products from being mixed
+uncritically with syrups, concentrates, powders, tea/coffee preparations,
+alcohol-related products, meal-replacement shakes, and other materially
+different formats.
 
-The beverage classifier is rule-based and MVP-level. Unknown beverage records
-are work in progress and should not be interpreted as a separate market
-segment.
+This is a chart/readability layer, not a complete beverage-market taxonomy.
 
-## Pack-image claim extraction process
+## Front-of-pack claim extraction
 
-A sampled subset of image-eligible products has undergone front-of-pack image
-analysis. As of the August 2026 launch build, the current US/UK and France
-analytical releases contain 17,127 valid front-of-pack observations. Azure AI
-Vision's Read API performs OCR on the product image, and the extracted text is
-passed to Azure OpenAI's `gpt-4.1-nano` deployment for structured claim
-extraction. Total OCR and LLM cost for the US, UK, and France launch runs was
-approximately 20 CHF.
+A sampled subset of image-eligible products undergoes front-of-pack analysis:
 
-The sampled releases are designed to study claim territories within an
-image-eligible Open Food Facts sampling frame. They are not retail-sales
-samples, market-share estimates, or a census of all packaged products. When
-prevalence is reported from the extraction releases, this project distinguishes
-between:
+```text
+OFF image
+→ Azure AI Vision OCR
+→ Azure OpenAI structured claim extraction
+→ validation
+→ claim taxonomy
+```
 
-- **Sample proportion:** the observed proportion among all sampled products,
-  including purposive components intentionally enriched for analytically
-  interesting claim territories.
-- **Backbone design-weighted estimate within the image-eligible OFF sampling
-  frame:** an approximate design-weighted estimate based only on the
-  probability-oriented backbone component of the sample. These weights are
-  approximate after brand capping, and Open Food Facts itself is not a
-  probability sample of retail sales or shelf presence.
+As of the August 2026 launch build, the current US/UK and France analytical
+releases contain **17,127 valid front-of-pack observations**.
 
-See `docs/CLAIM_EXTRACTION.md` for the full sampling design, prompt history,
-release record, extraction validator, and OCR/LLM limitations.
+These releases are samples from the image-eligible OFF universe. They are not
+retail-sales samples, market-share estimates, or a census of all packaged
+products.
+
+Two prevalence views must remain distinct:
+
+- **sample proportion** — the observed share within the full sampled release,
+  including purposive/enriched components;
+- **backbone design-weighted estimate** — an approximate estimate based on the
+  probability-oriented backbone of the image-eligible OFF sample.
+
+See `docs/CLAIM_EXTRACTION.md` for sampling design, prompt history, validation,
+release details, and OCR/LLM limitations.
 
 ## Metric definitions
 
-Each metric below states what it measures and what it explicitly does not
-measure.
-
 ### Positioning signals / claim taxonomy
-**Status:** Implemented in the pipeline; Streamlit MVP displays vision-based
-positioning signals only.
-**What it measures:** For products with valid front-pack OCR/LLM extraction,
-the tool identifies visible positioning signals such as protein, fibre,
-vitamins and minerals, no added / reduced sugar, organic, plant-based,
-heritage, sustainability, and other front-pack claim territories.
 
-The underlying pipeline may retain legacy or fallback classification fields for
-internal QA and historical compatibility. However, ingredient-derived or
-product-name-derived fallback signals must not be presented as confirmed
-front-of-pack observations in the Streamlit MVP. Stored category codes
-(`FUNCTIONAL`, `FREE_OF`, etc.) are not display-ready — see
-`docs/UI_LABELS.md` for the canonical code-to-label mapping used by the
-Streamlit app.
+**Status:** Implemented; Streamlit displays vision-based positioning signals.
 
-The distinction between missing pack evidence and a confirmed no-claim front
-pack is load-bearing:
+**Measures:** Explicit front-of-pack positioning territories detected from valid
+OCR/LLM observations, such as protein, fibre, vitamins/fortification, no added
+or reduced sugar, organic, plant-based, heritage, sustainability, and other
+pack cues.
 
-- `pack_claims_found = NULL` means no valid pack observation exists: not
-  analyzed, non-front image, or extraction failure. This is the only state
-  where ingredient/name fallback is allowed.
-- `pack_claims_found = ""` means the front pack was assessed and no taxonomy
-  claim was found. This must remain a true no-claim observation and must not
-  trigger ingredient-derived fallback.
-- `pack_claims_found = "..."` contains pipe-separated claims detected from
-  front-pack evidence.
+A critical distinction is:
 
-Ingredient-derived fallback classifications must not be presented as
-front-of-pack observations in the user interface or reporting language.
-**What it does not measure:** Whether a claim is legally valid, substantiated,
-or compliant with food labelling regulation in any jurisdiction. It also
-reflects only the single highest-priority category present on a
-product, not a complete count of every claim territory found — for
-that, the underlying `pack_claims_found` field lists every individual
-claim detected.
+- `pack_claims_found = NULL` — no valid pack observation exists;
+- `pack_claims_found = ""` — a valid front pack was assessed and no taxonomy
+  claim was found;
+- a non-empty value — one or more pack claims were detected.
+
+A confirmed no-claim observation must not be replaced with an
+ingredient-derived claim. Legacy or fallback classifications may remain for
+internal QA, but they must not be presented as confirmed front-of-pack
+evidence.
+
+**Does not measure:** legal validity, substantiation, regulatory compliance, or
+consumer benefit.
+
+Stored claim codes are mapped to user-facing labels through
+`docs/UI_LABELS.md`.
 
 ### Ingredient markers
-**Status:** Implemented internally; not a user-facing score in the current MVP
-**What it measures:** Identifies ingredient-processing markers in the
-ingredient list (e.g. emulsifiers, artificial sweeteners, glucose syrups,
-modified starches) and summarizes them into a weighted score
-(`composition_marker_score`, 0–40, using pre-assigned marker weights —
-see `docs/COLUMN_DESCRIPTIONS.md` for the exact formula), with a
-categorical reference band
-(`Extensive`/`Moderate`/`Limited`/`Minimal markers`). This is a
-composition-only signal, computed independently of any pack claim.
-The score remains in the pipeline for historical compatibility and internal
-analysis, but proprietary composite-style scores are not displayed in the
-current Streamlit MVP.
-**What it does not measure:** Whether a product is good or bad, or whether
-any individual marker is harmful in the amount present.
+
+**Status:** Implemented internally; not displayed as a proprietary user-facing
+score in the current MVP.
+
+**Measures:** Selected ingredient-processing markers identified in the
+ingredient list and summarized internally through
+`composition_marker_score`.
+
+**Does not measure:** whether a product is healthy, unhealthy, good, bad, or
+harmful at the amount consumed.
 
 ### Positioning-to-composition gap
-**Status:** Legacy/internal; not a user-facing metric in the current MVP
-**What it measures:** A composite signal combining the ingredient-marker
-score with the weight of front-of-pack claims present and, when claims are
-present, additional context from processing level and Nutri-Score. A higher
-value generally reflects a combination of more pronounced ingredient markers
-and more emphatic front-of-pack positioning. The score (`positioning_composition_gap`,
-0–100) has a categorical reference band (`High`/`Moderate`/`Low`/`Minimal
-positioning-composition signal`) — labelled "signal" rather than "gap" at
-the band level specifically because of the composite-not-pure-gap caveat
-below.
-**What it does not measure:** Whether a product is misleading, deceptive, or
-violates any advertising standard. It is also not purely a measure of
-"claim versus reality" in every case: the ingredient-marker component applies
-regardless of whether any claim is present, so a product with no detected
-claims can still receive a non-zero value. This is a composite analytical
-score, not a deception detector. Because of this interpretability limitation,
-the score is retained only for historical/internal compatibility and is not
-shown as a proprietary score in the current Streamlit MVP.
+
+**Status:** Legacy/internal; not a user-facing metric.
+
+The historical `positioning_composition_gap` combines ingredient-marker and
+positioning information into a composite analytical signal. Because it is not a
+pure "claim versus reality" measure and can be non-zero even without a detected
+claim, it is retained only for compatibility/internal analysis.
+
+It must not be interpreted as a deception or misleading-claims score.
 
 ### Claim-benchmark intersections
-**Status:** Implemented
-**What it measures:** Specific instances where detected positioning co-occurs
-with a relevant nutrition, ingredient, or processing benchmark signal — for
-example, "Protein positioning with saturated fat above reference threshold."
-For products with valid OCR/LLM extraction, the positioning side comes from
-front-pack evidence. For products without a valid pack observation, any
-fallback-derived intersection should be interpreted as a weaker evidence layer
-and labelled accordingly through `claim_source`.
-**What it does not measure:** Intent. The presence of an intersection does
-not imply the claim is false; both the positioning and the composition data
-point can be simultaneously accurate.
+
+**Status:** Implemented.
+
+**Measures:** Co-occurrence between a positioning signal and a relevant
+nutrition, ingredient, or processing reference point, for example protein
+positioning alongside saturated fat above a reference threshold.
+
+An intersection describes two observed signals occurring together. It does not
+infer intent or claim falsity.
 
 ### Nutrition benchmark flags
-**Status:** Implemented
-**What it measures:** Whether a nutrient value (sugar, saturated fat, fat,
-salt) sits above a reference threshold, applied per 100g or 100ml. Stored as
-neutral codes (e.g. `sugar_above_reference`), not display text — see
-`docs/UI_LABELS.md` for the code-to-label mapping used by the Streamlit
-app. Thresholds follow the UK Food Standards Agency's front-of-pack labelling guidance and are
-used here as a single reference scheme for cross-product comparison. The EU's
-mandatory nutrition declaration (Regulation 1169/2011) requires these nutrient
-values to be stated on pack in a standard format, but the regulation itself
-does not define high/low thresholds — that was deliberately left to individual
-Member States and food businesses to develop voluntarily, which is why this
-tool credits the UK FSA scheme specifically rather than EU law for the
-threshold values themselves. In the MVP, liquid vs solid is approximated using
-an energy-density proxy (under 100 kcal/100ml treated as liquid). This may
-misclassify some categories and should be reviewed if benchmark flags become
-a central reporting layer.
-**What it does not measure:** Legal compliance, health risk, or suitability
-for any individual. The same per-100g thresholds are applied to all products
-in the dataset, including US-market products, for comparability, since FDA
-per-serving daily-value percentages are not directly comparable to per-100g
-data.
+
+**Status:** Implemented.
+
+**Measures:** Whether sugar, saturated fat, fat, or salt sits above the
+project's reference threshold per 100g or 100ml.
+
+The project uses the UK Food Standards Agency front-of-pack threshold scheme as
+a common reference for cross-product comparison. The thresholds are analytical
+reference points, including for non-UK products; they are not legal-compliance
+tests.
+
+The liquid/solid distinction is approximated in the MVP using an energy-density
+proxy, which can misclassify some products.
 
 ### NOVA / processing indicators
-**Status:** Implemented (sourced from Open Food Facts)
-**What it measures:** A reference classification (1–4) describing the degree
-of industrial processing a product has undergone, as classified by Open Food
-Facts contributors using the NOVA system.
-**What it does not measure:** Product safety, health value, or quality in
-isolation. NOVA group is one processing-level reference point, not a
-standalone verdict.
+
+**Status:** Implemented from OFF.
+
+**Measures:** NOVA group 1–4 as recorded/classified in the OFF source.
+
+**Does not measure:** safety, overall health value, or product quality in
+isolation.
 
 ### Nutri-Score
-**Status:** Implemented where available (sourced from Open Food Facts)
-**What it measures:** A standardized A–E letter grade summarizing a
-product's nutrition profile, calculated from energy, sugar, saturated fat,
-salt, fibre, protein, and fruit/vegetable/nut content, as provided by Open
-Food Facts.
-**What it does not measure:** A personalized dietary recommendation.
-Nutri-Score does not account for serving size, individual dietary needs, or
-non-nutritional factors such as ingredient processing or additive use.
+
+**Status:** Implemented where available from OFF.
+
+**Measures:** The standardized A–E nutrition-profile grade supplied in OFF.
+
+**Does not measure:** personalized suitability and does not incorporate every
+dimension of a product, such as serving context or processing.
 
 ### Product segment
-**Status:** Planned, not yet implemented
-**What it will measure:** Groupings of products based on shared patterns
-across claims, ingredients, nutrition, processing indicators, and category,
-intended to surface emerging market segments.
-**What it will not measure:** Consumer suitability or health status. A
-segment is a market-pattern grouping, not a recommendation tier.
+
+**Status:** Planned, not yet implemented.
+
+**Will measure:** groups of products sharing patterns across positioning,
+ingredients, nutrition, processing, and category.
+
+A segment will be a market-pattern grouping, not a health or recommendation
+tier.
 
 ### Completeness score
-**Status:** Implemented
-**What it measures:** Whether the structured fields most relevant to
-analysis (product name, brands, ingredients text, six nutrition values,
-Nutri-Score, NOVA group — eleven fields in total) are present for a given
-product record. Calculated as the percentage of those eleven fields that are
-populated, rounded to the nearest integer.
-**What it does not measure:** Product quality. A low completeness score
-reflects missing source data, not a deficiency in the product itself.
 
-## Reporting layers: ingredient-stage vs final market-intelligence summary
+**Status:** Implemented.
 
-Two different aggregation tables exist in the database, computed at
-different points in the pipeline and serving different purposes — this
-distinction matters for interpreting any brand- or category-level
-summary correctly.
+**Measures:** The percentage of eleven core structured fields populated for a
+product: product name, brands, ingredient text, six nutrition values,
+Nutri-Score, and NOVA group.
 
-**`weekly_brand_summary`** is computed by `load.py`, before pack-image
-claim extraction or claim taxonomy exist for any product. It reflects
-ingredient-analysis-stage signals only (composition markers, NOVA,
-ingredient-based claim signals) and is intended for early pipeline QA —
-not as a source for claim territory shares, benchmark intersection
-rates, or the positioning-to-composition gap, since none of that data
-exists yet at the point this table is computed.
+**Does not measure:** accuracy or product quality. A populated field can still
+be wrong, and a low score primarily indicates missing source data.
 
-**`weekly_brand_positioning_summary`** is computed by `db_summary.py`,
-the final reporting aggregation layer, run after `merge_scores.py` and
-`tag_claims.py` have fully enriched the database. It contains claim taxonomy
-shares, pack-claim coverage, benchmark intersection rates, and other
-reporting-stage summaries computed from the full current database snapshot —
-not only the products changed in a given weekly update, so a trend chart never
-confuses "what changed this week" with "the observed market this week." Each
-reporting snapshot is identified by `week_ending` (the reporting period) and
-`run_timestamp` (the precise execution time), enabling time-series queries
-(e.g. "% of products with a protein claim over time") without losing prior
-periods' data.
+## Reporting layers
 
-A third table, **`positioning_example_products`**, is not a time
-series at all — it is a small, curated set of neutral product examples
-for Streamlit overview pages, fully replaced on every `db_summary.py` run.
-See `docs/ADR.md` ADR-012 for the full architectural rationale for this
-separation.
+Three database outputs serve different purposes.
 
-Reporting-stage exports generated by `db_summary.py` are separate from the
-earlier `load.py`, `merge_scores.py`, or `tag_claims.py` exports. Those earlier
-exports remain useful for QA and product-level inspection at each pipeline
-stage; `db_summary.py` outputs are the final aggregate reporting layer used by
-the Streamlit analytical board and any downstream analysis.
+### `weekly_brand_summary`
 
-## Known limitations of current methodology
+Generated at the ingredient-analysis stage before pack-image claim extraction.
+It is primarily a pipeline/QA summary and should not be used as the final source
+for pack-claim territory shares or benchmark-intersection reporting.
 
-See `docs/LIMITATIONS.md` for the full catalogue of known limitations
-affecting interpretation, including coverage gaps, context limitations,
-mapping caveats, and extraction quality caveats. Current methodology caveats
-that materially affect interpretation include:
+### `weekly_brand_positioning_summary`
 
-- **Open Food Facts source variability:** OFF is crowdsourced. Product names,
-  brands, categories, countries, images, and nutrition values can be incomplete,
-  inconsistent, duplicated, outdated, or entered at different levels of detail.
-- **Observed records, not market share:** product counts are observed OFF
-  records in the selected base. They are not sales-weighted, shelf-weighted, or
-  representative of retail distribution.
-- **Category cleanup is launch-scoped:** snacks and cereals were reviewed in
-  detail for MVP. Remaining category noise can still exist, especially outside
-  the reviewed launch scopes or in edge product forms.
-- **Nutrition flags are governance rules, not corrections:** products can be
-  excluded from aggregates because their nutrition values are unsuitable for
-  summary analysis, but the project does not claim to know which source field is
-  wrong in every case.
-- **Brand/company mapping is directional:** company filters are launch-stage
-  routing aids. Market-specific licensing, recent ownership changes,
-  private-label complexity, and noisy OFF brand strings mean the company field
-  should not be read as a legal ownership guarantee.
-- **Beverage segmentation is MVP-level:** ready-to-drink and
-  preparation/alcohol segments are designed to protect charts from incomparable
-  product forms. The classifier is not a final beverage taxonomy.
-- **OCR and pack-design limitations:** OCR quality degrades on dark packs,
-  angled or cropped images, small thumbnails, and highly stylized typography.
-- **Panel-classification residual error:** some valid front packs are likely
-  still classified as non-front, especially where certification, origin, or
-  short ingredient declarations dominate the OCR text.
-- **Unmapped claim understatement:** some claim-like text captured in
-  `other_claims` or `detected_claim_phrases` is not mapped into the boolean
-  taxonomy, producing a small estimated understatement of claim prevalence in
-  release-01.
-- **Missing is not zero:** null values, failed observations, and confirmed zero
-  values have different meanings and must not be collapsed during analysis.
+Generated after the database has been fully enriched. This is the final
+reporting aggregation layer for claim taxonomy shares, pack-claim coverage,
+benchmark intersections, and related market-intelligence summaries.
+
+Each snapshot represents the full current database state for its reporting
+period, rather than only products changed during that week.
+
+### `positioning_example_products`
+
+A small curated set of neutral product examples used by Streamlit overview
+pages. It is refreshed rather than treated as a historical time series.
+
+See `docs/ADR.md` for the architectural rationale behind the reporting layers.
+
+## Interpretation limits
+
+The most important interpretation boundaries are:
+
+- OFF coverage and data quality are uneven;
+- product counts are not sales or market share;
+- category and company fields are governed analytical classifications, not
+  perfect universal taxonomies or legal ownership determinations;
+- nutrition flags decide analytical suitability rather than correcting source
+  data;
+- beverage segmentation exists primarily for comparability;
+- image-based claim analysis is limited to products with usable front-of-pack
+  evidence and remains subject to OCR/image-quality error;
+- missing values, failed observations, and confirmed zeros are different states.
+
+See `docs/LIMITATIONS.md` for the complete limitation catalogue.

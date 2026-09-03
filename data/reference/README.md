@@ -15,8 +15,9 @@ Region grouping for the Market / region filter is defined one level up in
 ### `company_brand_mapping.csv`
 
 Main company / owner routing table used by `pipeline/clean.py` and the
-Streamlit app. As of the August 2026 MVP launch build, it contains 2,546 rows
-across 127 parent-company values.
+Streamlit app. After the September 2026 Top 9, retailer, France, and
+US/Canada regional-category orphan cleanup, it contains 3,631 rows across 208
+parent-company values.
 
 This file supports directional company / owner filtering. It is not a legal
 ownership audit. Market-scoped, licensed, recently changed, and manually
@@ -51,8 +52,9 @@ appropriate company later.
 
 ### `private_label_brand_mapping.csv`
 
-Curated private-label mapping reference. For the August 2026 MVP, this contains
-the Carrefour pilot only.
+Curated private-label mapping reference. After the September 2026 retailer
+mapping exercise, this contains 1,388 reviewed rows covering the completed
+retailer/private-label portfolios.
 
 The purpose is brand-level/private-label-line normalization, not parent-company
 assignment. For example, `Carrefour Bio`, `Carrefour Classic`,
@@ -64,8 +66,8 @@ process.
 
 ### `top_company_brand_portfolio_matrix.csv`
 
-Top-company portfolio routing matrix used as an input for the August 2026 Top 9
-company review.
+Top-company portfolio routing matrix used as an input for the August/September
+2026 Top 9 company review. It currently contains 247 portfolio/discovery rows.
 
 This file supports the curated routing layer for Nestlé, PepsiCo,
 The Coca-Cola Company, Mondelēz International, Danone, Kraft Heinz,
@@ -75,6 +77,20 @@ exceptions.
 The matrix is an input to company mapping. It should not be used as a blanket
 override without the conflict checks described in
 `docs/BRAND_COMPANY_MAPPING.md`.
+
+### `reviewed_product_mapping_overrides.csv`
+
+Exact GTIN-level reviewed overrides for cases where product evidence is
+stronger than contaminated Open Food Facts brand metadata or a broad portfolio
+rule. These rows can correct derived display brand, resolved company / owner,
+or project category for a specific product, including `OUT_OF_SCOPE`.
+The optional `region` column supports market-specific reviewed outcomes for
+the same GTIN; blank `region` means the override is unscoped.
+After the September 2026 Top 9 audits and France/US-Canada regional-category
+orphan cleanup, this file contains 12,577 active reviewed override rows.
+
+The file must not be used to infer broad brand aliases. Raw Open Food Facts
+fields remain unchanged.
 
 ### `brand_counts.csv` and `brand_coverage_report.csv`
 

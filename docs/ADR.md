@@ -2,821 +2,525 @@
 
 ## Food & Beverage Positioning Radar
 
-**Version:** 2.1
-**Date:** August 2026
-**Status:** Active
+**Version:** 2.2  
+**Date:** September 2026  
+**Status:** Active  
 **Author:** Julia Lenc
 
 ---
 
-## What is this document?
+## Purpose
 
-An Architecture Decision Record documents why the system was built the way
-it was — not just what it does. It is written for three audiences: a
-developer picking up the project in six months, a data analyst extending
-the analysis, and a technical reviewer evaluating the project's
-reproducibility.
+This document records the major architectural decisions behind Food & Beverage
+Positioning Radar and the reasons they were made.
 
-Every significant design decision is recorded here with its rationale,
-alternatives considered, and consequences. This makes the architecture
-auditable and the scope choices defensible.
+It is intentionally narrower than the methodology and governance documents:
 
----
+- `docs/METHODOLOGY.md` explains what the analytical outputs mean;
+- `docs/LIMITATIONS.md` catalogs interpretation caveats;
+- `docs/CATEGORY_CLEANUP.md` defines category governance;
+- `docs/BRAND_COMPANY_MAPPING.md` defines brand/company mapping governance;
+- `docs/NUTRITION_OUTLIER_GOVERNANCE.md` defines nutrition-quality rules;
+- `docs/CLAIM_EXTRACTION.md` documents sampling, prompts, and extraction history.
+
+The ADR should explain **why the system is structured this way**, not duplicate
+those documents.
 
 ## Project overview
 
-Food & Beverage Positioning Radar is a data pipeline and analysis system
-that maps how packaged food and beverage products position themselves
-through claims, ingredients, nutrition, processing, and product design.
-It ingests product data from Open Food Facts (OFF), cleans and enriches
-it, applies ingredient-based analysis and front-of-pack claim extraction,
-computes positioning and benchmark metrics, and stores results for
-the Streamlit analytical board and downstream QA/export workflows.
+Food & Beverage Positioning Radar is a reproducible market-intelligence pipeline
+for packaged foods and beverages. It combines Open Food Facts product data with
+category cleanup, brand/company normalization, ingredient analysis, nutrition
+governance, front-of-pack claim extraction, and reporting layers for Streamlit
+and downstream analysis.
 
-**Core analytical question:** How do packaged foods and beverages position
-themselves through claims, ingredients, nutrition, processing, and product
-design?
+Core analytical question:
 
-One analytical lens compares front-of-pack positioning with composition
-indicators, but the broader system is designed for market intelligence:
-product segments, claim territories, ingredient systems, category
-patterns, benchmark intersections, and product-level evidence.
+> How do packaged foods and beverages position themselves through claims,
+> ingredients, nutrition, processing, and product design?
 
 ---
 
-## Decision log
+# Decision log
 
----
+## ADR-001 — Use Open Food Facts as the primary product source
 
-### ADR-001 — Data source: Open Food Facts API + bulk export
-
-**Date:** 18 May 2026
+**Date:** 18 May 2026  
 **Status:** Active
 
-**Decision:** Use Open Food Facts (OFF) as the primary data source,
-combining the Live JSON API for development and weekly incremental updates,
-and the OFF bulk CSV export for production-scale analysis.
+**Decision:** Use Open Food Facts (OFF) as the primary product source. Use the
+bulk export for production-scale bootstrap and the API for development and
+incremental updates.
 
-**Rationale:** OFF is the only open, crowdsourced, global food product
-database with structured nutritional data, ingredient lists, NOVA group
-classifications, and Nutri-Score grades at scale. Commercial
-product-intelligence databases (Nielsen, Mintel, Innova Market Insights)
-are enterprise subscription products and are not reproducible or
-redistributable in the same way as an open-data pipeline. OFF data is
-licensed under ODbL — open for analysis, attribution required,
-share-alike for derivative databases.
-
-**Alternatives considered:**
-
-- Scraping retailer websites (Carrefour, Tesco, Amazon Fresh): legally
-  risky, technically fragile, no nutritional data
-- USDA FoodData Central: US-only, limited to approximately 600,000
-  products, no NOVA group
-- Commercial databases: cost-prohibitive for a self-funded project, and
-  non-reproducible by the intended technical audience
+**Rationale:** OFF is open, global, structured, reproducible, and includes the
+nutrition, ingredient, category, NOVA, Nutri-Score, and image fields required by
+the project. Commercial product-intelligence databases are not reproducible or
+redistributable in the same way.
 
 **Consequences:**
 
-- Coverage bias toward Western Europe, especially France (see OBS-001)
-- Data quality is crowdsourced — variable completeness (see OBS-002)
-- No sales volume data — analysis is based on product presence and claim
-  distribution, not market share (documented in `docs/LIMITATIONS.md`)
-- Fully reproducible by anyone with internet access
+- source coverage and completeness are uneven;
+- product counts are not sales or market share;
+- ODbL attribution/share-alike obligations apply to OFF-derived data;
+- project-level governance is required rather than treating OFF fields as clean
+  analytical truth.
 
-**Production strategy (OBS-012):**
-
-- Week 0: download full OFF bulk export (approximately 9GB compressed,
-  4.4M products), filter to relevant categories, load into SQLite
-- Weekly: query API for products with `last_modified_t` > 7 days,
-  INSERT OR REPLACE on barcode
-- No full table scan required — `last_modified_t` index makes
-  weekly diff fast
+See `docs/LIMITATIONS.md`.
 
 ---
 
-### ADR-002 — API fields: selective pull, not full record
+## ADR-002 — Pull only the OFF fields required by the pipeline
 
-**Date:** 18 May 2026
+**Date:** 18 May 2026  
 **Status:** Active
 
-**Decision:** Pull 16 fields from the OFF API rather than full product
-records.
+**Decision:** Use a selective OFF field set rather than full records.
 
-**Fields pulled:** code, product_name, brands, categories,
-ingredients_text, nutriments, nutriscore_grade, nova_group,
-countries_tags, labels_tags, quantity, packaging, created_t,
-last_modified_t, additives_tags, image_url.
+Core fields include product identity, product name, brands, categories,
+ingredients, nutriments, Nutri-Score, NOVA, country tags, labels, quantity,
+packaging, timestamps, additives, and image URL.
 
-**Rationale:** OFF records have 180+ fields. Full records are large and
-slow. We pull only what the analysis requires. `additives_tags` is
-included because OFF pre-parses E-numbers from ingredient lists, saving
-detection work in `analyze.py`. `image_url` is included to support
-front-of-pack image extraction in the vision pipeline.
+**Rationale:** Full OFF records are large and contain many fields irrelevant to
+the MVP. A selective contract reduces transfer, storage, and processing cost
+while remaining explicit and reproducible.
 
-**Fields deliberately excluded from v1 (available for future versions):**
-
-- `allergens_tags` — useful for dietary analysis extensions
-- `ecoscore_grade` — environmental impact, relevant for sustainability
-  positioning analysis
-- `serving_size` — needed for serving-based claim analysis
-- `stores` — retailer names, useful for market coverage analysis
+**Consequence:** New analytical dimensions such as allergens, Eco-Score, serving
+size, or retailer-store coverage require an intentional schema/input extension.
 
 ---
 
-### ADR-003 — Language scope: EN and FR only for ingredient analysis in v1
+## ADR-003 — Limit ingredient-marker analysis to supported languages
 
-**Date:** 18 May 2026
+**Date:** 18 May 2026  
 **Status:** Active
 
-**Decision:** Ingredient marker analysis applies only to products with EN,
-FR, or BOTH ingredient text. OTHER and UNKNOWN language products are
-retained in the dataset with null ingredient analysis scores.
+**Decision:** Run ingredient-marker analysis only when ingredient text is
+English, French, or bilingual EN/FR. Retain other products but leave the
+ingredient-analysis output ineligible/null.
 
-**Rationale:** Language distribution in the production sample: FR=69%,
-EN=11%, BOTH=3%, OTHER=14%, UNKNOWN=3%. The ingredient marker dictionary
-covers EN and FR — applying it to Arabic, Bulgarian, or German ingredient
-text produces silent false negatives (no markers detected where markers
-are present). This is worse than transparently flagging as ineligible.
-The `ingredient_analysis_eligible` boolean column makes this visible in
-every downstream table.
+**Rationale:** Applying an unsupported dictionary would create silent false
+negatives, which is worse than an explicit missing analytical layer.
 
-**German as v1.5 candidate (OBS-009):** German ingredient vocabulary
-shares significant overlap with EN/FR (maltodextrin, lecithin,
-glucose-sirup, palmöl). Extension is low-effort and planned for v1.5
-after EN/FR coverage is validated at scale.
-
-**Consequences:** Approximately 16% of products are not analyzed by
-ingredient markers in v1. These products retain valid nutritional data
-and are included in benchmark flag computation and future segmentation.
+**Consequence:** Nutrition, brand, category, company, and image-based analysis
+can still be used for products outside the ingredient-language scope.
 
 ---
 
-### ADR-004 — Ingredient analysis approach: rule-based in v1
+## ADR-004 — Use transparent rule-based ingredient analysis
 
-**Date:** 18 May 2026
+**Date:** 18 May 2026  
 **Status:** Active
 
-**Decision:** Use rule-based keyword matching for ingredient marker
-detection in v1. No ML models, no external NLP libraries beyond standard
-Python.
+**Decision:** Use auditable keyword/rule logic for ingredient-marker detection
+rather than an opaque ML classifier.
 
-**Options evaluated:**
+**Rationale:** Every ingredient signal should be traceable to source text and a
+known rule. Rule-based detection is fast, reproducible, dependency-light, and
+appropriate for the EN/FR MVP vocabulary.
 
-- **Option A (chosen): Rule-based/keyword matching** — bilingual EN/FR
-  keyword dictionary, zero dependencies, transparent, auditable, fast,
-  works offline
-- **Option B: K-Means clustering** — groups products by macronutrient
-  profile, useful for market segmentation, no claim detection capability
-- **Option C: LLM extraction** — extracts claims from packaging
-  text/images, highest analytical value for pack-image analysis, requires
-  API credits and infrastructure
-
-**Why Option A for v1:** Rule-based ingredient analysis produces fully
-auditable results. Every detected marker can be traced to a specific
-keyword in a specific ingredient field. This is essential for a
-reproducible market intelligence tool — every signal must be
-independently verifiable. Option A also produces the internal
-`composition_marker_score`, retained for historical compatibility and
-diagnostics but not shown as a user-facing proprietary score in the
-current Streamlit MVP.
-
-**Validation methodology:** Validate the ingredient dictionary on a small
-known sample before scaling. Three false positives were identified and
-fixed during development (OBS-010, OBS-013): curcuma as colorant,
-chicory fibre as texture ingredient, whey as confectionery ingredient.
-Manual review of the top 20 scored products is recommended before any
-new category or language is added.
+**Consequence:** The dictionary requires explicit maintenance and language
+expansion. Historical composite fields derived from these markers remain
+internal rather than user-facing scores.
 
 ---
 
-### ADR-005 — v2 (K-Means segmentation) deferred
+## ADR-005 — Defer product segmentation until the evidence layers are stable
 
-**Date:** 19 May 2026
-**Status:** Deferred — no deadline
+**Date:** 19 May 2026  
+**Status:** Deferred
 
-**Decision:** K-Means clustering on product composition data (Option B)
-is not implemented in v1. The infrastructure is ready but it is not
-prioritised ahead of the vision pipeline.
+**Decision:** Do not prioritize K-Means/product segmentation ahead of the vision
+and governance layers.
 
-**Rationale:** The vision pipeline (v3) has higher analytical value for
-the core positioning question and was prioritised. K-Means segmentation
-costs nothing computationally at the point of need and can be added at
-any time. The `product_segment_label` column is present as NULL in both
-`clean.py` output and the SQLite schema — when implemented, it requires
-changes only to `analyze.py` with no schema migration.
+**Rationale:** Front-of-pack evidence, category quality, brand/company routing,
+and nutrition governance provide more immediate analytical value and are
+prerequisites for trustworthy segmentation.
 
-**What segmentation adds:** Automatic grouping of products into market
-segments based on macronutrient profiles, claim patterns, and processing
-level. Intended to surface product clusters such as high-protein/lower-sugar
-products vs high-energy/high-claim products within a category — described
-by their centroid characteristics, not by health verdicts. Useful for
-Streamlit market-overview views and for the "emerging product segments"
-business question in the brief.
-
-**Stub in place:** `clean.py` adds `product_segment_label = None`.
-The SQLite schema includes `product_segment_label TEXT` in the
-`product_analysis` table.
+**Consequence:** `product_segment_label` can remain unpopulated until a later
+segmentation phase without blocking the MVP.
 
 ---
 
-### ADR-006 — Vision pipeline (v3) prioritised before segmentation
+## ADR-006 — Prioritize front-of-pack vision extraction
 
-**Date:** 19 May 2026
-**Status:** Active — complete
+**Date:** 19 May 2026  
+**Status:** Active — implemented
 
-**Decision:** Proceed directly to front-of-pack image claim extraction
-(v3) before implementing K-Means segmentation (v2).
+**Decision:** Build front-of-pack OCR/LLM extraction before product
+segmentation.
 
-**Rationale:** Front-of-pack claim extraction has higher analytical value
-for the core positioning question — it captures pack communication signals
-that cannot be inferred from ingredient text alone. The vision pipeline
-supplies the front-of-pack evidence layer needed to distinguish what a
-product contains from what the pack communicates.
+**Rationale:** Ingredient text describes what a product contains; front-of-pack
+analysis captures what the product communicates. The positioning question
+requires both evidence layers.
 
-**Sampling strategy:** Do not analyze all products. Use a curated,
-image-eligible sample with a probability-oriented backbone plus purposive
-matrix and calibration components. This supports both sample proportions
-and approximate backbone design-weighted estimates within the image-eligible
-OFF sampling frame. See `docs/CLAIM_EXTRACTION.md` for the current sampling
-design.
+**Consequence:** Image-based extraction is a distinct pipeline stage with its
+own sampling, validation, model, prompt, and release metadata.
 
-**Actual coverage and cost (current releases):** Across the current US/UK
-and France analytical releases, the project contains 17,127 valid
-front-of-pack observations. Azure AI Vision Read API for OCR plus Azure
-OpenAI `gpt-4.1-nano` for structured claim extraction cost approximately
-20 CHF total for the US, UK, and France OCR/LLM runs.
-
-**Current status of the composite score:** The historical v3 pipeline joined
-`composition_marker_score` (from `analyze.py`) with extracted pack claims
-(from `vision_extract.py`) in `merge_scores.py`. The resulting
-`positioning_composition_gap` is retained only for historical/internal
-compatibility and is not shown as a user-facing score in the Streamlit MVP.
+See `docs/CLAIM_EXTRACTION.md`.
 
 ---
 
-### ADR-007 — Storage: SQLite + CSV dual output
+## ADR-007 — Use SQLite as the analytical store, with CSV outputs for QA
 
-**Date:** 20 May 2026
-**Status:** Active — schema extended by ADR-012
+**Date:** 20 May 2026  
+**Status:** Active
 
-**Decision:** Store all pipeline output in SQLite with concurrent CSV
-exports for QA, notebooks, and downstream analysis.
+**Decision:** Store the working analytical database in SQLite and emit CSV
+outputs at relevant pipeline stages for QA, review, and downstream analysis.
 
-**Schema (six tables, two groups):**
+**Rationale:** SQLite is appropriate for a single-developer research product:
+zero infrastructure, portable, inspectable, and sufficient for the project
+scale. CSV exports make intermediate states easy to audit.
 
-Core/load tables (owned by `load.py`):
-- `products` — identity and nutrition, UPSERT on barcode
-- `product_analysis` — ingredient markers, extracted claims, benchmark
-  flags, and positioning metrics, UPSERT on barcode
-- `weekly_brand_summary` — ingredient-stage QA / early summary only,
-  computed at `load.py` time before pack-image claims or claim taxonomy
-  exist. NOT the final market-intelligence reporting table — see
-  `weekly_brand_positioning_summary` below and ADR-012.
-- `ingestion_log` — one row per pipeline run, full audit trail
+**Key consequences:**
 
-Final reporting tables (owned by `db_summary.py`, see ADR-012):
-- `weekly_brand_positioning_summary` — the actual pre-aggregated
-  market-intelligence summary for reporting views, computed from
-  the full database snapshot after `merge_scores.py` and `tag_claims.py`
-  have run
-- `positioning_example_products` — curated product-level examples for
-  Streamlit overview pages
-
-**Why SQLite not PostgreSQL:** Single-developer research project. SQLite
-is zero-infrastructure, file-based, version-controllable (schema.sql),
-and sufficient for hundreds of thousands of rows. Migration to PostgreSQL
-requires changing one connection string and no other code.
-
-**Why pre-aggregate:** Summary views over 100,000+ raw rows can become
-slow and hard to audit when every calculation is done interactively.
-`weekly_brand_positioning_summary` pre-computes brand/category metrics in
-Python so the Streamlit app and downstream analysis read stable,
-reproducible reporting tables. This pattern scales to larger datasets and
-keeps calculation logic in the version-controlled pipeline.
-
-**UPSERT logic:** INSERT OR REPLACE on barcode primary key. Safe to run
-multiple times. Handles Open Food Facts contributor corrections to
-existing products automatically.
-
-**WAL mode:** `PRAGMA journal_mode=WAL` enables safe concurrent reads
-while Python writes — important when Streamlit or analysis tools are
-connected.
+- product tables use barcode/GTIN as the primary identity;
+- idempotent reruns use UPSERT/replace logic where appropriate;
+- WAL mode supports concurrent reads during writes;
+- reporting tables can be precomputed rather than recalculated interactively in
+  Streamlit.
 
 ---
 
-### ADR-008 — Brand normalisation and company-owner routing
+## ADR-008 — Separate consumer brand from company / owner
 
-**Date:** 20 May 2026
-**Status:** Active — launch architecture updated August 2026
+**Date:** 20 May 2026  
+**Status:** Active — launch architecture finalized September 2026
 
-**Decision:** Separate brand and company handling into distinct layers:
+**Decision:** Treat brand normalization and company routing as separate layers:
 
 1. preserve raw OFF brand evidence;
 2. extract the most useful consumer-facing brand entity;
-3. normalize spelling, punctuation, accents, and approved aliases;
-4. resolve company / owner as a directional navigation field.
+3. normalize approved spelling/punctuation/aliases;
+4. optionally retain a broader `brand_family`;
+5. resolve company/owner separately for navigation and filtering.
 
-The legacy `primary_brand` field remains for compatibility, but the August
-2026 MVP pipeline also uses `off_brands_raw`, `off_brand_tokens`,
-`legacy_primary_brand`, `brand_entity_raw`, `brand_entity_source`,
-`normalized_brand`, `brand_family`, and `resolved_company`-style fields. This
-prevents brand entities such as `KitKat`, `Milka`, `Carrefour Bio`, or
-`Nescafe Dolce Gusto` from being flattened into parent companies or retailer
-banners too early.
+The preferred launch brand is `normalized_brand`. `primary_brand` is retained
+only for legacy compatibility/provenance.
 
-**Problem:** The OFF `brands` field is free-text, contributor-entered.
-The same company appears as multiple strings: `nestlé`, `nestle`,
-`nestlé, nesquik`, `fitness` (Nestlé sub-brand), `perrier` (Nestlé
-water brand). This makes brand-level aggregation inconsistent without
-normalisation (see OBS-014).
+**Rationale:** OFF brand strings frequently mix consumer brands, parent
+companies, retailer banners, private-label ranges, legal entities, and noisy
+contributor text. Flattening these too early destroys useful market structure.
 
-**Original v1 fix:** `primary_brand` = first token, lowercased,
-accent-stripped (NFKD normalisation). This reduced fragmentation at low
-effort, but it was not sufficient for launch because OFF often stores parent or
-company names where the product name or brand string clearly contains a more
-specific consumer-facing brand.
+**Company principle:** `resolved_company` is directional analytical routing, not
+a universal legal ownership register. Market, product form, licensing,
+joint-venture, private-label, and transaction timing can require scoped
+outcomes.
 
-**Launch update:** `pipeline/clean.py` now applies a conservative layered
-approach:
+**Conservative rule:** If ownership cannot be established with sufficiently
+strong evidence, keep `Other / not mapped to a company`. A false negative is
+preferred to a false-positive owner assignment.
 
-- controlled product-name recovery for high-confidence Nestle snack brands in
-  the reviewed France, UK/Ireland, and US/Canada cases;
-- Carrefour-only curated private-label normalization before generic alias
-  heuristics;
-- approved spelling and punctuation aliases such as `Kit Kat` / `KitKat`,
-  `Clif Bar` / `Clif`, and `Nescafe` / `Nescafe Dolce Gusto` handling;
-- a separate company-mapping resolver using
-  `data/reference/company_brand_mapping.csv`.
-
-**Company mapping:** `company_brand_mapping.csv` supports direct,
-market-scoped, licensed/partnered, recently changed, and review-required
-routing. Company / owner values are used for filtering and navigation, not for
-legal ownership certification or company-level scoring. Backend review status
-is preserved, but the Streamlit app must not display `Manual review` as a
-visible company / owner value; unresolved cases are shown as
-`Other / not mapped to a company` or a scoped company label.
-
-See `docs/BRAND_COMPANY_MAPPING.md` for the detailed launch governance.
+See `docs/BRAND_COMPANY_MAPPING.md`.
 
 ---
 
-### ADR-009 — Category scope: snacks, beverages, cereals, and dairy
+## ADR-009 — Use four governed launch categories
 
-**Date:** 18 May 2026
-**Status:** Active — MVP scope updated August 2026
+**Date:** 18 May 2026  
+**Status:** Active — launch governance finalized September 2026
 
-**Decision:** The August 2026 MVP app focuses on four OFF-derived analytical
-categories: snacks, beverages, cereals, and dairy.
+**Decision:** The launch analytical categories are:
 
-**Rationale:** These categories have a high concentration of
-functional, free-from, and organic/natural positioning claims in the
-dataset and cover the core use cases: protein bars, energy drinks,
-fortified breakfast cereals, plant-based drinks, yogurts, dairy desserts, and
-related packaged products. They are also the categories most relevant to the
-primary audience (CPG professionals, insight managers, market analysts)
-described in the brief.
+```text
+snacks
+beverages
+cereals
+dairies
+```
 
-**Known limitation:** OFF categories are contributor-assigned folksonomy
-tags, not a controlled vocabulary. Misclassification occurs (e.g. water
-appearing in snacks). Category definitions are refined using the
-`off_categories` field, which contains the full nested OFF category
-hierarchy per product.
+The app displays `dairies` as **Dairy**.
 
-**Launch update:** Category rules are now shared by bulk and incremental
-ingestion through `pipeline/category_rules.py`. MVP cleanup has reviewed and
-locked the main France, UK/Ireland, and US/Canada category bases used by the
-Streamlit app. Some non-MVP regions remain visible in source data but should
-not be over-interpreted as fully cleaned analytical markets.
+**Rationale:** These categories cover the project's main positioning use cases
+while remaining manageable enough for explicit cleanup and validation.
 
-**UK/US rationale:** The current sample is French-dominant (69% FR
-language). UK and US markets show higher density of functional and
-free-from claim language in these categories — protein bars, clean-label
-snacks, and superfood positioning are well-represented in Anglo-Saxon
-markets. OFF coverage of UK/US products is sufficient for trend and
-claim-territory analysis.
+**Architecture:** Category assignment is governed by product format and
+commercial use case, not simply by OFF parent tags. Shared deterministic rules
+are used in both bulk and incremental ingestion, while exact reviewed GTIN
+overrides handle product-specific exceptions.
 
----
+A reviewed product may be:
 
-### ADR-010 — Architectural pivot: pack-claim evidence comes from vision, not ingredient text
+- kept in its current category;
+- routed to another launch category;
+- assigned `OUT_OF_SCOPE`.
 
-**Date:** 22 May 2026
-**Status:** Active — implemented from v3 onward
+`OUT_OF_SCOPE` removes the product from the app-facing four-category universe
+without deleting its underlying source/provenance record.
 
-**Decision:** The pack-claim evidence layer is fed by Azure Vision
-front-of-pack extraction output, not by ingredient text analysis.
+**Launch state:** Snacks and cereals received detailed manual category cleanup
+across France, UK/Ireland, and US/Canada. The September mapping/orphan audits
+also added exact category corrections across France and US/Canada.
 
-**Rationale:** Component B in the original v1 design used ingredient text
-as a proxy for front-of-pack claims. This produced systematic false
-positives at scale:
+Restaurant/menu observations are not packaged CPG products and should be
+filtered upstream when a safe source/type discriminator exists. Broad
+restaurant-brand exclusions are unsafe because the same brand can also appear
+on packaged retail products.
 
-- Enriched flour vitamins (niacin, riboflavin) triggering a fortification
-  signal
-- Milk proteins as texture ingredients triggering a protein signal
-- Natural colorants (curcumin, paprika) triggering an adaptogen signal
-- Energy drinks making tautological energy claims
-
-Root cause: ingredient text describes what a product contains. Front-of-pack
-describes what a brand communicates. These are different information
-sources requiring different detection methods.
-
-**Historical v3 composite architecture:**
-
-Component A — ingredient composition score (0–40 points):
-Source: `ingredients_text` + `additives_tags` (keyword dictionary).
-Stored as `composition_marker_score`. Unchanged from v1.
-
-Component B — claim weight (0–30 points):
-Source: Azure Vision OCR → `gpt-4.1-nano` structured extraction.
-Populated by `vision_extract.py` output, joined on barcode.
-Zero for products without vision data.
-
-Component C — context signal (0–30 points):
-Source: vision claims × NOVA group × Nutri-Score.
-Populated after v3 merge in `merge_scores.py`.
-Only fires when Component B > 0.
-
-Full composite stored as `positioning_composition_gap` (0–100).
-See `docs/METHODOLOGY.md` for the complete formula and its known
-limitations as a composite rather than a pure gap metric.
-
-**Current status:** The evidence-layer decision remains active:
-front-pack claims come from OCR/LLM pack observation, not ingredient
-inference. The composite score itself is legacy/internal and is not
-displayed as a user-facing proprietary score in the Streamlit MVP.
-
-**False positives eliminated by this change:** Enriched flour vitamins,
-milk proteins as texture ingredients, natural colorants, tautological
-energy claims, protein-as-ingredient. See OBS-010 through OBS-017 in
-`docs/OBSERVATIONS.md`.
+See `docs/CATEGORY_CLEANUP.md`.
 
 ---
 
-### ADR-011 — Brand-level reporting and positioning typology
+## ADR-010 — Front-of-pack claim evidence must come from pack observation
 
-**Date:** 25 May 2026
-**Status:** Active — informs sampling and reporting strategy
-
-**Decision:** Analytical metrics are reported at brand level, not company
-level. The `company_brand_mapping.csv` enables company-owner navigation and
-cautious roll-up views in Streamlit and downstream exports, but market-scoped
-ownership rows require region/country-aware resolver logic before they should
-be treated as fully resolved company attribution. All scoring, segmentation,
-and benchmark intersection detection should run at the brand/product/category
-level, using `normalized_brand` where available. `primary_brand` remains a
-legacy compatibility/provenance field.
-
-**Rationale:** Company portfolios are too heterogeneous for company-level
-metric averages to be meaningful (a conglomerate whose portfolio spans
-mineral water and ultra-processed snacks produces a meaningless average).
-Brand-level analysis is precise; company-level is navigational.
-
-**Three brand positioning typologies observed in the dataset:**
-
-Type 1 — Dedicated functional or specialty brands: entire portfolio
-built around a specific positioning claim territory. Examples: Chiefs,
-Fiber One, Atkins, Muscle Milk. High metric scores expected and
-consistent with product intent. Useful as reference points for claim
-intensity benchmarking.
-
-Type 2 — Mainstream brands with a dedicated functional product line:
-core portfolio carries minimal claims; a functional sub-line is added
-to address a specific positioning territory. Examples: Snickers Protein,
-Emmi Energy Milk, Emmi PUR, Mars Bar Protein, Special K Protein. Most
-illustrative for studying how mainstream brand equity is applied to a
-focused claim territory.
-
-Type 3 — Mainstream brands with portfolio-wide positioning architecture:
-claims appear consistently across the entire portfolio as part of brand
-identity. Examples: Kellogg's (fortification across all cereals), Danone
-(coordinated sub-brand claim territories), Alpro/Oatly (plant-based
-positioning across the full range). Most useful for studying how claim
-architecture varies across category and sub-brand.
-
-**Two analytical dimensions for positioning analysis:**
-
-Dimension 1 — Communication approach (HOW brands make claims):
-
-1. Authorized health-claim style language: jurisdiction-specific
-   approved wording applied to specific nutrient-delivery formats.
-   Example: Actimel uses EU Regulation 432/2012 language for vitamins
-   B6 and D. Describes the communication style observed, not a
-   compliance assessment by this tool.
-2. Numeric precision: hard numbers as primary differentiators. Example:
-   Kellogg's Special K "12g protein", "HIGH FIBRE", "VITAMINS B6 B12 D".
-3. Transparency positioning: ingredient simplicity used as a positioning
-   claim. Example: Kind "ingredients you can see and pronounce".
-4. Proprietary positioning marks: branded nutrient or ingredient systems
-   used as a product concept. Examples: Nestlé OPTI-START, OPTI-GROW,
-   OPTI-DÉJ, ACTIVGO.
-
-Dimension 2 — Benefit territory (WHAT is claimed):
-
-- Protein: largest claim territory; numeric and comparative claims dominant
-- Sugar reduction: no added sugar + comparative % reduction
-- Gut health: probiotic + fibre combined positioning
-- Fortification: vitamins and minerals; often via proprietary marks
-- Natural / clean label: transparency + origin + no artificial
-- Plant-based: product-identity and substitution positioning
-- Immune support: authorized health-claim style language territory
-- Energy / performance: duration and endurance claims
-- Free-from: gluten-free, lactose-free, dairy-free
-
-The intersection of both dimensions identifies specific product
-positioning patterns, for example: Protein × Numeric (Special K
-"12g PROTEIN MEAL BARS"), Immune × Authorized health-claim style
-(Actimel vitamins B6+D), Natural × Transparency (Kind), Fortification ×
-Proprietary (Nestlé OPTI-GROW).
-
-**Implications for analysis:**
-
-- Filter brand-level summary views to n ≥ 20 products per brand to
-  surface Type 3 portfolio-scale patterns
-- Type 1 brands dominate raw metric rankings but are less analytically
-  informative for broad portfolio-level positioning analysis
-- Type 2 brands are the most illustrative case studies for the relationship
-  between ingredient composition and front-of-pack communication
-- Vegan and plant-based claims are classified as product-identity and
-  substitution positioning rather than a nutritional benefit claim
-
----
-
-### ADR-012 — Final reporting aggregation layer separated from claim tagging
-
-**Date:** June 2026
+**Date:** 22 May 2026  
 **Status:** Active
 
-**Decision:** `db_summary.py` is a dedicated final reporting aggregation
-layer, run after `merge_scores.py` and `tag_claims.py`, kept separate
-from `tag_claims.py` itself.
+**Decision:** Confirmed front-of-pack claim evidence comes from image
+observation via OCR + LLM extraction, not from ingredient text or product-name
+inference.
 
-**Rationale:** `tag_claims.py`'s job is product-level classification —
-claim taxonomy, benchmark flags, claim-benchmark intersections. This is
-analysis: it operates on one product at a time. `db_summary.py`'s job is
-reporting: brand/category summaries, claim territory distributions,
-benchmark intersection rates, and a curated set of product-level
-examples for Streamlit overview pages. These are different
-responsibilities, and keeping them in separate scripts keeps each one
-focused and independently testable.
+**Rationale:** Ingredient text and pack communication are different evidence
+layers. Ingredient-derived proxies created systematic false positives when
+treated as claims.
 
-**Full snapshot, not weekly diff:** `db_summary.py` always recomputes
-its summary from the full current database snapshot, regardless of
-whether that snapshot was built via a one-time bulk export or updated
-incrementally via a weekly API diff. This avoids ever reporting
-"products changed this week" as if it were "the observed market this
-week" — a load-bearing rule for any future production/incremental run.
+**Consequences:**
 
-**Two new tables, two different lifecycles:**
-- `weekly_brand_positioning_summary` — a time series (one row per
-  `week_ending` per brand/category), enabling trend queries such as
-  "% of products with a protein claim over time." Existing rows for the
-  same `week_ending` are replaced on rerun; rows from prior periods are
-  preserved.
-- `positioning_example_products` — NOT a time series. A small, neutral
-  showcase of curated product examples, fully replaced (truncate +
-  reinsert) on every run, with no historical accumulation.
+- ingredient/name-derived signals may remain for internal QA or fallback
+  analysis;
+- they must not be presented as confirmed pack observations;
+- a valid observed no-claim pack must remain a true no-claim result;
+- historical `positioning_composition_gap` remains legacy/internal and is not a
+  user-facing proprietary score.
 
-**Why these tables aren't declared upfront by `load.py`:** `load.py`'s
-"declare the full schema upfront" pattern (ADR-010 update) applies to
-`product_analysis`, a table multiple pipeline stages enrich over a
-single product row's lifetime. These two reporting tables have a
-different lifecycle entirely — periodic snapshots and full-replace
-showcases, not progressively-enriched rows — so `db_summary.py` owns
-its own DDL directly, the same way `load.py` owns the DDL for the
-tables it's responsible for.
+See `docs/METHODOLOGY.md` and `docs/CLAIM_EXTRACTION.md`.
 
 ---
 
-## Modular contract between pipeline layers
+## ADR-011 — Analyze primarily at product and brand level; use company for navigation
 
-The pipeline is designed so that each layer can be replaced independently
-without breaking adjacent layers. This is the property that makes v2
-segmentation and future v4 additions non-breaking.
+**Date:** 25 May 2026  
+**Status:** Active
 
+**Decision:** Product and brand are the primary analytical units.
+Company/owner is primarily a navigation, filtering, and portfolio roll-up layer.
+
+**Rationale:** Company portfolios can span fundamentally different categories
+and product architectures. Company-level averages can therefore obscure more
+than they explain, while brand/product/category analysis retains meaningful
+positioning structure.
+
+**Consequences:**
+
+- metrics and benchmark intersections should be interpreted at product,
+  normalized-brand, brand-family, and category levels;
+- company views require the scoped ownership resolver;
+- company aggregation must not imply legal ownership certainty or commercial
+  market share.
+
+---
+
+## ADR-012 — Keep final reporting aggregation separate from product tagging
+
+**Date:** June 2026  
+**Status:** Active
+
+**Decision:** `tag_claims.py` remains a product-level classification step, while
+`db_summary.py` owns final aggregate reporting tables.
+
+**Rationale:** Product classification and reporting aggregation have different
+responsibilities, testing needs, and lifecycles.
+
+**Reporting rules:**
+
+- `weekly_brand_summary` is an earlier ingredient-stage QA summary;
+- `weekly_brand_positioning_summary` is the final reporting aggregation layer;
+- `positioning_example_products` is a refreshed example set, not a time series;
+- final summaries are recomputed from the full current database snapshot, not
+  only from products changed in the latest incremental update.
+
+This prevents "products changed this week" from being mistaken for "the observed
+market this week."
+
+---
+
+## ADR-013 — Separate bulk bootstrap from weekly incremental ingestion
+
+**Date:** 12 July 2026  
+**Status:** Active
+
+**Decision:** Use two ingestion paths:
+
+1. OFF bulk export via the bootstrap path for initial/full population;
+2. API-based incremental ingestion for new or recently modified products.
+
+**Rationale:** OFF provides bulk exports for large-scale retrieval. The search
+API is appropriate for incremental lookup, not for repeatedly scraping the full
+database.
+
+**Consequence:** Production cadence keeps weekly API batches small and
+purpose-specific while retaining a reproducible full-bootstrap path.
+
+---
+
+## ADR-014 — Use curated sampling before scaling paid vision extraction
+
+**Date:** 12 July 2026  
+**Status:** Active
+
+**Decision:** Run OCR/LLM claim extraction on a curated image-eligible sample
+rather than automatically processing the entire product universe.
+
+The sample combines a probability-oriented backbone with purposive and
+calibration components.
+
+**Rationale:**
+
+- most OFF products do not require expensive claim extraction for taxonomy
+  development;
+- the project should validate prompts, taxonomy, and panel handling before
+  scaling cost;
+- the design supports both observed sample proportions and approximate
+  backbone design-weighted estimates within the image-eligible OFF frame.
+
+**Consequence:** Products outside the extraction sample have no confirmed
+front-pack claim observation and must not be silently assigned one from
+ingredient/name inference.
+
+See `docs/CLAIM_EXTRACTION.md`.
+
+---
+
+## ADR-015 — Use reviewed reference layers, exact overrides, and lock/regression validation
+
+**Date:** September 2026  
+**Status:** Active — launch mapping architecture locked
+
+**Decision:** Treat curated reference files and reviewed GTIN overrides as
+governed production inputs with explicit precedence, rather than as loose lookup
+tables.
+
+Final precedence:
+
+```text
+1. Region-scoped reviewed GTIN override
+2. Unscoped reviewed GTIN override
+3. Explicit market / product-form / category scoped company rule
+4. Exact normalized brand -> company rule
+5. Safe validated brand alias
+6. Non-exact matching for candidate generation only
+7. Other / not mapped to a company
 ```
-ingest.py         →  data/raw/*.json
-                     data/sample/sample_all_*.csv
-                     [contract: barcode, product fields, additives_tags,
-                      image_url]
 
-clean.py          →  data/sample/clean_*.csv
-                     [contract: same columns + cleaned text, language
-                      flags, completeness_score, ingredient_analysis_eligible,
-                      primary_brand, primary_country,
-                      product_segment_label (null)]
+Exact reviewed product overrides can correct:
 
-analyze.py        →  data/sample/analyzed_*.csv
-                     [contract: all clean columns + ingredient analysis
-                      output: composition_marker_score,
-                      composition_marker_band, processing_markers_found,
-                      ingredient_based_claim_signals_found,
-                      absence_reduction_claims_found]
+- normalized brand;
+- resolved company;
+- analytical category;
+- `OUT_OF_SCOPE` status.
 
-load.py           →  database/positioning_radar.db
-                     data/sample/reporting_products_*.csv
-                     data/sample/reporting_analysis_*.csv
-                     [contract: full product_analysis schema declared
-                      upfront via DDL_* constants — see ADR-010 update
-                      below — including fields not yet populated by
-                      analyze.py]
+They do **not** automatically create reusable aliases or broad brand/category
+rules.
 
-smart_sample.py   →  data/sample/smart_sample_*.csv
-                     [contract: barcode, image_url, tier, sampling_reason
-                      — a purposive priority sample, not a market-
-                      representative one, selected for pack-image
-                      extraction]
+**Rationale:** The final retailer, manufacturer, and orphan audits exposed
+collisions, licensing differences, market-specific ownership, private-label
+architecture, imported products, stale OFF metadata, and product-level category
+errors that cannot be handled safely through global aliases.
 
-vision_extract.py →  data/reference/vision_results_*.csv
-                     [contract: barcode, ocr_text, ocr_status,
-                      llm_status, vision_model, prompt_version,
-                      pack_analysis_timestamp, claims_json, v3_* raw
-                      claim fields. Does NOT output pack_claims_found —
-                      that is computed in merge_scores.py from the v3_*
-                      fields via an explicit allowlist.]
+**Orphan completion rule:** A qualifying orphan is a normalized brand still
+under `Other / not mapped to a company` with at least 100 products within one
+specific `region × category` bucket.
 
-merge_scores.py   →  database/positioning_radar.db (pack-image results
-                     and legacy/internal composite fields written)
-                     data/sample/merged_results_*.csv
-                     [contract: barcode join of analyzed + vision results;
-                      writes attempt metadata for every product attempted
-                      this run, result fields only where extraction
-                      succeeded — never overwrites a prior successful
-                      result with NULL on a failed rerun]
+France and US/Canada contained qualifying orphan candidates and were audited.
+UK/Ireland had no qualifying orphan candidates at that threshold.
 
-tag_claims.py     →  database/positioning_radar.db (claim taxonomy added)
-                     data/sample/reporting_tagged_*.csv
-                     [contract: claim_source, claim_category_1,
-                      claim_category_2, nutrition_benchmark_flags,
-                      claim_benchmark_intersections — UPDATE only, no
-                      ALTER TABLE, since load.py already declares these
-                      columns]
+The launch success criterion is now satisfied: no qualifying normalized brand
+remains under `Other / not mapped to a company` without reviewed resolution.
+Individual products may still remain under `Other` when evidence is genuinely
+insufficient.
 
-db_summary.py     →  database/positioning_radar.db (weekly_brand_positioning_summary
-                     and positioning_example_products written)
-                     data/sample/reporting_final_*.csv
-                     [contract: queries the full current database
-                      snapshot, not intermediate CSVs — recomputed from
-                      scratch every run regardless of whether the
-                      snapshot was built via bulk export or weekly API
-                      diff, so a weekly reporting summary never gets
-                      mistaken for "products changed this week" instead
-                      of "the observed market this week". See ADR-012.]
+**Lock model:** Once a reviewed manufacturer, retailer, or regional mapping
+scope is locked, later changes must regression-test that locked architecture.
+A new exact correction may override stale or contaminated evidence, but broad
+rules must not silently reassign previously validated products.
+
+See `docs/BRAND_COMPANY_MAPPING.md`.
+
+---
+
+# Modular pipeline contract
+
+The pipeline is deliberately layered so stages can evolve without requiring a
+full redesign:
+
+```text
+OFF bulk/API
+    ↓
+ingest / bootstrap
+    ↓
+clean
+    ├─ category governance
+    ├─ brand normalization
+    └─ company routing
+    ↓
+analyze
+    └─ ingredient-based analysis
+    ↓
+load → SQLite
+    ↓
+smart_sample
+    ↓
+vision_extract
+    └─ OCR + structured claim extraction
+    ↓
+merge_scores
+    ↓
+tag_claims
+    └─ claim taxonomy + benchmark intersections
+    ↓
+db_summary
+    └─ final reporting aggregates
+    ↓
+Streamlit / QA / exports
 ```
 
-**Supporting utilities** (not part of the core data-transformation chain,
-run separately for QA/maintenance): `validate_tags.py` is a manual QA
-sampler for spot-checking claim taxonomy output; `export_schema.py`
-exports the live database's actual tables and indexes to
-`database/schema.sql` for reference; `verify_schema.py` checks the live
-database against the current code's DDL constants across all six
-tables, to catch schema drift if `positioning_radar.db` was created
-under an older version of the pipeline.
+Cross-cutting governance layers include:
 
-**v2 upgrade (segmentation):** Replace the stub in `analyze.py`. No
-other files change. `product_segment_label` column populates
-automatically.
+- `data/reference/brand_alias_mapping.csv`;
+- `data/reference/company_brand_mapping.csv`;
+- `data/reference/private_label_brand_mapping.csv`;
+- `data/reference/reviewed_product_mapping_overrides.csv`;
+- nutrition-quality flags and category rules.
 
-**Future v4 upgrade:** New enrichment scripts (e.g. pricing data, retail
-coverage) can join to `products` on barcode without modifying existing
-pipeline steps.
+The contract principle is stable identifiers plus explicit derived fields:
+later stages enrich products rather than overwriting source provenance.
 
 ---
 
-## Known limitations
+# Current architectural boundaries
 
-| Limitation | Impact | Status |
-|---|---|---|
-| FR language dominance (69%) | Ingredient analysis misses 16% of products | German planned for v1.5; bulk export adds UK/US coverage |
-| Crowdsourced data quality | Variable completeness, some errors | Reality checks in `notebooks/`; `completeness_score` per product |
-| No sales volume data | Cannot measure market share | Documented in `docs/LIMITATIONS.md` |
-| Brand fragmentation | Conglomerate aggregations need care | Company mapping in `data/reference/`; category filters recommended |
-| OFF category folksonomy | Some category misclassification | Refined using `off_categories` full hierarchy field |
-| Image-based analysis covers a subset | Front-of-pack positioning coverage is incomplete for non-sampled products; Streamlit MVP displays vision-based positioning signals only | 17,127 valid front-of-pack observations across the current US/UK and France releases; use `release_run_id`, `claim_source`, and `pack_analysis_attempted` for coverage interpretation |
-| Sports nutrition context | Benchmark flags may reflect intended use, not unexpected profile | Documented in `docs/LIMITATIONS.md` |
-| Liquid/solid classification is a proxy | Energy-density heuristic may misclassify some formats | MVP approximation; flagged for review if benchmark flags become central |
+The following are deliberate boundaries rather than unresolved design mistakes:
 
----
+- OFF is the reproducible source, but not a sales/market-share dataset;
+- ingredient analysis remains EN/FR scoped;
+- image-based claims exist only for sampled image-eligible products;
+- category/company layers are governed analytical classifications, not universal
+  taxonomy or legal ownership truth;
+- nutrition governance controls analytical eligibility rather than correcting
+  OFF source values;
+- beverage segmentation is a comparability layer, not a full market taxonomy;
+- segmentation remains a future analytical extension.
 
-## Versioning summary
-
-Version numbers refer to capability layers developed during the
-project, not a strictly linear product-release sequence — this is why
-v1 can show "rebuilding" status while v3 shows "complete": each
-version tracks a distinct capability (ingredient analysis, vision
-extraction, segmentation), not a sequential release train.
-
-| Version | Status | Core deliverable |
-|---|---|---|
-| v1 | Rebuilding | Rule-based ingredient analysis; composite scores retained internally but not user-facing in the Streamlit MVP |
-| v1.5 | Planned | German ingredient dictionary and broader bulk-export filtering |
-| v2 | Planned | Product segmentation and additional Streamlit market-overview views |
-| v3 | Complete | Vision pipeline and pack-image claim extraction; current US/UK and France releases contain 17,127 valid front-of-pack observations |
-| v3.5 | Planned | Prompt/model calibration and targeted future extraction tests, including English panel-context review and prompt-drift checks |
-| Production | MVP launch | Full OFF bulk export path, cleaned local SQLite database, and Streamlit public deployment path |
+For interpretation details, use `docs/LIMITATIONS.md`.
 
 ---
 
-*This document is updated as new decisions are made.*
-*Last updated: August 2026 (current release scale, Streamlit-only MVP scope,
-legacy composite-score status, and bulk bootstrap status reconciled with
-`docs/METHODOLOGY.md` and `docs/CLAIM_EXTRACTION.md`).*
+# Capability status
 
-### ADR-013 — Production data strategy: bulk export bootstrap + weekly incremental API
-
-**Date:** 12 July 2026
-**Status:** Active — planned for production launch
-
-**Decision:** The production pipeline uses two distinct data ingestion
-paths that serve different purposes and must not be conflated:
-
-1. **Bulk export bootstrap** — one-time initial population of the
-   database from the OFF monthly CSV dump
-   (`world.openfoodfacts.org/data/en.openfoodfacts.org.products.csv.gz`,
-   ~10-15 GB compressed, ~3 million products), implemented through the
-   dedicated `bootstrap.py` pipeline stage.
-
-2. **Weekly incremental update** — `ingest.py` queries the OFF search
-   API for new and recently-modified products in the target categories,
-   updating the database with products that have appeared or changed
-   since the last run. Small batches only (hundreds of products per
-   week, not thousands).
-
-**Rationale:** The OFF search API (`/cgi/search.pl`) is designed for
-interactive product lookup, not bulk extraction. OFF's CDN rate-limits
-request patterns that look like bulk scraping — typically manifesting
-as 401 responses after sustained sequential page requests, regardless
-of delay between pages. OFF explicitly provides the bulk CSV dump for
-exactly this use case and encourages its use over API scraping.
-`ingest.py` is the right tool for incremental updates; it is the wrong
-tool for initial database population.
-
-**Current state (MVP):** `bootstrap.py` exists and is the intended full
-bulk-population path. `ingest.py` remains the incremental API path and
-should not be used as the initial bulk-population mechanism.
-
-**Implication for `ingest.py`:** Weekly incremental updates via the
-API should target new/modified products only (filtered by
-`last_modified_t` since the last run), keeping batch sizes small and
-polite. The four-category scope (snacks, beverages, cereals, dairies)
-and 10,000-per-category cap in the current script are appropriate for
-MVP development but not for production weekly cadence, where the cap
-should be much lower (hundreds, not thousands).
+| Capability | Status |
+|---|---|
+| OFF bulk bootstrap + incremental API | Active |
+| Rule-based ingredient analysis | Active |
+| Category cleanup / exact category overrides | Active and launch-locked |
+| Brand normalization / company routing | Active and launch-locked |
+| Retailer/private-label mapping | Complete and locked |
+| Top-9 manufacturer mapping | Complete and locked |
+| Regional orphan-brand completion | Complete and locked |
+| Nutrition-quality governance | Active |
+| Vision/OCR/LLM claim extraction | Active |
+| Final reporting aggregation | Active |
+| Product segmentation | Deferred / future |
 
 ---
 
-### ADR-014 — Intentional curated sampling before full-scale LLM extraction
-
-**Date:** 12 July 2026
-**Status:** Active — governs current and future vision extraction strategy
-
-**Decision:** The vision extraction pipeline (`vision_extract.py`) runs
-on a curated smart sample rather than the full product database.
-`smart_sample.py` selects products using three components: a
-probability-oriented backbone, a purposive positioning-by-reality matrix,
-and a calibration component for rare territories and prompt comparison.
-
-**Rationale:** This is a deliberate analytical and economic choice, not
-a technical limitation.
-
-*Analytical rationale:* Running vision extraction on a random draw from
-the full OFF database would allocate LLM budget predominantly to
-products with no front-of-pack claims — mineral water, plain staples,
-private-label basics. These products have nothing to validate in the
-claim taxonomy. The smart sample concentrates extraction on products
-most likely to carry positioning claims, where the LLM's output can
-actually be evaluated for accuracy and taxonomy coverage. This gives
-meaningful signal on whether the claim extraction model and prompt are
-working before committing to a full production run.
-
-*Economic rationale:* Vision extraction costs real money per product
-(~0.0017 CHF per product at gpt-4.1-nano rates). A random draw from
-3 million OFF products would cost thousands of CHF to achieve
-meaningful claim coverage. The curated sample achieves broad analytical
-coverage of the claim territory space at a fraction of the cost.
-
-*Sequencing rationale:* The correct production sequence is therefore:
-(1) validate claim taxonomy and extraction quality on curated samples;
-(2) run targeted prompt/model calibration panels where needed; (3) only
-then commit to larger-scale extraction using the confirmed language
-profile and prompt version. Scaling before validation would bake any
-taxonomy gaps or extraction errors into the full production dataset.
-
-**Known implication:** Products outside the smart sample have no
-vision-extracted front-pack claims. In the current Streamlit MVP, they should
-be shown as `Not tested` for positioning rather than assigned
-ingredient/name-derived front-pack claims.
-
-The underlying pipeline may retain ingredient/name-derived fallback fields for
-internal QA and historical compatibility, but these fallback signals must not
-be presented as confirmed front-of-pack observations.
-
-**Current release record:** See `docs/CLAIM_EXTRACTION.md` for the active
-release IDs, prompt versions, second-pass panel-context review, release
-denominators, and known extraction limitations.
-
----
-
-*This document is updated as new decisions are made.*
-*Last updated: August 2026 (current release scale, Streamlit-only MVP scope,
-legacy composite-score status, bulk bootstrap status, and launch brand/company
-routing reconciled with `docs/METHODOLOGY.md` and
-`docs/BRAND_COMPANY_MAPPING.md`).*
+*This document is updated when a material architectural decision changes.*

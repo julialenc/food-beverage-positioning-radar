@@ -916,12 +916,8 @@ if active_section == _CATEGORY_REPORT_SECTION:
         "company", key=lambda s: s.map(_company_sort_key)
     )
 
-    company_groups: list[tuple[str, pd.DataFrame]] = [
-        (company, drill_df[drill_df["company"] == company])
-        for company in company_counts["company"]
-    ]
-
-    for company_name, company_df in company_groups:
+    for company_name in company_counts["company"]:
+        company_df = drill_df[drill_df["company"] == company_name]
         n_company_records = len(company_df)
         n_company_brands = company_df["primary_brand"].nunique()
         expander_label = (

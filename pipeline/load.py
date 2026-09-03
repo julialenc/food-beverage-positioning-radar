@@ -69,6 +69,9 @@ SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 DB_DIR     = os.path.join(ROOT, "database")
 DB_PATH    = os.path.join(DB_DIR, "positioning_radar.db")
 COMPANY_MAP_PATH = os.path.join(ROOT, "data", "reference", "company_brand_mapping.csv")
+PRODUCT_MAPPING_OVERRIDE_PATH = os.path.join(
+    ROOT, "data", "reference", "reviewed_product_mapping_overrides.csv"
+)
 COMPANY_OTHER_LABEL = "Other / not mapped to a company"
 COMPANY_MANUAL_REVIEW_LABEL = "Manual review"
 
@@ -528,6 +531,14 @@ def load_company_mapping_index():
                     (row.get("ownership_resolution_status") or "").strip().lower()
                     or "direct"
                 ),
+                "needs_manual_review": (
+                    row.get("needs_manual_review") or ""
+                ).strip().lower(),
+                "category": (
+                    row.get("category_scope")
+                    or row.get("category")
+                    or ""
+                ).strip().lower(),
                 "country_tags_include": (row.get("country_tags_include") or "").strip(),
                 "country_tags_exclude": (row.get("country_tags_exclude") or "").strip(),
                 "region_codes_include": (row.get("region_codes_include") or "").strip(),
@@ -537,18 +548,41 @@ def load_company_mapping_index():
     return by_brand
 
 
-def resolve_company_owner_for_load(brand, countries, region_codes, mapping_index):
+def _category_scope_matches(mapping_category, product_category):
+    mapping_values = {
+        value.strip().lower()
+        for value in str(mapping_category or "").split("|")
+        if value.strip()
+    }
+    if not mapping_values:
+        return True
+    if mapping_values & {"food_beverage", "food_beverage_review"}:
+        return True
+    return str(product_category or "").strip().lower() in mapping_values
+
+
+def resolve_company_owner_for_load(
+    brand,
+    category,
+    countries,
+    region_codes,
+    mapping_index,
+):
     brand_norm = _normalize_brand(brand)
     if not brand_norm:
         return COMPANY_OTHER_LABEL
 
-    rows = mapping_index.get(brand_norm, [])
+    rows = [
+        r for r in mapping_index.get(brand_norm, [])
+        if _category_scope_matches(r.get("category", ""), category)
+    ]
     if not rows:
         return COMPANY_OTHER_LABEL
 
     scoped = [
         r for r in rows
         if r["status"] in {"market_scoped", "licensed_or_partnered"}
+        and r.get("needs_manual_review") != "yes"
         and (
             r.get("region_codes_include")
             or r.get("country_tags_include")
@@ -559,6 +593,7 @@ def resolve_company_owner_for_load(brand, countries, region_codes, mapping_index
     manual = [
         r for r in rows
         if r["status"] == "manual_review"
+        or r.get("needs_manual_review") == "yes"
         or r["parent_company"].lower() == COMPANY_MANUAL_REVIEW_LABEL.lower()
     ]
     direct = [
@@ -569,6 +604,7 @@ def resolve_company_owner_for_load(brand, countries, region_codes, mapping_index
             "recently_sold_or_spun_off",
             "licensed_or_partnered",
         }
+        and r.get("needs_manual_review") != "yes"
         and r["parent_company"].lower() != COMPANY_MANUAL_REVIEW_LABEL.lower()
     ]
 
@@ -590,16 +626,47 @@ def resolve_company_owner_for_load(brand, countries, region_codes, mapping_index
     return COMPANY_OTHER_LABEL
 
 
+def is_coca_cola_simply_beverage_product(brand_key, category, product_name):
+    """Return True only for supported Coca-Cola Simply beverage portfolio rows."""
+    if brand_key != "simply" or str(category or "") != "beverages":
+        return False
+    import re
+
+    name = str(product_name or "")
+    return bool(
+        re.search(
+            r"\bsimply\s+(orange|lemonade|limeade|apple|cranberry|fruit\s+punch|"
+            r"grapefruit|peach|tropical|smoothie|juice|juices|beverage|beverages)\b",
+            name,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
 def resolve_manual_review_replacement(
     brand,
     category,
     primary_country,
     region_codes,
+    product_name="",
 ):
     """Return visible launch owner plus backend status/source for Manual Review rows."""
     brand_key = _normalize_review_key(brand)
     country = str(primary_country or "").strip()
     regions = str(region_codes or "").strip()
+
+    if brand_key == "simply":
+        if is_coca_cola_simply_beverage_product(brand_key, category, product_name):
+            return (
+                "The Coca-Cola Company",
+                "resolved_from_coca_cola_simply_beverage_product_evidence",
+                "manual_review_company_replacement_rule_simply_beverage",
+            )
+        return (
+            COMPANY_OTHER_LABEL,
+            "manual_review_collision_prone_generic_brand",
+            "manual_review_company_replacement_rule_simply_collision",
+        )
 
     if "cadbury" in brand_key:
         company = (
@@ -639,6 +706,87 @@ def resolve_manual_review_replacement(
     )
 
 
+def load_reviewed_product_mapping_overrides():
+    """Load exact reviewed barcode-level mapping/category overrides."""
+    if not os.path.exists(PRODUCT_MAPPING_OVERRIDE_PATH):
+        return {}
+
+    overrides = {}
+    with open(PRODUCT_MAPPING_OVERRIDE_PATH, encoding="utf-8-sig", newline="") as f:
+        for row in csv.DictReader(f):
+            status = (row.get("status") or "").strip().lower()
+            barcode = (row.get("gtin") or row.get("barcode") or "").strip()
+            if status != "active" or not barcode:
+                continue
+            overrides.setdefault(barcode, []).append({
+                "region": (row.get("region") or "").strip(),
+                "brand": (row.get("reviewed_brand") or "").strip(),
+                "company": (row.get("reviewed_company") or "").strip(),
+                "category": (row.get("reviewed_category") or "").strip(),
+                "source": (row.get("source") or "").strip()
+                          or "reviewed_product_mapping_overrides.csv",
+            })
+    return overrides
+
+
+def _product_override_for_row(overrides, barcode, region_codes):
+    candidates = overrides.get(str(barcode or "").strip()) or []
+    if not candidates:
+        return None
+    row_regions = {
+        value.strip()
+        for value in str(region_codes or "").split("|")
+        if value.strip()
+    }
+    unscoped = None
+    for candidate in candidates:
+        region = candidate.get("region", "")
+        if not region:
+            unscoped = candidate
+            continue
+        if region in row_regions:
+            return candidate
+    return unscoped
+
+
+def apply_reviewed_product_mapping_overrides(df):
+    """Apply exact reviewed GTIN decisions without changing raw OFF fields."""
+    overrides = load_reviewed_product_mapping_overrides()
+    if not overrides or "barcode" not in df.columns:
+        return df
+
+    matched = 0
+    region_values = df.get("observed_market_region_codes", pd.Series("", index=df.index))
+    region_values = region_values.fillna("").astype(str)
+    for idx, barcode in df["barcode"].fillna("").astype(str).items():
+        override = _product_override_for_row(overrides, barcode, region_values.loc[idx])
+        if not override:
+            continue
+        matched += 1
+        brand = override["brand"]
+        company = override["company"]
+        category = override["category"]
+        source = override["source"]
+
+        if brand:
+            df.at[idx, "normalized_brand"] = brand
+            df.at[idx, "brand_family"] = brand
+            df.at[idx, "brand_alias_source"] = source
+            df.at[idx, "brand_alias_review_status"] = "reviewed_product_override"
+        if company:
+            df.at[idx, "resolved_company"] = company
+            df.at[idx, "company_ownership_resolution_status"] = (
+                "reviewed_product_override"
+            )
+            df.at[idx, "company_mapping_source"] = source
+        if category:
+            df.at[idx, "query_category"] = None if category == "OUT_OF_SCOPE" else category
+
+    if matched:
+        print(f"  Reviewed product mapping overrides applied: {matched:,} rows")
+    return df
+
+
 def add_resolved_company_column(df):
     """Precompute company ownership once so Streamlit can filter in SQL."""
     mapping_index = load_company_mapping_index()
@@ -664,13 +812,15 @@ def add_resolved_company_column(df):
 
     key_df = pd.DataFrame({
         "brand": brand_values,
+        "category": df.get("query_category", pd.Series("", index=df.index)),
         "countries": countries,
         "regions": regions,
     }).drop_duplicates()
 
     resolved = {
-        (row.brand, row.countries, row.regions): resolve_company_owner_for_load(
+        (row.brand, row.category, row.countries, row.regions): resolve_company_owner_for_load(
             row.brand,
+            row.category,
             row.countries,
             row.regions,
             mapping_index,
@@ -678,8 +828,13 @@ def add_resolved_company_column(df):
         for row in key_df.itertuples(index=False)
     }
     df["resolved_company"] = [
-        resolved.get((brand, country, region), COMPANY_OTHER_LABEL)
-        for brand, country, region in zip(brand_values, countries, regions)
+        resolved.get((brand, category, country, region), COMPANY_OTHER_LABEL)
+        for brand, category, country, region in zip(
+            brand_values,
+            df.get("query_category", pd.Series("", index=df.index)),
+            countries,
+            regions,
+        )
     ]
     df["company_ownership_resolution_status"] = "resolved_from_company_brand_mapping"
     df["company_mapping_source"] = "company_brand_mapping.csv"
@@ -692,12 +847,14 @@ def add_resolved_company_column(df):
                 category,
                 country,
                 region,
+                product_name,
             )
-            for brand, category, country, region in zip(
+            for brand, category, country, region, product_name in zip(
                 brand_values[manual_mask],
                 df.loc[manual_mask, "query_category"],
                 df.loc[manual_mask, "primary_country"],
                 regions[manual_mask],
+                df.loc[manual_mask, "product_name"],
             )
         ]
         df.loc[manual_mask, "resolved_company"] = [item[0] for item in replacements]
@@ -707,7 +864,7 @@ def add_resolved_company_column(df):
         df.loc[manual_mask, "company_mapping_source"] = [
             item[2] for item in replacements
         ]
-    return df
+    return apply_reviewed_product_mapping_overrides(df)
 
 
 # ── Products table ────────────────────────────────────────────────────────────

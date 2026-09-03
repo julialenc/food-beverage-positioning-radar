@@ -58,6 +58,9 @@ TOP_COMPANY_BRAND_MATRIX_PATH = os.path.join(
 COMPANY_BRAND_MAPPING_PATH = os.path.join(
     ROOT, "data", "reference", "company_brand_mapping.csv"
 )
+PRODUCT_MAPPING_OVERRIDE_PATH = os.path.join(
+    ROOT, "data", "reference", "reviewed_product_mapping_overrides.csv"
+)
 PRIVATE_LABEL_MAPPING_PATH = os.path.join(
     ROOT, "data", "reference", "private_label_brand_mapping.csv"
 )
@@ -149,6 +152,9 @@ CURATED_MECHANICAL_BRAND_ALIASES = {
     "balaton": "Balaton",
     "coca cola": "Coca-Cola",
     "coca cola light": "Coca-Cola Light",
+    "core power": "Core Power",
+    "gold peak": "Gold Peak",
+    "honest kids": "Honest Kids",
     "diet coke": "Diet Coke",
     "coke": "Coca-Cola",
     "dolce gusto": "Nescafé Dolce Gusto",
@@ -160,6 +166,17 @@ CURATED_MECHANICAL_BRAND_ALIASES = {
     "marks and spencer": "M&S",
     "mcvities": "McVitie's",
     "mcvitie s": "McVitie's",
+    "monster munch": "Monster Munch",
+    "walkers baked": "Walkers Baked",
+    "walkers max": "Walkers MAX",
+    "walkers 45 less salt": "Walkers 45% Less Salt",
+    "walkers 45 percent less salt": "Walkers 45% Less Salt",
+    "walkers sensations": "Sensations",
+    "walkers quavers": "Quavers",
+    "walkers squares": "Squares",
+    "walkers french fries": "French Fries",
+    "walkers sunbites": "Sunbites",
+    "walkers snack a jacks": "Snack a Jacks",
 }
 
 BRAND_FAMILY_BY_KEY = {
@@ -428,6 +445,184 @@ GENERIC_BRAND_ENTITY_KEYS = {
     "simply",
 }
 
+COLLISION_PRONE_GENERIC_BRAND_KEYS = {
+    "boost",
+    "chef",
+    "deluxe",
+    "gourmet",
+    "impact",
+    "munch",
+    "selection",
+    "simply",
+    "walkers",
+}
+
+NESTLE_AUDIT_TOP9_BRAND_BLOCK_KEYS = {
+    "bakers",
+    "boost",
+    "chef",
+    "felix",
+    "gourmet",
+    "impact",
+    "munch",
+}
+
+PEPSICO_AUDIT_TOP9_BRAND_BLOCK_KEYS = {
+    "starbucks rtd",
+    "tropicana",
+    "walkers",
+}
+
+MONDELEZ_AUDIT_TOP9_BRAND_BLOCK_KEYS = {
+    "granola",
+    "lulu",
+    "mondelez",
+    "pepito",
+    "philadelphia",
+    "prince",
+    "royal",
+    "trident",
+}
+
+DANONE_AUDIT_TOP9_BRAND_BLOCK_KEYS = {
+    "alpro",
+    "assil",
+    "danao",
+    "danone",
+    "dany",
+    "fantasia",
+    "fruchtzwerge",
+    "gallia",
+    "light free",
+    "nutricia",
+    "oikos",
+    "oykos",
+    "silk",
+    "too good",
+    "veloute",
+    "vitasnella",
+}
+
+COCACOLA_AUDIT_TOP9_BRAND_BLOCK_KEYS = {
+    "coca cola company",
+    "the coca cola company",
+    "costa",
+    "innocent kids",
+    "simply",
+}
+
+KRAFT_HEINZ_AUDIT_TOP9_BRAND_BLOCK_KEYS = {
+    "capri sun",
+    "cracker barrel",
+    "gevalia",
+    "kraft",
+    "maxwell house",
+    "mio",
+    "philadelphia",
+    "wyler",
+    "wyler s",
+}
+
+HERSHEY_AUDIT_TOP9_BRAND_BLOCK_KEYS = {
+    "cadbury",
+    "fulfil",
+    "heath",
+    "kitkat",
+    "lily s",
+    "oh henry",
+    "one",
+    "rolo",
+    "york",
+    "zero",
+}
+
+STARBUCKS_AUDIT_TOP9_BRAND_BLOCK_KEYS = {
+    "doubleshot",
+    "frappuccino",
+    "starbucks",
+    "starbucks chilled frappuccino",
+    "starbucks doubleshot canned",
+    "starbucks rtd",
+    "teavana",
+    "tripleshot",
+}
+
+UNILEVER_AUDIT_TOP9_BRAND_BLOCK_KEYS = {
+    "amora",
+    "ben and jerry s",
+    "best foods",
+    "bovril",
+    "boost",
+    "breyers",
+    "bru",
+    "carte d or",
+    "colman s",
+    "cornetto",
+    "good humor",
+    "hellmann s",
+    "horlicks",
+    "klik",
+    "knorr",
+    "lipton",
+    "lipton dry tea",
+    "magnum",
+    "magnum ice cream",
+    "maille",
+    "maizena",
+    "marmite",
+    "miko",
+    "pg tips",
+    "pot noodle",
+    "red label",
+    "royco",
+    "solero",
+    "taj mahal",
+    "telma",
+    "viennetta",
+    "wall s",
+    "wall s ice cream",
+}
+
+COCACOLA_CORPORATE_PRODUCT_NAME_RECOVERY = [
+    (re.compile(r"\bcoca\s*[- ]?\s*cola\b|\bcoke\b", re.IGNORECASE), "Coca-Cola"),
+    (re.compile(r"\bdiet\s+coke\b", re.IGNORECASE), "Diet Coke"),
+    (re.compile(r"\bfanta\b", re.IGNORECASE), "Fanta"),
+    (re.compile(r"\bgold\s+peak\b", re.IGNORECASE), "Gold Peak"),
+    (re.compile(r"\bhawai\b", re.IGNORECASE), "Hawai"),
+    (re.compile(r"\bhonest\s+kids\b", re.IGNORECASE), "Honest Kids"),
+    (re.compile(r"\bhonest\s+tea\b", re.IGNORECASE), "Honest Tea"),
+    (re.compile(r"\bmezzo\s+mix\b", re.IGNORECASE), "Mezzo Mix"),
+    (re.compile(r"\bminute\s+maid\b", re.IGNORECASE), "Minute Maid"),
+    (re.compile(r"\bsprite\b", re.IGNORECASE), "Sprite"),
+    (re.compile(r"\baha\b", re.IGNORECASE), "AHA"),
+    (re.compile(r"\bcappy\b", re.IGNORECASE), "Cappy"),
+    (re.compile(r"\bdasani\b", re.IGNORECASE), "Dasani"),
+    (re.compile(r"\bfinley\b", re.IGNORECASE), "Finley"),
+    (re.compile(r"\bsparletta\b", re.IGNORECASE), "Sparletta"),
+    (re.compile(r"\bthums\s+up\b", re.IGNORECASE), "Thums Up"),
+]
+
+SIMPLY_COCA_COLA_BEVERAGE_PATTERNS = [
+    re.compile(
+        r"\bsimply\s+(orange|lemonade|limeade|apple|cranberry|fruit\s+punch|"
+        r"grapefruit|peach|tropical|smoothie|juice|juices|beverage|beverages)\b",
+        re.IGNORECASE,
+    ),
+]
+
+SIMPLY_SPECIFIC_PRODUCT_NAME_RECOVERY = [
+    (re.compile(r"\btostitos\b", re.IGNORECASE), "Tostitos"),
+    (re.compile(r"\bruffles\b", re.IGNORECASE), "Ruffles"),
+    (re.compile(r"\bdoritos\b", re.IGNORECASE), "Doritos"),
+    (re.compile(r"\blay['’]?s\b|\blays\b", re.IGNORECASE), "Lay’s"),
+    (re.compile(r"\bpop\s*[- ]?\s*tarts\b", re.IGNORECASE), "Pop-Tarts"),
+    (re.compile(r"\bsimply\s+7\b", re.IGNORECASE), "Simply 7"),
+    (re.compile(r"\bsimply\s+artisan\s+reserve\b", re.IGNORECASE), "Simply Artisan Reserve"),
+    (re.compile(r"\bsimply\s+roundy['’]?s\b|\bsimply\s+roundys\b", re.IGNORECASE), "Simply Roundy's"),
+    (re.compile(r"\bway\s+better\b|\bsimply\s+sprouted\b", re.IGNORECASE), "Way Better Snacks"),
+    (re.compile(r"\bsimply\s+protein\b|\bsimplyprotein\b", re.IGNORECASE), "SimplyProtein"),
+]
+
 
 def clean_carrefour_brand_key(value):
     """Clean common duplicated Carrefour line forms before curated matching."""
@@ -533,6 +728,33 @@ def load_brand_entity_reference():
                     ref["top9_parent_keys"].add(parent_key)
             brand_key = row.get("brand_key") or row.get("brand")
             canonical = row.get("canonical_brand") or row.get("brand")
+            brand_key_norm = normalize_brand_key(brand_key)
+            core_group = normalize_brand_key(row.get("core_cpg_group", ""))
+            notes = str(row.get("notes", "") or "").lower()
+            if (
+                core_group == "nestle"
+                and (
+                    brand_key_norm in NESTLE_AUDIT_TOP9_BRAND_BLOCK_KEYS
+                    or "likely outside food/beverage mvp scope" in notes
+                )
+            ):
+                continue
+            if core_group == "pepsico" and brand_key_norm in PEPSICO_AUDIT_TOP9_BRAND_BLOCK_KEYS:
+                continue
+            if core_group == "mondelez international" and brand_key_norm in MONDELEZ_AUDIT_TOP9_BRAND_BLOCK_KEYS:
+                continue
+            if core_group == "danone" and brand_key_norm in DANONE_AUDIT_TOP9_BRAND_BLOCK_KEYS:
+                continue
+            if core_group == "coca cola" and brand_key_norm in COCACOLA_AUDIT_TOP9_BRAND_BLOCK_KEYS:
+                continue
+            if core_group == "kraft heinz" and brand_key_norm in KRAFT_HEINZ_AUDIT_TOP9_BRAND_BLOCK_KEYS:
+                continue
+            if core_group == "hershey" and brand_key_norm in HERSHEY_AUDIT_TOP9_BRAND_BLOCK_KEYS:
+                continue
+            if core_group == "starbucks" and brand_key_norm in STARBUCKS_AUDIT_TOP9_BRAND_BLOCK_KEYS:
+                continue
+            if core_group == "unilever" and brand_key_norm in UNILEVER_AUDIT_TOP9_BRAND_BLOCK_KEYS:
+                continue
             add_brand(
                 ref["top9_exact"],
                 ref["top9_compact"],
@@ -552,7 +774,7 @@ def load_brand_entity_reference():
                 ref["private_label_compact"],
                 row.get("raw_brand_pattern", ""),
                 row.get("canonical_brand", ""),
-                "curated_carrefour_private_label_mapping",
+                "curated_private_label_mapping",
             )
 
     if os.path.exists(COMPANY_BRAND_MAPPING_PATH):
@@ -604,7 +826,7 @@ def normalize_brand_alias(value, ref):
         return curated, "curated_mechanical_brand_alias", "confirmed"
 
     for exact_name, compact_name, source in [
-        ("private_label_exact", "private_label_compact", "curated_carrefour_private_label_mapping"),
+        ("private_label_exact", "private_label_compact", "curated_private_label_mapping"),
         ("top9_exact", "top9_compact", "top9_portfolio_brand_alias"),
         ("mapped_exact", "mapped_compact", "existing_company_brand_mapping_alias"),
     ]:
@@ -628,12 +850,157 @@ def normalize_brand_alias_from_row(row, ref):
     return normalize_brand_alias(row["brand_entity_raw"], ref)
 
 
+def recover_specific_brand_from_generic_tokens(tokens):
+    """Prefer specific same-token brand evidence over a generic first token."""
+    for token in sorted(tokens, key=len, reverse=True):
+        key = normalize_brand_key(token)
+        if not key or key in COLLISION_PRONE_GENERIC_BRAND_KEYS:
+            continue
+        for generic_key in COLLISION_PRONE_GENERIC_BRAND_KEYS:
+            if key.startswith(f"{generic_key} "):
+                return key.title()
+    return None
+
+
+def recover_simply_brand_from_product_name(row):
+    """Recover strong product-name evidence for Simply collision rows."""
+    if normalize_brand_key(row.get("brand_entity_raw", "")) != "simply":
+        return None
+    name = row.get("product_name", "")
+    if not isinstance(name, str) or not name.strip():
+        return None
+
+    for pattern, brand in SIMPLY_SPECIFIC_PRODUCT_NAME_RECOVERY:
+        if pattern.search(name):
+            return brand, "generic_simply_product_name_recovery"
+
+    if row.get("query_category") == "beverages":
+        for pattern in SIMPLY_COCA_COLA_BEVERAGE_PATTERNS:
+            if pattern.search(name):
+                return "Simply", "coca_cola_simply_beverage_product_name_recovery"
+    return None
+
+
+def recover_cocacola_brand_from_product_name(row):
+    """Recover specific Coca-Cola brands when OFF only exposes the owner string."""
+    if normalize_brand_key(row.get("brand_entity_raw", "")) not in {
+        "coca cola company",
+        "the coca cola company",
+    }:
+        return None
+    name = row.get("product_name", "")
+    if not isinstance(name, str) or not name.strip():
+        return None
+    for pattern, brand in COCACOLA_CORPORATE_PRODUCT_NAME_RECOVERY:
+        if pattern.search(name):
+            return brand, "coca_cola_corporate_product_name_recovery"
+    return None
+
+
 def derive_brand_family(normalized_brand):
     """Return broader brand family only for explicitly approved roll-ups."""
     key = normalize_brand_key(normalized_brand)
     if not key:
         return "unknown"
     return BRAND_FAMILY_BY_KEY.get(key, normalized_brand)
+
+
+def load_reviewed_product_mapping_overrides():
+    """Load exact reviewed barcode-level brand/category overrides."""
+    if not os.path.exists(PRODUCT_MAPPING_OVERRIDE_PATH):
+        return {}
+
+    overrides = {}
+    product_scope_columns = [
+        "gtin",
+        "region",
+        "reviewed_brand",
+        "reviewed_company",
+        "reviewed_category",
+        "source",
+        "status",
+    ]
+    overrides_df = pd.read_csv(
+        PRODUCT_MAPPING_OVERRIDE_PATH,
+        dtype=str,
+        encoding="utf-8-sig",
+    ).fillna("")
+    missing = [col for col in product_scope_columns if col not in overrides_df.columns]
+    if missing:
+        raise ValueError(
+            "Reviewed product mapping override file is missing columns: "
+            + ", ".join(missing)
+        )
+
+    active = overrides_df[
+        overrides_df["status"].str.strip().str.lower().eq("active")
+    ]
+    for _, row in active.iterrows():
+        barcode = str(row["gtin"]).strip()
+        if not barcode:
+            continue
+        region = str(row.get("region", "")).strip()
+        overrides.setdefault(barcode, []).append({
+            "region": region,
+            "brand": str(row["reviewed_brand"]).strip(),
+            "category": str(row["reviewed_category"]).strip(),
+            "source": str(row["source"]).strip()
+                      or "reviewed_product_mapping_overrides.csv",
+        })
+    return overrides
+
+
+def _product_override_for_row(overrides, barcode, region_codes):
+    candidates = overrides.get(str(barcode or "").strip()) or []
+    if not candidates:
+        return None
+    row_regions = {
+        value.strip()
+        for value in str(region_codes or "").split("|")
+        if value.strip()
+    }
+    unscoped = None
+    for candidate in candidates:
+        region = candidate.get("region", "")
+        if not region:
+            unscoped = candidate
+            continue
+        if region in row_regions:
+            return candidate
+    return unscoped
+
+
+def apply_reviewed_product_mapping_overrides(df):
+    """Apply exact reviewed GTIN decisions without changing raw OFF fields."""
+    overrides = load_reviewed_product_mapping_overrides()
+    if not overrides or "barcode" not in df.columns:
+        return df
+
+    matched = 0
+    region_values = df.get("observed_market_region_codes", pd.Series("", index=df.index))
+    for idx, barcode in df["barcode"].fillna("").astype(str).items():
+        regions = region_values.fillna("").astype(str).loc[idx]
+        override = _product_override_for_row(overrides, barcode, regions)
+        if not override:
+            continue
+        matched += 1
+        brand = override["brand"]
+        category = override["category"]
+        source = override["source"]
+
+        if brand:
+            df.at[idx, "brand_entity_raw"] = brand
+            df.at[idx, "brand_entity_source"] = source
+            df.at[idx, "normalized_brand"] = brand
+            df.at[idx, "brand_family"] = derive_brand_family(brand)
+            df.at[idx, "brand_alias_source"] = source
+            df.at[idx, "brand_alias_review_status"] = "reviewed_product_override"
+        if category:
+            df.at[idx, "query_category"] = None if category == "OUT_OF_SCOPE" else category
+
+    if matched:
+        print(f"  Reviewed product mapping overrides applied: {matched:,} rows")
+    return df
 
 
 def recover_nestle_snacks_brand_from_product_name(row):
@@ -700,8 +1067,9 @@ def derive_brand_entity_from_tokens(tokens, legacy, ref):
                     if record:
                         return record["canonical_brand"], record["source"]
 
-    # 2. Curated Carrefour/private-label line.
-    for token in tokens:
+    # 2. Curated private-label line. Prefer the most specific reviewed line
+    # when OFF lists both a retailer banner and a line, e.g. "Auchan, Auchan Bio".
+    for token in sorted(tokens, key=len, reverse=True):
         cleaned = clean_carrefour_brand_key(token)
         record = lookup_brand_record(
             cleaned, ref["private_label_exact"], ref["private_label_compact"]
@@ -717,7 +1085,14 @@ def derive_brand_entity_from_tokens(tokens, legacy, ref):
         if record:
             return record["canonical_brand"], record["source"]
 
-    # 4. Traceable fallback.
+    # 4. If the first token is generic/collision-prone, preserve a more
+    # specific same-field token rather than collapsing to the generic token.
+    if legacy in COLLISION_PRONE_GENERIC_BRAND_KEYS:
+        specific = recover_specific_brand_from_generic_tokens(tokens)
+        if specific:
+            return specific, "specific_token_over_generic_fallback"
+
+    # 5. Traceable fallback.
     return legacy, "first_off_brand_token_fallback"
 
 
@@ -1208,6 +1583,32 @@ def clean(input_path):
             value[1] for value in recovered_nestle[recovery_mask]
         ]
 
+    recovered_simply = df.apply(
+        recover_simply_brand_from_product_name,
+        axis=1,
+    )
+    simply_recovery_mask = recovered_simply.notna()
+    if simply_recovery_mask.any():
+        df.loc[simply_recovery_mask, "brand_entity_raw"] = [
+            value[0] for value in recovered_simply[simply_recovery_mask]
+        ]
+        df.loc[simply_recovery_mask, "brand_entity_source"] = [
+            value[1] for value in recovered_simply[simply_recovery_mask]
+        ]
+
+    recovered_cocacola = df.apply(
+        recover_cocacola_brand_from_product_name,
+        axis=1,
+    )
+    cocacola_recovery_mask = recovered_cocacola.notna()
+    if cocacola_recovery_mask.any():
+        df.loc[cocacola_recovery_mask, "brand_entity_raw"] = [
+            value[0] for value in recovered_cocacola[cocacola_recovery_mask]
+        ]
+        df.loc[cocacola_recovery_mask, "brand_entity_source"] = [
+            value[1] for value in recovered_cocacola[cocacola_recovery_mask]
+        ]
+
     changed_brand_entity = (
         df["legacy_primary_brand"].fillna("") != df["brand_entity_raw"].fillna("")
     ).sum()
@@ -1218,6 +1619,14 @@ def clean(input_path):
     print(
         f"            Nestlé snacks product-name recovery: "
         f"{int(recovery_mask.sum()):,} rows"
+    )
+    print(
+        f"            Simply collision product-name recovery: "
+        f"{int(simply_recovery_mask.sum()):,} rows"
+    )
+    print(
+        f"            Coca-Cola corporate product-name recovery: "
+        f"{int(cocacola_recovery_mask.sum()):,} rows"
     )
 
     # Step 4a: Normalize brand aliases from brand_entity_raw.
@@ -1266,6 +1675,7 @@ def clean(input_path):
         f"            Brand family roll-up: "
         f"{changed_brand_family:,} rows differ from normalized_brand"
     )
+    df = apply_reviewed_product_mapping_overrides(df)
 
     # Step 4b: Normalise brands for the legacy primary_brand field.
     df["brands"] = (
