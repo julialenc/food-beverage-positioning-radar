@@ -79,14 +79,16 @@ reviewed mapping and category scopes are locked where stated:
   audit and regression validation;
 - regional-category orphan-brand review is complete across France, UK/Ireland,
   and US/Canada;
-- nutrition-quality and outlier governance is implemented for Product Explorer,
-  Market Overview calculations, and chart inclusion;
+- nutrition-quality and outlier governance is locked for Product Explorer and
+  Market Overview: Product Explorer hard gates define the usable population,
+  all passing products are used in Market Overview calculations, and
+  chart-range controls affect visualization only;
 - beverage segmentation is an MVP chart-readability layer, not a final beverage
   taxonomy.
 
 The regional orphan threshold was:
 
-```text
+```
 normalized brand assigned to Other / not mapped to a company
 AND at least 100 products in one specific region x category bucket
 ```
@@ -120,7 +122,10 @@ Core data principles:
 - missing values are not treated as zero;
 - category, brand, company, and nutrition fields are governed derived layers;
 - Product Explorer can show imperfect but useful records;
-- Market Overview calculations and charts use stricter inclusion rules;
+- all products that pass Product Explorer hard validity gates are used in
+  Market Overview calculations;
+- Market Overview charts use the same valid population, with precomputed
+  chart-range controls for visualization readability;
 - exact reviewed GTIN overrides outrank broad brand/company/category rules.
 
 ## Known Beta Limitations
@@ -158,7 +163,7 @@ compressed public MVP database artifact included for deployment.
 
 ## Repository Layout
 
-```text
+```
 app.py                  Streamlit entry point
 pages/                  Streamlit pages
 shared/                 Shared UI, labels, beverage segments, and DB helpers
@@ -171,7 +176,7 @@ docs/                   Methodology, limitations, governance, and ADRs
 Generated local workspaces are kept as empty committed folders with `.gitkeep`
 placeholders:
 
-```text
+```
 data/raw/                         Cached OFF/API inputs when regenerated
 data/sample/                      Local pipeline outputs and release samples
 data/brand_mapping_review/        Local brand/company review exports
@@ -205,7 +210,7 @@ They preserve brand, company, and product-specific governance decisions used by
 
 The standard local build path is:
 
-```text
+```
 1. pipeline/bootstrap.py or pipeline/ingest.py
 2. pipeline/clean.py
 3. pipeline/nutrition_outliers/build_quality_flags.py
@@ -255,13 +260,13 @@ Repository code and original project documentation are licensed under the
 If you reuse or redistribute this project, retain the Apache 2.0 license and
 notice files and credit:
 
-```text
+```
 Food & Beverage Positioning Radar by Julia Lenc
 ```
 
 Data attribution:
 
-```text
+```
 Data from Open Food Facts - https://world.openfoodfacts.org
 ```
 
