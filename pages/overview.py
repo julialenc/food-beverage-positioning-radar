@@ -1315,6 +1315,12 @@ _METRICS: dict[str, str] = {
     "Salt, g/100 g or 100 ml":            "salt_100g",
 }
 _PER_KCAL_COLS = {"protein_per_kcal", "fiber_per_kcal", "satfat_per_kcal", "sugars_per_kcal"}
+_CHART_RANGE_OPTIONS = ["Lower 3%", "Middle 94%", "Upper 3%", "All"]
+_CHART_RANGE_TO_BAND = {
+    "Lower 3%": "L",
+    "Middle 94%": "M",
+    "Upper 3%": "U",
+}
 
 _DEFAULT_X_LABEL = "Energy, kcal/100 g or 100 ml"
 _DEFAULT_Y_LABEL = "Protein, g/100 kcal"
@@ -1326,6 +1332,17 @@ with col_x:
         "X-axis", metric_labels,
         index=metric_labels.index(_DEFAULT_X_LABEL), key="mo_xaxis",
     )
+    x_range_label = st.selectbox(
+        "X-axis range",
+        _CHART_RANGE_OPTIONS,
+        index=_CHART_RANGE_OPTIONS.index("Middle 94%"),
+        key="mo_xaxis_range",
+        help=(
+            "Chart range uses precomputed nutrition percentiles for the "
+            "selected metric. Middle 94% is the default for readability; "
+            "Lower 3%, Upper 3%, and All remain available."
+        ),
+    )
 with col_y:
     # Same metric cannot be on both axes (spec section 4).
     y_choices = [m for m in metric_labels if m != x_label]
@@ -1334,9 +1351,34 @@ with col_y:
         "Y-axis", y_choices,
         index=y_choices.index(y_default), key="mo_yaxis",
     )
+    y_range_label = st.selectbox(
+        "Y-axis range",
+        _CHART_RANGE_OPTIONS,
+        index=_CHART_RANGE_OPTIONS.index("Middle 94%"),
+        key="mo_yaxis_range",
+        help=(
+            "Chart range uses precomputed nutrition percentiles for the "
+            "selected metric. Middle 94% is the default for readability; "
+            "Lower 3%, Upper 3%, and All remain available."
+        ),
+    )
 
 x_col = _METRICS[x_label]
 y_col = _METRICS[y_label]
+
+
+def _chart_band_col(metric_key: str) -> str | None:
+    return db.CHART_BAND_COLUMNS.get(metric_key)
+
+
+def _range_mask(frame: pd.DataFrame, metric_key: str, range_label: str) -> pd.Series:
+    if range_label == "All":
+        return pd.Series(True, index=frame.index)
+    band_col = _chart_band_col(metric_key)
+    band_value = _CHART_RANGE_TO_BAND.get(range_label)
+    if not band_col or band_col not in frame.columns or band_value is None:
+        return pd.Series(False, index=frame.index)
+    return frame[band_col].fillna("").astype(str).eq(band_value)
 
 # Methodological note: whenever Energy is paired with any per-100kcal
 # metric, that metric is partly derived from Energy (Energy is the
@@ -1367,18 +1409,37 @@ with st.expander("Additional chart options", expanded=False):
         bubble_col = None
 
 # ── Eligible population: both axis metrics must be valid (spec section 12) ──
-_eligible_mask = df_scope[x_col].notna() & df_scope[y_col].notna()
-df_eligible = df_scope[_eligible_mask]
+_axis_value_mask = df_scope[x_col].notna() & df_scope[y_col].notna()
+df_axis_eligible = df_scope[_axis_value_mask]
+
+_range_mask_selected = _range_mask(
+    df_axis_eligible,
+    x_col,
+    x_range_label,
+) & _range_mask(df_axis_eligible, y_col, y_range_label)
+df_eligible = df_axis_eligible[_range_mask_selected]
 
 n_in_scope = len(df_scope)
+n_axis_eligible = len(df_axis_eligible)
 n_eligible = len(df_eligible)
-_coverage_pct = (n_eligible / n_in_scope) if n_in_scope else 0
+_coverage_pct = (n_axis_eligible / n_in_scope) if n_in_scope else 0
+_trimmed_count = n_axis_eligible - n_eligible
 
 st.markdown(
     f"**{region_label} · {_category_label(category)}** &nbsp;·&nbsp; "
     f"{n_in_scope:,} products in scope &nbsp;·&nbsp; {n_eligible:,} products plotted"
 )
 st.caption(f"{_coverage_pct:.1%} of products in scope have usable values for both selected axes.")
+if _trimmed_count:
+    st.caption(
+        "Chart ranges use precomputed nutrition percentiles for the selected "
+        "metric(s). Product and market statistics continue to use the full "
+        "eligible population unless otherwise stated."
+    )
+    st.caption(
+        f"{_trimmed_count:,} otherwise axis-eligible product(s) are outside "
+        "the selected chart range."
+    )
 
 # ── Large-volume handling: sample for display, keep stats on full population ─
 _DISPLAY_THRESHOLD = 15_000

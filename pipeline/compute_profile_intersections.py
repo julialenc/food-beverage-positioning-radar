@@ -104,6 +104,9 @@ def load_data(conn) -> pd.DataFrame:
                observed_market_region_codes
         FROM products
         WHERE primary_brand IS NOT NULL
+          AND ingested_at = (SELECT MAX(ingested_at) FROM products)
+          AND COALESCE(include_in_product_table, 1) = 1
+          AND COALESCE(include_in_aggregates, 1) = 1
           AND TRIM(LOWER(primary_brand)) NOT IN ('unknown', '', 'nan')
     """, conn)
     for col in ["energy_kcal", "protein_100g", "saturated_fat_100g",

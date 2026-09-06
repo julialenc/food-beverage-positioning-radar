@@ -34,6 +34,20 @@ PRODUCT_BRAND_SQL = "COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_br
 PRODUCT_BRAND_SQL_UNALIASED = "COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand)"
 CURRENT_PRODUCT_SQL = "p.ingested_at = (SELECT MAX(ingested_at) FROM products)"
 CURRENT_PRODUCT_SQL_UNALIASED = "ingested_at = (SELECT MAX(ingested_at) FROM products)"
+CHART_BAND_COLUMNS = {
+    "energy_kcal": "energy_chart_band",
+    "protein_100g": "protein_chart_band",
+    "fat_100g": "fat_chart_band",
+    "saturated_fat_100g": "saturated_fat_chart_band",
+    "carbs_100g": "carbs_chart_band",
+    "sugars_100g": "sugars_chart_band",
+    "fiber_100g": "fiber_chart_band",
+    "salt_100g": "salt_chart_band",
+    "protein_per_kcal": "protein_per_kcal_chart_band",
+    "satfat_per_kcal": "satfat_per_kcal_chart_band",
+    "fiber_per_kcal": "fiber_per_kcal_chart_band",
+    "sugars_per_kcal": "sugars_per_kcal_chart_band",
+}
 
 
 def _extracted_public_db_path() -> Path:
@@ -540,6 +554,16 @@ def _qmarks(values: list) -> str:
     return ",".join("?" for _ in values)
 
 
+@st.cache_data(show_spinner=False, ttl=600)
+def product_column_exists(column: str) -> bool:
+    conn = get_connection()
+    try:
+        rows = conn.execute("PRAGMA table_info(products)").fetchall()
+    except Exception:
+        return False
+    return column in {row[1] for row in rows}
+
+
 def _normalize_brand(b: str) -> str:
     import re
     import unicodedata
@@ -574,7 +598,10 @@ def _build_where(
         f"{PRODUCT_BRAND_SQL} IS NOT NULL"
         f" AND TRIM(LOWER({PRODUCT_BRAND_SQL})) NOT IN ('unknown', '', 'nan')"
     )
+    if product_column_exists("include_in_product_table"):
+        clauses.append("COALESCE(p.include_in_product_table, 1) = 1")
 
+    text = str(text or "").strip()
     if text:
         clauses.append("(LOWER(p.product_name) LIKE LOWER(?) OR LOWER(p.brands) LIKE LOWER(?))")
         like = f"%{text}%"
@@ -679,6 +706,18 @@ def search_products(
         company_names, region_codes, positioning_codes, nova_groups,
         nutriscore_grades
     )
+    if product_column_exists("warning_types"):
+        warning_select = """
+            p.warning_flag,
+            p.warning_types,
+            p.warning_summary,
+        """
+    else:
+        warning_select = """
+            0 AS warning_flag,
+            '' AS warning_types,
+            '' AS warning_summary,
+        """
     limit_sql = "LIMIT ?" if limit is not None else ""
     query_params = [*params, limit] if limit is not None else params
     df = pd.read_sql_query(f"""
@@ -706,6 +745,7 @@ def search_products(
             p.nutriscore_grade,
             p.nova_group,
             p.completeness_score,
+            {warning_select}
             a.pack_claims_found,
             a.claim_source
         FROM products p
@@ -790,25 +830,37 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
     """
     conn = get_connection()
     df = pd.read_sql_query("""
-        SELECT barcode, product_name,
-               COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand) AS primary_brand,
-               primary_brand AS legacy_primary_brand,
-               normalized_brand, brand_entity_raw, brand_entity_source,
-               primary_country, image_url,
-               countries, observed_market_region_codes,
-               resolved_company,
-               off_categories,
-               ingredients_text, completeness_score,
-               energy_kcal, fat_100g, saturated_fat_100g, carbs_100g,
-               sugars_100g, fiber_100g, protein_100g, salt_100g,
-               nova_group, nutriscore_grade
-        FROM products
-        WHERE query_category = ?
-          AND observed_market_region_codes LIKE ?
-          AND ingested_at = (SELECT MAX(ingested_at) FROM products)
-          AND COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand) IS NOT NULL
-          AND TRIM(LOWER(COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand))) NOT IN ('unknown', '', 'nan')
-    """, conn, params=[category, f"%{region_code}%"])
+        SELECT p.barcode, p.product_name,
+               COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_brand) AS primary_brand,
+               p.primary_brand AS legacy_primary_brand,
+               p.normalized_brand, p.brand_entity_raw, p.brand_entity_source,
+               p.primary_country, p.image_url,
+               p.countries, p.observed_market_region_codes,
+               p.resolved_company,
+               p.off_categories,
+               p.ingredients_text, p.completeness_score,
+               p.energy_kcal, p.fat_100g, p.saturated_fat_100g, p.carbs_100g,
+               p.sugars_100g, p.fiber_100g, p.protein_100g, p.salt_100g,
+               p.nova_group, p.nutriscore_grade,
+               p.include_in_product_table, p.include_in_aggregates, p.include_in_charts,
+               b.energy_chart_band, b.protein_chart_band, b.fat_chart_band,
+               b.saturated_fat_chart_band, b.carbs_chart_band,
+               b.sugars_chart_band, b.fiber_chart_band, b.salt_chart_band,
+               b.protein_per_kcal_chart_band, b.satfat_per_kcal_chart_band,
+               b.fiber_per_kcal_chart_band, b.sugars_per_kcal_chart_band
+        FROM products p
+        LEFT JOIN market_chart_bands b
+          ON b.barcode = p.barcode
+         AND b.region_code = ?
+         AND b.category = p.query_category
+         AND b.snapshot = (SELECT MAX(snapshot) FROM market_chart_bands)
+        WHERE p.query_category = ?
+          AND p.observed_market_region_codes LIKE ?
+          AND p.ingested_at = (SELECT MAX(ingested_at) FROM products)
+          AND COALESCE(p.include_in_product_table, 1) = 1
+          AND COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_brand) IS NOT NULL
+          AND TRIM(LOWER(COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_brand))) NOT IN ('unknown', '', 'nan')
+    """, conn, params=[region_code, category, f"%{region_code}%"])
 
     for col in ["energy_kcal", "fat_100g", "saturated_fat_100g", "carbs_100g",
                 "sugars_100g", "fiber_100g", "protein_100g", "salt_100g"]:
@@ -930,3 +982,28 @@ def get_category_region_averages() -> dict:
         }
 
     return result
+
+
+@st.cache_data(show_spinner=False, ttl=600)
+def get_axis_range_config() -> pd.DataFrame:
+    """Latest precomputed Market Overview chart bounds."""
+    conn = get_connection()
+    try:
+        snapshot = conn.execute(
+            "SELECT MAX(snapshot) FROM axis_range_config"
+        ).fetchone()[0]
+        if snapshot is None:
+            return pd.DataFrame()
+        return pd.read_sql_query(
+            """
+            SELECT region_code, category, beverage_view_segment, metric_key,
+                   p03, p97, n_valid, n_below_p03, n_above_p97, n_trimmed
+            FROM axis_range_config
+            WHERE snapshot = ?
+            """,
+            conn,
+            params=[snapshot],
+        )
+    except Exception as exc:
+        print(f"[get_axis_range_config] lookup failed: {exc}")
+        return pd.DataFrame()

@@ -59,13 +59,48 @@ NUTRIENT_G_COLS = [
 ]
 
 DENSITY_LIMITS = {
-    "protein_g_per_100kcal": 27.0,
-    "carbs_g_per_100kcal": 27.0,
+    "protein_g_per_100kcal": 28.0,
     "fat_g_per_100kcal": 12.5,
 }
 
+ZERO_ENERGY_MACRO_TOLERANCE_G_100G = 0.5
+RELATIONAL_NUTRIENT_TOLERANCE_G_100G = 0.5
+MAX_KNOWN_MASS_G_100G = 105.0
+MAX_SALT_G_100G = 50.0
+MINIMUM_IMPLIED_ENERGY_RATIO = 1.25
+MINIMUM_IMPLIED_ENERGY_ABS_DIFF_KCAL = 20.0
 ENERGY_MACRO_DIFF_PCT_THRESHOLD = 0.15
 ALCOHOL_FORMULA_EXCEPTION_MAX_KCAL = 100
+ENERGY_MACRO_WARNING_TEXT = (
+    "Energy-macro mismatch: Reported kcal and macro-derived kcal differ "
+    "materially. The product is still useful to inspect, but nutrition "
+    "interpretation should be cautious."
+)
+WITHIN_BRAND_WARNING_TEXT = (
+    "Within-brand nutrition outlier: One or more nutrition values differ "
+    "sharply from comparable products in the same brand/category/region, "
+    "suggesting a possible OFF entry issue or unusual product format."
+)
+WITHIN_BRAND_MIN_PRODUCTS = 10
+WITHIN_BRAND_MIN_METRIC_VALUES = 10
+WITHIN_BRAND_LOW_MULTIPLIER = 0.5
+WITHIN_BRAND_HIGH_MULTIPLIER = 1.5
+WITHIN_BRAND_ROBUST_Z_THRESHOLD = 4.5
+WITHIN_BRAND_METRIC_FLOORS = {
+    "energy_kcal_100g": 75.0,
+    "protein_g_100g": 5.0,
+    "carbs_g_100g": 15.0,
+    "fat_g_100g": 7.5,
+    "sugars_g_100g": 12.0,
+    "saturated_fat_g_100g": 5.0,
+    "fiber_g_100g": 5.0,
+    "salt_g_100g": 0.8,
+}
+WITHIN_BRAND_BROAD_PORTFOLIO_PATTERNS = [
+    r"\bcoca[\s-]?cola\b",
+    r"\bpepsi\b",
+    r"\bpepsico\b",
+]
 ALCOHOL_PATTERN = (
     r"\b(?:wine|vin|champagne|brut|beer|bi[eè]re|lager|cider|cidre|sake|"
     r"liqueur|alcohol|alcool|cocktail|spritz|aperitif|apéritif|vodka|gin|"
@@ -92,6 +127,12 @@ AUDIT_COLUMNS = [
     "energy_kcal_macro_calculated_100g",
     "energy_kcal_macro_diff_abs",
     "energy_kcal_macro_diff_pct",
+    "effective_carbs_g_100g",
+    "effective_fat_g_100g",
+    "minimum_implied_energy_kcal_100g",
+    "minimum_implied_energy_diff_kcal_100g",
+    "minimum_implied_energy_ratio",
+    "minimum_known_mass_g_100g",
     "protein_g_per_100kcal",
     "carbs_g_per_100kcal",
     "fat_g_per_100kcal",
@@ -102,6 +143,9 @@ AUDIT_COLUMNS = [
     "include_in_product_explorer",
     "include_in_market_overview_calculations",
     "include_in_market_overview_charts",
+    "warning_flag",
+    "warning_types",
+    "warning_summary",
 ]
 
 
@@ -189,6 +233,10 @@ def apply_hard_error(df: pd.DataFrame, mask: pd.Series, reason: str) -> None:
     df.loc[mask, "include_in_market_overview_charts"] = False
 
 
+def effective_parent_or_subset(parent: pd.Series, subset: pd.Series) -> pd.Series:
+    return parent.where(parent.notna(), subset).fillna(0)
+
+
 def apply_accepted_exception(
     df: pd.DataFrame,
     mask: pd.Series,
@@ -210,6 +258,37 @@ def apply_accepted_exception(
     df.loc[mask, "energy_macro_exception_type"] = df.loc[
         mask, "energy_macro_exception_type"
     ].apply(add_exception)
+
+
+def append_warning(df: pd.DataFrame, mask: pd.Series, warning_type: str) -> None:
+    if int(mask.sum()) == 0:
+        return
+
+    def add(existing):
+        if not isinstance(existing, str) or existing.strip() == "":
+            return warning_type
+        parts = [p for p in existing.split("|") if p]
+        if warning_type not in parts:
+            parts.append(warning_type)
+        return "|".join(parts)
+
+    df.loc[mask, "warning_types"] = df.loc[mask, "warning_types"].apply(add)
+    df.loc[mask, "warning_flag"] = True
+
+
+def append_warning_summary(df: pd.DataFrame, mask: pd.Series, summary: str) -> None:
+    if int(mask.sum()) == 0:
+        return
+
+    def add(existing):
+        if not isinstance(existing, str) or existing.strip() == "":
+            return summary
+        parts = [p for p in existing.split("\n\n") if p]
+        if summary not in parts:
+            parts.append(summary)
+        return "\n\n".join(parts)
+
+    df.loc[mask, "warning_summary"] = df.loc[mask, "warning_summary"].apply(add)
 
 
 def add_display_fields(df: pd.DataFrame) -> pd.DataFrame:
@@ -240,6 +319,95 @@ def add_display_fields(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def known_broad_beverage_portfolio_mask(frame: pd.DataFrame) -> pd.Series:
+    brand = frame["_brand_key"].fillna("").astype(str)
+    known_broad_brand = pd.Series(False, index=frame.index)
+    for pattern in WITHIN_BRAND_BROAD_PORTFOLIO_PATTERNS:
+        known_broad_brand = known_broad_brand | brand.str.contains(
+            pattern,
+            regex=True,
+            na=False,
+        )
+    return frame["category"].astype(str).str.lower().eq("beverages") & known_broad_brand
+
+
+def within_brand_warning_mask(df: pd.DataFrame) -> pd.Series:
+    eligible = df[
+        df["include_in_product_explorer"].astype(bool)
+        & df["category"].fillna("").astype(str).str.strip().ne("")
+        & df["region"].fillna("").astype(str).str.strip().ne("")
+        & df["brand"].fillna("").astype(str).str.strip().ne("")
+    ].copy()
+    if eligible.empty:
+        return pd.Series(False, index=df.index)
+
+    eligible["_source_index"] = eligible.index
+    eligible["region"] = eligible["region"].fillna("").astype(str).str.split("|")
+    eligible = eligible.explode("region")
+    eligible["region"] = eligible["region"].fillna("").astype(str).str.strip()
+    eligible = eligible[eligible["region"].ne("")]
+    eligible["_brand_key"] = eligible["brand"].map(normalize_key)
+    eligible = eligible[eligible["_brand_key"].ne("")]
+
+    group_cols = ["region", "category", "_brand_key"]
+    eligible["_group_size"] = eligible.groupby(group_cols)["barcode"].transform("size")
+    eligible = eligible[
+        eligible["_group_size"].ge(WITHIN_BRAND_MIN_PRODUCTS)
+        & ~known_broad_beverage_portfolio_mask(eligible)
+    ].copy()
+    if eligible.empty:
+        return pd.Series(False, index=df.index)
+
+    metric_warning = pd.Series(False, index=eligible.index)
+    for metric in SOURCE_NUTRITION_COLS:
+        value = pd.to_numeric(eligible[metric], errors="coerce")
+        grouped = value.groupby(
+            [eligible[col] for col in group_cols],
+            dropna=False,
+        )
+        median = grouped.transform("median")
+        metric_count = grouped.transform("count")
+        absolute_diff = (value - median).abs()
+        mad = absolute_diff.groupby(
+            [eligible[col] for col in group_cols],
+            dropna=False,
+        ).transform("median")
+        robust_z = absolute_diff / (1.4826 * mad)
+        q1 = grouped.transform(lambda s: s.quantile(0.25))
+        q3 = grouped.transform(lambda s: s.quantile(0.75))
+        iqr = q3 - q1
+        statistical_extreme = (
+            (mad.gt(0) & robust_z.ge(WITHIN_BRAND_ROBUST_Z_THRESHOLD))
+            | (
+                mad.le(0)
+                & iqr.gt(0)
+                & (
+                    value.lt(q1 - 3.0 * iqr)
+                    | value.gt(q3 + 3.0 * iqr)
+                )
+            )
+        )
+        relative_difference = (
+            median.le(0)
+            | value.le(median * WITHIN_BRAND_LOW_MULTIPLIER)
+            | value.ge(median * WITHIN_BRAND_HIGH_MULTIPLIER)
+        )
+        floor = WITHIN_BRAND_METRIC_FLOORS[metric]
+        metric_warning = metric_warning | (
+            value.notna()
+            & median.notna()
+            & metric_count.ge(WITHIN_BRAND_MIN_METRIC_VALUES)
+            & statistical_extreme
+            & relative_difference
+            & absolute_diff.ge(floor)
+        )
+
+    warning_indices = set(
+        eligible.loc[metric_warning, "_source_index"].astype(int).tolist()
+    )
+    return df.index.to_series().isin(warning_indices)
+
+
 def build_nutrition_quality_flags(df: pd.DataFrame) -> pd.DataFrame:
     """Return a copy of df with derived nutrition quality fields added."""
     out = add_display_fields(df)
@@ -253,11 +421,38 @@ def build_nutrition_quality_flags(df: pd.DataFrame) -> pd.DataFrame:
     out["include_in_product_explorer"] = True
     out["include_in_market_overview_calculations"] = True
     out["include_in_market_overview_charts"] = True
+    out["warning_flag"] = False
+    out["warning_types"] = ""
+    out["warning_summary"] = ""
 
     energy = out["energy_kcal_100g"]
     protein = out["protein_g_100g"]
     carbs = out["carbs_g_100g"]
     fat = out["fat_g_100g"]
+    sugars = out["sugars_g_100g"]
+    satfat = out["saturated_fat_g_100g"]
+    salt = out["salt_g_100g"]
+
+    out["effective_carbs_g_100g"] = effective_parent_or_subset(carbs, sugars)
+    out["effective_fat_g_100g"] = effective_parent_or_subset(fat, satfat)
+    effective_protein = protein.fillna(0)
+    out["minimum_implied_energy_kcal_100g"] = (
+        effective_protein * 4
+        + out["effective_carbs_g_100g"] * 4
+        + out["effective_fat_g_100g"] * 9
+    )
+    out["minimum_implied_energy_diff_kcal_100g"] = (
+        out["minimum_implied_energy_kcal_100g"] - energy
+    )
+    out["minimum_implied_energy_ratio"] = (
+        out["minimum_implied_energy_kcal_100g"] / energy
+    ).where(energy.notna() & energy.ne(0))
+    out["minimum_known_mass_g_100g"] = (
+        effective_protein
+        + out["effective_carbs_g_100g"]
+        + out["effective_fat_g_100g"]
+        + salt.fillna(0)
+    )
 
     valid_energy = energy.notna() & (energy > 0)
     out["protein_g_per_100kcal"] = (protein / energy * 100).where(valid_energy)
@@ -281,24 +476,73 @@ def build_nutrition_quality_flags(df: pd.DataFrame) -> pd.DataFrame:
         apply_hard_error(out, out[col] < 0, "negative_nutrient_value")
         apply_hard_error(out, out[col] > 100, "nutrient_value_above_100g")
 
+    zero_energy_positive_macro = (
+        energy.notna()
+        & energy.eq(0)
+        & (
+            protein.gt(ZERO_ENERGY_MACRO_TOLERANCE_G_100G)
+            | carbs.gt(ZERO_ENERGY_MACRO_TOLERANCE_G_100G)
+            | fat.gt(ZERO_ENERGY_MACRO_TOLERANCE_G_100G)
+            | out["sugars_g_100g"].gt(ZERO_ENERGY_MACRO_TOLERANCE_G_100G)
+        )
+    )
+    apply_hard_error(
+        out,
+        zero_energy_positive_macro,
+        "zero_energy_with_positive_macros",
+    )
+
+    minimum_implied_energy_mask = (
+        energy.notna()
+        & energy.ge(0)
+        & (protein.notna() | carbs.notna() | fat.notna() | sugars.notna() | satfat.notna())
+        & out["minimum_implied_energy_kcal_100g"].gt(
+            energy * MINIMUM_IMPLIED_ENERGY_RATIO
+        )
+        & out["minimum_implied_energy_diff_kcal_100g"].gt(
+            MINIMUM_IMPLIED_ENERGY_ABS_DIFF_KCAL
+        )
+    )
+    apply_hard_error(
+        out,
+        minimum_implied_energy_mask,
+        "reported_energy_below_minimum_implied_energy",
+    )
+
     macro_mass = protein + carbs + fat
     apply_hard_error(
         out,
-        protein.notna() & carbs.notna() & fat.notna() & (macro_mass > 100),
+        protein.notna() & carbs.notna() & fat.notna() & (macro_mass > 105),
         "macro_mass_balance_exceeds_100g",
+    )
+    apply_hard_error(
+        out,
+        out["minimum_known_mass_g_100g"].gt(MAX_KNOWN_MASS_G_100G),
+        "minimum_known_nutrient_mass_exceeds_105g",
+    )
+    apply_hard_error(
+        out,
+        salt.notna() & salt.gt(MAX_SALT_G_100G),
+        "salt_above_50g_per_100",
     )
     apply_hard_error(
         out,
         out["sugars_g_100g"].notna()
         & carbs.notna()
-        & (out["sugars_g_100g"] > carbs),
+        & (
+            out["sugars_g_100g"]
+            > carbs + RELATIONAL_NUTRIENT_TOLERANCE_G_100G
+        ),
         "sugars_greater_than_carbs",
     )
     apply_hard_error(
         out,
         out["saturated_fat_g_100g"].notna()
         & fat.notna()
-        & (out["saturated_fat_g_100g"] > fat),
+        & (
+            out["saturated_fat_g_100g"]
+            > fat + RELATIONAL_NUTRIENT_TOLERANCE_G_100G
+        ),
         "saturated_fat_greater_than_fat",
     )
 
@@ -399,6 +643,33 @@ def build_nutrition_quality_flags(df: pd.DataFrame) -> pd.DataFrame:
         high_energy_beverage_exception_review,
         "high_energy_beverage_formula_exception_review",
     )
+    product_explorer_energy_macro_warning = (
+        excluded_energy_macro
+        & out["include_in_product_explorer"].astype(bool)
+        & ~is_alcohol_like
+    )
+    append_warning(
+        out,
+        product_explorer_energy_macro_warning,
+        "energy_macro_mismatch",
+    )
+    append_warning_summary(
+        out,
+        product_explorer_energy_macro_warning,
+        ENERGY_MACRO_WARNING_TEXT,
+    )
+
+    product_explorer_within_brand_warning = within_brand_warning_mask(out)
+    append_warning(
+        out,
+        product_explorer_within_brand_warning,
+        "within_brand_nutrition_outlier",
+    )
+    append_warning_summary(
+        out,
+        product_explorer_within_brand_warning,
+        WITHIN_BRAND_WARNING_TEXT,
+    )
 
     return out
 
@@ -482,6 +753,8 @@ def build_summary(df: pd.DataFrame) -> pd.DataFrame:
 
 def write_audits(df: pd.DataFrame, audit_dir: str = AUDIT_DIR) -> dict[str, str]:
     os.makedirs(audit_dir, exist_ok=True)
+    market_cleanup_dir = os.path.join(audit_dir, "market_overview_cleanup")
+    os.makedirs(market_cleanup_dir, exist_ok=True)
 
     outputs = {
         "hard_data_quality_errors.csv": df[
@@ -532,6 +805,44 @@ def write_audits(df: pd.DataFrame, audit_dir: str = AUDIT_DIR) -> dict[str, str]
     )
     segment_summary.to_csv(segment_summary_path, index=False, encoding="utf-8-sig")
     written["beverage_view_segment_audit.csv"] = segment_summary_path
+
+    reason = df["nutrition_quality_reason"].fillna("").astype(str)
+    minimum_energy_cols = [
+        "region", "category", "barcode", "product_name", "brand", "company",
+        "energy_kcal_100g", "protein_g_100g", "carbs_g_100g", "fat_g_100g",
+        "sugars_g_100g", "saturated_fat_g_100g", "effective_carbs_g_100g",
+        "effective_fat_g_100g", "minimum_implied_energy_kcal_100g",
+        "minimum_implied_energy_diff_kcal_100g", "minimum_implied_energy_ratio",
+        "nutrition_quality_reason", "image_url",
+    ]
+    salt_cols = [
+        "region", "category", "barcode", "product_name", "brand", "company",
+        "protein_g_100g", "carbs_g_100g", "fat_g_100g", "sugars_g_100g",
+        "saturated_fat_g_100g", "salt_g_100g", "effective_carbs_g_100g",
+        "effective_fat_g_100g", "minimum_known_mass_g_100g",
+        "nutrition_quality_reason", "image_url",
+    ]
+    minimum_energy_path = os.path.join(
+        market_cleanup_dir, "minimum_implied_energy_failures.csv"
+    )
+    audit_view(
+        df[reason.str.contains("reported_energy_below_minimum_implied_energy")]
+    ).reindex(columns=minimum_energy_cols).to_csv(
+        minimum_energy_path, index=False, encoding="utf-8-sig"
+    )
+    written["market_overview_cleanup/minimum_implied_energy_failures.csv"] = (
+        minimum_energy_path
+    )
+
+    salt_path = os.path.join(market_cleanup_dir, "salt_hard_gate_failures.csv")
+    salt_reason = reason.str.contains(
+        "minimum_known_nutrient_mass_exceeds_105g|salt_above_50g_per_100",
+        regex=True,
+    )
+    audit_view(df[salt_reason]).reindex(columns=salt_cols).to_csv(
+        salt_path, index=False, encoding="utf-8-sig"
+    )
+    written["market_overview_cleanup/salt_hard_gate_failures.csv"] = salt_path
     return written
 
 

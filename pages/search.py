@@ -59,6 +59,7 @@ _CLAIM_NAMES: dict[str, str] = {
 
 # All table columns: display_name → (source_col_or_None, is_default)
 _ALL_COLS: dict[str, tuple] = {
+    "Warning":               ("_warning",          True),
     "Category":              ("query_category",     True),
     "Brand":                 ("primary_brand",      True),
     "Company / owner":       ("company",            True),
@@ -84,6 +85,21 @@ _DEFAULT_COLS = [k for k, (_, d) in _ALL_COLS.items() if d]
 
 # Status filter options
 _STATUS_OPTS = ["All", "↑ Above average", "≈ Parity", "↓ Below average"]
+
+_WARNING_DEFINITIONS = {
+    "energy_macro_mismatch": (
+        "Energy-macro mismatch",
+        "Reported kcal and macro-derived kcal differ materially. The product "
+        "is still useful to inspect, but nutrition interpretation should be "
+        "cautious.",
+    ),
+    "within_brand_nutrition_outlier": (
+        "Within-brand nutrition outlier",
+        "One or more nutrition values differ sharply from comparable products "
+        "in the same brand/category/region, suggesting a possible OFF entry "
+        "issue or unusual product format.",
+    ),
+}
 
 
 def _missing(value) -> bool:
@@ -210,6 +226,27 @@ def _fmt_positioning(pack_claims_val, claim_source: str) -> str:
     return " · ".join(seen) if seen else "No claims on pack"
 
 
+def _warning_marker(product: pd.Series) -> str:
+    warning_types = product.get("warning_types")
+    if not _missing(warning_types) and str(warning_types).strip():
+        return "!"
+    return ""
+
+
+def _warning_messages(product: dict) -> list[str]:
+    summary = product.get("warning_summary")
+    if not _missing(summary) and str(summary).strip():
+        return [part.strip() for part in str(summary).split("\n\n") if part.strip()]
+
+    messages = []
+    for warning_type in str(product.get("warning_types") or "").split("|"):
+        warning_type = warning_type.strip()
+        if warning_type in _WARNING_DEFINITIONS:
+            title, body = _WARNING_DEFINITIONS[warning_type]
+            messages.append(f"{title}: {body}")
+    return messages
+
+
 def _apply_status_filter(df: pd.DataFrame, col: str, metric: str,
                          status: str) -> pd.DataFrame:
     """Post-query filter: keep rows matching the selected status tier."""
@@ -264,6 +301,8 @@ def render_product_card(product: dict) -> None:
                 f"(completeness: {completeness_int}%), so interpretation may be incomplete.",
                 icon="⚠️",
             )
+        for warning_text in _warning_messages(product):
+            st.warning(warning_text, icon="⚠️")
 
     # 2. Badges
     badge_html = ""
@@ -603,6 +642,7 @@ display_df["_positioning"] = display_df.apply(
         row.get("pack_claims_found"), row.get("claim_source", "")
     ), axis=1,
 )
+display_df["_warning"] = display_df.apply(_warning_marker, axis=1)
 
 # Optional absolute columns
 _ABS_COLS = {
@@ -645,6 +685,7 @@ for col_name in selected_col_names:
 
 # ── Export CSV (numeric, no emoji) ────────────────────────────────────────────
 export_cols = {
+    "_warning":            "Warning",
     "query_category":     "Category",
     "primary_brand":      "Brand",
     "company":            "Company / owner",
@@ -676,6 +717,7 @@ st.caption(
 
 # ── Table ─────────────────────────────────────────────────────────────────────
 col_rename = {
+    "_warning":            "Warning",
     "query_category":     "Category",
     "primary_brand":      "Brand",
     "company":            "Company / owner",
