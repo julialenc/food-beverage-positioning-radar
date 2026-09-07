@@ -1,12 +1,12 @@
 """
-build_exclusion_reduction_review.py
------------------------------------
+nut_hist_01_exclusion_reduction_review.py
+-----------------------------------------
 Creates a prioritized review list of records currently excluded from Market
 Overview calculations, so rules can be adjusted toward the 2-3% exclusion
 range without silently changing governance decisions.
 
 Usage:
-    python pipeline/nutrition_outliers/build_exclusion_reduction_review.py
+    python pipeline/governance/nutrition_quality/historical/nut_hist_01_exclusion_reduction_review.py
 """
 
 from __future__ import annotations
@@ -16,7 +16,13 @@ import os
 import pandas as pd
 
 
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT = os.path.dirname(
+    os.path.dirname(
+        os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        )
+    )
+)
 AUDIT_DIR = os.path.join(ROOT, "data", "nutrition_outlier_review", "audits")
 FLAGS_PATH = os.path.join(AUDIT_DIR, "nutrition_quality_flags.csv")
 REVIEW_PATH = os.path.join(

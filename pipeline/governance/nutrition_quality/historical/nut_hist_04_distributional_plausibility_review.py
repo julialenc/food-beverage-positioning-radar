@@ -1,6 +1,6 @@
 """
-build_distributional_plausibility_review.py
--------------------------------------------
+nut_hist_04_distributional_plausibility_review.py
+-------------------------------------------------
 Profiles distribution tails after locked hard-error and energy-macro governance.
 
 The goal is pattern discovery, not automatic exclusion. Extreme values are
@@ -9,7 +9,7 @@ decide whether a tail is normal category structure, a genuine product-format
 outlier cluster, category-scope noise, a data-quality issue, or still unclear.
 
 Usage:
-    python pipeline/nutrition_outliers/build_distributional_plausibility_review.py
+    python pipeline/governance/nutrition_quality/historical/nut_hist_04_distributional_plausibility_review.py
 """
 
 from __future__ import annotations
@@ -23,7 +23,13 @@ from datetime import datetime
 import pandas as pd
 
 
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT = os.path.dirname(
+    os.path.dirname(
+        os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        )
+    )
+)
 SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 AUDIT_DIR = os.path.join(ROOT, "data", "nutrition_outlier_review", "audits")
 FLAGS_PATH = os.path.join(AUDIT_DIR, "nutrition_quality_flags.csv")

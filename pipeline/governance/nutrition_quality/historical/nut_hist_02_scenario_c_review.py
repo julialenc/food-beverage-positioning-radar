@@ -1,6 +1,6 @@
 """
-build_scenario_c_review.py
---------------------------
+nut_hist_02_scenario_c_review.py
+--------------------------------
 Creates Scenario C review exports without changing current nutrition-quality
 flags or app/database behavior.
 
@@ -9,7 +9,7 @@ Scenario C re-includes for Market Overview calculations:
 2. beverage_energy_not_captured_by_macros
 
 Usage:
-    python pipeline/nutrition_outliers/build_scenario_c_review.py
+    python pipeline/governance/nutrition_quality/historical/nut_hist_02_scenario_c_review.py
 """
 
 from __future__ import annotations
@@ -19,7 +19,13 @@ import os
 import pandas as pd
 
 
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT = os.path.dirname(
+    os.path.dirname(
+        os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        )
+    )
+)
 AUDIT_DIR = os.path.join(ROOT, "data", "nutrition_outlier_review", "audits")
 REVIEW_PATH = os.path.join(
     AUDIT_DIR, "market_overview_exclusion_reduction_review.csv"
@@ -145,7 +151,7 @@ def build_summary(review: pd.DataFrame, total_records: int) -> pd.DataFrame:
 def main() -> None:
     if not os.path.exists(REVIEW_PATH):
         raise FileNotFoundError(
-            f"{REVIEW_PATH} not found. Run build_exclusion_reduction_review.py first."
+            f"{REVIEW_PATH} not found. Run nut_hist_01_exclusion_reduction_review.py first."
         )
     if not os.path.exists(FLAGS_PATH):
         raise FileNotFoundError(
