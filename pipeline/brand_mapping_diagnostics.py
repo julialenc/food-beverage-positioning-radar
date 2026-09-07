@@ -1,37 +1,32 @@
 """
-Brand coverage report — utility script, not part of the main pipeline.
+Brand mapping diagnostics.
 
-Produces TWO reports:
+This utility groups read-only brand/company mapping checks behind one CLI.
+It is not part of the main production pipeline.
 
-1. data/reference/brand_coverage_report.csv
-   Which primary_brand values in the DB have no match in
-   company_brand_mapping.csv. Review this to expand company coverage.
+Modes:
+    --counts
+        Write data/reference/brand_counts.csv and print the largest brands.
 
-2. data/reference/brand_alias_candidates.csv
-   Candidate brand aliases detected by three pattern rules:
-   - prefix     : "emmi schweiz" → "emmi"  (canonical exists as standalone brand)
-   - punctuation: "chin-chin"   → "chin chin"  (identical after removing hyphens)
-   - geo_suffix : "nestle france" → "nestle"  (geographic/legal suffix stripped)
+    --coverage
+        Write data/reference/brand_coverage_report.csv and
+        data/reference/brand_alias_candidates.csv.
 
-   Review brand_alias_candidates.csv, add "confirm" or "skip" in the
-   action column for each row, then save the file as:
-       data/reference/brand_alias_mapping.csv
+    --check-brand PREFIX
+        Print brand variants whose primary_brand starts with PREFIX.
 
-   clean.py reads brand_alias_mapping.csv and applies all rows where
-   action = "confirm" during Step 4b of the cleaning pipeline.
+    --unmapped
+        Print brand mapping coverage against company_brand_mapping.csv.
 
-Usage:
-    python pipeline/brand_coverage_report.py
-
-Both reports are overwritten on each run. brand_alias_mapping.csv is
-never overwritten by this script — it is the confirmed, hand-reviewed
-version you create from the candidates.
+If no mode is provided, --coverage is used. Reference mapping files are read
+only; candidate outputs are review material and never overwrite curated
+brand_alias_mapping.csv.
 """
 
 from __future__ import annotations
 
+import argparse
 import csv
-import os
 import re
 import sqlite3
 import unicodedata
@@ -41,6 +36,7 @@ from pathlib import Path
 ROOT          = Path(__file__).resolve().parent.parent
 DB_PATH       = ROOT / "database" / "positioning_radar.db"
 MAPPING_PATH  = ROOT / "data" / "reference" / "company_brand_mapping.csv"
+BRAND_COUNTS_OUT = ROOT / "data" / "reference" / "brand_counts.csv"
 COVERAGE_OUT  = ROOT / "data" / "reference" / "brand_coverage_report.csv"
 ALIAS_OUT     = ROOT / "data" / "reference" / "brand_alias_candidates.csv"
 
@@ -58,6 +54,8 @@ GEO_SUFFIXES = [
     " group", " holding", " holdings",
 ]
 
+CompanyCandidate = tuple[str, str, set[str], int]
+
 
 # ── Normalisation ──────────────────────────────────────────────────────────────
 
@@ -69,6 +67,153 @@ def _normalize(s: str) -> str:
     s = re.sub(r"[-_./,]", " ", s)
     s = re.sub(r"\b(the|company|co|ltd|inc|s\.?a\.?|group|international|foods?)\b", "", s)
     return re.sub(r"\s+", " ", s).strip()
+
+
+def _simple_brand_key(value: str) -> str:
+    return value.lower().replace("-", " ").strip()
+
+
+def load_brand_counts() -> list[tuple[str, int, str]]:
+    conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+    rows = conn.execute("""
+        SELECT
+            primary_brand,
+            COUNT(*) as total_products,
+            GROUP_CONCAT(DISTINCT query_category) as categories
+        FROM products
+        WHERE primary_brand IS NOT NULL
+          AND TRIM(LOWER(primary_brand)) NOT IN ('unknown', '', 'nan')
+        GROUP BY primary_brand
+        ORDER BY total_products DESC
+    """).fetchall()
+    conn.close()
+    return rows
+
+
+def run_counts() -> None:
+    rows = load_brand_counts()
+
+    with open(BRAND_COUNTS_OUT, "w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.writer(f)
+        writer.writerow(["primary_brand", "total_products", "categories", "action"])
+        for brand, n, cats in rows:
+            writer.writerow([brand, n, cats, ""])
+
+    print(f"Saved {len(rows):,} brands -> {BRAND_COUNTS_OUT}")
+    print(f"\nTop 30 brands by product count:")
+    print(f"{'Brand':<40} {'Products':>8}  Categories")
+    print("-" * 75)
+    for brand, n, cats in rows[:30]:
+        print(f"{brand:<40} {n:>8}  {cats}")
+
+
+def run_check_brand(prefix: str) -> None:
+    prefix = prefix.lower()
+    conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+    rows = conn.execute("""
+        SELECT primary_brand, COUNT(*) as n
+        FROM products
+        WHERE LOWER(primary_brand) LIKE ?
+          AND TRIM(LOWER(primary_brand)) NOT IN ('unknown', '', 'nan')
+        GROUP BY primary_brand
+        ORDER BY n DESC
+    """, (f"{prefix}%",)).fetchall()
+    conn.close()
+
+    if not rows:
+        print(f"\nNo brands starting with '{prefix}' found.")
+        return
+
+    total = sum(n for _, n in rows)
+    main = rows[0][1]
+    pct = main / total * 100
+
+    print(f"\nBrands starting with '{prefix}': {len(rows)} variants, {total:,} total products")
+    print(f"Largest variant: '{rows[0][0]}' ({main:,} products = {pct:.1f}% of group)\n")
+    print(f"{'Brand':<50} {'Products':>8}  {'% of group':>10}")
+    print("-" * 73)
+    for brand, n in rows:
+        bar = "#" * min(int(n / total * 40), 40)
+        print(f"{brand:<50} {n:>8}  {n/total*100:>9.1f}%  {bar}")
+
+    print(f"\n{'TOTAL':<50} {total:>8}")
+    print(f"\n95% threshold: {total * 0.95:.0f} products")
+    print(f"Already unified under '{rows[0][0]}': {main:,} ({pct:.1f}%)")
+    if pct >= 95:
+        print("Above 95% - done, no further action needed.")
+    else:
+        print(f"Below 95% - {total - main:,} products in {len(rows)-1} variants still unmatched.")
+
+
+def run_unmapped() -> None:
+    mapped_statuses = {}
+    with open(MAPPING_PATH, encoding="utf-8-sig") as f:
+        for row in csv.DictReader(f):
+            brand = row.get("primary_brand_db", "").strip()
+            if brand:
+                status = row.get("ownership_resolution_status", "").strip().lower() or "direct"
+                mapped_statuses.setdefault(_simple_brand_key(brand), set()).add(status)
+
+    conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+    rows = conn.execute("""
+        SELECT primary_brand, COUNT(*) as n
+        FROM products
+        WHERE primary_brand IS NOT NULL
+          AND TRIM(LOWER(primary_brand)) NOT IN ('unknown', '', 'nan')
+        GROUP BY primary_brand
+        ORDER BY n DESC
+    """).fetchall()
+    conn.close()
+
+    direct_mapped = []
+    scoped_or_review = []
+    unmapped = []
+
+    for brand, n in rows:
+        statuses = mapped_statuses.get(_simple_brand_key(brand))
+        if not statuses:
+            unmapped.append((brand, n))
+        elif statuses == {"direct"}:
+            direct_mapped.append((brand, n))
+        else:
+            scoped_or_review.append((brand, n, statuses))
+
+    total_unmapped_products = sum(n for _, n in unmapped)
+    total_scoped_products = sum(n for _, n, _ in scoped_or_review)
+    total_products = sum(n for _, n in rows)
+    brands_under_10 = sum(1 for _, n in unmapped if n < 10)
+    manual_review_brands = [
+        (brand, n, statuses)
+        for brand, n, statuses in scoped_or_review
+        if "manual_review" in statuses
+    ]
+
+    print(f"Total distinct brands in DB:    {len(rows):,}")
+    print(f"Total products with a brand:     {total_products:,}")
+    print(f"Resolved direct mappings:        {len(direct_mapped):,}")
+    print(f"Scoped/manual-review mappings:   {len(scoped_or_review):,}  ({total_scoped_products:,} products)")
+    print(f"  with manual-review fallback:   {len(manual_review_brands):,} brands")
+    print(f"Unmapped (Other):               {len(unmapped):,}  ({total_unmapped_products:,} products)")
+    print(f"  of which < 10 products:       {brands_under_10:,} brands")
+    print(f"  of which >= 10 products:      {len(unmapped) - brands_under_10:,} brands")
+    print(f"\nTop 40 unmapped brands (>= 10 products):")
+    print(f"{'Brand':<45} {'Products':>8}")
+    print("-" * 56)
+    shown = 0
+    for brand, n in unmapped:
+        if n >= 10:
+            print(f"{brand:<45} {n:>8}")
+            shown += 1
+            if shown >= 40:
+                break
+
+    if scoped_or_review:
+        print(f"\nTop scoped/manual-review mapped brands:")
+        print(f"{'Brand':<45} {'Products':>8}  Statuses")
+        print("-" * 75)
+        for brand, n, statuses in scoped_or_review[:20]:
+            status_text = ", ".join(sorted(statuses))
+            print(f"{brand:<45} {n:>8}  {status_text}")
 
 
 # ── Existing: company coverage report ─────────────────────────────────────────
@@ -91,8 +236,18 @@ def load_mapping() -> tuple[dict[str, list[str]], dict[str, set[str]]]:
     return mapping, statuses_by_brand
 
 
+def flatten_company_candidates(mapping: dict[str, list[str]]) -> list[CompanyCandidate]:
+    candidates: list[CompanyCandidate] = []
+    for company, brand_list in mapping.items():
+        for mapped_brand in brand_list:
+            candidates.append(
+                (company, mapped_brand, set(mapped_brand.split()), len(mapped_brand))
+            )
+    return candidates
+
+
 def best_company_match(
-    norm_brand: str, mapping: dict[str, list[str]]
+    norm_brand: str, candidates: list[CompanyCandidate]
 ) -> tuple[str, float]:
     """Fuzzy match an unmapped brand against the company mapping.
     Returns (best_company, score). Score is 0–1; suggestions below 0.4
@@ -100,17 +255,27 @@ def best_company_match(
     best_company = ""
     best_score = 0.0
     brand_tokens = set(norm_brand.split())
-    for company, brand_list in mapping.items():
-        for mapped_brand in brand_list:
-            mapped_tokens = set(mapped_brand.split())
-            overlap = len(brand_tokens & mapped_tokens) / max(
-                len(brand_tokens | mapped_tokens), 1
-            )
-            seq   = SequenceMatcher(None, norm_brand, mapped_brand).ratio()
-            score = max(overlap, seq)
-            if score > best_score:
-                best_score = score
-                best_company = company
+    brand_len = len(norm_brand)
+    for company, mapped_brand, mapped_tokens, mapped_len in candidates:
+        overlap = len(brand_tokens & mapped_tokens) / max(
+            len(brand_tokens | mapped_tokens), 1
+        )
+        if overlap > best_score:
+            best_score = overlap
+            best_company = company
+
+        max_seq_ratio = (
+            2 * min(brand_len, mapped_len) / (brand_len + mapped_len)
+            if brand_len + mapped_len
+            else 1.0
+        )
+        if max_seq_ratio > best_score:
+            matcher = SequenceMatcher(None, norm_brand, mapped_brand)
+            if matcher.quick_ratio() > best_score:
+                seq = matcher.ratio()
+                if seq > best_score:
+                    best_score = seq
+                    best_company = company
     return best_company, round(best_score, 3)
 
 
@@ -259,7 +424,7 @@ def merge_alias_candidates(
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-def main() -> None:
+def run_coverage() -> None:
     if not DB_PATH.exists():
         print(f"Database not found: {DB_PATH}")
         return
@@ -269,6 +434,7 @@ def main() -> None:
 
     # ── 1. Company coverage report ───────────────────────────────────────────
     mapping, statuses_by_brand = load_mapping()
+    match_candidates = flatten_company_candidates(mapping)
 
     conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
     rows = conn.execute("""
@@ -311,7 +477,7 @@ def main() -> None:
         # Fuzzy matching is only a weak review hint, not ownership attribution.
         # Limit it to material brands so this diagnostic stays fast.
         if n >= 10:
-            suggested_company, score = best_company_match(norm, mapping)
+            suggested_company, score = best_company_match(norm, match_candidates)
         else:
             suggested_company, score = "", 0.0
         coverage_results.append({
@@ -400,12 +566,26 @@ def main() -> None:
     print(f"3. Append approved rows to the existing curated file:")
     print(f"   data/reference/brand_alias_mapping.csv")
     print(f"4. Do not overwrite brand_alias_mapping.csv with the candidate file")
-    print(f"5. Re-run the pipeline from clean.py:")
-    print(f"   python pipeline/clean.py")
-    print(f"   python pipeline/analyze.py")
-    print(f"   python pipeline/load.py")
-    print(f"   python pipeline/tag_claims.py")
-    print(f"   python pipeline/db_summary.py")
+    print(f"5. Re-run the pipeline from clean.py onward")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Brand/company mapping diagnostics.")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--counts", action="store_true", help="Write and print brand counts.")
+    mode.add_argument("--coverage", action="store_true", help="Write coverage and alias-candidate reports.")
+    mode.add_argument("--check-brand", metavar="PREFIX", help="Print variants starting with a brand prefix.")
+    mode.add_argument("--unmapped", action="store_true", help="Print unmapped/scoped mapping coverage.")
+    args = parser.parse_args()
+
+    if args.counts:
+        run_counts()
+    elif args.check_brand:
+        run_check_brand(args.check_brand)
+    elif args.unmapped:
+        run_unmapped()
+    else:
+        run_coverage()
 
 
 if __name__ == "__main__":
