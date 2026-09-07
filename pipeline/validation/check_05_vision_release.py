@@ -1,14 +1,14 @@
 """
-qa_release.py
---------------
+check_05_vision_release.py
+--------------------------
 Automated release QA over the final vision files and merged files for the
 first release (US + UK). Hard checks fail the run; soft checks warn.
 
 Usage:
-    python pipeline/qa_release.py
-    python pipeline/qa_release.py --us-merged data/sample/merged_results_20260722_210439.csv ^
-                                 --uk-merged data/sample/merged_results_20260722_210446.csv
-    python pipeline/qa_release.py --output-dir data/sample/qa
+    python pipeline/validation/check_05_vision_release.py
+    python pipeline/validation/check_05_vision_release.py --us-merged data/sample/merged_results_20260722_210439.csv ^
+                                                         --uk-merged data/sample/merged_results_20260722_210446.csv
+    python pipeline/validation/check_05_vision_release.py --output-dir data/sample/qa
 
 Exit code is 1 if any hard check fails, else 0.
 
@@ -29,7 +29,7 @@ from pathlib import Path
 
 import pandas as pd
 
-REPO_ROOT  = Path(__file__).resolve().parent.parent
+REPO_ROOT  = Path(__file__).resolve().parents[2]
 SAMPLE_DIR = REPO_ROOT / "data" / "sample"
 P = "v3_"   # flattened extraction-schema prefix
 
@@ -481,7 +481,7 @@ def main():
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    print("\nFood & Beverage Positioning Radar - qa_release.py")
+    print("\nFood & Beverage Positioning Radar - check_05_vision_release.py")
     print(f"Output dir: {out_dir}")
 
     us = load_csv(Path(args.us_vision))

@@ -1,6 +1,6 @@
 """
-validate_tags.py
------------------
+review_06_claim_taxonomy.py
+---------------------------
 Quick QA sampler for manual review of claim taxonomy and benchmark
 flags. Prints a random sample of products per claim_category_1, with
 their underlying claim evidence, tags, benchmark flags, and image URL
@@ -20,10 +20,10 @@ so the default --source all is what makes this script useful at that
 stage rather than printing nothing.
 
 Usage:
-    python pipeline/validate_tags.py
-    python pipeline/validate_tags.py --n 10
-    python pipeline/validate_tags.py --source vision
-    python pipeline/validate_tags.py --source ingredient_text_only
+    python pipeline/validation/review_06_claim_taxonomy.py
+    python pipeline/validation/review_06_claim_taxonomy.py --n 10
+    python pipeline/validation/review_06_claim_taxonomy.py --source vision
+    python pipeline/validation/review_06_claim_taxonomy.py --source ingredient_text_only
 
 Input:
     database/positioning_radar.db (products + product_analysis, after
@@ -35,7 +35,7 @@ import pandas as pd
 import argparse
 from pathlib import Path
 
-ROOT    = Path(__file__).parent.parent
+ROOT    = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
 
 CATEGORIES = ["FUNCTIONAL", "FREE_OF", "NATURAL_ORGANIC", "OTHER"]
@@ -82,7 +82,7 @@ def main():
     if args.source != "all":
         df = df[df["claim_source"] == args.source]
 
-    print(f"\nvalidate_tags.py — sampling up to {args.n} products per category "
+    print(f"\nreview_06_claim_taxonomy.py - sampling up to {args.n} products per category "
           f"(source filter: {args.source})")
 
     if df.empty:

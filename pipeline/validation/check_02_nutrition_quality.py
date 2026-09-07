@@ -1,10 +1,10 @@
 """
-validate_quality_flags.py
--------------------------
+check_02_nutrition_quality.py
+------------------------------
 Lightweight validation checks for nutrition quality governance.
 
 Usage:
-    python pipeline/nutrition_outliers/validate_quality_flags.py
+    python pipeline/validation/check_02_nutrition_quality.py
 """
 
 from __future__ import annotations

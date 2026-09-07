@@ -147,7 +147,7 @@ def safe_label_for(table: str, code: Optional[str], fallback: str = "—") -> st
     is None — but worth knowing if that changes.
 
     Use label_for() directly wherever an unmapped code should be
-    treated as a bug to fix (QA scripts, tests, validate_tags.py-style
+    treated as a bug to fix (QA scripts, tests, review_06_claim_taxonomy.py-style
     tooling), not papered over."""
     if code is None:
         return fallback

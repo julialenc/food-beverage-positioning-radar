@@ -51,7 +51,7 @@ Known limitation:
     CREATE TABLE IF NOT EXISTS does not migrate an existing database with
     an older schema. If a positioning_radar.db from a prior schema version
     exists, drop it before running, or use the schema-verification logic
-    in verify_schema.py once that script is updated to match this schema.
+    in pipeline/validation/check_04_schema.py once that script is updated to match this schema.
 """
 
 import argparse

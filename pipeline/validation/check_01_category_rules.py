@@ -10,7 +10,7 @@ documented in:
 
 Run before a bulk bootstrap or incremental ingest rule change:
 
-    python pipeline/validate_category_rules.py
+    python pipeline/validation/check_01_category_rules.py
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from pipeline.rules.category_rules import assign_category  # noqa: E402
 

@@ -1,6 +1,6 @@
 """
-verify_schema.py
------------------
+check_04_schema.py
+------------------
 Compares the LIVE database's actual schema against what the current
 pipeline code declares - the DDL constants in
 stage_05_load_database.py, stage_13_build_app_summaries.py, and known helper-table scripts.
@@ -23,7 +23,7 @@ itself over time), then compares column sets against the live database
 via PRAGMA table_info.
 
 Usage:
-    python pipeline/verify_schema.py
+    python pipeline/validation/check_04_schema.py
 
 If drift is found:
     For a development database, the simplest fix is usually to delete
@@ -38,7 +38,7 @@ import sqlite3
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from pipeline.stages.stage_05_load_database import (
@@ -113,7 +113,7 @@ def main():
         )
     }
 
-    print("\nverify_schema.py - comparing live database against current DDL\n")
+    print("\ncheck_04_schema.py - comparing live database against current DDL\n")
 
     any_drift = False
 

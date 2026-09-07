@@ -20,7 +20,7 @@ not commit it to git — it is gitignored.
 Category assignment is delegated to pipeline/rules/category_rules.py. Broad OFF
 tags such as en:snacks and en:cereals-and-their-products are candidate scopes,
 not final analytical categories. If category rules change, run
-python pipeline/validate_category_rules.py before a bulk bootstrap.
+python pipeline/validation/check_01_category_rules.py before a bulk bootstrap.
 
 Usage:
     python pipeline/stages/stage_01a_bootstrap_from_off_bulk.py

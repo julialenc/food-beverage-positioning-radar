@@ -1,10 +1,10 @@
 """
-validate_beverage_segments.py
+check_03_beverage_segments.py
 -----------------------------
 Lightweight checks for the MVP beverage_view_segment helper.
 
 Usage:
-    python pipeline/nutrition_outliers/validate_beverage_segments.py
+    python pipeline/validation/check_03_beverage_segments.py
 """
 
 from __future__ import annotations
