@@ -58,18 +58,19 @@ if ROOT not in sys.path:
 from shared.beverage_segments import beverage_view_segment
 
 SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
-REGION_MAPPING_PATH = os.path.join(ROOT, "data", "country_region_mapping.csv")
+REFERENCE_INPUT_DIR = os.path.join(ROOT, "data", "01_reference_inputs")
+REGION_MAPPING_PATH = os.path.join(REFERENCE_INPUT_DIR, "01_country_region_mapping.csv")
 TOP_COMPANY_BRAND_MATRIX_PATH = os.path.join(
-    ROOT, "data", "reference", "top_company_brand_portfolio_matrix.csv"
+    REFERENCE_INPUT_DIR, "06_top_company_brand_portfolio_matrix.csv"
 )
 COMPANY_BRAND_MAPPING_PATH = os.path.join(
-    ROOT, "data", "reference", "company_brand_mapping.csv"
+    REFERENCE_INPUT_DIR, "03_company_brand_mapping.csv"
 )
 PRODUCT_MAPPING_OVERRIDE_PATH = os.path.join(
-    ROOT, "data", "reference", "reviewed_product_mapping_overrides.csv"
+    REFERENCE_INPUT_DIR, "05_reviewed_product_mapping_overrides.csv"
 )
 PRIVATE_LABEL_MAPPING_PATH = os.path.join(
-    ROOT, "data", "reference", "private_label_brand_mapping.csv"
+    REFERENCE_INPUT_DIR, "04_private_label_brand_mapping.csv"
 )
 BRAND_MAPPING_REVIEW_DIR = os.path.join(ROOT, "data", "brand_mapping_review")
 
@@ -995,7 +996,7 @@ def load_reviewed_product_mapping_overrides():
             "brand": str(row["reviewed_brand"]).strip(),
             "category": str(row["reviewed_category"]).strip(),
             "source": str(row["source"]).strip()
-                      or "reviewed_product_mapping_overrides.csv",
+                      or "05_reviewed_product_mapping_overrides.csv",
         })
     return overrides
 
@@ -1799,7 +1800,7 @@ def add_completeness_score(df):
 # -- Main cleaning pipeline ---------------------------------------------------
 
 def load_region_mapping(path=REGION_MAPPING_PATH):
-    """Load data/country_region_mapping.csv into a dict mapping each OFF
+    """Load data/01_reference_inputs/01_country_region_mapping.csv into a dict mapping each OFF
     country_tag (e.g. 'en:france') to its region_code (e.g. 'FRANCE').
 
     Returns ({} , None) if the file is missing, so the pipeline can run
@@ -2039,7 +2040,7 @@ def clean(input_path):
     df["primary_brand"] = df["legacy_primary_brand"]
     # Strip accents for consistent grouping - nestle variants are already ASCII.
     # Full company normalisation now maintained in
-    # data/reference/company_brand_mapping.csv (see docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md)
+    # data/01_reference_inputs/03_company_brand_mapping.csv (see docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md)
     df["primary_brand"] = df["primary_brand"]\
         .str.normalize("NFKD")\
         .str.encode("ascii", errors="ignore")\
@@ -2047,7 +2048,7 @@ def clean(input_path):
     print(f"  Step 4b - Legacy primary_brand retained and accents stripped")
 
     # Step 4c: Apply legacy brand alias mapping to primary_brand only.
-    alias_path = os.path.join(ROOT, "data", "reference", "brand_alias_mapping.csv")
+    alias_path = os.path.join(REFERENCE_INPUT_DIR, "02_brand_alias_mapping.csv")
     if os.path.exists(alias_path):
         alias_df = pd.read_csv(alias_path, encoding="utf-8-sig", dtype=str).fillna("")
         confirmed = alias_df[
@@ -2129,7 +2130,7 @@ def clean(input_path):
     # Step 11c: Derive observed_market_region_codes from the full
     # countries field (NOT primary_country — a product can map to
     # multiple regions). Grouping is defined entirely by
-    # data/country_region_mapping.csv; see derive_region_codes() and
+    # data/01_reference_inputs/01_country_region_mapping.csv; see derive_region_codes() and
     # the brief's Market / region section. Used by the app's
     # Market / region filter.
     tag_to_region = load_region_mapping()

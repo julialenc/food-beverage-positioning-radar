@@ -21,11 +21,12 @@ REPO_ROOT        = Path(__file__).resolve().parent.parent
 LOCAL_DB_PATH    = REPO_ROOT / "database" / "positioning_radar.db"
 PUBLIC_DB_PATH   = REPO_ROOT / "database" / "positioning_radar_public_mvp.db"
 PUBLIC_DB_GZ_PATH = REPO_ROOT / "database" / "positioning_radar_public_mvp.db.gz"
-COMPANY_MAP_PATH = REPO_ROOT / "data" / "reference" / "company_brand_mapping.csv"
+REFERENCE_INPUT_DIR = REPO_ROOT / "data" / "01_reference_inputs"
+COMPANY_MAP_PATH = REFERENCE_INPUT_DIR / "03_company_brand_mapping.csv"
 PRODUCT_MAPPING_OVERRIDE_PATH = (
-    REPO_ROOT / "data" / "reference" / "reviewed_product_mapping_overrides.csv"
+    REFERENCE_INPUT_DIR / "05_reviewed_product_mapping_overrides.csv"
 )
-REGION_MAP_PATH  = REPO_ROOT / "data" / "country_region_mapping.csv"
+REGION_MAP_PATH  = REFERENCE_INPUT_DIR / "01_country_region_mapping.csv"
 
 DOWNLOAD_SCOPE_REGIONS = {"FRANCE", "UK_IE", "US_CANADA"}
 COMPANY_OTHER_LABEL    = "Other / not mapped to a company"

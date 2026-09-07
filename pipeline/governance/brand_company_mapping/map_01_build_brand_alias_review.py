@@ -25,8 +25,9 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_INPUT = ROOT / "data" / "sample" / "clean_20260822_220423.csv"
-ALIAS_PATH = ROOT / "data" / "reference" / "brand_alias_mapping.csv"
-PRIVATE_LABEL_MAPPING_PATH = ROOT / "data" / "reference" / "private_label_brand_mapping.csv"
+REFERENCE_INPUT_DIR = ROOT / "data" / "01_reference_inputs"
+ALIAS_PATH = REFERENCE_INPUT_DIR / "02_brand_alias_mapping.csv"
+PRIVATE_LABEL_MAPPING_PATH = REFERENCE_INPUT_DIR / "04_private_label_brand_mapping.csv"
 OUTPUT_DIR = ROOT / "data" / "brand_mapping_review"
 DEFAULT_OUTPUT = OUTPUT_DIR / "brand_alias_suggestions_bottom_up.csv"
 DEFAULT_REVIEWED_OUTPUT = (

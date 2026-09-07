@@ -16,11 +16,11 @@ Modes:
         Print brand variants whose primary_brand starts with PREFIX.
 
     --unmapped
-        Print brand mapping coverage against company_brand_mapping.csv.
+        Print brand mapping coverage against 03_company_brand_mapping.csv.
 
 If no mode is provided, --coverage is used. Reference mapping files are read
 only; candidate outputs are review material and never overwrite curated
-brand_alias_mapping.csv.
+02_brand_alias_mapping.csv.
 """
 
 from __future__ import annotations
@@ -35,7 +35,7 @@ from pathlib import Path
 
 ROOT          = Path(__file__).resolve().parents[3]
 DB_PATH       = ROOT / "database" / "positioning_radar.db"
-MAPPING_PATH  = ROOT / "data" / "reference" / "company_brand_mapping.csv"
+MAPPING_PATH  = ROOT / "data" / "01_reference_inputs" / "03_company_brand_mapping.csv"
 BRAND_COUNTS_OUT = ROOT / "data" / "reference" / "brand_counts.csv"
 COVERAGE_OUT  = ROOT / "data" / "reference" / "brand_coverage_report.csv"
 ALIAS_OUT     = ROOT / "data" / "reference" / "brand_alias_candidates.csv"
@@ -488,7 +488,7 @@ def run_coverage() -> None:
             "mapping_statuses":       "",
             "weak_similarity_hint":   suggested_company if score >= 0.8 else "",
             "similarity_score":       score if score >= 0.8 else "",
-            "requires_review_reason": "no primary_brand_db match in company_brand_mapping.csv",
+            "requires_review_reason": "no primary_brand_db match in 03_company_brand_mapping.csv",
             "action":                 "review",
         })
 
@@ -564,8 +564,8 @@ def run_coverage() -> None:
     print(f"1. Open data/reference/brand_alias_candidates.csv")
     print(f"2. Review candidate rows individually; do not bulk-confirm by confidence alone")
     print(f"3. Append approved rows to the existing curated file:")
-    print(f"   data/reference/brand_alias_mapping.csv")
-    print(f"4. Do not overwrite brand_alias_mapping.csv with the candidate file")
+    print(f"   data/01_reference_inputs/02_brand_alias_mapping.csv")
+    print(f"4. Do not overwrite 02_brand_alias_mapping.csv with the candidate file")
     print(f"5. Re-run the pipeline from stage_02_clean_products.py onward")
 
 

@@ -7,12 +7,17 @@ The files here are not raw Open Food Facts data. They are project-maintained
 lookups that support category routing, brand normalization, company / owner
 navigation, and audited launch fixes.
 
-Region grouping for the Market / region filter is defined one level up in
-`data/country_region_mapping.csv`.
+Region grouping for the Market / region filter is defined in
+`01_country_region_mapping.csv`.
 
 ## Launch Reference Files
 
-### `company_brand_mapping.csv`
+### `01_country_region_mapping.csv`
+
+Region lookup table used to map Open Food Facts country tags into project
+regions such as France, UK/Ireland, and US/Canada.
+
+### `03_company_brand_mapping.csv`
 
 Main company / owner routing table used by `pipeline/stages/stage_02_clean_products.py` and the
 Streamlit app. After the September 2026 Top 9, retailer, France, and
@@ -33,7 +38,7 @@ in metadata.
 
 Full governance notes are documented in `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md`.
 
-### `brand_alias_mapping.csv`
+### `02_brand_alias_mapping.csv`
 
 Observed brand-string variants mapped to canonical brand strings.
 
@@ -50,7 +55,7 @@ Alias mapping must not collapse consumer-facing brand lines into parent
 companies. For example, `KitKat` remains a brand entity and is routed to the
 appropriate company later.
 
-### `private_label_brand_mapping.csv`
+### `04_private_label_brand_mapping.csv`
 
 Curated private-label mapping reference. After the September 2026 retailer
 mapping exercise, this contains 1,388 reviewed rows covering the completed
@@ -64,7 +69,7 @@ brand-level entities before company routing.
 Do not expand this file to other retailers without the same step-by-step review
 process.
 
-### `top_company_brand_portfolio_matrix.csv`
+### `06_top_company_brand_portfolio_matrix.csv`
 
 Top-company portfolio routing matrix used as an input for the August/September
 2026 Top 9 company review. It currently contains 247 portfolio/discovery rows.
@@ -78,7 +83,7 @@ The matrix is an input to company mapping. It should not be used as a blanket
 override without the conflict checks described in
 `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md`.
 
-### `reviewed_product_mapping_overrides.csv`
+### `05_reviewed_product_mapping_overrides.csv`
 
 Exact GTIN-level reviewed overrides for cases where product evidence is
 stronger than contaminated Open Food Facts brand metadata or a broad portfolio
@@ -92,24 +97,23 @@ orphan cleanup, this file contains 12,577 active reviewed override rows.
 The file must not be used to infer broad brand aliases. Raw Open Food Facts
 fields remain unchanged.
 
-### `brand_counts.csv` and `brand_coverage_report.csv`
-
-Brand coverage diagnostics used during mapping review. These are helpful for
-prioritizing cleanup but are not the app's final company / owner truth table.
-
 ## Generated Outputs Elsewhere
 
 Most audit outputs are generated outside this folder and are treated as local
 review artifacts rather than production reference inputs:
 
-- `data/brand_mapping_review/` contains brand/entity/company review exports.
-- `data/nutrition_outlier_review/` contains nutrition-quality and outlier
+- `data/06_brand_governance_outputs/` contains brand/entity/company review
+  exports and diagnostics.
+- `data/07_nutrition_quality_outputs/` contains nutrition-quality and outlier
   review exports.
-- `data/sample/` contains pipeline sample outputs when generated locally.
+- `data/03_pipeline_intermediates/` contains pipeline intermediate outputs when
+  generated locally.
+- `data/04_vision_sampling/` and `data/05_vision_release/` contain vision
+  sample and release outputs when generated locally.
 - `database/` contains the local SQLite database when built locally.
 
 Large or one-off review files should generally stay local, be regenerated from
-the relevant script when needed, and not be added to `data/reference/`.
+the relevant script when needed, and not be added to `data/01_reference_inputs/`.
 
 ## Reproducing From Scratch
 

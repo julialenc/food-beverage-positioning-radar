@@ -20,8 +20,9 @@ SAMPLE_DIR = ROOT / "data" / "sample"
 OUT_DIR = ROOT / "data" / "brand_mapping_review"
 OUT_PATH = OUT_DIR / "company_mapping_layer3_review.csv"
 SUMMARY_PATH = OUT_DIR / "company_mapping_layer3_summary.csv"
-COMPANY_MAPPING_PATH = ROOT / "data" / "reference" / "company_brand_mapping.csv"
-TOP9_MATRIX_PATH = ROOT / "data" / "reference" / "top_company_brand_portfolio_matrix.csv"
+REFERENCE_INPUT_DIR = ROOT / "data" / "01_reference_inputs"
+COMPANY_MAPPING_PATH = REFERENCE_INPUT_DIR / "03_company_brand_mapping.csv"
+TOP9_MATRIX_PATH = REFERENCE_INPUT_DIR / "06_top_company_brand_portfolio_matrix.csv"
 
 COMPANY_OTHER_LABEL = "Other / not mapped to a company"
 COMPANY_MANUAL_REVIEW_LABEL = "Manual review / complex ownership"
@@ -116,7 +117,7 @@ def load_company_mapping_rows() -> list[dict[str, str]]:
                 "category_scope": str(raw.get("category_scope", "")).strip()
                     or str(raw.get("category", "")).strip(),
                 "mapping_source": str(raw.get("brand_mapping_source", "")).strip()
-                    or "company_brand_mapping.csv",
+                    or "03_company_brand_mapping.csv",
                 "review_note": str(raw.get("review_note", "")).strip()
                     or str(raw.get("notes", "")).strip(),
             }

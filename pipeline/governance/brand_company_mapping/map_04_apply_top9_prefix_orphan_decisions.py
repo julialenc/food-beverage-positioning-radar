@@ -34,8 +34,9 @@ EXTERNAL_REVIEWED_PATH = Path(
 LOCAL_REVIEWED_PATH = REVIEW_DIR / "top9_brand_prefix_orphan_candidates_reviewed.csv"
 DECISION_PATH = REVIEW_DIR / "top9_brand_prefix_orphan_candidates_applied_decisions.csv"
 SUMMARY_PATH = REVIEW_DIR / "top9_brand_prefix_orphan_apply_summary.csv"
-ALIAS_PATH = ROOT / "data" / "reference" / "brand_alias_mapping.csv"
-COMPANY_MAPPING_PATH = ROOT / "data" / "reference" / "company_brand_mapping.csv"
+REFERENCE_INPUT_DIR = ROOT / "data" / "01_reference_inputs"
+ALIAS_PATH = REFERENCE_INPUT_DIR / "02_brand_alias_mapping.csv"
+COMPANY_MAPPING_PATH = REFERENCE_INPUT_DIR / "03_company_brand_mapping.csv"
 
 ALIAS_PATTERN = "top9_prefix_orphan_review"
 SOURCE_TAG = "top9_brand_prefix_orphan_review_20260825"

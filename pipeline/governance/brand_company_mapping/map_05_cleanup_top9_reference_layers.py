@@ -20,14 +20,14 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[3]
-REFERENCE_DIR = ROOT / "data" / "reference"
+REFERENCE_DIR = ROOT / "data" / "01_reference_inputs"
 REVIEW_DIR = ROOT / "data" / "brand_mapping_review"
 DB_PATH = ROOT / "database" / "positioning_radar.db"
 
-ALIAS_PATH = REFERENCE_DIR / "brand_alias_mapping.csv"
-COMPANY_PATH = REFERENCE_DIR / "company_brand_mapping.csv"
-MATRIX_PATH = REFERENCE_DIR / "top_company_brand_portfolio_matrix.csv"
-OVERRIDE_PATH = REFERENCE_DIR / "reviewed_product_mapping_overrides.csv"
+ALIAS_PATH = REFERENCE_DIR / "02_brand_alias_mapping.csv"
+COMPANY_PATH = REFERENCE_DIR / "03_company_brand_mapping.csv"
+MATRIX_PATH = REFERENCE_DIR / "06_top_company_brand_portfolio_matrix.csv"
+OVERRIDE_PATH = REFERENCE_DIR / "05_reviewed_product_mapping_overrides.csv"
 
 PRE_TOP9_PATH = REVIEW_DIR / "top9_reference_cleanup_pre_top9_current.csv"
 POST_TOP9_PATH = REVIEW_DIR / "top9_reference_cleanup_post_top9_current.csv"
@@ -711,7 +711,7 @@ def restore_db_from_pre_snapshot() -> int:
         kind="stable",
     )
     # The products table is GTIN keyed. Region-specific exceptions are still
-    # applied by reviewed_product_mapping_overrides.csv at display/export time.
+    # applied by 05_reviewed_product_mapping_overrides.csv at display/export time.
     per_gtin = snapshot.drop_duplicates("gtin", keep="first")
     updates = [
         (

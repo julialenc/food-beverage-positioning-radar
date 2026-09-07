@@ -21,7 +21,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[3]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-TOP9_MATRIX_PATH = ROOT / "data" / "reference" / "top_company_brand_portfolio_matrix.csv"
+TOP9_MATRIX_PATH = ROOT / "data" / "01_reference_inputs" / "06_top_company_brand_portfolio_matrix.csv"
 OUT_DIR = ROOT / "data" / "brand_mapping_review"
 OUT_PATH = OUT_DIR / "top9_brand_prefix_orphan_candidates.csv"
 SUMMARY_PATH = OUT_DIR / "top9_brand_prefix_orphan_candidates_summary.csv"

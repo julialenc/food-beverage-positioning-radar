@@ -34,7 +34,7 @@ from shared.beverage_segments import beverage_view_segment
 SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 AUDIT_DIR = os.path.join(ROOT, "data", "nutrition_outlier_review", "audits")
 COMPANY_MAPPING_PATH = os.path.join(
-    ROOT, "data", "reference", "company_brand_mapping.csv"
+    ROOT, "data", "01_reference_inputs", "03_company_brand_mapping.csv"
 )
 
 SOURCE_NUTRITION_COLS = {

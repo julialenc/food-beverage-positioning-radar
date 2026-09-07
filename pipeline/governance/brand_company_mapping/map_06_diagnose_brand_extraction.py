@@ -22,8 +22,9 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[3]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-TOP_COMPANY_MATRIX = ROOT / "data" / "reference" / "top_company_brand_portfolio_matrix.csv"
-COMPANY_BRAND_MAPPING = ROOT / "data" / "reference" / "company_brand_mapping.csv"
+REFERENCE_INPUT_DIR = ROOT / "data" / "01_reference_inputs"
+TOP_COMPANY_MATRIX = REFERENCE_INPUT_DIR / "06_top_company_brand_portfolio_matrix.csv"
+COMPANY_BRAND_MAPPING = REFERENCE_INPUT_DIR / "03_company_brand_mapping.csv"
 OUT_DIR = ROOT / "data" / "brand_mapping_review"
 DETAIL_OUT = OUT_DIR / "brand_extraction_primary_brand_diagnosis.csv"
 SUMMARY_OUT = OUT_DIR / "brand_extraction_primary_brand_diagnosis_summary.csv"

@@ -68,9 +68,9 @@ ROOT       = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__f
 SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 DB_DIR     = os.path.join(ROOT, "database")
 DB_PATH    = os.path.join(DB_DIR, "positioning_radar.db")
-COMPANY_MAP_PATH = os.path.join(ROOT, "data", "reference", "company_brand_mapping.csv")
+COMPANY_MAP_PATH = os.path.join(ROOT, "data", "01_reference_inputs", "03_company_brand_mapping.csv")
 PRODUCT_MAPPING_OVERRIDE_PATH = os.path.join(
-    ROOT, "data", "reference", "reviewed_product_mapping_overrides.csv"
+    ROOT, "data", "01_reference_inputs", "05_reviewed_product_mapping_overrides.csv"
 )
 COMPANY_OTHER_LABEL = "Other / not mapped to a company"
 COMPANY_MANUAL_REVIEW_LABEL = "Manual review"
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS products (
     off_categories                 TEXT,
     countries                    TEXT,
     primary_country                TEXT,
-    observed_market_region_codes   TEXT,      -- pipe-separated region codes, see country_region_mapping.csv
+    observed_market_region_codes   TEXT,      -- pipe-separated region codes, see 01_country_region_mapping.csv
     labels                       TEXT,
     ingredients_text               TEXT,
     additives_tags                 TEXT,
@@ -730,7 +730,7 @@ def load_reviewed_product_mapping_overrides():
                 "company": (row.get("reviewed_company") or "").strip(),
                 "category": (row.get("reviewed_category") or "").strip(),
                 "source": (row.get("source") or "").strip()
-                          or "reviewed_product_mapping_overrides.csv",
+                          or "05_reviewed_product_mapping_overrides.csv",
             })
     return overrides
 
@@ -843,7 +843,7 @@ def add_resolved_company_column(df):
         )
     ]
     df["company_ownership_resolution_status"] = "resolved_from_company_brand_mapping"
-    df["company_mapping_source"] = "company_brand_mapping.csv"
+    df["company_mapping_source"] = "03_company_brand_mapping.csv"
 
     manual_mask = df["resolved_company"].eq(COMPANY_MANUAL_REVIEW_LABEL)
     if manual_mask.any():
