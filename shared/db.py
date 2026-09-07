@@ -897,7 +897,7 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
 def get_region_category_benchmarks() -> pd.DataFrame:
     """All 12 region x category rows for the latest snapshot, for By
     Region. Lookup only — computed by
-    pipeline/compute_region_benchmarks.py. Empty DataFrame if the table
+    pipeline/stages/stage_14_compute_region_benchmarks.py. Empty DataFrame if the table
     doesn't exist yet or no snapshot is found."""
     conn = get_connection()
     try:
@@ -918,7 +918,7 @@ def get_region_category_benchmarks() -> pd.DataFrame:
 @st.cache_data(show_spinner=False, ttl=600)
 def get_profile_intersections(region_code: str, category: str,
                                full_subset_key: str) -> dict[str, tuple[int, int]]:
-    """Lookup, not calculation — reads pipeline/compute_profile_intersections.py's
+    """Lookup, not calculation — reads pipeline/stages/stage_15_compute_profile_intersections.py's
     precomputed table for the latest snapshot. Returns
     {sub_collection_key: (eligible_count, matching_count)} for every
     sub_collection stored under this full_subset_key. Empty dict if the

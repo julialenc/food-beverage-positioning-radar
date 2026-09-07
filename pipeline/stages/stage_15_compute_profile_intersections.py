@@ -22,22 +22,22 @@ Two subtleties that drove this design, both from the spec:
    includes it. Genuine-but-extreme values (e.g. a legitimately
    low-energy high-fibre product) are NOT excluded — they stay eligible
    and get classified normally. Same _HARD_RANGES rules as
-   compute_axis_ranges.py, duplicated rather than imported (no shared
+   stage_16_build_chart_ranges.py, duplicated rather than imported (no shared
    pipeline/app dependency), must stay in sync with that file.
 
 3. BENCHMARK SOURCE (spec section 14): the benchmark used for each
    dimension's index calculation is READ from
-   region_category_benchmarks (computed by compute_region_benchmarks.py),
+   region_category_benchmarks (computed by stage_14_compute_region_benchmarks.py),
    not computed independently here. Earlier versions of this script used
    their own protected mean — changed to reading Section 3's median once
    Section 3 existed, per the spec's explicit requirement that Section 2
    never silently compare products against a different reference
    statistic than what Section 3 displays. RUN ORDER MATTERS: run
-   compute_region_benchmarks.py BEFORE this script.
+   stage_14_compute_region_benchmarks.py BEFORE this script.
 
 Usage:
-    python pipeline/compute_region_benchmarks.py    (first)
-    python pipeline/compute_profile_intersections.py (second)
+    python pipeline/stages/stage_14_compute_region_benchmarks.py    (first)
+    python pipeline/stages/stage_15_compute_profile_intersections.py (second)
 """
 
 from __future__ import annotations
@@ -49,13 +49,13 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT     = Path(__file__).resolve().parent.parent
+ROOT     = Path(__file__).resolve().parents[2]
 DB_PATH  = ROOT / "database" / "positioning_radar.db"
 SNAPSHOT = date.today().isoformat()
 
 DOWNLOAD_SCOPE_REGIONS = {"FRANCE", "UK_IE", "US_CANADA"}
 
-# Same hard-plausibility rules as compute_axis_ranges.py.
+# Same hard-plausibility rules as stage_16_build_chart_ranges.py.
 _HARD_RANGES: dict[str, tuple[float, float | None]] = {
     "energy_kcal":      (0.0, 900.0),
     "protein_per_kcal": (0.0, 30.0),
@@ -132,7 +132,7 @@ def _hard_valid(series: pd.Series, metric_key: str) -> pd.Series:
 
 def get_benchmarks(conn, region_code: str, category: str) -> dict[str, float | None]:
     """Reads the median benchmark from region_category_benchmarks
-    (computed by compute_region_benchmarks.py — run that script FIRST)
+    (computed by stage_14_compute_region_benchmarks.py — run that script FIRST)
     rather than computing an independent mean here. This is deliberate:
     spec section 14 requires Section 2's index calculation to use the
     exact same reference statistic Section 3 displays, so that a product

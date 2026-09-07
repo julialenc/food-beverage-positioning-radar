@@ -633,7 +633,7 @@ raw JSON
     → claim_source = 'vision' for the 17,127 release products
     → nutrition_benchmark_flags, claim_benchmark_intersections
 
-→ db_summary.py
+→ stage_13_build_app_summaries.py
     → weekly_brand_positioning_summary
     → powerbi_final_*.csv
 ```

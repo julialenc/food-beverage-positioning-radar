@@ -393,7 +393,7 @@ patterns rather than proprietary composite scores.
 `weekly_brand_summary` is an ingredient-stage QA table. It is not the final
 claim or market-intelligence summary.
 
-`weekly_brand_positioning_summary`, produced by `db_summary.py`, is the
+`weekly_brand_positioning_summary`, produced by `stage_13_build_app_summaries.py`, is the
 reporting-stage summary. It should be computed from the full current database
 snapshot, not only the products changed in a given update period. Otherwise a
 trend chart could confuse "products changed this week" with "the observed

@@ -221,11 +221,11 @@ The standard local build path is:
 7. pipeline/stages/stage_10_extract_pack_claims.py  [paid/manual vision stage]
 8. pipeline/stages/stage_11_merge_vision_results.py
 9. pipeline/stages/stage_12_build_claim_taxonomy.py
-10. pipeline/db_summary.py
-11. pipeline/compute_region_benchmarks.py
-12. pipeline/compute_profile_intersections.py
-13. pipeline/compute_axis_ranges.py
-14. pipeline/build_deployment_database.py
+10. pipeline/stages/stage_13_build_app_summaries.py
+11. pipeline/stages/stage_14_compute_region_benchmarks.py
+12. pipeline/stages/stage_15_compute_profile_intersections.py
+13. pipeline/stages/stage_16_build_chart_ranges.py
+14. pipeline/stages/stage_17_build_deployment_database.py
 ```
 
 Some scripts are maintenance or review utilities rather than automatic pipeline

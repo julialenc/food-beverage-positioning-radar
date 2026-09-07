@@ -1082,7 +1082,7 @@ if active_section == "By Region":
     if bench_df.empty:
         st.warning(
             "No precomputed region benchmarks found yet — run "
-            "pipeline/compute_region_benchmarks.py to generate them."
+            "pipeline/stages/stage_14_compute_region_benchmarks.py to generate them."
         )
         st.stop()
 
@@ -1282,7 +1282,7 @@ if active_section == "Product Profile Landscape":
     if not lookup:
         st.warning(
             "No precomputed profile data found for this market yet — run "
-            "pipeline/compute_profile_intersections.py to generate it."
+            "pipeline/stages/stage_15_compute_profile_intersections.py to generate it."
         )
     else:
         # eligible_count is constant across every row sharing this

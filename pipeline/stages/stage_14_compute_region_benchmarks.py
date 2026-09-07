@@ -3,17 +3,17 @@ Compute By Region's fixed 12-row (3 region x 4 category) benchmark table.
 
 Medians and P25/P75, not means — deliberately. Two reasons:
 1. Section 3 itself displays medians (spec section 6).
-2. compute_profile_intersections.py's benchmark MUST use the same
+2. stage_15_compute_profile_intersections.py's benchmark MUST use the same
    statistic as what's displayed here, per spec section 14 ("this avoids
    a situation in which Section 3 displays medians while Section 2
    silently compares products with a different statistic"). That script
    now reads its benchmark from THIS table rather than computing its own
    mean — see the note in that file. Run this script BEFORE
-   compute_profile_intersections.py; the latter depends on this one's
+   stage_15_compute_profile_intersections.py; the latter depends on this one's
    output.
 
-Hard-invalid values (same _HARD_RANGES as compute_axis_ranges.py and
-compute_profile_intersections.py) are excluded from every median/quantile
+Hard-invalid values (same _HARD_RANGES as stage_16_build_chart_ranges.py and
+stage_15_compute_profile_intersections.py) are excluded from every median/quantile
 calculation. Genuine extreme-but-valid values are NOT trimmed here (no
 P99.5) — that trimming exists only to keep Product Landscape's scatter
 visually usable; medians/quartiles are naturally robust to a few extreme
@@ -29,7 +29,7 @@ value directly — no derivation. Computed for all categories (cheap,
 harmless), but analytically these are the beverage benchmark; solids keep
 using the per-100kcal (_eff) metrics.
 
-Usage: python pipeline/compute_region_benchmarks.py
+Usage: python pipeline/stages/stage_14_compute_region_benchmarks.py
 """
 
 from __future__ import annotations
@@ -40,7 +40,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT     = Path(__file__).resolve().parent.parent
+ROOT     = Path(__file__).resolve().parents[2]
 DB_PATH  = ROOT / "database" / "positioning_radar.db"
 SNAPSHOT = date.today().isoformat()
 

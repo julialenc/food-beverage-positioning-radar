@@ -316,7 +316,7 @@ positioning structure.
 **Status:** Active
 
 **Decision:** `stage_12_build_claim_taxonomy.py` remains a product-level classification step, while
-`db_summary.py` owns final aggregate reporting tables.
+`stage_13_build_app_summaries.py` owns final aggregate reporting tables.
 
 **Rationale:** Product classification and reporting aggregation have different
 responsibilities, testing needs, and lifecycles.
@@ -468,7 +468,7 @@ stage_11_merge_vision_results
 stage_12_build_claim_taxonomy
     └─ claim taxonomy + benchmark intersections
     ↓
-db_summary
+stage_13_build_app_summaries
     └─ final reporting aggregates
     ↓
 Streamlit / QA / exports

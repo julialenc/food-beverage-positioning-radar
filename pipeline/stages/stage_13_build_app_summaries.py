@@ -1,9 +1,9 @@
 """
-db_summary.py
---------------
+stage_13_build_app_summaries.py
+-------------------------------
 Final reporting aggregation layer. Runs at the end of the full pipeline:
 
-    stage_05_load_database.py -> stage_11_merge_vision_results.py -> stage_12_build_claim_taxonomy.py -> db_summary.py
+    stage_05_load_database.py -> stage_11_merge_vision_results.py -> stage_12_build_claim_taxonomy.py -> stage_13_build_app_summaries.py
 
 Queries the fully populated SQLite database directly (products JOIN
 product_analysis) — not intermediate CSVs, since the fully enriched
@@ -87,7 +87,7 @@ Possible future extension (not implemented in this version):
     deferred to keep this first version's scope contained.
 
 Usage:
-    python pipeline/db_summary.py
+    python pipeline/stages/stage_13_build_app_summaries.py
 
 Input:
     database/positioning_radar.db (products + product_analysis, fully
@@ -104,7 +104,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-ROOT       = Path(__file__).parent.parent
+ROOT       = Path(__file__).resolve().parents[2]
 DB_PATH    = ROOT / "database" / "positioning_radar.db"
 SAMPLE_DIR = ROOT / "data" / "sample"
 
@@ -661,7 +661,7 @@ def compute_market_trend_weekly(df: "pd.DataFrame", week_ending: str,
 def write_market_trend_weekly(conn, rows: list[dict], week_ending: str) -> int:
     """
     Insert market trend rows, replacing any existing rows for this week_ending.
-    Uses INSERT OR REPLACE so re-running db_summary.py is idempotent.
+    Uses INSERT OR REPLACE so re-running stage_13_build_app_summaries.py is idempotent.
     """
     if not rows:
         return 0
@@ -687,7 +687,7 @@ def main():
     # today's date; in a weekly production schedule it represents the
     # week-ending / reporting snapshot date for that run.
     week_ending = datetime.now().strftime("%Y-%m-%d")
-    print(f"\nFood & Beverage Positioning Radar - db_summary.py")
+    print(f"\nFood & Beverage Positioning Radar - stage_13_build_app_summaries.py")
     print(f"Run timestamp: {timestamp}")
     print(f"Week ending:   {week_ending}")
     print(f"Source scope:  {SOURCE_SCOPE} (always — see module docstring)\n")
@@ -725,7 +725,7 @@ def main():
 
 
     # ── Market trend weekly (Ozempic / longitudinal tracker) ─────────────────
-    # Runs silently every time db_summary.py executes. Each row is a
+    # Runs silently every time stage_13_build_app_summaries.py executes. Each row is a
     # timestamped cross-sectional snapshot of all key metrics per category.
     # Compare rows across weeks to build the longitudinal signal.
     # See docs/03_PROJECT_REFERENCE/01_ADR.md ADR-014 and the project brief's Phase 3F section.

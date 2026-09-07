@@ -13,7 +13,7 @@ Beverages are included, but percentile bounds are computed inside the existing
 beverage_view_segment groups so ready-to-drink beverages, preparations/alcohol,
 and unknown beverage records do not borrow one another's tails.
 
-Usage: python pipeline/compute_axis_ranges.py
+Usage: python pipeline/stages/stage_16_build_chart_ranges.py
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
 AUDIT_DIR = (
     ROOT

@@ -15,7 +15,7 @@ import gzip
 from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 SOURCE_DB = REPO_ROOT / "database" / "positioning_radar.db"
 PUBLIC_DB = REPO_ROOT / "database" / "positioning_radar_public_mvp.db"
 PUBLIC_DB_GZ = PUBLIC_DB.with_suffix(PUBLIC_DB.suffix + ".gz")

@@ -83,7 +83,7 @@ Output:
       ALTER TABLE)
     - Saves data/sample/powerbi_tagged_<timestamp>.csv — a product-level
       tagged export, not the final aggregated Power BI deck source (see
-      db_summary.py for that)
+      stage_13_build_app_summaries.py for that)
 """
 
 import sqlite3
@@ -525,7 +525,7 @@ def main():
 
     # ── Power BI export ───────────────────────────────────────────────────────
     # This is a product-level tagged export, not the final aggregated
-    # Power BI deck source — see db_summary.py for that.
+    # Power BI deck source — see stage_13_build_app_summaries.py for that.
     print("\n  Saving product-level tagged export...")
 
     pbi_cols = [
@@ -562,7 +562,7 @@ def main():
     print(f"    claim_category_2               — protein / fiber / gut_health / vitamins / ...")
     print(f"    nutrition_benchmark_flags      — sugar_above_reference | saturated_fat_above_reference | ...")
     print(f"    claim_benchmark_intersections  — Protein positioning with sugar above reference threshold | ...")
-    print(f"\n  Next step: python pipeline/db_summary.py (final reporting aggregation),")
+    print(f"\n  Next step: python pipeline/stages/stage_13_build_app_summaries.py (final reporting aggregation),")
     print(f"  then streamlit run app.py\n")
 
 

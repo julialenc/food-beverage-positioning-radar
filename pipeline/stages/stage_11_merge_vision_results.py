@@ -410,7 +410,7 @@ def main():
     print(f"  ({len(merged):,} rows)")
 
     # Power BI QA export — vision-analyzed products only.
-    # Final reporting comes from db_summary.py after stage_12_build_claim_taxonomy.py has run.
+    # Final reporting comes from stage_13_build_app_summaries.py after stage_12_build_claim_taxonomy.py has run.
     pbi_cols = [
         "barcode", "product_name", "brands", "primary_brand",
         "query_category", "primary_country", "nova_group", "nutriscore_grade",

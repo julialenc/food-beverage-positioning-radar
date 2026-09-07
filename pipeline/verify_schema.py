@@ -3,13 +3,13 @@ verify_schema.py
 -----------------
 Compares the LIVE database's actual schema against what the current
 pipeline code declares - the DDL constants in
-stage_05_load_database.py, db_summary.py, and known helper-table scripts.
+stage_05_load_database.py, stage_13_build_app_summaries.py, and known helper-table scripts.
 Reports any drift in either direction.
 
 Why this exists: CREATE TABLE IF NOT EXISTS is a no-op if a table
 already exists — it will NOT add new columns or rename old ones. If
 positioning_radar.db was created under an older version of
-stage_05_load_database.py or db_summary.py (e.g. before a column rename),
+stage_05_load_database.py or stage_13_build_app_summaries.py (e.g. before a column rename),
 running the current
 pipeline against it will silently NOT fix the schema. This script is
 how you'd detect that before it causes confusing downstream errors —
@@ -46,12 +46,12 @@ from pipeline.stages.stage_05_load_database import (
     DDL_WEEKLY_BRAND_SUMMARY, DDL_INGESTION_LOG,
     DDL_MARKET_TREND_WEEKLY,
 )
-from db_summary import (
+from pipeline.stages.stage_13_build_app_summaries import (
     DDL_WEEKLY_BRAND_POSITIONING_SUMMARY, DDL_POSITIONING_EXAMPLE_PRODUCTS,
 )
-from compute_axis_ranges import DDL as DDL_AXIS_RANGE_CONFIG
-from compute_region_benchmarks import DDL as DDL_REGION_CATEGORY_BENCHMARKS
-from compute_profile_intersections import DDL as DDL_PROFILE_INTERSECTIONS
+from pipeline.stages.stage_16_build_chart_ranges import DDL as DDL_AXIS_RANGE_CONFIG
+from pipeline.stages.stage_14_compute_region_benchmarks import DDL as DDL_REGION_CATEGORY_BENCHMARKS
+from pipeline.stages.stage_15_compute_profile_intersections import DDL as DDL_PROFILE_INTERSECTIONS
 
 DB_PATH = ROOT / "database" / "positioning_radar.db"
 
