@@ -19,7 +19,7 @@ from pathlib import Path
 import pandas as pd
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 REFERENCE_DIR = ROOT / "data" / "reference"
 REVIEW_DIR = ROOT / "data" / "brand_mapping_review"
 DB_PATH = ROOT / "database" / "positioning_radar.db"

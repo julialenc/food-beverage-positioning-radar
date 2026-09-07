@@ -1,13 +1,13 @@
 """
-build_brand_alias_bottom_up_review.py
--------------------------------------
+map_01_build_brand_alias_review.py
+----------------------------------
 Generate the first-pass bottom-up brand alias review file.
 
 This script proposes normalized brand candidates only. It does not assign
 parent-company ownership and does not modify reference mapping files.
 
 Usage:
-    python pipeline/build_brand_alias_bottom_up_review.py
+    python pipeline/governance/brand_company_mapping/map_01_build_brand_alias_review.py
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ from pathlib import Path
 import pandas as pd
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_INPUT = ROOT / "data" / "sample" / "clean_20260822_220423.csv"
 ALIAS_PATH = ROOT / "data" / "reference" / "brand_alias_mapping.csv"
 PRIVATE_LABEL_MAPPING_PATH = ROOT / "data" / "reference" / "private_label_brand_mapping.csv"

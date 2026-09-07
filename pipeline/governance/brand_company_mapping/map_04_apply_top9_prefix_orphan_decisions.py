@@ -25,7 +25,7 @@ from pathlib import Path
 import pandas as pd
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 REVIEW_DIR = ROOT / "data" / "brand_mapping_review"
 EXTERNAL_REVIEWED_PATH = Path(
     r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"

@@ -15,7 +15,7 @@ from pathlib import Path
 import pandas as pd
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 SAMPLE_DIR = ROOT / "data" / "sample"
 OUT_DIR = ROOT / "data" / "brand_mapping_review"
 OUT_PATH = OUT_DIR / "company_mapping_layer3_review.csv"

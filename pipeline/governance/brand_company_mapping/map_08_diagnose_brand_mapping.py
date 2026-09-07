@@ -33,7 +33,7 @@ import unicodedata
 from difflib import SequenceMatcher
 from pathlib import Path
 
-ROOT          = Path(__file__).resolve().parent.parent
+ROOT          = Path(__file__).resolve().parents[3]
 DB_PATH       = ROOT / "database" / "positioning_radar.db"
 MAPPING_PATH  = ROOT / "data" / "reference" / "company_brand_mapping.csv"
 BRAND_COUNTS_OUT = ROOT / "data" / "reference" / "brand_counts.csv"
