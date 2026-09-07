@@ -566,7 +566,7 @@ def run_coverage() -> None:
     print(f"3. Append approved rows to the existing curated file:")
     print(f"   data/reference/brand_alias_mapping.csv")
     print(f"4. Do not overwrite brand_alias_mapping.csv with the candidate file")
-    print(f"5. Re-run the pipeline from clean.py onward")
+    print(f"5. Re-run the pipeline from stage_02_clean_products.py onward")
 
 
 def main() -> None:

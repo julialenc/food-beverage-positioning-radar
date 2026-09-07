@@ -1,6 +1,6 @@
 """
-analyze.py
-----------
+stage_04_build_product_analysis.py
+----------------------------------
 Option A — rule-based ingredient marker analysis.
 Computes the composition_marker_score from ingredient text and additives,
 independent of any front-of-pack claim. See docs/03_PROJECT_REFERENCE/01_ADR.md ADR-004 and
@@ -9,14 +9,15 @@ ADR-010 for the full architectural rationale.
 Architecture:
     composition_marker_score (Component A, this file) is combined with
     front-of-pack claim weight and processing/nutrition context
-    (Components B and C, from vision_extract.py) in merge_scores.py to
-    produce positioning_composition_gap. See docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md.
+    (Components B and C, from stage_10_extract_pack_claims.py) in
+    stage_11_merge_vision_results.py to produce positioning_composition_gap.
+    See docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md.
 
     Claim-signal fields are detected and stored here from ingredient
     text and product name — they support benchmark intersection
     detection and Power BI filtering, but do not feed into
     composition_marker_score itself. Front-of-pack claims are extracted
-    separately via vision_extract.py and are a different evidence layer
+    separately via stage_10_extract_pack_claims.py and are a different evidence layer
     (see docs/03_PROJECT_REFERENCE/05_OBSERVATIONS.md OBS-016).
 
     The four benchmark intersection pattern flags below are based on
@@ -26,7 +27,7 @@ Architecture:
     docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md for how this differs from claim_benchmark_intersections.
 
 Usage:
-    python pipeline/analyze.py
+    python pipeline/stages/stage_04_build_product_analysis.py
 
 Input:
     data/sample/clean_<timestamp>.csv   (latest file auto-detected)
@@ -44,7 +45,7 @@ from collections import Counter
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 
-ROOT       = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT       = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 
 
@@ -58,7 +59,7 @@ SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 # ── Ingredient composition markers ───────────────────────────────────────────
 # These feed Component A only — the ingredient composition signal.
 # Do NOT add claim language here. Claims are captured separately via
-# front-of-pack vision extraction (see vision_extract.py).
+# front-of-pack vision extraction (see stage_10_extract_pack_claims.py).
 # See docs/03_PROJECT_REFERENCE/01_ADR.md ADR-010.
 
 ULTRA_PROCESSED_MARKERS = [
@@ -458,7 +459,7 @@ def find_latest_clean(sample_dir):
     ]
     if not files:
         raise FileNotFoundError(
-            f"No clean_*.csv found in {sample_dir}. Run clean.py first."
+            f"No clean_*.csv found in {sample_dir}. Run stage_02_clean_products.py first."
         )
     files.sort(reverse=True)
     return os.path.join(sample_dir, files[0])
@@ -803,7 +804,7 @@ def analyze(input_path):
 
 def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    print(f"\nFood & Beverage Positioning Radar - analyze.py")
+    print(f"\nFood & Beverage Positioning Radar - stage_04_build_product_analysis.py")
     print(f"Run timestamp: {timestamp}")
     print(f"Architecture:  Component A (ingredient composition) only")
     print(f"               Components B+C added in merge_scores.py from vision results\n")

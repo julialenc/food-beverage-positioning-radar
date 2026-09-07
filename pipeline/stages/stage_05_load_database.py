@@ -1,6 +1,6 @@
 """
-load.py
--------
+stage_05_load_database.py
+-------------------------
 Loads analyzed product data into SQLite database.
 
 Schema:
@@ -20,10 +20,10 @@ Design principles:
     - weekly_brand_summary pre-aggregated for early pipeline review
     - ingestion_log records source (api / bulk_export) for auditability
     - product_analysis declares its full schema upfront, including columns
-      not yet populated by analyze.py (claim taxonomy, benchmark flags,
+      not yet populated by stage_04_build_product_analysis.py (claim taxonomy, benchmark flags,
       pack-image metadata) — these are written later by merge_scores.py
       and tag_claims.py via UPDATE, not ALTER TABLE. See docs/03_PROJECT_REFERENCE/01_ADR.md.
-    - load.py is an ingredient-stage loader: it only writes columns that
+    - stage_05_load_database.py is an ingredient-stage loader: it only writes columns that
       are present in the current input CSV. It must never write later-
       stage fields (pack_claims_found, claim_category_1, nutrition_
       benchmark_flags, positioning_composition_gap, etc.) as NULL on a
@@ -31,8 +31,8 @@ Design principles:
       by merge_scores.py or tag_claims.py.
 
 Usage:
-    python pipeline/load.py
-    python pipeline/load.py --source bulk_export
+    python pipeline/stages/stage_05_load_database.py
+    python pipeline/stages/stage_05_load_database.py --source bulk_export
 
 Input:
     data/sample/analyzed_<timestamp>.csv   (latest file auto-detected)
@@ -64,7 +64,7 @@ from datetime import datetime
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 
-ROOT       = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT       = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 DB_DIR     = os.path.join(ROOT, "database")
 DB_PATH    = os.path.join(DB_DIR, "positioning_radar.db")
@@ -157,7 +157,7 @@ DDL_PRODUCT_ANALYSIS = """
 CREATE TABLE IF NOT EXISTS product_analysis (
     barcode                               TEXT PRIMARY KEY,
 
-    -- Ingredient composition markers (analyze.py, Component A)
+    -- Ingredient composition markers (stage_04_build_product_analysis.py, Component A)
     processing_marker_count                 INTEGER,
     processing_markers_found                 TEXT,
     processing_marker_max_severity             INTEGER,
@@ -168,13 +168,13 @@ CREATE TABLE IF NOT EXISTS product_analysis (
     composition_marker_score                 REAL,
     composition_marker_band                  TEXT,
 
-    -- Ingredient/name-based claim signals (analyze.py)
+    -- Ingredient/name-based claim signals (stage_04_build_product_analysis.py)
     ingredient_based_claim_signal_count         INTEGER,
     ingredient_based_claim_signals_found         TEXT,
     absence_reduction_claim_count             INTEGER,
     absence_reduction_claims_found             TEXT,
 
-    -- Named intersection patterns (analyze.py)
+    -- Named intersection patterns (stage_04_build_product_analysis.py)
     sugar_positioning_intersection_flag          INTEGER,   -- 1/0
     protein_fat_intersection_flag              INTEGER,
     fibre_sugar_processing_intersection_flag       INTEGER,
@@ -359,7 +359,7 @@ def find_latest_analyzed(sample_dir):
     if not files:
         raise FileNotFoundError(
             f"No analyzed_*.csv found in {sample_dir}. "
-            "Run analyze.py first."
+            "Run stage_04_build_product_analysis.py first."
         )
     files.sort(reverse=True)
     return os.path.join(sample_dir, files[0])
@@ -948,7 +948,7 @@ def load_products(df, conn, timestamp):
 
 # ── Product analysis table ────────────────────────────────────────────────────
 # ANALYSIS_COLS is the full declared schema, including columns not yet
-# produced by analyze.py (claim taxonomy, benchmark flags, pack-image
+# produced by stage_04_build_product_analysis.py (claim taxonomy, benchmark flags, pack-image
 # metadata). load_product_analysis() only writes the subset of these
 # columns actually present in the input CSV — see its docstring for why
 # this matters on rerun.
@@ -985,7 +985,7 @@ def load_product_analysis(df, conn, timestamp):
     Only writes columns that are actually present in the input dataframe.
     This matters: product_analysis declares its full schema upfront (see
     DDL_PRODUCT_ANALYSIS), including fields populated later by
-    merge_scores.py and tag_claims.py. If load.py is rerun after those
+    merge_scores.py and tag_claims.py. If stage_05_load_database.py is rerun after those
     steps — for example during a weekly API diff — naively writing every
     declared column would set later-stage fields (pack_claims_found,
     claim_category_1, positioning_composition_gap, etc.) to NULL,
@@ -1045,7 +1045,7 @@ def compute_weekly_brand_summary(df, conn, timestamp):
     primary_brand (normalized), not the raw brands field, for consistency
     with every other aggregation in the pipeline.
 
-    Scope note: this runs at load.py time, before merge_scores.py and
+    Scope note: this runs at stage_05_load_database.py time, before merge_scores.py and
     tag_claims.py have populated pack claims, claim taxonomy, benchmark
     flags, or positioning_composition_gap — so this summary necessarily
     reflects ingredient-analysis-stage signals only. A full
@@ -1271,7 +1271,7 @@ def main():
     args = parser.parse_args()
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    print(f"\nFood & Beverage Positioning Radar — load.py")
+    print(f"\nFood & Beverage Positioning Radar - stage_05_load_database.py")
     print(f"Run timestamp: {timestamp}")
     print(f"Source: {args.source}")
 

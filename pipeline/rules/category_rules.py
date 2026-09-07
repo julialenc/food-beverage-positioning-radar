@@ -1,9 +1,9 @@
 """
 Shared Open Food Facts category assignment rules.
 
-Both bootstrap.py (bulk export) and ingest.py (incremental API pull) must use
-the same rules. Otherwise a clean bulk refresh can be contaminated again by a
-later incremental run.
+Both stage_01a_bootstrap_from_off_bulk.py and stage_01b_ingest_from_off_api.py
+must use the same rules. Otherwise a clean bulk refresh can be contaminated
+again by a later incremental run.
 """
 
 from __future__ import annotations

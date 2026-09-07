@@ -4,7 +4,7 @@ export_schema.py
 Exports the live database's actual schema (tables AND indexes) to
 database/schema.sql, as a human-readable reference. This reflects
 exactly what exists in the database right now — run it after any
-schema change (e.g. after updating DDL in load.py or db_summary.py and
+schema change (e.g. after updating DDL in stage_05_load_database.py or db_summary.py and
 running them) to keep schema.sql in sync.
 
 This is a documentation/reference tool, not a migration tool — it does

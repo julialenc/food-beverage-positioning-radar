@@ -1,6 +1,6 @@
 """
-build_quality_flags.py
-----------------------
+stage_03_build_nutrition_quality_flags.py
+-----------------------------------------
 Builds nutrition-quality flags and audit exports without overwriting raw
 Open Food Facts nutrition values.
 
@@ -10,8 +10,8 @@ writes review/audit outputs. It does not delete products or correct source
 nutrition values.
 
 Usage:
-    python pipeline/nutrition_outliers/build_quality_flags.py
-    python pipeline/nutrition_outliers/build_quality_flags.py --input data/sample/clean_20260822_220423.csv
+    python pipeline/stages/stage_03_build_nutrition_quality_flags.py
+    python pipeline/stages/stage_03_build_nutrition_quality_flags.py --input data/sample/clean_20260822_220423.csv
 """
 
 from __future__ import annotations
@@ -156,7 +156,7 @@ def find_latest_clean(sample_dir: str = SAMPLE_DIR) -> str:
     ]
     if not files:
         raise FileNotFoundError(
-            f"No clean_*.csv found in {sample_dir}. Run pipeline/clean.py first."
+            f"No clean_*.csv found in {sample_dir}. Run pipeline/stages/stage_02_clean_products.py first."
         )
     files.sort(reverse=True)
     return os.path.join(sample_dir, files[0])

@@ -2,16 +2,19 @@
 verify_schema.py
 -----------------
 Compares the LIVE database's actual schema against what the current
-pipeline code declares - the DDL constants in load.py, db_summary.py,
-and known helper-table scripts. Reports any drift in either direction.
+pipeline code declares - the DDL constants in
+stage_05_load_database.py, db_summary.py, and known helper-table scripts.
+Reports any drift in either direction.
 
 Why this exists: CREATE TABLE IF NOT EXISTS is a no-op if a table
 already exists — it will NOT add new columns or rename old ones. If
-positioning_radar.db was created under an older version of load.py or
-db_summary.py (e.g. before a column rename), running the current
+positioning_radar.db was created under an older version of
+stage_05_load_database.py or db_summary.py (e.g. before a column rename),
+running the current
 pipeline against it will silently NOT fix the schema. This script is
 how you'd detect that before it causes confusing downstream errors —
-see the "Known limitation" note in load.py's module docstring.
+see the "Known limitation" note in stage_05_load_database.py's module
+docstring.
 
 How it works: builds a reference schema in a fresh in-memory SQLite
 database using the exact same DDL constants the pipeline scripts use
@@ -24,8 +27,8 @@ Usage:
 
 If drift is found:
     For a development database, the simplest fix is usually to delete
-    database/positioning_radar.db and rerun the pipeline from load.py
-    onward. For a production database with data worth preserving,
+    database/positioning_radar.db and rerun the pipeline from
+    stage_05_load_database.py onward. For a production database with data worth preserving,
     write an explicit ALTER TABLE migration instead of relying on
     CREATE TABLE IF NOT EXISTS.
 """
@@ -36,9 +39,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(ROOT / "pipeline"))
+sys.path.insert(0, str(ROOT))
 
-from load import (
+from pipeline.stages.stage_05_load_database import (
     DDL_PRODUCTS, DDL_PRODUCT_ANALYSIS,
     DDL_WEEKLY_BRAND_SUMMARY, DDL_INGESTION_LOG,
     DDL_MARKET_TREND_WEEKLY,
@@ -96,7 +99,10 @@ def get_live_columns(conn, table_name):
 
 def main():
     if not DB_PATH.exists():
-        print(f"No database found at {DB_PATH}. Run pipeline/load.py first.")
+        print(
+            f"No database found at {DB_PATH}. "
+            "Run pipeline/stages/stage_05_load_database.py first."
+        )
         return
 
     conn = sqlite3.connect(DB_PATH)
@@ -151,7 +157,7 @@ def main():
         print("SCHEMA DRIFT FOUND. See docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md for "
               "the intended schema. For a development database, the "
               "simplest fix is usually to delete database/positioning_radar.db "
-              "and rerun the pipeline from load.py onward.")
+              "and rerun the pipeline from stage_05_load_database.py onward.")
     else:
         print("All tables in sync with current pipeline code.")
 

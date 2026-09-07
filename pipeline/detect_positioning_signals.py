@@ -10,7 +10,7 @@ THE CORE PRINCIPLE (spec, "breaks the ouroboros cleanly"):
 
 If ingredients drove both "likely positioning" and "product reality," the
 two sides of the sampling matrix would be partly circular. So this module
-splits the existing analyze.py keyword material into two strictly separate
+splits the existing stage_04_build_product_analysis.py keyword material into two strictly separate
 piles:
   - EXPLICIT (communication) terms  -> pre_llm_positioning_signal
   - FORMULATION (ingredient/nutrition) terms -> formulation_likelihood_signal

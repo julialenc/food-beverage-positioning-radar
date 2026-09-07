@@ -1,16 +1,17 @@
 """
-bootstrap.py
-------------
+stage_01a_bootstrap_from_off_bulk.py
+------------------------------------
 One-time bootstrap of the database from the Open Food Facts full CSV export.
-Use this instead of ingest.py for initial database population.
+Use this instead of stage_01b_ingest_from_off_api.py for initial database
+population.
 
 The OFF search API rate-limits bulk scraping (see docs/03_PROJECT_REFERENCE/01_ADR.md ADR-013).
 The correct path for initial population is this script: it downloads the
 full OFF CSV export (~800 MB compressed), streams it in 50,000-row chunks
 to avoid loading it entirely into memory, filters by target countries and
 categories, and writes a sample_all_<timestamp>.csv in exactly the same
-format as ingest.py produces — so clean.py and the rest of the pipeline
-are unaffected.
+format as stage_01b_ingest_from_off_api.py produces, so
+stage_02_clean_products.py and the rest of the pipeline are unaffected.
 
 The compressed file is cached in data/raw/ after the first download. Delete
 it manually to force a fresh download (e.g. for a quarterly refresh). Do
@@ -22,13 +23,13 @@ not final analytical categories. If category rules change, run
 python pipeline/validate_category_rules.py before a bulk bootstrap.
 
 Usage:
-    python pipeline/bootstrap.py
+    python pipeline/stages/stage_01a_bootstrap_from_off_bulk.py
 
 Output:
     data/raw/en.openfoodfacts.org.products.csv.gz   (cached download)
     data/sample/sample_all_<timestamp>.csv           (pipeline input)
 
-Next step: python pipeline/clean.py
+Next step: python pipeline/stages/stage_02_clean_products.py
 """
 
 from __future__ import annotations
@@ -41,7 +42,7 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from pipeline.rules.category_rules import CATEGORY_MAP, assign_category, matches_country
 
 # ── Configuration ─────────────────────────────────────────────────────────────
@@ -54,7 +55,7 @@ CHUNK_SIZE = 50_000  # rows per chunk — ~200 MB RAM peak per chunk
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 
-ROOT       = Path(__file__).resolve().parent.parent
+ROOT       = Path(__file__).resolve().parents[2]
 RAW_DIR    = ROOT / "data" / "raw"
 SAMPLE_DIR = ROOT / "data" / "sample"
 GZ_PATH    = RAW_DIR / "en.openfoodfacts.org.products.csv.gz"
@@ -187,7 +188,7 @@ def process_chunk(chunk: pd.DataFrame) -> pd.DataFrame:
 
 def main() -> None:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    print(f"\nFood & Beverage Positioning Radar — bootstrap.py")
+    print(f"\nFood & Beverage Positioning Radar - stage_01a_bootstrap_from_off_bulk.py")
     print(f"Run timestamp:     {timestamp}")
     print(f"Target countries:  France, United Kingdom, United States")
     print(f"Target categories: {[label for label, _ in CATEGORY_MAP]}\n")
@@ -258,7 +259,7 @@ def main() -> None:
     df.to_csv(out, index=False, encoding="utf-8-sig")
     size_mb = out.stat().st_size / 1_048_576
     print(f"\n  Saved -> {out.name}  ({len(df):,} rows, {len(df.columns)} columns, {size_mb:.0f} MB)")
-    print(f"\n  Next step: python pipeline/clean.py\n")
+    print(f"\n  Next step: python pipeline/stages/stage_02_clean_products.py\n")
 
     print("=" * 52)
     print("BOOTSTRAP SUMMARY")

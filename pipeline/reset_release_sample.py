@@ -52,7 +52,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DB_PATH   = REPO_ROOT / "database" / "positioning_radar.db"
 
 # ── Fields to clear ───────────────────────────────────────────────────────────
-# Core fields always cleared; these are declared by load.py.
+# Core fields always cleared; these are declared by stage_05_load_database.py.
 CORE_RESET_FIELDS = [
     "pack_analysis_attempted = 0",
     "pack_claims_found       = NULL",

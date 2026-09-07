@@ -1,11 +1,11 @@
 """
-ingest.py
----------
+stage_01b_ingest_from_off_api.py
+--------------------------------
 Pulls products from the Open Food Facts Live JSON API by category.
 Saves raw JSON to data/raw/ and a flat CSV to data/sample/.
 
 Usage:
-    python pipeline/ingest.py
+    python pipeline/stages/stage_01b_ingest_from_off_api.py
 
 Output:
     data/raw/raw_<category>_<timestamp>.json   (one per category)
@@ -20,7 +20,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from pipeline.rules.category_rules import assign_category
 
 # ── Configuration ────────────────────────────────────────────────────────────
@@ -58,13 +58,13 @@ FIELDS = ",".join([
     "packaging",
     "created_t",
     "last_modified_t",
-    "additives_tags",       # E-number list pre-parsed by OFF, used in analyze.py
+    "additives_tags",       # E-number list pre-parsed by OFF, used in stage_04_build_product_analysis.py
     "image_url",            # front-of-pack image, used by vision_extract.py
 ])
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 
-ROOT       = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT       = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RAW_DIR    = os.path.join(ROOT, "data", "raw")
 SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 
@@ -238,7 +238,7 @@ def flatten_product(product: dict, category: str) -> dict | None:
         "countries":            "|".join(product.get("countries_tags", [])),
         "labels":               "|".join(product.get("labels_tags", [])),
 
-        # ingredients (raw text — clean.py will parse this)
+        # ingredients (raw text; stage_02_clean_products.py will parse this)
         "ingredients_text":     product.get("ingredients_text", ""),
 
         # nutrition (per 100g)
@@ -292,7 +292,7 @@ def save_sample(df: pd.DataFrame, timestamp: str) -> None:
 
 def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    print(f"\nFood & Beverage Positioning Radar — ingest.py")
+    print(f"\nFood & Beverage Positioning Radar - stage_01b_ingest_from_off_api.py")
     print(f"Run timestamp: {timestamp}")
     print(f"Categories: {CATEGORIES}")
     print(f"Products per category: {PRODUCTS_PER_CATEGORY:,}\n")

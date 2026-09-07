@@ -325,7 +325,7 @@ v4 was already more multilingual than it appeared — it carried
 
 **Root cause of the initial thin French signal rate (8.8%):** the first French
 dictionary had only plural forms — `sans conservateurs`, `sans additifs`.
-`analyze.py`, which was the vocabulary source, uses singular forms:
+`stage_04_build_product_analysis.py`, which was the vocabulary source, uses singular forms:
 `sans conservateur`, `sans additif`. Word-boundary regex means
 `\bsans conservateur\b` does not match "sans conservateurs." Both forms now
 present throughout.
@@ -685,13 +685,13 @@ miss rate. The estimated understatement is ~2 percentage points.
 **Cereals category contamination.** The cereals category in all three releases
 contains pasta, bread, flour, rusks, breadsticks, and puff pastry products. In
 OFF, `en:cereals-and-their-products` is a parent category covering far more
-than breakfast cereal; the exclusion list in `bootstrap.py` correctly removes
+than breakfast cereal; the exclusion list in `stage_01a_bootstrap_from_off_bulk.py` correctly removes
 `en:cereal-pastas` and `en:cereal-semolinas` but not plain `en:pastas`, which
 most pasta products carry. The contamination is especially visible in the
 France run, which included many Italian products via the FRANCE|SOUTHERN_EUROPE
 multi-region tag. Cereals claim figures in all releases describe a
-contaminated category. The fix requires both updating `bootstrap.py` and
-explicitly re-categorising existing contaminated rows, since `load.py` never
+contaminated category. The fix requires both updating `stage_01a_bootstrap_from_off_bulk.py` and
+explicitly re-categorising existing contaminated rows, since `stage_05_load_database.py` never
 removes products. Deferred to the next bootstrap/cleansing cycle.
 
 **Validator override rate.** The deterministic validator overrode the model's
@@ -733,7 +733,7 @@ English keywords remain valid for multilingual packs.
   validator. The model's self-reported value is overridden a third of the time
   and adds noise without improving accuracy.
 - **Cereals contamination fix:** update `_EXCLUDE_FROM_CEREALS` in
-  `bootstrap.py` and run an explicit DB cleanup. See section 9.
+  `stage_01a_bootstrap_from_off_bulk.py` and run an explicit DB cleanup. See section 9.
 - **Panel-context review for English:** run `review_context_check.py` with
   `--language en --all-categories` on the release-01 CSVs to measure the
   false-exclusion rate. 141 candidate rows identified.

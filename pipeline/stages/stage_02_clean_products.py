@@ -1,7 +1,8 @@
 """
-clean.py
---------
-Cleans the raw CSV produced by ingest.py and outputs an analysis-ready CSV.
+stage_02_clean_products.py
+--------------------------
+Cleans the raw CSV produced by stage_01a/stage_01b and outputs an
+analysis-ready CSV.
  
 Cleaning decisions based on data exploration (18 May 2026):
     - 300 rows, 22 columns
@@ -31,7 +32,7 @@ What this script does:
     16. Save clean CSV to data/sample/
  
 Usage:
-    python pipeline/clean.py
+    python pipeline/stages/stage_02_clean_products.py
  
 Input:
     data/sample/sample_all_<timestamp>.csv   (latest file auto-detected)
@@ -50,7 +51,7 @@ from datetime import datetime
 
 # -- Paths --------------------------------------------------------------------
 
-ROOT       = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT       = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
@@ -423,7 +424,7 @@ def find_latest_sample(sample_dir):
     if not files:
         raise FileNotFoundError(
             f"No sample_all_*.csv found in {sample_dir}. "
-            "Run ingest.py first."
+            "Run stage_01a_bootstrap_from_off_bulk.py or stage_01b_ingest_from_off_api.py first."
         )
     files.sort(reverse=True)
     return os.path.join(sample_dir, files[0])
@@ -2521,7 +2522,7 @@ def write_nestle_france_snacks_product_name_recovery_audit(df):
 
 def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    print(f"\nFood & Beverage Positioning Radar - clean.py")
+    print(f"\nFood & Beverage Positioning Radar - stage_02_clean_products.py")
     print(f"Run timestamp: {timestamp}")
 
     input_path = find_latest_sample(SAMPLE_DIR)
@@ -2551,7 +2552,7 @@ def main():
           .replace("\n", "\n  "))
 
     # Save FIRST — previously the MemoryError on the low-completeness print
-    # crashed clean.py before the file was ever written, so aliases were lost.
+    # crashed stage_02_clean_products.py before the file was ever written, so aliases were lost.
     output_filename = f"clean_{timestamp}.csv"
     output_path     = os.path.join(SAMPLE_DIR, output_filename)
     df.to_csv(output_path, index=False, encoding="utf-8-sig")

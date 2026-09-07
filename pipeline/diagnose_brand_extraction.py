@@ -1,7 +1,7 @@
 """
-Diagnose primary-brand extraction before changing clean.py.
+Diagnose primary-brand extraction before changing stage_02_clean_products.py.
 
-The current clean.py behavior uses the first OFF brand token as primary_brand.
+The current stage_02_clean_products.py behavior uses the first OFF brand token as primary_brand.
 This audit proposes brand-level alternatives when a known Top 9 portfolio brand
 appears elsewhere in the raw OFF brands field or in the product name.
 

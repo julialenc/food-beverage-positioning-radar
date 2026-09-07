@@ -11,7 +11,8 @@ This script is intentionally narrow:
   - removes any previous partial rows from this exact source before rebuilding;
   - updates reference files only, not product rows or the SQLite database.
 
-Run clean.py and load.py afterwards to materialize the reference updates.
+Run stage_02_clean_products.py and stage_05_load_database.py afterwards to
+materialize the reference updates.
 """
 
 from __future__ import annotations

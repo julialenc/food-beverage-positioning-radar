@@ -204,18 +204,19 @@ The production reference layer is under `data/reference/`:
 
 These files are project-maintained derived inputs, not raw Open Food Facts data.
 They preserve brand, company, and product-specific governance decisions used by
-`pipeline/clean.py`, `pipeline/load.py`, and the Streamlit app.
+`pipeline/stages/stage_02_clean_products.py`,
+`pipeline/stages/stage_05_load_database.py`, and the Streamlit app.
 
 ## Pipeline Overview
 
 The standard local build path is:
 
 ```
-1. pipeline/bootstrap.py or pipeline/ingest.py
-2. pipeline/clean.py
-3. pipeline/nutrition_outliers/build_quality_flags.py
-4. pipeline/analyze.py
-5. pipeline/load.py
+1. pipeline/stages/stage_01a_bootstrap_from_off_bulk.py or pipeline/stages/stage_01b_ingest_from_off_api.py
+2. pipeline/stages/stage_02_clean_products.py
+3. pipeline/stages/stage_03_build_nutrition_quality_flags.py
+4. pipeline/stages/stage_04_build_product_analysis.py
+5. pipeline/stages/stage_05_load_database.py
 6. pipeline/smart_sample.py                         [manual when refreshing vision sample]
 7. pipeline/vision_extract.py                       [paid/manual vision stage]
 8. pipeline/merge_scores.py

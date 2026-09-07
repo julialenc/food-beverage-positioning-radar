@@ -111,7 +111,7 @@ with mostly empty fields if a product has not yet been through analysis.
 
 **Null-interpretation note:** `product_analysis` declares its full schema
 upfront, but fields are populated in stages. Ingredient-stage fields are
-populated by `analyze.py`; pack-image metadata and legacy/internal composite
+populated by `stage_04_build_product_analysis.py`; pack-image metadata and legacy/internal composite
 fields are populated by `merge_scores.py`; claim taxonomy and benchmark fields
 are populated by `tag_claims.py`. A null value in a later-stage field may mean
 that pipeline step has not run yet, or that the product was not selected for
@@ -166,7 +166,7 @@ France analytical releases contain 17,127 valid front-of-pack observations,
 drawn from sampled, image-eligible Open Food Facts products. See
 `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md` for the sampling design, prompt history, release
 IDs, and extraction limitations. All fields in this section are declared in
-the schema upfront but populated by `merge_scores.py`, not by `analyze.py`.
+the schema upfront but populated by `merge_scores.py`, not by `stage_04_build_product_analysis.py`.
 
 | Column | Type | Description |
 |---|---|---|
@@ -236,7 +236,7 @@ Pre-aggregated brand/category statistics, computed so that downstream
 reporting tools never need to query raw product rows for trend views.
 
 **Scope: this table is ingredient-stage only, not the final market-
-intelligence summary.** It is computed inside `load.py`, which runs
+intelligence summary.** It is computed inside `stage_05_load_database.py`, which runs
 before `merge_scores.py` and `tag_claims.py` enrich the database — so it
 necessarily reflects ingredient-analysis-stage signals only (composition
 markers, NOVA, ingredient-based claim signals). It does not include pack
@@ -245,7 +245,7 @@ or `positioning_composition_gap`. A separate aggregation step, run after
 the full pipeline completes and querying `product_analysis` directly, is
 needed for the richer market-intelligence summary described in the brief.
 This table is useful for early pipeline QA, not as the final Streamlit or
-reporting export source. `load.py` deletes existing rows for the current day's
+reporting export source. `stage_05_load_database.py` deletes existing rows for the current day's
 `week_ending` before inserting, so rerunning on the same day does not
 create duplicate trend rows — for production weekly reporting, this
 should instead reflect the full database snapshot, not a same-day-only

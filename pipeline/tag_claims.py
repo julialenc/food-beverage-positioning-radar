@@ -79,7 +79,7 @@ Usage:
 
 Output:
     - Updates product_analysis table in SQLite (columns are already
-      declared by load.py — this script only UPDATEs, it does not
+      declared by stage_05_load_database.py — this script only UPDATEs, it does not
       ALTER TABLE)
     - Saves data/sample/powerbi_tagged_<timestamp>.csv — a product-level
       tagged export, not the final aggregated Power BI deck source (see
@@ -476,7 +476,7 @@ def main():
     # No ALTER TABLE needed — claim_category_1, claim_category_2,
     # nutrition_benchmark_flags, claim_benchmark_intersections, and
     # claim_source are all already declared in product_analysis by
-    # load.py's DDL. This script only updates existing rows.
+    # stage_05_load_database.py's DDL. This script only updates existing rows.
     print("\n  Writing tags to database...")
 
     cursor = conn.cursor()

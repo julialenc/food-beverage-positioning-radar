@@ -14,7 +14,7 @@ Region grouping for the Market / region filter is defined one level up in
 
 ### `company_brand_mapping.csv`
 
-Main company / owner routing table used by `pipeline/clean.py` and the
+Main company / owner routing table used by `pipeline/stages/stage_02_clean_products.py` and the
 Streamlit app. After the September 2026 Top 9, retailer, France, and
 US/Canada regional-category orphan cleanup, it contains 3,631 rows across 208
 parent-company values.
@@ -39,7 +39,7 @@ Observed brand-string variants mapped to canonical brand strings.
 
 This file is part of the brand alias normalization layer. It should be read
 together with the newer extraction and private-label logic in
-`pipeline/clean.py`:
+`pipeline/stages/stage_02_clean_products.py`:
 
 1. preserve raw OFF brand evidence;
 2. extract a brand-level entity;

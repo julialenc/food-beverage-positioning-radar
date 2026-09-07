@@ -187,7 +187,7 @@ def suggest_pattern_label(frame: pd.DataFrame, metric: str, direction: str) -> s
 def load_review_base(flags_path: str, clean_path: str | None) -> pd.DataFrame:
     if not os.path.exists(flags_path):
         raise FileNotFoundError(
-            f"{flags_path} not found. Run build_quality_flags.py first."
+            f"{flags_path} not found. Run stage_03_build_nutrition_quality_flags.py first."
         )
     flags = pd.read_csv(flags_path, encoding="utf-8-sig", low_memory=False)
 

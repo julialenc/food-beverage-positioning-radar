@@ -45,7 +45,10 @@ def normalize_key(value: object) -> str:
 def latest_clean_file() -> Path:
     files = sorted(SAMPLE_DIR.glob("clean_*.csv"), reverse=True)
     if not files:
-        raise FileNotFoundError("No data/sample/clean_*.csv file found. Run clean.py first.")
+        raise FileNotFoundError(
+            "No data/sample/clean_*.csv file found. "
+            "Run stage_02_clean_products.py first."
+        )
     return files[0]
 
 

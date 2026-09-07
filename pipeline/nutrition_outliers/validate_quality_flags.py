@@ -9,9 +9,18 @@ Usage:
 
 from __future__ import annotations
 
+import os
+import sys
+
 import pandas as pd
 
-from build_quality_flags import build_nutrition_quality_flags
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+from pipeline.stages.stage_03_build_nutrition_quality_flags import (  # noqa: E402
+    build_nutrition_quality_flags,
+)
 
 
 BASE_ROW = {

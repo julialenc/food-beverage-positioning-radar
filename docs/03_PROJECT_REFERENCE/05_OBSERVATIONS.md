@@ -294,8 +294,8 @@ The Open Food Facts search API is suitable for small incremental updates, but
 it is not the right mechanism for initial database population at scale. The
 production path is:
 
-- `bootstrap.py` for one-time or periodic bulk-export population;
-- `ingest.py` for small API-based incremental updates.
+- `stage_01a_bootstrap_from_off_bulk.py` for one-time or periodic bulk-export population;
+- `stage_01b_ingest_from_off_api.py` for small API-based incremental updates.
 
 These paths should not be conflated. Initial population should use the bulk
 export; weekly or monthly updates can use the API with modest batch sizes.

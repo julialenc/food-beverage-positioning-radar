@@ -149,7 +149,7 @@ def main() -> None:
         )
     if not os.path.exists(FLAGS_PATH):
         raise FileNotFoundError(
-            f"{FLAGS_PATH} not found. Run build_quality_flags.py first."
+            f"{FLAGS_PATH} not found. Run stage_03_build_nutrition_quality_flags.py first."
         )
 
     review = pd.read_csv(REVIEW_PATH, encoding="utf-8-sig", low_memory=False)

@@ -68,7 +68,7 @@ RANDOM_SEED = 42
 # One profile per sampling run. Selected with --region.
 #
 # A product can carry several region codes (see derive_region_codes in
-# clean.py). Because only one profile's regions are in scope per run,
+# stage_02_clean_products.py). Because only one profile's regions are in scope per run,
 # primary_region() resolves to "contains this region" rather than "first
 # region listed" — the order in observed_market_region_codes is OFF
 # contributor insertion order and carries no meaning.
@@ -442,7 +442,7 @@ def get_released_barcodes() -> set:
         cols = {r[1] for r in conn.execute("PRAGMA table_info(product_analysis)")}
         if "release_run_id" not in cols:
             print("  [warn] product_analysis has no release_run_id column - "
-                  "run load.py with the current schema first. No barcodes excluded.")
+                  "run stage_05_load_database.py with the current schema first. No barcodes excluded.")
             return set()
         rows = conn.execute("""
             SELECT barcode FROM product_analysis

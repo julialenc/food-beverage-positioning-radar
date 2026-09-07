@@ -111,7 +111,7 @@ def summarise(df):
         print(f"  Report {rate(sub):.1f}% (n={len(sub):,}) only as a description of")
         print(f"  the sample, never as a market figure.")
     else:
-        print(f"\n  NOTE: sampling_weight is empty — re-run load.py with the")
+        print(f"\n  NOTE: sampling_weight is empty — re-run stage_05_load_database.py with the")
         print(f"  current schema, then merge_scores.py. Only unweighted figures available.")
 
     dims = [("sampling_region", "region")]
@@ -142,7 +142,7 @@ def summarise(df):
             print(line)
 
     if "sampling_region" in sub.columns and sub["sampling_region"].isna().all():
-        print(f"\n  NOTE: sampling_region is empty — re-run load.py with the")
+        print(f"\n  NOTE: sampling_region is empty — re-run stage_05_load_database.py with the")
         print(f"  current schema, then merge_scores.py. Country-level")
         print(f"  breakdowns are not a valid substitute.")
 

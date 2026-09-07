@@ -3,7 +3,7 @@ db_summary.py
 --------------
 Final reporting aggregation layer. Runs at the end of the full pipeline:
 
-    load.py -> merge_scores.py -> tag_claims.py -> db_summary.py
+    stage_05_load_database.py -> merge_scores.py -> tag_claims.py -> db_summary.py
 
 Queries the fully populated SQLite database directly (products JOIN
 product_analysis) — not intermediate CSVs, since the fully enriched
@@ -25,7 +25,7 @@ IMPORTANT — full snapshot, not weekly diff:
     or experimental aggregation mode would be visibly distinguishable
     from the standard one.
 
-Tables created (DDL owned by this script, not load.py):
+Tables created (DDL owned by this script, not stage_05_load_database.py):
 
     weekly_brand_positioning_summary
         Grain: week_ending + run_timestamp + source_scope + primary_brand
@@ -91,7 +91,7 @@ Usage:
 
 Input:
     database/positioning_radar.db (products + product_analysis, fully
-    enriched by load.py + merge_scores.py + tag_claims.py)
+    enriched by stage_05_load_database.py + merge_scores.py + tag_claims.py)
 
 Output:
     database/positioning_radar.db (new rows in weekly_brand_positioning_summary

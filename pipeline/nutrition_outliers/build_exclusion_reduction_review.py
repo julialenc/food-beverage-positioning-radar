@@ -219,7 +219,7 @@ def build_summary(review: pd.DataFrame, total_records: int) -> pd.DataFrame:
 def main() -> None:
     if not os.path.exists(FLAGS_PATH):
         raise FileNotFoundError(
-            f"{FLAGS_PATH} not found. Run build_quality_flags.py first."
+            f"{FLAGS_PATH} not found. Run stage_03_build_nutrition_quality_flags.py first."
         )
 
     df = pd.read_csv(FLAGS_PATH, encoding="utf-8-sig", low_memory=False)
