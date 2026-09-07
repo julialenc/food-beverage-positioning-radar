@@ -5,7 +5,7 @@ Audit and optionally apply category cleanup actions already stored in
 database/positioning_radar.db.
 
 Why this exists
-  pipeline/category_rules.py now protects future bulk and incremental
+  pipeline/rules/category_rules.py now protects future bulk and incremental
   ingestion from obvious category contamination. Existing SQLite rows,
   however, can still carry old query_category values because a re-filtered
   ingest only upserts products present in the new input. Products excluded
@@ -15,7 +15,7 @@ Why this exists
 Scope
   This script is deliberately conservative and DB-local. The current DB does
   not preserve canonical OFF categories_tags, so this is not a perfect replay
-  of category_rules.assign_category(). It audits current query_category plus
+  of pipeline.rules.category_rules.assign_category(). It audits current query_category plus
   product_name/off_categories and writes separate action-bucket CSVs.
 
 Actions

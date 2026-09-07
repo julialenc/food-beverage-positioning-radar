@@ -16,7 +16,7 @@ The compressed file is cached in data/raw/ after the first download. Delete
 it manually to force a fresh download (e.g. for a quarterly refresh). Do
 not commit it to git — it is gitignored.
 
-Category assignment is delegated to pipeline/category_rules.py. Broad OFF
+Category assignment is delegated to pipeline/rules/category_rules.py. Broad OFF
 tags such as en:snacks and en:cereals-and-their-products are candidate scopes,
 not final analytical categories. If category rules change, run
 python pipeline/validate_category_rules.py before a bulk bootstrap.
@@ -34,13 +34,15 @@ Next step: python pipeline/clean.py
 from __future__ import annotations
 
 import gzip
+import sys
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 import requests
 
-from category_rules import CATEGORY_MAP, assign_category, matches_country
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from pipeline.rules.category_rules import CATEGORY_MAP, assign_category, matches_country
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 

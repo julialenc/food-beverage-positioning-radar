@@ -16,9 +16,12 @@ import requests
 import pandas as pd
 import json
 import os
+import sys
 from datetime import datetime
+from pathlib import Path
 
-from category_rules import assign_category
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from pipeline.rules.category_rules import assign_category
 
 # ── Configuration ────────────────────────────────────────────────────────────
 

@@ -108,7 +108,7 @@ re-bootstrap alone would not have revisited contaminated rows that disappeared
 from the newly filtered input.
 
 As of the August 2026 category-rules cleanup, bulk and incremental ingestion
-share the same rules in `pipeline/category_rules.py`. Cereals exclusions are
+share the same rules in `pipeline/rules/category_rules.py`. Cereals exclusions are
 intentionally broad for pasta, noodles, bread, flour, rusks, breadsticks,
 tortillas/wraps, dough, puff pastry, rice, grain staples, bakery staples, and
 meal components because these products inherit broad grain parent tags but do

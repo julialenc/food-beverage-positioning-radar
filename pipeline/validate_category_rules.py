@@ -3,7 +3,7 @@ Validate shared category assignment rules against documented edge cases.
 
 This script is intentionally read-only. It does not download Open Food Facts
 data, update the database, or write outputs. It checks whether
-category_rules.assign_category() matches the frozen MVP category-scope rules
+pipeline.rules.category_rules.assign_category() matches the frozen MVP category-scope rules
 documented in:
 
 - docs/01_PRODUCT_DATA_GOVERNANCE/01_CATEGORY_SCOPE_AND_CLEANUP.md
@@ -19,9 +19,9 @@ from dataclasses import dataclass
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from category_rules import assign_category  # noqa: E402
+from pipeline.rules.category_rules import assign_category  # noqa: E402
 
 
 @dataclass(frozen=True)

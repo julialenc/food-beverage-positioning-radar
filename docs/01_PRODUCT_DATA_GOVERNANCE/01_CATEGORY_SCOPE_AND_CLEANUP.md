@@ -46,7 +46,7 @@ issues discovered during the completed mapping audits were reviewed and
 implemented rather than left under an incorrect category.
 
 Category cleanup rules are implemented through shared category logic in
-`pipeline/category_rules.py` and consumed by bulk and incremental ingestion.
+`pipeline/rules/category_rules.py` and consumed by bulk and incremental ingestion.
 Reviewed product-specific category corrections are stored in
 `data/reference/reviewed_product_mapping_overrides.csv`.
 
