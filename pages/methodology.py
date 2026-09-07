@@ -2,8 +2,8 @@
 Methodology page for the Streamlit app.
 
 This page translates the technical methodology into final-user language.
-Detailed metric definitions and caveats remain in docs/METHODOLOGY.md and
-docs/LIMITATIONS.md.
+Detailed metric definitions and caveats remain in docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md and
+docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md.
 """
 
 from __future__ import annotations

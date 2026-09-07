@@ -52,7 +52,7 @@ Environment variables required:
 Cost controls:
     Set AZURE_COST_ALERT_CHF to stop processing when estimated cost
     exceeds that value. Default is set below the v3.5 model-benchmark
-    budget (see docs/ADR.md) to leave a buffer. Hard stop before
+    budget (see docs/03_PROJECT_REFERENCE/01_ADR.md) to leave a buffer. Hard stop before
     credits run out.
 
     Cost-per-1000 figures below are historical estimates from the v3
@@ -60,7 +60,7 @@ Cost controls:
     should be reconfirmed before any larger rerun. See also
     smart_sample.py, which uses the same historical baseline.
 
-See docs/ADR.md ADR-006 and ADR-010 for architecture rationale.
+See docs/03_PROJECT_REFERENCE/01_ADR.md ADR-006 and ADR-010 for architecture rationale.
 """
 
 import os
@@ -100,7 +100,7 @@ OCR_COST_PER_1K   = float(os.getenv("AZURE_OCR_COST_PER_1K_CHF", "1.50"))
 LLM_COST_PER_1K   = float(os.getenv("AZURE_LLM_COST_PER_1K_CHF", "0.20"))
 
 # Increment when SYSTEM_PROMPT changes. This is the original, locked
-# extraction prompt used for the v3 run (see docs/ADR.md ADR-006) —
+# extraction prompt used for the v3 run (see docs/03_PROJECT_REFERENCE/01_ADR.md ADR-006) —
 # do not change the prompt text itself without also bumping this.
 # ── Language profiles ───────────────────────────────────────────────────────
 # One standalone prompt per language, loaded from pipeline/prompts/ at run
@@ -950,7 +950,7 @@ def main():
             "image_url":     image_url,
             # pack_analysis_attempted=1 means this product was submitted
             # for image-based extraction, regardless of OCR/LLM outcome —
-            # see docs/COLUMN_DESCRIPTIONS.md.
+            # see docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md.
             "pack_analysis_attempted":  1,
             "vision_model":             OPENAI_DEPLOYMENT,
             "prompt_version":           PROMPT_VERSION,
@@ -967,7 +967,7 @@ def main():
         # names. merge_scores.py and tag_claims.py translate these into
         # the neutral, user-facing taxonomy (pack_claims_found,
         # claim_category_1, claim_category_2, nutrition_benchmark_flags,
-        # claim_benchmark_intersections — see docs/COLUMN_DESCRIPTIONS.md).
+        # claim_benchmark_intersections — see docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md).
         # Raw keys such as sustainability_halo or glp1_positioning are
         # extraction-schema keys only and should not be treated as final
         # product language in the UI, README, or Power BI deck.

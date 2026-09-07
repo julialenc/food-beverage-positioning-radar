@@ -41,7 +41,7 @@ NUTRITION BENCHMARK FLAGS (per 100g solid / per 100ml liquid):
 
     nutrition_benchmark_flags stores neutral codes (e.g.
     sugar_above_reference), not display text — consistent with
-    claim_category_1/2. See docs/UI_LABELS.md for the code-to-display
+    claim_category_1/2. See docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md for the code-to-display
     mapping used by app.py and the Power BI deck.
 
     Thresholds follow the UK Food Standards Agency's voluntary
@@ -51,12 +51,12 @@ NUTRITION BENCHMARK FLAGS (per 100g solid / per 100ml liquid):
     be stated on pack but does not itself define high/low thresholds —
     that was deliberately left to individual Member States and food
     businesses. US-market products are assessed against the same
-    thresholds for comparability — see docs/METHODOLOGY.md and
-    docs/LIMITATIONS.md.
+    thresholds for comparability — see docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md and
+    docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md.
 
     Liquid detection: products with energy_kcal < 100 kcal/100ml treated
     as liquids, all others as solids. This is an MVP approximation and
-    may misclassify some categories — see docs/LIMITATIONS.md.
+    may misclassify some categories — see docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md.
 
 Claim source:
     claim_source records which evidence layer fed claim_category_1/2 for
@@ -66,7 +66,7 @@ Claim source:
     pack_claims_found (claims string on success, "" on success-with-no-
     claims, NULL when never attempted or failed) — see
     update_db_positioning_scores() in merge_scores.py and
-    docs/COLUMN_DESCRIPTIONS.md.
+    docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md.
 
     When claim_source is "ingredient_text_only", the fallback claim
     evidence combines BOTH ingredient_based_claim_signals_found and
@@ -117,7 +117,7 @@ NUTRITION_BENCHMARK_THRESHOLDS = {
     }
 }
 
-# Liquid detection threshold (kcal/100ml) — see docs/LIMITATIONS.md
+# Liquid detection threshold (kcal/100ml) — see docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md
 LIQUID_KCAL_THRESHOLD = 100
 
 # ── Claim taxonomy mappings ───────────────────────────────────────────────────
@@ -246,8 +246,8 @@ def compute_nutrition_benchmark_flags(row):
     Compute nutrition benchmark flags against UK FSA front-of-pack
     reference thresholds. Returns pipe-separated string of neutral
     codes, or empty string. Computed independently of any claim — see
-    docs/METHODOLOGY.md. Display labels for these codes live in
-    docs/UI_LABELS.md, not here — this keeps stored values stable and
+    docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md. Display labels for these codes live in
+    docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md, not here — this keeps stored values stable and
     rename-resistant, consistent with claim_category_1/2.
     """
     liquid = is_liquid(row.get("energy_kcal"))
@@ -286,7 +286,7 @@ def compute_claim_benchmark_intersections(row):
     a nutrition or processing benchmark signal for the same product.
     Only fires when both the claim and the benchmark condition are
     present. Describes co-occurrence only — does not indicate that a
-    claim is false, illegal, or misleading. See docs/METHODOLOGY.md.
+    claim is false, illegal, or misleading. See docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md.
     """
     intersections = []
 
@@ -365,7 +365,7 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     print(f"\nFood & Beverage Positioning Radar - tag_claims.py")
     print(f"Run timestamp: {timestamp}")
-    print(f"Thresholds: UK FSA front-of-pack guidance (see docs/METHODOLOGY.md)\n")
+    print(f"Thresholds: UK FSA front-of-pack guidance (see docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md)\n")
 
     # Load from DB
     conn = sqlite3.connect(DB_PATH)
@@ -403,7 +403,7 @@ def main():
     # this correctly covers both "claims found" and "pack analysis
     # succeeded with zero claims found", since merge_scores.py only
     # leaves pack_claims_found null when extraction was never attempted
-    # or failed. See docs/COLUMN_DESCRIPTIONS.md.
+    # or failed. See docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md.
     df["claim_source"] = df["pack_claims_found"].apply(
         lambda x: "vision" if pd.notna(x) else "ingredient_text_only"
     )

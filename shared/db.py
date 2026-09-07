@@ -316,7 +316,7 @@ def resolve_company_owner(brand: str, countries: str = "",
                           region_codes: str = "") -> str:
     """Resolve brand ownership for one product row.
 
-    This follows docs/BRAND_COMPANY_MAPPING.md's priority order: scoped
+    This follows docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md's priority order: scoped
     rows are evaluated first, manual-review rows are used as fallbacks,
     direct rows are used only when there is no scoped conflict.
     """

@@ -17,7 +17,7 @@ IMPORTANT — full snapshot, not weekly diff:
     FULL database snapshot, regardless of whether that snapshot was
     built via a one-time bulk load or updated incrementally via a
     weekly API diff. This avoids reporting "products changed this week"
-    as if it were "the market this week" — see docs/ADR.md ADR-001 for
+    as if it were "the market this week" — see docs/03_PROJECT_REFERENCE/01_ADR.md ADR-001 for
     the bulk-export-then-diff production strategy this assumes.
 
     SOURCE_SCOPE is always "full_database_snapshot" for this reason; it
@@ -65,7 +65,7 @@ Tables created (DDL owned by this script, not load.py):
         product (pack-image claims if analyzed, otherwise ingredient/
         name-derived signals only) — not necessarily that the product
         carries no claim at all on its actual packaging. This matches
-        docs/UI_LABELS.md's "No claim identified" wording, chosen over
+        docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md's "No claim identified" wording, chosen over
         "No claim exists" for the same reason.
 
     positioning_example_products
@@ -262,7 +262,7 @@ def compute_weekly_brand_positioning_summary(df, week_ending, run_timestamp):
     available for that product (pack-image claims if analyzed,
     otherwise ingredient/name-derived signals only) — not necessarily
     that the product carries no claim at all on its actual packaging.
-    See docs/UI_LABELS.md, which uses "No claim identified" rather than
+    See docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md, which uses "No claim identified" rather than
     "No claim exists" for exactly this reason.
     """
     rows = []
@@ -728,7 +728,7 @@ def main():
     # Runs silently every time db_summary.py executes. Each row is a
     # timestamped cross-sectional snapshot of all key metrics per category.
     # Compare rows across weeks to build the longitudinal signal.
-    # See docs/ADR.md ADR-014 and the project brief's Phase 3F section.
+    # See docs/03_PROJECT_REFERENCE/01_ADR.md ADR-014 and the project brief's Phase 3F section.
     trend_rows = compute_market_trend_weekly(df, week_ending, timestamp)
     n_trend = write_market_trend_weekly(conn, trend_rows, week_ending)
     print(f"  Market trend snapshot: {n_trend} category rows written "

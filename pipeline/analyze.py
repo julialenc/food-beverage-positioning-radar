@@ -3,27 +3,27 @@ analyze.py
 ----------
 Option A — rule-based ingredient marker analysis.
 Computes the composition_marker_score from ingredient text and additives,
-independent of any front-of-pack claim. See docs/ADR.md ADR-004 and
+independent of any front-of-pack claim. See docs/03_PROJECT_REFERENCE/01_ADR.md ADR-004 and
 ADR-010 for the full architectural rationale.
 
 Architecture:
     composition_marker_score (Component A, this file) is combined with
     front-of-pack claim weight and processing/nutrition context
     (Components B and C, from vision_extract.py) in merge_scores.py to
-    produce positioning_composition_gap. See docs/METHODOLOGY.md.
+    produce positioning_composition_gap. See docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md.
 
     Claim-signal fields are detected and stored here from ingredient
     text and product name — they support benchmark intersection
     detection and Power BI filtering, but do not feed into
     composition_marker_score itself. Front-of-pack claims are extracted
     separately via vision_extract.py and are a different evidence layer
-    (see docs/OBSERVATIONS.md OBS-016).
+    (see docs/03_PROJECT_REFERENCE/05_OBSERVATIONS.md OBS-016).
 
     The four benchmark intersection pattern flags below are based on
     ingredient/name-derived signals and nutrition values only. They are
     useful for broad filtering and early pattern detection, but they
     are not substitutes for pack-image claim extraction — see
-    docs/METHODOLOGY.md for how this differs from claim_benchmark_intersections.
+    docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md for how this differs from claim_benchmark_intersections.
 
 Usage:
     python pipeline/analyze.py
@@ -52,14 +52,14 @@ SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 # These marker lists are intentionally not exhaustive. They reflect the
 # current project scope, observed OFF records, OCR validation, and domain
 # review. New markers should be added through validation on real product
-# examples and documented in docs/OBSERVATIONS.md or docs/METHODOLOGY.md.
+# examples and documented in docs/03_PROJECT_REFERENCE/05_OBSERVATIONS.md or docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md.
 
 
 # ── Ingredient composition markers ───────────────────────────────────────────
 # These feed Component A only — the ingredient composition signal.
 # Do NOT add claim language here. Claims are captured separately via
 # front-of-pack vision extraction (see vision_extract.py).
-# See docs/ADR.md ADR-010.
+# See docs/03_PROJECT_REFERENCE/01_ADR.md ADR-010.
 
 ULTRA_PROCESSED_MARKERS = [
     # Artificial sweeteners
@@ -510,7 +510,7 @@ def strip_parenthetical_enrichment(text):
     Prevents 'enriched flour (niacin, riboflavin, folic acid...)' from
     triggering a fortification signal on mandatory US flour enrichment.
     Also strips colorant context phrases identified during validation.
-    See docs/ADR.md ADR-010 and docs/OBSERVATIONS.md OBS-010.
+    See docs/03_PROJECT_REFERENCE/01_ADR.md ADR-010 and docs/03_PROJECT_REFERENCE/05_OBSERVATIONS.md OBS-010.
     """
     if not isinstance(text, str):
         return text
@@ -537,7 +537,7 @@ def compute_composition_marker_score(upf_flags):
 
     Components B and C (claim weight + processing/nutrition context)
     are added in merge_scores.py from front-of-pack vision extraction.
-    See docs/ADR.md ADR-010 and docs/METHODOLOGY.md.
+    See docs/03_PROJECT_REFERENCE/01_ADR.md ADR-010 and docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md.
     """
     if not upf_flags:
         return 0
@@ -562,12 +562,12 @@ def classify_composition_marker_band(score):
 # co-occurrence patterns, not product verdicts. Thresholds here are
 # project-defined pattern thresholds, distinct from the formal
 # nutrition_benchmark_flags thresholds (UK FSA front-of-pack scheme) —
-# see docs/METHODOLOGY.md for both.
+# see docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md for both.
 #
 # These pattern flags are based on ingredient/name-derived signals and
 # nutrition values only. They are useful for broad filtering and early
 # pattern detection, but they are not substitutes for pack-image claim
-# extraction (see claim_benchmark_intersections in docs/METHODOLOGY.md).
+# extraction (see claim_benchmark_intersections in docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md).
 
 def detect_sugar_positioning_intersection(row):
     """

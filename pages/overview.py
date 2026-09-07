@@ -8,7 +8,7 @@ share-, or trend-reporting tool. Three sections:
   3. By Region                 — fixed cross-region/category benchmark table
 
 OFF data only. No OCR/LLM/claim data anywhere on this page — that
-distinction lives in Product Explorer instead (see docs/ADR.md).
+distinction lives in Product Explorer instead (see docs/03_PROJECT_REFERENCE/01_ADR.md).
 
 Market scope (Region, Category) is a mandatory, single-select, page-level
 filter shared by sections 1 and 2 — deliberately different from Product
@@ -84,10 +84,82 @@ _BEVERAGE_SEGMENT_BY_LABEL = {
     SEGMENT_LABELS[PREPARATION_ALCOHOL_SEGMENT]: PREPARATION_ALCOHOL_SEGMENT,
     SEGMENT_LABELS[UNKNOWN_BEVERAGE_SEGMENT]: UNKNOWN_BEVERAGE_SEGMENT,
 }
+_KEY_COMPANIES = {
+    "Nestlé",
+    "PepsiCo",
+    "PepsiCo (NACP)",
+    "PepsiCo / North American Coffee Partnership",
+    "The Coca-Cola Company",
+    "Danone",
+    "Danone (Dannon in US)",
+    "Mondelēz International",
+    "The Hershey Company",
+    "Kraft Heinz",
+    "Kraft Heinz (Kraft Dinner)",
+    "Starbucks Coffee Company",
+    "Unilever",
+}
+_KEY_PRIVATE_LABELS_BY_REGION = {
+    "FRANCE": {
+        "Aldi",
+        "Lidl",
+        "Auchan",
+        "Carrefour",
+        "E.Leclerc",
+        "Intermarché",
+        "Les Mousquetaires / Intermarché",
+        "Groupe Casino",
+        "Groupe U",
+    },
+    "UK_IE": {
+        "Aldi",
+        "Lidl",
+        "Asda",
+        "Tesco",
+        "Sainsbury's",
+        "Morrisons",
+        "Waitrose",
+    },
+    "US_CANADA": {
+        "Aldi",
+        "Lidl",
+        "Walmart",
+        "Walmart / Great Value",
+        "Costco",
+        "Kroger",
+        "Target",
+        "Walgreens",
+    },
+}
 
 
 def _category_label(category: str) -> str:
     return _CATEGORY_LABELS.get(str(category), str(category).replace("_", " ").title())
+
+
+def _alpha_sort_text(value: object) -> str:
+    text = str(value or "").strip().lower()
+    if text.startswith("the "):
+        text = text[4:]
+    return text
+
+
+def _company_sort_key(company: object) -> tuple[int, str]:
+    company_text = str(company or "")
+    if company_text == db.COMPANY_MANUAL_REVIEW_LABEL:
+        return (1, _alpha_sort_text(company_text))
+    if company_text == db.COMPANY_OTHER_LABEL:
+        return (2, _alpha_sort_text(company_text))
+    return (0, _alpha_sort_text(company_text))
+
+
+def _company_block_label(company: object, region_code: str) -> str:
+    company_text = str(company or "")
+    if company_text in _KEY_COMPANIES:
+        return "Key Companies"
+    if company_text in _KEY_PRIVATE_LABELS_BY_REGION.get(region_code, set()):
+        return "Key Private Labels"
+    return "All Others"
 
 
 def _pct(numerator: int | float, denominator: int | float) -> str:
@@ -904,97 +976,99 @@ if active_section == _CATEGORY_REPORT_SECTION:
         .reset_index()
     )
 
-    def _company_sort_key(company: str) -> tuple[int, str]:
-        company_text = str(company or "")
-        if company_text == db.COMPANY_MANUAL_REVIEW_LABEL:
-            return (1, company_text.lower())
-        if company_text == db.COMPANY_OTHER_LABEL:
-            return (2, company_text.lower())
-        return (0, company_text.lower())
-
-    company_counts = company_counts.sort_values(
-        "company", key=lambda s: s.map(_company_sort_key)
+    company_counts["_block"] = company_counts["company"].map(
+        lambda company_name: _company_block_label(company_name, region_code)
     )
+    company_counts["_sort_key"] = company_counts["company"].map(_company_sort_key)
 
-    for company_name in company_counts["company"]:
-        company_df = drill_df[drill_df["company"] == company_name]
-        n_company_records = len(company_df)
-        n_company_brands = company_df["primary_brand"].nunique()
-        expander_label = (
-            f"{company_name} · {n_company_records:,} observed records · "
-            f"{n_company_brands:,} brands"
+    for block_label in ["Key Companies", "Key Private Labels", "All Others"]:
+        block_counts = company_counts[company_counts["_block"] == block_label].sort_values(
+            "_sort_key"
         )
-        with st.expander(expander_label, expanded=(company_filter != _ALL_COMPANIES_LABEL)):
-            company_cols = st.columns(3)
-            with company_cols[0]:
-                _metric_card("Observed product records", f"{n_company_records:,}")
-            with company_cols[1]:
-                _metric_card("Number of brands", f"{n_company_brands:,}")
-            with company_cols[2]:
-                _metric_card(
-                    "Nutrition data coverage",
-                    _pct(_nutrition_any_mask(company_df).sum(), n_company_records),
-                )
+        if block_counts.empty:
+            continue
 
-            st.markdown("**Brand summaries**")
-            brand_summary = _brand_summary(company_df, reference_values)
-            brand_event = st.dataframe(
-                brand_summary,
-                hide_index=True,
-                width="stretch",
-                column_config=_column_help_config(list(brand_summary.columns)),
-                on_select="rerun",
-                selection_mode="single-row",
-                key=f"cr_brands_{company_name}",
+        st.markdown(f"#### {block_label}")
+
+        for company_name in block_counts["company"]:
+            company_df = drill_df[drill_df["company"] == company_name]
+            n_company_records = len(company_df)
+            n_company_brands = company_df["primary_brand"].nunique()
+            expander_label = (
+                f"{company_name} · {n_company_records:,} observed records · "
+                f"{n_company_brands:,} brands"
             )
+            with st.expander(expander_label, expanded=(company_filter != _ALL_COMPANIES_LABEL)):
+                company_cols = st.columns(3)
+                with company_cols[0]:
+                    _metric_card("Observed product records", f"{n_company_records:,}")
+                with company_cols[1]:
+                    _metric_card("Number of brands", f"{n_company_brands:,}")
+                with company_cols[2]:
+                    _metric_card(
+                        "Nutrition data coverage",
+                        _pct(_nutrition_any_mask(company_df).sum(), n_company_records),
+                    )
 
-            selected_brand = None
-            if (
-                company_filter == company_name
-                and brand_filter != _ALL_BRANDS_LABEL
-            ):
-                selected_brand = brand_filter
-            else:
-                if hasattr(brand_event, "selection"):
-                    selected_brand_rows = brand_event.selection.rows
-                else:
-                    selected_brand_rows = brand_event.get("selection", {}).get("rows", [])
-                if selected_brand_rows:
-                    selected_brand = brand_summary.iloc[selected_brand_rows[0]]["Brand"]
-
-            if selected_brand:
-                brand_products = company_df[company_df["primary_brand"] == selected_brand]
-                st.markdown(
-                    f"**Product records: {selected_brand} · "
-                    f"{len(brand_products):,} observed product records**"
-                )
-                product_records = brand_products.head(250)
-                product_view = _product_table(brand_products, reference_values, limit=250)
-                product_event = st.dataframe(
-                    product_view,
+                st.markdown("**Brand summaries**")
+                brand_summary = _brand_summary(company_df, reference_values)
+                brand_event = st.dataframe(
+                    brand_summary,
                     hide_index=True,
                     width="stretch",
-                    column_config=_column_help_config(list(product_view.columns)),
+                    column_config=_column_help_config(list(brand_summary.columns)),
                     on_select="rerun",
                     selection_mode="single-row",
-                    key=f"cr_products_{company_name}_{selected_brand}",
+                    key=f"cr_brands_{company_name}",
                 )
-                if hasattr(product_event, "selection"):
-                    selected_rows = product_event.selection.rows
+
+                selected_brand = None
+                if (
+                    company_filter == company_name
+                    and brand_filter != _ALL_BRANDS_LABEL
+                ):
+                    selected_brand = brand_filter
                 else:
-                    selected_rows = product_event.get("selection", {}).get("rows", [])
-                if selected_rows:
-                    _render_product_detail(product_records.iloc[selected_rows[0]])
-                if len(brand_products) > 250:
-                    st.caption(
-                        f"Showing 250 of {len(brand_products):,} product records "
-                        f"for {selected_brand}. Use the Brand filter to narrow the drill-down."
+                    if hasattr(brand_event, "selection"):
+                        selected_brand_rows = brand_event.selection.rows
+                    else:
+                        selected_brand_rows = brand_event.get("selection", {}).get("rows", [])
+                    if selected_brand_rows:
+                        selected_brand = brand_summary.iloc[selected_brand_rows[0]]["Brand"]
+
+                if selected_brand:
+                    brand_products = company_df[company_df["primary_brand"] == selected_brand]
+                    st.markdown(
+                        f"**Product records: {selected_brand} · "
+                        f"{len(brand_products):,} observed product records**"
                     )
-            else:
-                st.caption(
-                    "Select one brand in the table above, or use the filters above "
-                    "to display product records for a selected company / owner and brand."
-                )
+                    product_records = brand_products.head(250)
+                    product_view = _product_table(brand_products, reference_values, limit=250)
+                    product_event = st.dataframe(
+                        product_view,
+                        hide_index=True,
+                        width="stretch",
+                        column_config=_column_help_config(list(product_view.columns)),
+                        on_select="rerun",
+                        selection_mode="single-row",
+                        key=f"cr_products_{company_name}_{selected_brand}",
+                    )
+                    if hasattr(product_event, "selection"):
+                        selected_rows = product_event.selection.rows
+                    else:
+                        selected_rows = product_event.get("selection", {}).get("rows", [])
+                    if selected_rows:
+                        _render_product_detail(product_records.iloc[selected_rows[0]])
+                    if len(brand_products) > 250:
+                        st.caption(
+                            f"Showing 250 of {len(brand_products):,} product records "
+                            f"for {selected_brand}. Use the Brand filter to narrow the drill-down."
+                        )
+                else:
+                    st.caption(
+                        "Select one brand in the table above, or use the filters above "
+                        "to display product records for a selected company / owner and brand."
+                    )
 
     st.stop()
 

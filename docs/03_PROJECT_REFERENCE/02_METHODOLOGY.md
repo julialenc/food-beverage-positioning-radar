@@ -3,7 +3,7 @@
 This document explains what Food & Beverage Positioning Radar measures, how the
 main analytical layers are prepared, and what the outputs should not be
 interpreted to mean. For exact database fields and types, see
-`docs/COLUMN_DESCRIPTIONS.md`. Detailed governance is documented separately in
+`docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md`. Detailed governance is documented separately in
 the specialist files referenced below.
 
 ## Core principle
@@ -26,7 +26,7 @@ incomplete, duplicated, inconsistent, outdated, or uneven across markets and
 brands. Product counts therefore represent observed OFF records, not sales,
 market share, distribution, or shelf presence.
 
-See `docs/LIMITATIONS.md` for the full source, coverage, quality, and licensing
+See `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md` for the full source, coverage, quality, and licensing
 caveats.
 
 ## Data preparation and governance
@@ -115,7 +115,7 @@ source/type discriminator exists, they should be filtered before analytical
 category and orphan generation. Broad exclusions by restaurant brand are unsafe
 because the same brand can also appear on legitimate packaged retail products.
 
-See `docs/CATEGORY_CLEANUP.md` for the full category rules and override
+See `docs/01_PRODUCT_DATA_GOVERNANCE/01_CATEGORY_SCOPE_AND_CLEANUP.md` for the full category rules and override
 precedence.
 
 ## Brand and company mapping
@@ -185,7 +185,7 @@ products in a single launch region-category remains under
 `Other / not mapped to a company` without reviewed resolution. Individual
 products can still remain under `Other` when ownership is genuinely ambiguous.
 
-See `docs/BRAND_COMPANY_MAPPING.md` for precedence, scoped ownership logic,
+See `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md` for precedence, scoped ownership logic,
 reference files, and maintenance rules.
 
 ## Nutrition quality and outlier treatment
@@ -225,7 +225,7 @@ approximately **3.02%**.
 Within-brand nutrition plausibility checks are not yet fully implemented in the
 launch MVP.
 
-See `docs/NUTRITION_OUTLIER_GOVERNANCE.md` for the detailed rules.
+See `docs/01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md` for the detailed rules.
 
 ## Beverage segmentation
 
@@ -271,7 +271,7 @@ Two prevalence views must remain distinct:
 - **backbone design-weighted estimate** — an approximate estimate based on the
   probability-oriented backbone of the image-eligible OFF sample.
 
-See `docs/CLAIM_EXTRACTION.md` for sampling design, prompt history, validation,
+See `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md` for sampling design, prompt history, validation,
 release details, and OCR/LLM limitations.
 
 ## Metric definitions
@@ -301,7 +301,7 @@ evidence.
 consumer benefit.
 
 Stored claim codes are mapped to user-facing labels through
-`docs/UI_LABELS.md`.
+`docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md`.
 
 ### Ingredient markers
 
@@ -415,7 +415,7 @@ period, rather than only products changed during that week.
 A small curated set of neutral product examples used by Streamlit overview
 pages. It is refreshed rather than treated as a historical time series.
 
-See `docs/ADR.md` for the architectural rationale behind the reporting layers.
+See `docs/03_PROJECT_REFERENCE/01_ADR.md` for the architectural rationale behind the reporting layers.
 
 ## Interpretation limits
 
@@ -432,4 +432,4 @@ The most important interpretation boundaries are:
   evidence and remains subject to OCR/image-quality error;
 - missing values, failed observations, and confirmed zeros are different states.
 
-See `docs/LIMITATIONS.md` for the complete limitation catalogue.
+See `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md` for the complete limitation catalogue.

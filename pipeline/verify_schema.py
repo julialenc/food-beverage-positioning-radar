@@ -148,7 +148,7 @@ def main():
 
     print()
     if any_drift:
-        print("SCHEMA DRIFT FOUND. See docs/COLUMN_DESCRIPTIONS.md for "
+        print("SCHEMA DRIFT FOUND. See docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md for "
               "the intended schema. For a development database, the "
               "simplest fix is usually to delete database/positioning_radar.db "
               "and rerun the pipeline from load.py onward.")

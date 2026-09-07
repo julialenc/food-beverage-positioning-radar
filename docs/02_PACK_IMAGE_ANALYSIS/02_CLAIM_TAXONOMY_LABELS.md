@@ -2,7 +2,7 @@
 
 This document is the canonical mapping from stored taxonomy codes
 (`claim_category_1`, `claim_category_2` in `product_analysis` — see
-`docs/COLUMN_DESCRIPTIONS.md`) to the display labels used in the
+`docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md`) to the display labels used in the
 Streamlit app.
 
 **Why this file exists:** the stored codes (`FUNCTIONAL`, `no_added_x`,

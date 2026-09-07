@@ -8,15 +8,15 @@ scripts.
 
 The observations below describe Open Food Facts data, pipeline behavior, and
 market-positioning patterns. They are not product verdicts, health ratings,
-legal assessments, or market-share estimates. See `docs/METHODOLOGY.md` for
-metric definitions, `docs/LIMITATIONS.md` for interpretation caveats, and
-`docs/CLAIM_EXTRACTION.md` for the full OCR/LLM sampling and prompt history.
+legal assessments, or market-share estimates. See `docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md` for
+metric definitions, `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md` for interpretation caveats, and
+`docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md` for the full OCR/LLM sampling and prompt history.
 
 **Launch documentation note:** this file is a durable observation register, not
 the controlling MVP methodology. For the August 2026 launch state, use
-`docs/METHODOLOGY.md`, `docs/LIMITATIONS.md`,
-`docs/BRAND_COMPANY_MAPPING.md`, and
-`docs/NUTRITION_OUTLIER_GOVERNANCE.md` as the current source of truth. Older
+`docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md`, `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md`,
+`docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md`, and
+`docs/01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md` as the current source of truth. Older
 observations are retained here for auditability when they explain why a
 pipeline decision was made.
 
@@ -136,7 +136,7 @@ future version may add a separate snacking-occasion flag or allow
 double-assignment, so small dairy snacks can appear in both `dairies` and a
 holistic snacking view without weakening the dairy base.
 
-See `docs/CATEGORY_CLEANUP.md` for the operational review rules used to
+See `docs/01_PRODUCT_DATA_GOVERNANCE/01_CATEGORY_SCOPE_AND_CLEANUP.md` for the operational review rules used to
 classify snacks, cereals, route-to-snacks rows, and non-category rows during
 category cleanup.
 
@@ -368,7 +368,7 @@ producer, and short ingredient information.
 
 The French release added a narrow second-pass panel-context review for dairy
 products, which rescued many valid observations. The same issue may exist at a
-lower rate in the English release. See `docs/CLAIM_EXTRACTION.md` for the full
+lower rate in the English release. See `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md` for the full
 review design, release counts, and remaining caveats.
 
 ### OBS-016 - Some claim-like text remains unmapped

@@ -16,12 +16,12 @@ Positioning Radar and the reasons they were made.
 
 It is intentionally narrower than the methodology and governance documents:
 
-- `docs/METHODOLOGY.md` explains what the analytical outputs mean;
-- `docs/LIMITATIONS.md` catalogs interpretation caveats;
-- `docs/CATEGORY_CLEANUP.md` defines category governance;
-- `docs/BRAND_COMPANY_MAPPING.md` defines brand/company mapping governance;
-- `docs/NUTRITION_OUTLIER_GOVERNANCE.md` defines nutrition-quality rules;
-- `docs/CLAIM_EXTRACTION.md` documents sampling, prompts, and extraction history.
+- `docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md` explains what the analytical outputs mean;
+- `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md` catalogs interpretation caveats;
+- `docs/01_PRODUCT_DATA_GOVERNANCE/01_CATEGORY_SCOPE_AND_CLEANUP.md` defines category governance;
+- `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md` defines brand/company mapping governance;
+- `docs/01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md` defines nutrition-quality rules;
+- `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md` documents sampling, prompts, and extraction history.
 
 The ADR should explain **why the system is structured this way**, not duplicate
 those documents.
@@ -65,7 +65,7 @@ redistributable in the same way.
 - project-level governance is required rather than treating OFF fields as clean
   analytical truth.
 
-See `docs/LIMITATIONS.md`.
+See `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md`.
 
 ---
 
@@ -156,7 +156,7 @@ requires both evidence layers.
 **Consequence:** Image-based extraction is a distinct pipeline stage with its
 own sampling, validation, model, prompt, and release metadata.
 
-See `docs/CLAIM_EXTRACTION.md`.
+See `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md`.
 
 ---
 
@@ -211,7 +211,7 @@ outcomes.
 strong evidence, keep `Other / not mapped to a company`. A false negative is
 preferred to a false-positive owner assignment.
 
-See `docs/BRAND_COMPANY_MAPPING.md`.
+See `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md`.
 
 ---
 
@@ -257,7 +257,7 @@ filtered upstream when a safe source/type discriminator exists. Broad
 restaurant-brand exclusions are unsafe because the same brand can also appear
 on packaged retail products.
 
-See `docs/CATEGORY_CLEANUP.md`.
+See `docs/01_PRODUCT_DATA_GOVERNANCE/01_CATEGORY_SCOPE_AND_CLEANUP.md`.
 
 ---
 
@@ -283,7 +283,7 @@ treated as claims.
 - historical `positioning_composition_gap` remains legacy/internal and is not a
   user-facing proprietary score.
 
-See `docs/METHODOLOGY.md` and `docs/CLAIM_EXTRACTION.md`.
+See `docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md` and `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md`.
 
 ---
 
@@ -377,7 +377,7 @@ calibration components.
 front-pack claim observation and must not be silently assigned one from
 ingredient/name inference.
 
-See `docs/CLAIM_EXTRACTION.md`.
+See `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md`.
 
 ---
 
@@ -434,7 +434,7 @@ scope is locked, later changes must regression-test that locked architecture.
 A new exact correction may override stale or contaminated evidence, but broad
 rules must not silently reassign previously validated products.
 
-See `docs/BRAND_COMPANY_MAPPING.md`.
+See `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md`.
 
 ---
 
@@ -501,7 +501,7 @@ The following are deliberate boundaries rather than unresolved design mistakes:
 - beverage segmentation is a comparability layer, not a full market taxonomy;
 - segmentation remains a future analytical extension.
 
-For interpretation details, use `docs/LIMITATIONS.md`.
+For interpretation details, use `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md`.
 
 ---
 

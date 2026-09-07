@@ -1,7 +1,7 @@
 """
 Loads the canonical stored-code -> display-label mappings directly from
-docs/UI_LABELS.md, instead of duplicating them as a second hardcoded
-dict in Python. docs/UI_LABELS.md remains the single source of truth
+docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md, instead of duplicating them as a second hardcoded
+dict in Python. docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md remains the single source of truth
 (per its own "Implementation note" / "Rule" sections) — this module's
 only job is to parse it faithfully and fail loudly if it can't.
 
@@ -11,7 +11,7 @@ never reach the UI directly. A silently-skipped or silently-defaulted
 mapping is exactly the failure mode that would let a raw code leak
 through, so this module raises instead of guessing.
 
-If UI_LABELS.md is revised (new code added, label wording changed),
+If 02_CLAIM_TAXONOMY_LABELS.md is revised (new code added, label wording changed),
 nothing in this file needs to change — it re-reads the file at most
 once per process (see lru_cache) and just needs the table format
 (`| `code` | label |`) and section headers to stay the same.
@@ -25,10 +25,15 @@ from pathlib import Path
 from typing import Optional
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-UI_LABELS_PATH = REPO_ROOT / "docs" / "UI_LABELS.md"
+UI_LABELS_PATH = (
+    REPO_ROOT
+    / "docs"
+    / "02_PACK_IMAGE_ANALYSIS"
+    / "02_CLAIM_TAXONOMY_LABELS.md"
+)
 
 # Maps the table key the app asks for -> the exact section header in
-# UI_LABELS.md. If that file's headers ever change, update here.
+# 02_CLAIM_TAXONOMY_LABELS.md. If that file's headers ever change, update here.
 _SECTION_HEADERS = {
     "claim_category_1": "## claim_category_1",
     "claim_category_2": "## claim_category_2",
@@ -42,7 +47,7 @@ _ROW_RE = re.compile(r"^\|\s*`([^`]+)`\s*\|\s*([^|]+?)\s*\|\s*$")
 
 
 class UILabelsError(RuntimeError):
-    """Raised when docs/UI_LABELS.md is missing, malformed, or doesn't
+    """Raised when docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md is missing, malformed, or doesn't
     have an entry for a code the app is trying to display. Deliberately
     not caught anywhere in the app — see module docstring."""
 
@@ -52,7 +57,7 @@ def _parse_section(lines: list[str], header: str) -> dict[str, str]:
         start = lines.index(header)
     except ValueError:
         raise UILabelsError(
-            f"UI_LABELS.md is missing the expected section header "
+            f"02_CLAIM_TAXONOMY_LABELS.md is missing the expected section header "
             f"'{header}'. Either the file was restructured (update "
             f"shared/labels.py to match) or it needs to be restored."
         )
@@ -67,7 +72,7 @@ def _parse_section(lines: list[str], header: str) -> dict[str, str]:
     if not mapping:
         raise UILabelsError(
             f"Parsed zero rows out of the '{header}' section of "
-            f"UI_LABELS.md — the table format may have changed."
+            f"02_CLAIM_TAXONOMY_LABELS.md — the table format may have changed."
         )
     return mapping
 
@@ -76,7 +81,7 @@ def _parse_section(lines: list[str], header: str) -> dict[str, str]:
 def _load_all() -> dict[str, dict[str, str]]:
     if not UI_LABELS_PATH.exists():
         raise UILabelsError(
-            f"docs/UI_LABELS.md not found at {UI_LABELS_PATH}. This file "
+            f"docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md not found at {UI_LABELS_PATH}. This file "
             f"is the canonical source for every claim/benchmark label "
             f"this app shows — without it, the app refuses to display "
             f"raw stored codes as a substitute."
@@ -91,7 +96,7 @@ def label_for(table: str, code: Optional[str]) -> str:
     `table` is one of 'claim_category_1', 'claim_category_2',
     'nutrition_benchmark_flags'. For claim_category_2, a None/empty
     code is treated as the explicit 'none' code ("No subcategory"),
-    matching how tag_claims.py and UI_LABELS.md model "no subcategory"
+    matching how tag_claims.py and 02_CLAIM_TAXONOMY_LABELS.md model "no subcategory"
     as a real value rather than an absence.
     """
     if not code and table == "claim_category_2":
@@ -100,7 +105,7 @@ def label_for(table: str, code: Optional[str]) -> str:
     if code not in mapping:
         raise UILabelsError(
             f"No display label found for {table} code '{code}' in "
-            f"UI_LABELS.md. Add it there first, then this lookup will "
+            f"02_CLAIM_TAXONOMY_LABELS.md. Add it there first, then this lookup will "
             f"pick it up automatically — this app does not fall back "
             f"to showing the raw code."
         )

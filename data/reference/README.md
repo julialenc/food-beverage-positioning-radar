@@ -31,7 +31,7 @@ Rows that still require review should use a mapped company or
 `Other / not mapped to a company` as the visible owner, with review status kept
 in metadata.
 
-Full governance notes are documented in `docs/BRAND_COMPANY_MAPPING.md`.
+Full governance notes are documented in `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md`.
 
 ### `brand_alias_mapping.csv`
 
@@ -76,7 +76,7 @@ exceptions.
 
 The matrix is an input to company mapping. It should not be used as a blanket
 override without the conflict checks described in
-`docs/BRAND_COMPANY_MAPPING.md`.
+`docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md`.
 
 ### `reviewed_product_mapping_overrides.csv`
 

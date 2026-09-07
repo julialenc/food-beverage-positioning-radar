@@ -374,7 +374,7 @@ Do **not** create broad exclusions such as `Dunkin -> OUT_OF_SCOPE` or
 on legitimate packaged retail products.
 
 Beverages also use a separate MVP view segmentation layer documented in
-`docs/NUTRITION_OUTLIER_GOVERNANCE.md` and implemented in
+`docs/01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md` and implemented in
 `shared/beverage_segments.py`.
 
 The beverage segment split is used for chart readability and nutrition

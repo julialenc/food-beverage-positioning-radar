@@ -236,17 +236,17 @@ paid Azure services and should not be run as part of an automatic loop.
 
 ## Documentation
 
-- `docs/METHODOLOGY.md` - metric definitions, evidence layers, and
+- `docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md` - metric definitions, evidence layers, and
   interpretation rules
-- `docs/LIMITATIONS.md` - source-data, coverage, and methodology limitations
-- `docs/CATEGORY_CLEANUP.md` - category cleanup and routing governance
-- `docs/BRAND_COMPANY_MAPPING.md` - brand normalization and company mapping
+- `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md` - source-data, coverage, and methodology limitations
+- `docs/01_PRODUCT_DATA_GOVERNANCE/01_CATEGORY_SCOPE_AND_CLEANUP.md` - category cleanup and routing governance
+- `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md` - brand normalization and company mapping
   governance
-- `docs/NUTRITION_OUTLIER_GOVERNANCE.md` - nutrition-quality and outlier
+- `docs/01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md` - nutrition-quality and outlier
   treatment rules
-- `docs/COLUMN_DESCRIPTIONS.md` - database/output field definitions
-- `docs/CLAIM_EXTRACTION.md` - OCR/LLM front-pack claim extraction methodology
-- `docs/ADR.md` - architecture decision records
+- `docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md` - database/output field definitions
+- `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md` - OCR/LLM front-pack claim extraction methodology
+- `docs/03_PROJECT_REFERENCE/01_ADR.md` - architecture decision records
 - `data/reference/README.md` - reference mapping files and provenance notes
 
 ## Data Source, License, And Attribution

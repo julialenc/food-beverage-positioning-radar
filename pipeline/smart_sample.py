@@ -3,7 +3,8 @@ smart_sample.py — stratified enriched sampler for the clean OCR/LLM run.
 
 COMPLETE REPLACEMENT of the original smart_sample.py, which was built
 around composition_marker_score (now deprecated — see llm_sampling_design_log.md
-and ADR.md). The design is fully documented in llm_sampling_design_log.md.
+and docs/03_PROJECT_REFERENCE/01_ADR.md). The design is fully documented in
+llm_sampling_design_log.md.
 
 Current scope: US & Canada + UK & Ireland only.
 France: deferred pending a French keyword dictionary for the positioning

@@ -395,7 +395,7 @@ STRUCTURAL_MAX_COLS = [
     "salt_100g",
 ]
 
-# Fields used to calculate completeness_score — see docs/METHODOLOGY.md
+# Fields used to calculate completeness_score — see docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md
 # for the full metric definition and scope statement.
 COMPLETENESS_COLS = [
     "product_name",
@@ -1761,7 +1761,7 @@ def completeness_score(row):
     """
     Score a product 0-100 based on key structured field population.
     This is a data-quality indicator, not a quality score for the
-    product itself. See docs/METHODOLOGY.md for the full metric
+    product itself. See docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md for the full metric
     definition and scope statement.
     """
     filled = sum(
@@ -2038,7 +2038,7 @@ def clean(input_path):
     df["primary_brand"] = df["legacy_primary_brand"]
     # Strip accents for consistent grouping - nestle variants are already ASCII.
     # Full company normalisation now maintained in
-    # data/reference/company_brand_mapping.csv (see docs/BRAND_COMPANY_MAPPING.md)
+    # data/reference/company_brand_mapping.csv (see docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md)
     df["primary_brand"] = df["primary_brand"]\
         .str.normalize("NFKD")\
         .str.encode("ascii", errors="ignore")\
@@ -2149,7 +2149,7 @@ def clean(input_path):
     # from Option A ingredient marker analysis.
     # BOTH = bilingual packaging, treated as eligible.
     # Coverage: ~84% of rows based on 18 May 2026 sample.
-    # See docs/OBSERVATIONS.md OBS-001 and OBS-008.
+    # See docs/03_PROJECT_REFERENCE/05_OBSERVATIONS.md OBS-001 and OBS-008.
     df["ingredient_analysis_eligible"] = df["ingredients_lang"].isin(["EN", "FR", "BOTH"])
     eligible = df["ingredient_analysis_eligible"].sum()
     print(f"  Step 12 - Ingredient analysis eligible: {eligible} of {len(df)} rows "
@@ -2158,7 +2158,7 @@ def clean(input_path):
     # Step 13: Add nullable product_segment_label (v2 stub)
     # Intentionally empty in v1. K-Means (Option B) will populate this.
     # Column exists now so SQLite schema and Power BI model don't break.
-    # See docs/ADR.md ADR-005.
+    # See docs/03_PROJECT_REFERENCE/01_ADR.md ADR-005.
     if "product_segment_label" not in df.columns:
         df["product_segment_label"] = None
     print(f"  Step 13 - product_segment_label column added (null, v2 stub)")

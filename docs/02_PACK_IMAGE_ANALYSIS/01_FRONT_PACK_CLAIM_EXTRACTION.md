@@ -31,11 +31,11 @@ together form one analytical release.
 
 **What to read elsewhere:**
 - Metric definitions and "what it measures / what it does not measure" →
-  `docs/METHODOLOGY.md`
-- Interpretation caveats and data-source limitations → `docs/LIMITATIONS.md`
+  `docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md`
+- Interpretation caveats and data-source limitations → `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md`
 - Architectural decisions (language-profile design, release-ID scheme) →
-  `docs/ADR.md`
-- Field names and types → `docs/COLUMN_DESCRIPTIONS.md`
+  `docs/03_PROJECT_REFERENCE/01_ADR.md`
+- Field names and types → `docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md`
 
 ---
 
@@ -195,7 +195,7 @@ detected claim. Field → category mapping is defined in `tag_claims.py`.
 | `OTHER` | comparative, heritage, sustainability, reformulation, other |
 | `NO_CLAIM` | — |
 
-The 34 claim fields are documented in `docs/COLUMN_DESCRIPTIONS.md`. The
+The 34 claim fields are documented in `docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md`. The
 taxonomy reached its current shape through four prompt versions, each adding
 fields in response to specific observed gaps.
 

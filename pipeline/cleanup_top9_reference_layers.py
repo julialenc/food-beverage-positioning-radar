@@ -1,7 +1,7 @@
 """Clean Top-9 reference layers without changing locked product results.
 
 This is a maintenance utility for the post-audit reference cleanup described in
-docs/BRAND_COMPANY_MAPPING.md. It snapshots the current Streamlit-facing
+docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md. It snapshots the current Streamlit-facing
 product mapping, cleans duplicate/unsafe reusable reference rows, regenerates
 the standard Top-9 extract from SQLite, and validates pre/post equality.
 """

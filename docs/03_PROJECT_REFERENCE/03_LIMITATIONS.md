@@ -5,7 +5,7 @@
 
 This document catalogs the main limitations affecting interpretation of
 Food & Beverage Positioning Radar outputs. For metric definitions and
-"what it measures / what it does not measure", see `docs/METHODOLOGY.md`.
+"what it measures / what it does not measure", see `docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md`.
 
 ## Data source: Open Food Facts
 
@@ -90,7 +90,7 @@ if upstream source/type signals change or are incomplete.
 `OUT_OF_SCOPE` is an analytical decision for this Radar, not a statement that a
 product is invalid or incorrectly classified in OFF.
 
-See `docs/CATEGORY_CLEANUP.md` for the launch taxonomy and exact-override
+See `docs/01_PRODUCT_DATA_GOVERNANCE/01_CATEGORY_SCOPE_AND_CLEANUP.md` for the launch taxonomy and exact-override
 precedence.
 
 ## Brand and company limitations
@@ -125,7 +125,7 @@ Products can remain under `Other / not mapped to a company` when ownership
 cannot be established with sufficiently strong evidence. The project
 deliberately prefers a false negative to a false-positive owner assignment.
 
-See `docs/BRAND_COMPANY_MAPPING.md` for the mapping hierarchy and maintenance
+See `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md` for the mapping hierarchy and maintenance
 rules.
 
 ## Nutrition limitations
@@ -144,7 +144,7 @@ available.
 Some records can therefore remain visible at product level while being excluded
 from aggregate analysis.
 
-See `docs/NUTRITION_OUTLIER_GOVERNANCE.md` for the detailed rules.
+See `docs/01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md` for the detailed rules.
 
 ### Within-brand plausibility is not fully implemented
 
@@ -215,7 +215,7 @@ The Streamlit MVP displays vision-based positioning signals. Legacy or fallback
 ingredient/name classifications can remain in the pipeline for internal QA, but
 they must not be presented as confirmed pack observations.
 
-See `docs/CLAIM_EXTRACTION.md` for the sampling design and release methodology.
+See `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md` for the sampling design and release methodology.
 
 ## Extraction and detection limitations
 

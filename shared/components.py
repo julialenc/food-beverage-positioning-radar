@@ -3,7 +3,7 @@ Shared rendering helpers for the Streamlit app.
 
 Chip styling is deliberately muted for both claim chips and benchmark
 flag chips — no red/orange "warning" colors anywhere — per the brief's
-no-blame requirement (see docs/ADR.md and the project's onboarding
+no-blame requirement (see docs/03_PROJECT_REFERENCE/01_ADR.md and the project's onboarding
 notes: "muted benchmark chips, not red warning boxes"). The two chip
 tones below distinguish *category* (a positioning claim vs. a nutrition
 benchmark flag vs. a co-occurrence), never severity or judgment. Do not
@@ -173,7 +173,7 @@ def render_product_pack_image(image_url: Optional[str], product_name: str = "") 
 def product_image_url(raw_url: Optional[str]) -> Optional[str]:
     """Returns None for missing, NaN, or known-placeholder image URLs
     (Open Food Facts marks unavailable images with '/invalid/' in the
-    path — see docs/COLUMN_DESCRIPTIONS.md) so callers can render a
+    path — see docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md) so callers can render a
     neutral "no image available" placeholder instead of a broken image.
     NaN (not just None) is handled explicitly: pandas returns NaN, not
     None, for a NULL TEXT column in at least some read paths, and the

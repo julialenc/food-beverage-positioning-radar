@@ -22,7 +22,7 @@ Design principles:
     - product_analysis declares its full schema upfront, including columns
       not yet populated by analyze.py (claim taxonomy, benchmark flags,
       pack-image metadata) — these are written later by merge_scores.py
-      and tag_claims.py via UPDATE, not ALTER TABLE. See docs/ADR.md.
+      and tag_claims.py via UPDATE, not ALTER TABLE. See docs/03_PROJECT_REFERENCE/01_ADR.md.
     - load.py is an ingredient-stage loader: it only writes columns that
       are present in the current input CSV. It must never write later-
       stage fields (pack_claims_found, claim_category_1, nutrition_
@@ -44,7 +44,7 @@ Production note:
     Week 0: run on full OFF bulk export (~50,000-100,000 filtered products)
     Weekly: run on API diff (last_modified_t > 7 days) — same script,
     different input size, pass --source bulk_export or --source api
-    accordingly. See docs/ADR.md and docs/OBSERVATIONS.md OBS-012 for
+    accordingly. See docs/03_PROJECT_REFERENCE/01_ADR.md and docs/03_PROJECT_REFERENCE/05_OBSERVATIONS.md OBS-012 for
     full production strategy.
 
 Known limitation:
@@ -1052,7 +1052,7 @@ def compute_weekly_brand_summary(df, conn, timestamp):
     market-intelligence summary (pack claim distribution, claim taxonomy
     shares, benchmark intersection rates, average positioning gap) needs
     a separate aggregation step that runs after the full pipeline
-    completes and queries product_analysis directly. See docs/ADR.md.
+    completes and queries product_analysis directly. See docs/03_PROJECT_REFERENCE/01_ADR.md.
 
     Deletes existing rows for today's week_ending before inserting, so
     re-running this script on the same day does not create duplicate

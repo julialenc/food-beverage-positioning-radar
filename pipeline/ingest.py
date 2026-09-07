@@ -38,7 +38,7 @@ PRODUCTS_PER_CATEGORY = 10_000  # 4 categories × 10,000 = 40,000 total
 BASE_URL = "https://world.openfoodfacts.org/cgi/search.pl"
 
 # Fields pulled from the OFF API — kept selective to keep response size light.
-# See docs/ADR.md ADR-002 for the full field-selection rationale.
+# See docs/03_PROJECT_REFERENCE/01_ADR.md ADR-002 for the full field-selection rationale.
 FIELDS = ",".join([
     "code",
     "product_name",

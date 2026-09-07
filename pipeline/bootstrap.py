@@ -4,7 +4,7 @@ bootstrap.py
 One-time bootstrap of the database from the Open Food Facts full CSV export.
 Use this instead of ingest.py for initial database population.
 
-The OFF search API rate-limits bulk scraping (see docs/ADR.md ADR-013).
+The OFF search API rate-limits bulk scraping (see docs/03_PROJECT_REFERENCE/01_ADR.md ADR-013).
 The correct path for initial population is this script: it downloads the
 full OFF CSV export (~800 MB compressed), streams it in 50,000-row chunks
 to avoid loading it entirely into memory, filters by target countries and
