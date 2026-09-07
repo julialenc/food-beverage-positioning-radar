@@ -1,4 +1,5 @@
 pandas
+requests
 streamlit>=1.36
 plotly
 python-dotenv
