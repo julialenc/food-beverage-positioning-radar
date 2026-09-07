@@ -1,5 +1,5 @@
 """
-cleanup_category_assignments.py
+cat_01_apply_category_cleanup.py
 --------------------------------
 Audit and optionally apply category cleanup actions already stored in
 database/positioning_radar.db.
@@ -39,25 +39,25 @@ What is never touched
 
 Usage
   Dry run:
-    python pipeline/cleanup_category_assignments.py
+    python pipeline/governance/category_scope/cat_01_apply_category_cleanup.py
 
   Dry run using Julia-reviewed snack files:
-    python pipeline/cleanup_category_assignments.py ^
+    python pipeline/governance/category_scope/cat_01_apply_category_cleanup.py ^
       --snack-high-confidence-review C:\\path\\set_2_snack_classified.xlsx ^
       --snack-manual-review C:\\path\\snacks_misfit_review_classified.csv
 
   Dry run using a completed France snack scope review:
-    python pipeline/cleanup_category_assignments.py ^
+    python pipeline/governance/category_scope/cat_01_apply_category_cleanup.py ^
       --france-snack-review C:\\path\\20.08.2026_france_snacks_or_not_snacks.csv ^
       --france-snack-review-source data\\sample\\france_snacks_scope_review_YYYYMMDD_HHMMSS.csv
 
   Dry run using a completed France cereal scope review:
-    python pipeline/cleanup_category_assignments.py ^
+    python pipeline/governance/category_scope/cat_01_apply_category_cleanup.py ^
       --france-cereal-review C:\\path\\france_cereals_review_classified.csv ^
       --france-cereal-review-source data\\sample\\france_cereals_review_YYYYMMDD_HHMMSS.csv
 
   Apply after reviewing the audit CSVs:
-    python pipeline/cleanup_category_assignments.py --apply [same review args]
+    python pipeline/governance/category_scope/cat_01_apply_category_cleanup.py --apply [same review args]
 """
 
 from __future__ import annotations
@@ -73,7 +73,7 @@ from pathlib import Path
 import pandas as pd
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[3]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
 AUDIT_DIR = ROOT / "data" / "sample"
 
@@ -482,7 +482,7 @@ def apply_cleanup(conn: sqlite3.Connection, rows: list[dict[str, object]]) -> in
 
 
 def print_summary(rows: list[dict[str, object]], paths: dict[str, Path]) -> None:
-    print("\nFood & Beverage Positioning Radar - cleanup_category_assignments.py")
+    print("\nFood & Beverage Positioning Radar - cat_01_apply_category_cleanup.py")
     print("\nFlagged category assignment actions:")
     if not rows:
         print("  none")
