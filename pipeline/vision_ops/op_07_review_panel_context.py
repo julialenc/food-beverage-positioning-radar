@@ -1,6 +1,6 @@
 """
-review_context_check.py
------------------------
+op_07_review_panel_context.py
+-----------------------------
 Applies the second-pass panel-context reviewer to rows an existing run
 already classified as ingredient_or_legal_panel, using their SAVED OCR text.
 No Azure Vision calls — one small LLM call per eligible row.
@@ -12,9 +12,9 @@ It reuses review_image_context() from stage_10_extract_pack_claims.py, so the ch
 the production path cannot drift apart.
 
 Usage:
-    python pipeline/review_context_check.py --input data/sample/vision_results_<ts>.csv
-    python pipeline/review_context_check.py --input <file> --all-categories
-    python pipeline/review_context_check.py --input <file> --language fr
+    python pipeline/vision_ops/op_07_review_panel_context.py --input data/sample/vision_results_<ts>.csv
+    python pipeline/vision_ops/op_07_review_panel_context.py --input <file> --all-categories
+    python pipeline/vision_ops/op_07_review_panel_context.py --input <file> --language fr
 
 Exit code is 0 always — this is a diagnostic, not a gate.
 """
@@ -25,7 +25,7 @@ from pathlib import Path
 
 import pandas as pd
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 from pipeline.stages import stage_10_extract_pack_claims as ve  # noqa: E402
 
@@ -77,7 +77,7 @@ def main():
     else:
         eligible = panel
 
-    print(f"\nFood & Beverage Positioning Radar - review_context_check.py")
+    print(f"\nFood & Beverage Positioning Radar - op_07_review_panel_context.py")
     print(f"\n  Input:            {Path(args.input).name}")
     print(f"  Review prompt:    {review_file}")
     print(f"  Rows in file:     {len(df):,}")

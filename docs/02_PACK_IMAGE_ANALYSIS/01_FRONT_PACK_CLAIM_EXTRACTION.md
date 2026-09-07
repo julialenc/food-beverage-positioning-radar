@@ -137,7 +137,7 @@ The initial 12,029-product clean sample was discarded after preflight showed
 Submitting `nan` to Azure OCR produced HTTP 400 errors labelled as
 `invalid_image`. The fix was applied to the sampler: `stage_09_build_vision_sample.py` now
 filters `image_url IS NOT NULL AND TRIM(image_url) <> '' AND LOWER(TRIM(image_url)) LIKE 'http%'`.
-A preflight HTTP check (`preflight_images.py`) confirmed 100% availability
+A preflight HTTP check (`pipeline/vision_ops/op_02_preflight_images.py`) confirmed 100% availability
 before the locked run was drawn.
 
 ### 2.5 Three sampling components
@@ -652,7 +652,7 @@ taxonomy claim. These are distinct states. Loading with `keep_default_na=False`
 is required to preserve the distinction.
 
 **Release scoping:** `claim_source = 'vision'` correctly identifies the
-release population only because `clear_stale_vision.py` was run before
+release population only because `pipeline/vision_ops/op_05_clear_stale_observations.py` was run before
 `stage_11_merge_vision_results.py`, retiring 3,858 superseded pilot rows (3,789 prompt-v2,
 69 v4 test artifacts). For future releases, filter on `release_run_id`.
 
@@ -742,6 +742,6 @@ English keywords remain valid for multilingual packs.
   and adds noise without improving accuracy.
 - **Cereals contamination fix:** update `_EXCLUDE_FROM_CEREALS` in
   `stage_01a_bootstrap_from_off_bulk.py` and run an explicit DB cleanup. See section 9.
-- **Panel-context review for English:** run `review_context_check.py` with
+- **Panel-context review for English:** run `pipeline/vision_ops/op_07_review_panel_context.py` with
   `--language en --all-categories` on the release-01 CSVs to measure the
   false-exclusion rate. 141 candidate rows identified.

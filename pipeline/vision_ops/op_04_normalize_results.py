@@ -1,6 +1,6 @@
 """
-normalise_release.py
---------------------
+op_04_normalize_results.py
+--------------------------
 Applies deterministic consistency corrections to a final vision-results CSV.
 No LLM calls — every rule is derivable from data already in the file.
 
@@ -38,8 +38,8 @@ Rules applied
 Idempotent: running twice produces the same output.
 
 Usage:
-    python pipeline/normalise_release.py --input data/sample/vision_results_us_canada_final.csv
-    python pipeline/normalise_release.py --input data/sample/vision_results_uk_ie_final.csv
+    python pipeline/vision_ops/op_04_normalize_results.py --input data/sample/vision_results_us_canada_final.csv
+    python pipeline/vision_ops/op_04_normalize_results.py --input data/sample/vision_results_uk_ie_final.csv
 
 Output:
     <input>_normalised.csv   plus a per-rule change log
@@ -50,7 +50,7 @@ from pathlib import Path
 
 import pandas as pd
 
-REPO_ROOT  = Path(__file__).resolve().parent.parent
+REPO_ROOT  = Path(__file__).resolve().parents[2]
 SAMPLE_DIR = REPO_ROOT / "data" / "sample"
 P = "v3_"   # flattened extraction-schema prefix
 
@@ -103,7 +103,7 @@ def main():
     out_path = (Path(args.output) if args.output
                 else in_path.with_name(in_path.stem + "_normalised.csv"))
 
-    print(f"\nFood & Beverage Positioning Radar - normalise_release.py")
+    print(f"\nFood & Beverage Positioning Radar - op_04_normalize_results.py")
     print(f"\n  Input:  {in_path.name}")
 
     df = pd.read_csv(in_path, dtype={"barcode": str}, keep_default_na=False,

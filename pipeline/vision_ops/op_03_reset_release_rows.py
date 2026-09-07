@@ -1,6 +1,6 @@
 """
-reset_release_sample.py
------------------------
+op_03_reset_release_rows.py
+---------------------------
 Clears all vision-pipeline and claim-tagging fields for a locked
 regional sample before the clean production run. Only touches the
 barcodes in the input file — the other ~506,000 rows are not affected.
@@ -28,7 +28,7 @@ Fields NOT cleared (preserved in every case):
     stage_11_merge_vision_results.py Path 2a when a non-front reclassification occurs)
 
 Release-run order (per region):
-  1. python pipeline/reset_release_sample.py --input <regional_sample.csv>
+  1. python pipeline/vision_ops/op_03_reset_release_rows.py --input <regional_sample.csv>
   2. Remove or rename any existing vision_results_checkpoint.csv
   3. python pipeline/stages/stage_10_extract_pack_claims.py  (full run, no --test)
   4. Review run-level QA output
@@ -37,8 +37,8 @@ Release-run order (per region):
   6. python pipeline/stages/stage_12_build_claim_taxonomy.py
 
 Usage:
-    python pipeline/reset_release_sample.py --input data/sample/us_release_sample.csv
-    python pipeline/reset_release_sample.py --input data/sample/us_release_sample.csv --dry-run
+    python pipeline/vision_ops/op_03_reset_release_rows.py --input data/sample/us_release_sample.csv
+    python pipeline/vision_ops/op_03_reset_release_rows.py --input data/sample/us_release_sample.csv --dry-run
 """
 
 import argparse
@@ -48,7 +48,7 @@ from pathlib import Path
 import pandas as pd
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DB_PATH   = REPO_ROOT / "database" / "positioning_radar.db"
 
 # ── Fields to clear ───────────────────────────────────────────────────────────
@@ -84,7 +84,7 @@ def get_existing_columns(conn: sqlite3.Connection) -> set:
     return {row[1] for row in rows}
 
 
-def reset_release_sample(
+def reset_release_rows(
     conn: sqlite3.Connection,
     barcodes,
     dry_run: bool = False,
@@ -168,7 +168,7 @@ def main():
     if not input_path.exists():
         raise FileNotFoundError(f"Input file not found: {input_path}")
 
-    print(f"\nFood & Beverage Positioning Radar - reset_release_sample.py")
+    print(f"\nFood & Beverage Positioning Radar - op_03_reset_release_rows.py")
     print(f"{'DRY RUN — no changes will be written' if args.dry_run else 'LIVE RUN'}")
     print(f"\n  Input sample: {input_path.name}")
 
@@ -185,7 +185,7 @@ def main():
     # ── Connect and reset ─────────────────────────────────────────────────────
     conn = sqlite3.connect(args.db)
 
-    matched = reset_release_sample(conn, sample["barcode"], dry_run=args.dry_run)
+    matched = reset_release_rows(conn, sample["barcode"], dry_run=args.dry_run)
     conn.close()
 
     if args.dry_run:

@@ -1,6 +1,6 @@
 """
-release_summary.py
-------------------
+op_06_summarize_release.py
+--------------------------
 Release-scoped claim prevalence. Every figure is restricted to rows
 carrying a release_run_id — never to claim_source='vision', which also
 matches superseded observations, and never to the whole products table,
@@ -17,10 +17,10 @@ Two modes:
   diagnose misses.
 
 Usage:
-    python pipeline/release_summary.py
-    python pipeline/release_summary.py --release-id release_2026_01_us_uk
-    python pipeline/release_summary.py --brand kind --misses-only
-    python pipeline/release_summary.py --brand kind --misses-only --full-ocr
+    python pipeline/vision_ops/op_06_summarize_release.py
+    python pipeline/vision_ops/op_06_summarize_release.py --release-id release_2026_01_us_uk
+    python pipeline/vision_ops/op_06_summarize_release.py --brand kind --misses-only
+    python pipeline/vision_ops/op_06_summarize_release.py --brand kind --misses-only --full-ocr
 """
 
 import argparse
@@ -29,7 +29,7 @@ from pathlib import Path
 
 import pandas as pd
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DB_PATH   = REPO_ROOT / "database" / "positioning_radar.db"
 
 
@@ -263,7 +263,7 @@ def main():
                     help="With --brand, print the full OCR text rather than truncating")
     args = ap.parse_args()
 
-    print(f"\nFood & Beverage Positioning Radar - release_summary.py")
+    print(f"\nFood & Beverage Positioning Radar - op_06_summarize_release.py")
     print(f"Release: {args.release_id}")
 
     conn = sqlite3.connect(args.db)

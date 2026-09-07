@@ -1,6 +1,6 @@
 """
-clear_stale_vision.py
----------------------
+op_05_clear_stale_observations.py
+---------------------------------
 Clears vision and claim-tagging fields for every product that carries a
 vision observation but is NOT part of the current release.
 
@@ -32,10 +32,10 @@ The pilot results remain available in the archived run CSVs — nothing
 irrecoverable is lost.
 
 Usage:
-    python pipeline/clear_stale_vision.py --release data/sample/us_release_sample.csv ^
-                                          --release data/sample/uk_release_sample.csv --dry-run
-    python pipeline/clear_stale_vision.py --release data/sample/us_release_sample.csv ^
-                                          --release data/sample/uk_release_sample.csv
+    python pipeline/vision_ops/op_05_clear_stale_observations.py --release data/sample/us_release_sample.csv ^
+                                                                 --release data/sample/uk_release_sample.csv --dry-run
+    python pipeline/vision_ops/op_05_clear_stale_observations.py --release data/sample/us_release_sample.csv ^
+                                                                 --release data/sample/uk_release_sample.csv
 """
 
 import argparse
@@ -44,7 +44,7 @@ from pathlib import Path
 
 import pandas as pd
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DB_PATH   = REPO_ROOT / "database" / "positioning_radar.db"
 
 RESET_FIELDS = [
@@ -78,7 +78,7 @@ def main():
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
-    print(f"\nFood & Beverage Positioning Radar - clear_stale_vision.py")
+    print(f"\nFood & Beverage Positioning Radar - op_05_clear_stale_observations.py")
     print(f"{'DRY RUN — no changes will be written' if args.dry_run else 'LIVE RUN'}")
 
     # ── Collect release barcodes ──────────────────────────────────────────────

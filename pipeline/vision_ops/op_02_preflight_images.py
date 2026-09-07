@@ -1,13 +1,13 @@
 """
-preflight_images.py
---------------------
+op_02_preflight_images.py
+-------------------------
 Tests every image URL in the release sample before spending on Azure OCR.
 Writes a preflight CSV with HTTP status, content type, and image size for
 each barcode. Use the results to exclude unavailable images before the run.
 
 Usage:
-    python pipeline/preflight_images.py --input data/sample/us_release_sample.csv
-    python pipeline/preflight_images.py --input data/sample/us_release_sample.csv --workers 32
+    python pipeline/vision_ops/op_02_preflight_images.py --input data/sample/us_release_sample.csv
+    python pipeline/vision_ops/op_02_preflight_images.py --input data/sample/us_release_sample.csv --workers 32
 
 Output:
     data/sample/us_release_sample_preflight.csv
@@ -22,7 +22,7 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def clean_url(value) -> str:
@@ -84,7 +84,7 @@ def main():
         input_path.stem + "_preflight" + input_path.suffix
     )
 
-    print(f"\nFood & Beverage Positioning Radar - preflight_images.py")
+    print(f"\nFood & Beverage Positioning Radar - op_02_preflight_images.py")
     print(f"\n  Input:   {input_path.name}")
     print(f"  Workers: {args.workers}")
 
@@ -127,7 +127,7 @@ def main():
           f"({100*available/len(out):.1f}%)")
     print(f"\n  Saved → {output_path.name}")
     print(f"\n  Next step: filter to image_preflight_status == 'available'")
-    print(f"  before running reset_release_sample.py and stage_10_extract_pack_claims.py.\n")
+    print(f"  before running op_03_reset_release_rows.py and stage_10_extract_pack_claims.py.\n")
 
 
 if __name__ == "__main__":
