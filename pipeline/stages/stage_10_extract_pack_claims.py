@@ -103,7 +103,8 @@ LLM_COST_PER_1K   = float(os.getenv("AZURE_LLM_COST_PER_1K_CHF", "0.20"))
 # extraction prompt used for the v3 run (see docs/03_PROJECT_REFERENCE/01_ADR.md ADR-006) —
 # do not change the prompt text itself without also bumping this.
 # ── Language profiles ───────────────────────────────────────────────────────
-# One standalone prompt per language, loaded from pipeline/prompts/ at run
+# One standalone prompt per language, loaded from pipeline/vision_prompts/current/
+# at run
 # time rather than pasted inline — the archive and the active prompt are then
 # the same artifact and cannot drift apart.
 #
@@ -111,16 +112,16 @@ LLM_COST_PER_1K   = float(os.getenv("AZURE_LLM_COST_PER_1K_CHF", "0.20"))
 # validator contract and taxonomy, French phrase coverage, plus the
 # mixed_pack_text tightening that release-01 did not have. When English is
 # next re-run it should get that fix too, as v5-en.
-PROMPTS_DIR = ROOT / "pipeline" / "prompts"
+PROMPTS_DIR = ROOT / "pipeline" / "vision_prompts" / "current"
 
 LANGUAGE_PROFILES: dict[str, dict] = {
     # Release-01 ran on v4 with no review step. The reviewer is defined here
     # so the diagnostic can measure release-01's false-exclusion rate, and so
     # future English runs get the same protection France has. Any English run
     # that must reproduce release-01 exactly needs --no-context-review.
-    "en": {"prompt_file": "prompt_v4.txt",    "version": "v4",
+    "en": {"prompt_file": "prompt_v5_en.txt", "version": "v4",
            "context_review_prompt": "prompt_en_context_review.txt"},
-    "fr": {"prompt_file": "prompt_v5_1_fr.txt", "version": "v5.1-fr",
+    "fr": {"prompt_file": "prompt_v5_fr.txt", "version": "v5.1-fr",
            # Second-pass panel-context reviewer. Only languages that define
            # one get the review step, so this also gates the feature.
            "context_review_prompt": "prompt_fr_context_review.txt"},
@@ -151,7 +152,7 @@ def load_prompt(language: str) -> tuple[str, str]:
     if not path.exists():
         raise FileNotFoundError(
             f"Prompt file not found: {path}\n"
-            f"  Each language profile loads its prompt from pipeline/prompts/.\n"
+            f"  Each language profile loads its prompt from pipeline/vision_prompts/current/.\n"
             f"  Expected {profile['prompt_file']} for language '{language}'."
         )
     text = path.read_text(encoding="utf-8").strip()

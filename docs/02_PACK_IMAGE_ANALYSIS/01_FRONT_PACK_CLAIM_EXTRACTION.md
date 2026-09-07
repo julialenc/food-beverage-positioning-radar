@@ -12,8 +12,15 @@ claims with a language-specific LLM prompt → validate the structured output
 → map claims into a common taxonomy → compare observed positioning with
 formulation and nutrition reality.
 
-**Current active prompts:** `prompt_v4.txt` (English, US+UK release);
-`prompt_v5_1_fr.txt` + `prompt_fr_context_review.txt` (French release).
+**Current active prompts:** `pipeline/vision_prompts/current/prompt_v5_en.txt`
+(`prompt_version = v4`, English, US+UK release);
+`pipeline/vision_prompts/current/prompt_v5_fr.txt`
+(`prompt_version = v5.1-fr`, French release), plus the current English and
+French context-review prompts.
+
+Prompt filenames are repository organization labels. `prompt_version` is the
+analytical extraction-method version written to data; it changes only when
+prompt text changes, not when files are renamed or moved.
 
 **Release naming:** "Release 01" and "Release 02" refer to extraction runs
 in ordinal order. `release_2026_01_us_uk` and `release_2026_01_fr` are the
@@ -203,10 +210,11 @@ fields in response to specific observed gaps.
 
 ## 4. Prompt version history
 
-All prompts live in `pipeline/prompts/`. The active version is loaded at
-run time by `stage_10_extract_pack_claims.py --language`; nothing is pasted inline. This
-means the file IS the record: the archive and the active prompt cannot drift
-apart.
+Current prompts live in `pipeline/vision_prompts/current/`; older prompt files
+live in `pipeline/vision_prompts/historical/`. The active version is loaded at
+run time by `stage_10_extract_pack_claims.py --language`; nothing is pasted
+inline. This means the file IS the record: the archive and the active prompt
+cannot drift apart.
 
 ### 4.1 v1/v2 — single-pass extraction (used for the ~4,700-product pilot)
 
@@ -561,7 +569,7 @@ non-front, even after the v5.1-fr fixes.
 | Failed/not attempted | 79 | 94 | 173 |
 
 **Release ID:** `release_2026_01_us_uk`  
-**Prompt:** `prompt_v4.txt` (v4), no second-pass review  
+**Prompt:** `prompt_v5_en.txt` (`prompt_version = v4`), no second-pass review
 **Sample file:** `pipeline/sample_clean_run.csv` (RUN_ID `release-01-image-eligible`)  
 **Archived results:** `vision_results_us_canada_final.csv`, `vision_results_uk_ie_final.csv`  
 **Normalised results (feed stage_11_merge_vision_results):** `*_normalised.csv`
@@ -585,7 +593,7 @@ snacks 39.7% / 33.8%; beverages 38.5% / 33.5%
 | Failed/not attempted | 182 |
 
 **Release ID:** `release_2026_01_fr`  
-**Prompt:** `prompt_v5_1_fr.txt` (v5.1-fr) with `prompt_fr_context_review.txt`  
+**Prompt:** `prompt_v5_fr.txt` (`prompt_version = v5.1-fr`) with `prompt_fr_context_review.txt`
 **Sample file:** `pipeline/sample_france_run.csv` (RUN_ID `release-02-france`)  
 **Archived results:** `vision_results_20260724_014247.csv`  
 **Context review:** 243 triggered, 187 rescued  
