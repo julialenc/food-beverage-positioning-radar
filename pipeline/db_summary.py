@@ -3,12 +3,12 @@ db_summary.py
 --------------
 Final reporting aggregation layer. Runs at the end of the full pipeline:
 
-    stage_05_load_database.py -> merge_scores.py -> tag_claims.py -> db_summary.py
+    stage_05_load_database.py -> stage_11_merge_vision_results.py -> stage_12_build_claim_taxonomy.py -> db_summary.py
 
 Queries the fully populated SQLite database directly (products JOIN
 product_analysis) — not intermediate CSVs, since the fully enriched
 fields (claim taxonomy, benchmark flags, positioning_composition_gap)
-only exist in the database after merge_scores.py and tag_claims.py have
+only exist in the database after stage_11_merge_vision_results.py and stage_12_build_claim_taxonomy.py have
 run. This is a different job from those two scripts: they do
 product-level classification; this script does reporting aggregation.
 
@@ -91,7 +91,7 @@ Usage:
 
 Input:
     database/positioning_radar.db (products + product_analysis, fully
-    enriched by stage_05_load_database.py + merge_scores.py + tag_claims.py)
+    enriched by stage_05_load_database.py + stage_11_merge_vision_results.py + stage_12_build_claim_taxonomy.py)
 
 Output:
     database/positioning_radar.db (new rows in weekly_brand_positioning_summary
@@ -405,7 +405,7 @@ def select_positioning_examples(df, per_reason_cap=PER_REASON_CAP):
       plant-based pack claim.
     - protein_positioning_with_benchmark_intersection: products where a
       protein-positioning claim co-occurs with a benchmark signal (see
-      tag_claims.py compute_claim_benchmark_intersections()).
+      stage_12_build_claim_taxonomy.py compute_claim_benchmark_intersections()).
     - high_claim_density_example: products with 4 or more distinct pack
       claims, illustrating dense multi-claim positioning architecture.
 

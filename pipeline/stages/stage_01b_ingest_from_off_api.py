@@ -59,7 +59,7 @@ FIELDS = ",".join([
     "created_t",
     "last_modified_t",
     "additives_tags",       # E-number list pre-parsed by OFF, used in stage_04_build_product_analysis.py
-    "image_url",            # front-of-pack image, used by vision_extract.py
+    "image_url",            # front-of-pack image, used by stage_10_extract_pack_claims.py
 ])
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
@@ -263,7 +263,7 @@ def flatten_product(product: dict, category: str) -> dict | None:
         # stored as pipe-separated string e.g. "en:e407|en:e950|en:e952"
         "additives_tags":       "|".join(product.get("additives_tags", [])),
 
-        # front-of-pack image, used by vision_extract.py for claim extraction
+        # front-of-pack image, used by stage_10_extract_pack_claims.py for claim extraction
         "image_url":            product.get("image_url", ""),
     }
 

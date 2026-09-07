@@ -15,7 +15,7 @@ llm_sampling_design_log.md for the reasoning.
 
 IMPORTANT DISTINCTION FROM POSITIONING DETECTOR:
 This script can use off_categories for sub-type detection. The contamination
-issue in detect_positioning_signals.py was specific to pack COMMUNICATION
+issue in stage_06_detect_sampling_signals.py was specific to pack COMMUNICATION
 proxies — OFF's "Plant-based foods and beverages" ancestry was being used
 as if it meant a deliberate claim. Here we're asking "what structural TYPE
 of product is this" (cheese vs. yogurt vs. milk drink), and OFF's
@@ -27,7 +27,7 @@ Families are MUTUALLY EXCLUSIVE per product (first-match-wins priority
 order). Every product that matches no family gets "other_<category>".
 The classifier records which rule matched (family_source) for audit.
 
-Usage: python pipeline/classify_formulation_families.py
+Usage: python pipeline/stages/stage_08_classify_formulation_families.py
 Writes: pipeline/formulation_families.csv
 """
 
@@ -39,9 +39,9 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT    = Path(__file__).resolve().parent.parent
+ROOT    = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-OUT_CSV = Path(__file__).resolve().parent / "formulation_families.csv"
+OUT_CSV = ROOT / "pipeline" / "formulation_families.csv"
 
 RULE_VERSION = "family-v1"
 

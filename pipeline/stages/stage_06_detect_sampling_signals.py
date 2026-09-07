@@ -40,8 +40,8 @@ needs to be SYMMETRICALLY incomplete, so a France sample is not
 stratified against a different set of territories than US/UK.
 
 Usage:
-    python pipeline/detect_positioning_signals.py --region us_uk
-    python pipeline/detect_positioning_signals.py --region france
+    python pipeline/stages/stage_06_detect_sampling_signals.py --region us_uk
+    python pipeline/stages/stage_06_detect_sampling_signals.py --region france
 
 Writes: pipeline/positioning_signals_us_uk.csv
         pipeline/positioning_signals_fr.csv
@@ -57,14 +57,15 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT    = Path(__file__).resolve().parent.parent
+ROOT    = Path(__file__).resolve().parents[2]
+PIPELINE_DIR = ROOT / "pipeline"
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-OUT_CSV = Path(__file__).resolve().parent / "positioning_signals_us_uk.csv"
+OUT_CSV = PIPELINE_DIR / "positioning_signals_us_uk.csv"
 
 # Rebound in main() from the selected profile — do not edit directly.
 RULE_VERSION     = "positioning-v1-en"
 IN_SCOPE_REGIONS = {"US_CANADA", "UK_IE"}
-OUT_CSV          = Path(__file__).resolve().parent / "positioning_signals_us_uk.csv"
+OUT_CSV          = PIPELINE_DIR / "positioning_signals_us_uk.csv"
 STRIP_ACCENTS    = False
 
 # ── EXPLICIT positioning terms (communication-like text ONLY) ───────────────
@@ -534,7 +535,7 @@ def main():
     profile          = REGION_PROFILES[args.region]
     RULE_VERSION     = profile["rule_version"]
     IN_SCOPE_REGIONS = profile["regions"]
-    OUT_CSV          = Path(__file__).resolve().parent / profile["out_csv"]
+    OUT_CSV          = PIPELINE_DIR / profile["out_csv"]
     STRIP_ACCENTS    = profile["strip_accents"]
     EXPLICIT_TERMS               = _prepare_terms(profile["explicit_terms"])
     FORMULATION_INGREDIENT_TERMS = _prepare_terms(profile["formulation_terms"])

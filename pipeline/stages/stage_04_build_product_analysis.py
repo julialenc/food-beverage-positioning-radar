@@ -176,7 +176,7 @@ E_NUMBER_MARKERS = [
 # DETECTED AND STORED but NOT used in composition_marker_score (ADR-010).
 # Purpose: ingredient_based_claim_signals_found field, benchmark
 # intersection detection, Power BI filtering. Front-of-pack claims are
-# extracted separately via vision_extract.py.
+# extracted separately via stage_10_extract_pack_claims.py.
 
 POSITIONING_SIGNAL_MARKERS = [
     # Protein — require explicit claim context, not bare ingredient
@@ -537,7 +537,7 @@ def compute_composition_marker_score(upf_flags):
     one count per unique marker category.
 
     Components B and C (claim weight + processing/nutrition context)
-    are added in merge_scores.py from front-of-pack vision extraction.
+    are added in stage_11_merge_vision_results.py from front-of-pack vision extraction.
     See docs/03_PROJECT_REFERENCE/01_ADR.md ADR-010 and docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md.
     """
     if not upf_flags:
@@ -746,7 +746,7 @@ def analyze(input_path):
     eligible["composition_marker_band"] = eligible["composition_marker_score"].apply(
         classify_composition_marker_band
     )
-    # Placeholders — populated by merge_scores.py after joining vision results
+    # Placeholders — populated by stage_11_merge_vision_results.py after joining vision results
     eligible["positioning_composition_gap"]      = None
     eligible["positioning_composition_gap_band"] = None
     eligible["pack_claims_found"]                = None
@@ -807,7 +807,7 @@ def main():
     print(f"\nFood & Beverage Positioning Radar - stage_04_build_product_analysis.py")
     print(f"Run timestamp: {timestamp}")
     print(f"Architecture:  Component A (ingredient composition) only")
-    print(f"               Components B+C added in merge_scores.py from vision results\n")
+    print(f"               Components B+C added in stage_11_merge_vision_results.py from vision results\n")
 
     input_path = find_latest_clean(SAMPLE_DIR)
     df = analyze(input_path)
@@ -846,7 +846,7 @@ def main():
     df.to_csv(output_path, index=False, encoding="utf-8-sig")
     print(f"\n  Saved -> analyzed_{timestamp}.csv")
     print(f"  ({len(df):,} rows, {len(df.columns)} columns)")
-    print(f"\n  positioning_composition_gap: computed in merge_scores.py,")
+    print(f"\n  positioning_composition_gap: computed in stage_11_merge_vision_results.py,")
     print(f"  joined to vision results on 'barcode'\n")
 
 

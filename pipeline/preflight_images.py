@@ -127,7 +127,7 @@ def main():
           f"({100*available/len(out):.1f}%)")
     print(f"\n  Saved → {output_path.name}")
     print(f"\n  Next step: filter to image_preflight_status == 'available'")
-    print(f"  before running reset_release_sample.py and vision_extract.py.\n")
+    print(f"  before running reset_release_sample.py and stage_10_extract_pack_claims.py.\n")
 
 
 if __name__ == "__main__":

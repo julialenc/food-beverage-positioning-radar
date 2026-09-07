@@ -1,6 +1,6 @@
 """
-merge_scores.py
-----------------
+stage_11_merge_vision_results.py
+--------------------------------
 Joins vision claim extraction output with product data and writes
 pack-image results to the database.
 
@@ -18,11 +18,11 @@ computes Component A/B/C scoring. Its sole responsibilities are:
 
 claim_source, claim_category_1, claim_category_2,
 nutrition_benchmark_flags, and claim_benchmark_intersections are NOT
-written here — they are populated by tag_claims.py.
+written here — they are populated by stage_12_build_claim_taxonomy.py.
 
 Usage:
-    python pipeline/merge_scores.py
-    python pipeline/merge_scores.py --input data/sample/vision_results_<ts>.csv
+    python pipeline/stages/stage_11_merge_vision_results.py
+    python pipeline/stages/stage_11_merge_vision_results.py --input data/sample/vision_results_<ts>.csv
 """
 
 import argparse
@@ -32,14 +32,14 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-ROOT       = Path(__file__).parent.parent
+ROOT       = Path(__file__).resolve().parents[2]
 SAMPLE_DIR = ROOT / "data" / "sample"
 REF_DIR    = ROOT / "data" / "reference"
 DB_PATH    = ROOT / "database" / "positioning_radar.db"
 
 
 # ── Pack claim fields ─────────────────────────────────────────────────────────
-# The full set of boolean claim fields produced by vision_extract.py's
+# The full set of boolean claim fields produced by stage_10_extract_pack_claims.py's
 # extraction schema, used to build pack_claims_found. This list
 # explicitly EXCLUDES non-claim extraction metadata and non-boolean
 # fields — no_claims_detected (an absence indicator, not a claim),
@@ -102,7 +102,7 @@ def find_latest_vision_results():
     if not files:
         raise FileNotFoundError(
             "No vision_results_*.csv found (excluding checkpoint files). "
-            "Run vision_extract.py first."
+            "Run stage_10_extract_pack_claims.py first."
         )
     return max(files, key=lambda f: f.stat().st_mtime)
 
@@ -294,7 +294,7 @@ def main():
     args = parser.parse_args()
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    print(f"\nFood & Beverage Positioning Radar - merge_scores.py")
+    print(f"\nFood & Beverage Positioning Radar - stage_11_merge_vision_results.py")
     print(f"Run timestamp: {timestamp}")
     print(f"Merging vision results and writing pack_claims_found to database")
     if args.release_id:
@@ -326,7 +326,7 @@ def main():
     # Keep v3_ raw claim columns plus any available extraction metadata.
     # Metadata columns (vision_model, prompt_version,
     # pack_analysis_timestamp) are present for any run using the current
-    # vision_extract.py; may be absent if reusing an older archived
+    # stage_10_extract_pack_claims.py; may be absent if reusing an older archived
     # vision_results CSV — handled gracefully via row.get()/safe_text().
     v3_cols = [c for c in vision.columns if c.startswith("v3_")]
     metadata_cols = [c for c in [
@@ -410,7 +410,7 @@ def main():
     print(f"  ({len(merged):,} rows)")
 
     # Power BI QA export — vision-analyzed products only.
-    # Final reporting comes from db_summary.py after tag_claims.py has run.
+    # Final reporting comes from db_summary.py after stage_12_build_claim_taxonomy.py has run.
     pbi_cols = [
         "barcode", "product_name", "brands", "primary_brand",
         "query_category", "primary_country", "nova_group", "nutriscore_grade",

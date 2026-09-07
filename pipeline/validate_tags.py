@@ -4,12 +4,12 @@ validate_tags.py
 Quick QA sampler for manual review of claim taxonomy and benchmark
 flags. Prints a random sample of products per claim_category_1, with
 their underlying claim evidence, tags, benchmark flags, and image URL
-— so a human can spot-check whether tag_claims.py's output looks
+— so a human can spot-check whether stage_12_build_claim_taxonomy.py's output looks
 reasonable on real data.
 
 This is a manual review tool, not a pipeline step — it does not write
 anything to the database and produces no file output, only console
-output for visual inspection. Run it after tag_claims.py whenever the
+output for visual inspection. Run it after stage_12_build_claim_taxonomy.py whenever the
 taxonomy mapping changes, or periodically as a sanity check.
 
 By default this samples across BOTH evidence layers (claim_source
@@ -27,7 +27,7 @@ Usage:
 
 Input:
     database/positioning_radar.db (products + product_analysis, after
-    tag_claims.py has run)
+    stage_12_build_claim_taxonomy.py has run)
 """
 
 import sqlite3
@@ -46,7 +46,7 @@ def get_evidence_string(row):
     Reconstruct the claim evidence that actually fed this product's
     taxonomy assignment — pack_claims_found if claim_source is
     'vision', otherwise the same combined ingredient-evidence fallback
-    used in tag_claims.py's get_ingredient_fallback_claims().
+    used in stage_12_build_claim_taxonomy.py's get_ingredient_fallback_claims().
     """
     if row["claim_source"] == "vision":
         return row["pack_claims_found"]
@@ -89,7 +89,8 @@ def main():
         print("\nNo products match this filter.")
         if args.source == "vision":
             print("This likely means no pack-image analysis has been run yet "
-                  "— see pipeline/vision_extract.py and merge_scores.py.")
+                  "— see pipeline/stages/stage_10_extract_pack_claims.py "
+                  "and stage_11_merge_vision_results.py.")
         return
 
     for cat in CATEGORIES:

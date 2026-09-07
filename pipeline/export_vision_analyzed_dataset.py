@@ -17,7 +17,7 @@ metric is never computed from a zero/missing energy denominator):
 
 Claim features: pack_claims_found (the raw pipe-separated field) is
 expanded into one binary 0/1 column per claim key, pulled directly from
-tag_claims.py's CLAIM_TAXONOMY at runtime — not a hardcoded duplicate
+stage_12_build_claim_taxonomy.py's CLAIM_TAXONOMY at runtime — not a hardcoded duplicate
 list — so this export never silently drifts out of sync if the taxonomy
 changes (e.g. during the upcoming Nielsen-alignment work). claim_category_1/2
 (the collapsed single-dominant-claim view) are included too, but the
@@ -46,8 +46,8 @@ OUT_CSV = Path(__file__).resolve().parent / "vision_analyzed_dataset.csv"
 # in the same pipeline/ package, so a normal import is appropriate here
 # (unlike shared/db.py, which deliberately duplicates small pieces of
 # pipeline logic to avoid an app-layer -> pipeline-layer dependency).
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from tag_claims import CLAIM_TAXONOMY  # noqa: E402
+sys.path.insert(0, str(ROOT))
+from pipeline.stages.stage_12_build_claim_taxonomy import CLAIM_TAXONOMY  # noqa: E402
 
 CLAIM_KEYS = list(CLAIM_TAXONOMY.keys())
 

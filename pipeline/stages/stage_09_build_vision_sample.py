@@ -1,7 +1,7 @@
 """
-smart_sample.py — stratified enriched sampler for the clean OCR/LLM run.
+stage_09_build_vision_sample.py — stratified enriched sampler for the clean OCR/LLM run.
 
-COMPLETE REPLACEMENT of the original smart_sample.py, which was built
+COMPLETE REPLACEMENT of the original sampler, which was built
 around composition_marker_score (now deprecated — see llm_sampling_design_log.md
 and docs/03_PROJECT_REFERENCE/01_ADR.md). The design is fully documented in
 llm_sampling_design_log.md.
@@ -11,9 +11,9 @@ France: deferred pending a French keyword dictionary for the positioning
 proxy. See llm_sampling_design_log.md for the reasoning.
 
 INPUTS (all pre-computed pipeline outputs — run these first):
-  pipeline/positioning_signals_us_uk.csv  (detect_positioning_signals.py)
-  pipeline/reality_bands.csv              (assign_reality_bands.py)
-  pipeline/formulation_families.csv       (classify_formulation_families.py)
+  pipeline/positioning_signals_us_uk.csv  (stage_06_detect_sampling_signals.py)
+  pipeline/reality_bands.csv              (stage_07_assign_sampling_bands.py)
+  pipeline/formulation_families.csv       (stage_08_classify_formulation_families.py)
   database/positioning_radar.db           (for prompt calibration panel)
 
 OUTPUTS:
@@ -43,7 +43,7 @@ DESIGN PRINCIPLES:
     calibration (greedy multi-cell deduplication prevents exact calc).
   - Random seed 42, stored with every output row for reproducibility.
 
-Usage: python pipeline/smart_sample.py [--seed 42] [--dry-run]
+Usage: python pipeline/stages/stage_09_build_vision_sample.py [--seed 42] [--dry-run]
 """
 
 from __future__ import annotations
@@ -55,10 +55,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ROOT    = Path(__file__).resolve().parent.parent
+ROOT    = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
 
-PIPELINE_DIR    = Path(__file__).resolve().parent
+PIPELINE_DIR    = ROOT / "pipeline"
 REALITY_CSV     = PIPELINE_DIR / "reality_bands.csv"
 FAMILIES_CSV    = PIPELINE_DIR / "formulation_families.csv"
 
@@ -433,7 +433,7 @@ def get_released_barcodes() -> set:
     Barcodes already carrying a release_run_id in product_analysis.
 
     The database stores one row per barcode. If a new sample picked up a
-    barcode already published in an earlier release, merge_scores.py would
+    barcode already published in an earlier release, stage_11_merge_vision_results.py would
     overwrite that row's release_run_id, sampling_region and claim data —
     silently shrinking the earlier release. Excluding them is what keeps
     releases disjoint.
@@ -536,7 +536,7 @@ def main():
     if not POSITIONING_CSV.exists():
         print(f"\n  ERROR: {POSITIONING_CSV.name} not found.")
         print(f"  The pre-LLM positioning proxy is language-specific and is")
-        print(f"  produced by detect_positioning_signals.py. Generate it for")
+        print(f"  produced by stage_06_detect_sampling_signals.py. Generate it for")
         print(f"  this region before sampling — without it the matrix and")
         print(f"  calibration strata cannot be built.")
         return
@@ -554,7 +554,7 @@ def main():
     elif args.region != "us_uk":
         print(f"\n  WARNING: --exclude-released not set. Any barcode already")
         print(f"  published in an earlier release will be re-sampled, and the")
-        print(f"  next merge_scores.py run would overwrite that release's row.")
+        print(f"  next stage_11_merge_vision_results.py run would overwrite that release's row.")
 
     # Image-coverage breakdown by region × category
     print("\n  Image-eligible universe:")
@@ -605,7 +605,7 @@ def main():
         return
 
     OUTPUT_COLS = [
-        # Product identity — needed by vision_extract.py for OCR handoff
+        # Product identity — needed by stage_10_extract_pack_claims.py for OCR handoff
         "barcode", "product_name", "primary_brand", "image_url",
         "sampling_run_id", "sampling_region", "sampling_category",
         "sample_component", "primary_stratum_id",

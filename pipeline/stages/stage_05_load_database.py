@@ -21,14 +21,14 @@ Design principles:
     - ingestion_log records source (api / bulk_export) for auditability
     - product_analysis declares its full schema upfront, including columns
       not yet populated by stage_04_build_product_analysis.py (claim taxonomy, benchmark flags,
-      pack-image metadata) — these are written later by merge_scores.py
-      and tag_claims.py via UPDATE, not ALTER TABLE. See docs/03_PROJECT_REFERENCE/01_ADR.md.
+      pack-image metadata) — these are written later by stage_11_merge_vision_results.py
+      and stage_12_build_claim_taxonomy.py via UPDATE, not ALTER TABLE. See docs/03_PROJECT_REFERENCE/01_ADR.md.
     - stage_05_load_database.py is an ingredient-stage loader: it only writes columns that
       are present in the current input CSV. It must never write later-
       stage fields (pack_claims_found, claim_category_1, nutrition_
       benchmark_flags, positioning_composition_gap, etc.) as NULL on a
       rerun, since that would silently erase enrichment already written
-      by merge_scores.py or tag_claims.py.
+      by stage_11_merge_vision_results.py or stage_12_build_claim_taxonomy.py.
 
 Usage:
     python pipeline/stages/stage_05_load_database.py
@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS product_analysis (
     fibre_sugar_processing_intersection_flag       INTEGER,
     plant_based_nutrition_intersection_flag       INTEGER,
 
-    -- Pack-image extraction metadata (populated by merge_scores.py)
+    -- Pack-image extraction metadata (populated by stage_11_merge_vision_results.py)
     pack_analysis_attempted                 INTEGER,   -- 1/0, whether
                                                         -- this product was
                                                         -- submitted for
@@ -205,15 +205,15 @@ CREATE TABLE IF NOT EXISTS product_analysis (
     sampling_weight                        REAL,
     weight_status                          TEXT,
 
-    -- Claim taxonomy (populated by tag_claims.py)
+    -- Claim taxonomy (populated by stage_12_build_claim_taxonomy.py)
     claim_category_1                        TEXT,
     claim_category_2                        TEXT,
 
-    -- Benchmark flags and intersections (populated by tag_claims.py)
+    -- Benchmark flags and intersections (populated by stage_12_build_claim_taxonomy.py)
     nutrition_benchmark_flags                 TEXT,
     claim_benchmark_intersections              TEXT,
 
-    -- Positioning-to-composition gap (populated by merge_scores.py)
+    -- Positioning-to-composition gap (populated by stage_11_merge_vision_results.py)
     positioning_composition_gap               REAL,
     positioning_composition_gap_band            TEXT,
 
@@ -985,7 +985,7 @@ def load_product_analysis(df, conn, timestamp):
     Only writes columns that are actually present in the input dataframe.
     This matters: product_analysis declares its full schema upfront (see
     DDL_PRODUCT_ANALYSIS), including fields populated later by
-    merge_scores.py and tag_claims.py. If stage_05_load_database.py is rerun after those
+    stage_11_merge_vision_results.py and stage_12_build_claim_taxonomy.py. If stage_05_load_database.py is rerun after those
     steps — for example during a weekly API diff — naively writing every
     declared column would set later-stage fields (pack_claims_found,
     claim_category_1, positioning_composition_gap, etc.) to NULL,
@@ -1045,8 +1045,8 @@ def compute_weekly_brand_summary(df, conn, timestamp):
     primary_brand (normalized), not the raw brands field, for consistency
     with every other aggregation in the pipeline.
 
-    Scope note: this runs at stage_05_load_database.py time, before merge_scores.py and
-    tag_claims.py have populated pack claims, claim taxonomy, benchmark
+    Scope note: this runs at stage_05_load_database.py time, before stage_11_merge_vision_results.py and
+    stage_12_build_claim_taxonomy.py have populated pack claims, claim taxonomy, benchmark
     flags, or positioning_composition_gap — so this summary necessarily
     reflects ingredient-analysis-stage signals only. A full
     market-intelligence summary (pack claim distribution, claim taxonomy

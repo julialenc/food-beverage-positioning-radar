@@ -1,6 +1,6 @@
 """
-tag_claims.py
---------------
+stage_12_build_claim_taxonomy.py
+--------------------------------
 Computes claim taxonomy and nutrition benchmark flags.
 Writes results back to the product_analysis table and updates the
 Power BI export.
@@ -62,10 +62,10 @@ Claim source:
     claim_source records which evidence layer fed claim_category_1/2 for
     each product: "vision" when pack-image claim extraction was
     available (including when it found zero claims), "ingredient_text_only"
-    when it was not. This depends on the merge_scores.py contract for
+    when it was not. This depends on the stage_11_merge_vision_results.py contract for
     pack_claims_found (claims string on success, "" on success-with-no-
     claims, NULL when never attempted or failed) — see
-    update_db_positioning_scores() in merge_scores.py and
+    update_db_positioning_scores() in stage_11_merge_vision_results.py and
     docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md.
 
     When claim_source is "ingredient_text_only", the fallback claim
@@ -75,7 +75,7 @@ Claim source:
     either field alone would undercount that category.
 
 Usage:
-    python pipeline/tag_claims.py
+    python pipeline/stages/stage_12_build_claim_taxonomy.py
 
 Output:
     - Updates product_analysis table in SQLite (columns are already
@@ -93,7 +93,7 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
-ROOT       = Path(__file__).parent.parent
+ROOT       = Path(__file__).resolve().parents[2]
 DB_PATH    = ROOT / "database" / "positioning_radar.db"
 SAMPLE_DIR = ROOT / "data" / "sample"
 
@@ -363,7 +363,7 @@ def compute_claim_benchmark_intersections(row):
 
 def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    print(f"\nFood & Beverage Positioning Radar - tag_claims.py")
+    print(f"\nFood & Beverage Positioning Radar - stage_12_build_claim_taxonomy.py")
     print(f"Run timestamp: {timestamp}")
     print(f"Thresholds: UK FSA front-of-pack guidance (see docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md)\n")
 
@@ -401,7 +401,7 @@ def main():
 
     # claim_source: "vision" whenever pack_claims_found is not null —
     # this correctly covers both "claims found" and "pack analysis
-    # succeeded with zero claims found", since merge_scores.py only
+    # succeeded with zero claims found", since stage_11_merge_vision_results.py only
     # leaves pack_claims_found null when extraction was never attempted
     # or failed. See docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md.
     df["claim_source"] = df["pack_claims_found"].apply(

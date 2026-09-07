@@ -8,7 +8,7 @@ No Azure Vision calls — one small LLM call per eligible row.
 Use this to validate the reviewer before wiring it into a production run,
 rather than re-running a whole 100-product OCR test.
 
-It reuses review_image_context() from vision_extract.py, so the check and
+It reuses review_image_context() from stage_10_extract_pack_claims.py, so the check and
 the production path cannot drift apart.
 
 Usage:
@@ -25,8 +25,9 @@ from pathlib import Path
 
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import vision_extract as ve  # noqa: E402
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+from pipeline.stages import stage_10_extract_pack_claims as ve  # noqa: E402
 
 P = "v3_"
 
@@ -132,7 +133,7 @@ def main():
     print(f"\n  A rescued row still needs its claims extracted again — the "
           f"first pass\n  zeroed every claim field once it decided the image "
           f"was a legal panel.\n  That happens automatically in "
-          f"vision_extract.py; this script only\n  reports what the reviewer "
+          f"stage_10_extract_pack_claims.py; this script only\n  reports what the reviewer "
           f"would decide.\n")
 
 

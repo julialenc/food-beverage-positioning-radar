@@ -54,7 +54,7 @@ REPO_ROOT  = Path(__file__).resolve().parent.parent
 SAMPLE_DIR = REPO_ROOT / "data" / "sample"
 P = "v3_"   # flattened extraction-schema prefix
 
-# Must mirror PACK_CLAIM_FIELDS in merge_scores.py.
+# Must mirror PACK_CLAIM_FIELDS in stage_11_merge_vision_results.py.
 PACK_CLAIM_FIELDS = [
     "protein_claim", "sugar_free_claim", "reduced_sugar",
     "no_palm_oil", "no_artificial", "natural_claim",
@@ -212,7 +212,7 @@ def main():
 
     df.to_csv(out_path, index=False, encoding="utf-8-sig")
     print(f"\n  Saved -> {out_path.name}")
-    print(f"\n  Next: python pipeline/merge_scores.py --input {out_path.as_posix()}\n")
+    print(f"\n  Next: python pipeline/stages/stage_11_merge_vision_results.py --input {out_path.as_posix()}\n")
 
 
 if __name__ == "__main__":

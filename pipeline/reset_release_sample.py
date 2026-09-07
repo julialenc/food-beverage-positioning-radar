@@ -25,16 +25,16 @@ Fields NOT cleared (preserved in every case):
   Formulation families and sampling metadata
   analyzed_at (shared with earlier pipeline stages)
   positioning_composition_gap / _band (legacy; cleared per-row by
-    merge_scores.py Path 2a when a non-front reclassification occurs)
+    stage_11_merge_vision_results.py Path 2a when a non-front reclassification occurs)
 
 Release-run order (per region):
   1. python pipeline/reset_release_sample.py --input <regional_sample.csv>
   2. Remove or rename any existing vision_results_checkpoint.csv
-  3. python pipeline/vision_extract.py            (full run, no --test)
+  3. python pipeline/stages/stage_10_extract_pack_claims.py  (full run, no --test)
   4. Review run-level QA output
-  5. python pipeline/merge_scores.py --input data/sample/vision_results_<ts>.csv
+  5. python pipeline/stages/stage_11_merge_vision_results.py --input data/sample/vision_results_<ts>.csv
   After both US and UK are merged:
-  6. python pipeline/tag_claims.py
+  6. python pipeline/stages/stage_12_build_claim_taxonomy.py
 
 Usage:
     python pipeline/reset_release_sample.py --input data/sample/us_release_sample.csv
@@ -196,10 +196,10 @@ def main():
         print(f"\n  Next steps:")
         print(f"    1. Remove or rename any existing vision_results_checkpoint.csv")
         print(f"       in data/sample/ before starting the vision run.")
-        print(f"    2. python pipeline/vision_extract.py")
+        print(f"    2. python pipeline/stages/stage_10_extract_pack_claims.py")
         print(f"    3. Review QA output, then:")
-        print(f"       python pipeline/merge_scores.py --input data/sample/vision_results_<ts>.csv")
-        print(f"    4. After all regions are merged: python pipeline/tag_claims.py")
+        print(f"       python pipeline/stages/stage_11_merge_vision_results.py --input data/sample/vision_results_<ts>.csv")
+        print(f"    4. After all regions are merged: python pipeline/stages/stage_12_build_claim_taxonomy.py")
 
     print()
 

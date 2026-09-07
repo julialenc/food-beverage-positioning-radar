@@ -43,7 +43,7 @@ EXPECTED_STATUS = {
     "uncertain":                 "unreadable",
 }
 
-# Must mirror PACK_CLAIM_FIELDS in merge_scores.py.
+# Must mirror PACK_CLAIM_FIELDS in stage_11_merge_vision_results.py.
 PACK_CLAIM_FIELDS = [
     "protein_claim", "sugar_free_claim", "reduced_sugar",
     "no_palm_oil", "no_artificial", "natural_claim",
@@ -326,11 +326,11 @@ def check_claim_keys(merged, name):
         return
 
     try:
-        sys.path.insert(0, str(REPO_ROOT / "pipeline"))
-        from tag_claims import CLAIM_TAXONOMY  # noqa
+        sys.path.insert(0, str(REPO_ROOT))
+        from pipeline.stages.stage_12_build_claim_taxonomy import CLAIM_TAXONOMY  # noqa
         taxonomy = set(CLAIM_TAXONOMY)
     except Exception as exc:
-        warn("CLAIM_TAXONOMY importable from tag_claims", False, str(exc))
+        warn("CLAIM_TAXONOMY importable from stage_12_build_claim_taxonomy", False, str(exc))
         return
 
     observed = {

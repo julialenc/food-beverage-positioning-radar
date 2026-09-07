@@ -5,7 +5,7 @@ Clears vision and claim-tagging fields for every product that carries a
 vision observation but is NOT part of the current release.
 
 Why this exists
-  tag_claims.py recalculates all 512,937 products, so every product that
+  stage_12_build_claim_taxonomy.py recalculates all 512,937 products, so every product that
   ever received a successful vision observation is tagged
   claim_source='vision' — including prompt v1/v2 pilot runs that the
   release supersedes. That inflates the vision population (15,106) well
@@ -163,11 +163,11 @@ def main():
     print(f"\n  Cleared {stale:,} superseded rows.")
     print(f"  Products with a vision observation now: {remaining:,}")
     print(f"\n  Next:")
-    print(f"    python pipeline/merge_scores.py --input <us_normalised.csv> "
+    print(f"    python pipeline/stages/stage_11_merge_vision_results.py --input <us_normalised.csv> "
           f"--release-id release_2026_01_us_uk")
-    print(f"    python pipeline/merge_scores.py --input <uk_normalised.csv> "
+    print(f"    python pipeline/stages/stage_11_merge_vision_results.py --input <uk_normalised.csv> "
           f"--release-id release_2026_01_us_uk")
-    print(f"    python pipeline/tag_claims.py\n")
+    print(f"    python pipeline/stages/stage_12_build_claim_taxonomy.py\n")
 
 
 if __name__ == "__main__":

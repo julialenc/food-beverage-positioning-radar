@@ -217,10 +217,10 @@ The standard local build path is:
 3. pipeline/stages/stage_03_build_nutrition_quality_flags.py
 4. pipeline/stages/stage_04_build_product_analysis.py
 5. pipeline/stages/stage_05_load_database.py
-6. pipeline/smart_sample.py                         [manual when refreshing vision sample]
-7. pipeline/vision_extract.py                       [paid/manual vision stage]
-8. pipeline/merge_scores.py
-9. pipeline/tag_claims.py
+6. pipeline/stages/stage_09_build_vision_sample.py  [manual when refreshing vision sample]
+7. pipeline/stages/stage_10_extract_pack_claims.py  [paid/manual vision stage]
+8. pipeline/stages/stage_11_merge_vision_results.py
+9. pipeline/stages/stage_12_build_claim_taxonomy.py
 10. pipeline/db_summary.py
 11. pipeline/compute_region_benchmarks.py
 12. pipeline/compute_profile_intersections.py
@@ -230,8 +230,8 @@ The standard local build path is:
 
 Some scripts are maintenance or review utilities rather than automatic pipeline
 steps. Use them deliberately when refreshing mappings, category rules,
-nutrition governance, or the vision sample. `smart_sample.py` and
-`vision_extract.py` are shown in the build path for completeness but are run
+nutrition governance, or the vision sample. `stage_09_build_vision_sample.py`
+and `stage_10_extract_pack_claims.py` are shown in the build path for completeness but are run
 only when vision results are intentionally refreshed. The vision/OCR stage calls
 paid Azure services and should not be run as part of an automatic loop.
 

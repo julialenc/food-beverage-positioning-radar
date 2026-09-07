@@ -112,7 +112,7 @@ def summarise(df):
         print(f"  the sample, never as a market figure.")
     else:
         print(f"\n  NOTE: sampling_weight is empty — re-run stage_05_load_database.py with the")
-        print(f"  current schema, then merge_scores.py. Only unweighted figures available.")
+        print(f"  current schema, then stage_11_merge_vision_results.py. Only unweighted figures available.")
 
     dims = [("sampling_region", "region")]
     # sampling_category and query_category carry the same values; show one.
@@ -143,7 +143,7 @@ def summarise(df):
 
     if "sampling_region" in sub.columns and sub["sampling_region"].isna().all():
         print(f"\n  NOTE: sampling_region is empty — re-run stage_05_load_database.py with the")
-        print(f"  current schema, then merge_scores.py. Country-level")
+        print(f"  current schema, then stage_11_merge_vision_results.py. Country-level")
         print(f"  breakdowns are not a valid substitute.")
 
     if has_weights:
@@ -271,7 +271,7 @@ def main():
 
     if df.empty:
         print(f"\n  No rows found for release_run_id = {args.release_id}.")
-        print(f"  Check the ID, or re-run merge_scores.py with --release-id.\n")
+        print(f"  Check the ID, or re-run stage_11_merge_vision_results.py with --release-id.\n")
         conn.close()
         return
 

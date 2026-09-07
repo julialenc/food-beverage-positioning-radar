@@ -39,7 +39,7 @@ Every classification records HOW it was banded (band_method) so the
 sampler and any later audit can see which products got the normal
 quartile rule vs. a fallback.
 
-Usage: python pipeline/assign_reality_bands.py
+Usage: python pipeline/stages/stage_07_assign_sampling_bands.py
 Writes: pipeline/reality_bands.csv
 """
 
@@ -50,9 +50,9 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT    = Path(__file__).resolve().parent.parent
+ROOT    = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-OUT_CSV = Path(__file__).resolve().parent / "reality_bands.csv"
+OUT_CSV = ROOT / "pipeline" / "reality_bands.csv"
 
 DOWNLOAD_SCOPE_REGIONS = {"FRANCE", "UK_IE", "US_CANADA"}
 

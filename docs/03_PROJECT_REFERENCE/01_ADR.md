@@ -315,7 +315,7 @@ positioning structure.
 **Date:** June 2026  
 **Status:** Active
 
-**Decision:** `tag_claims.py` remains a product-level classification step, while
+**Decision:** `stage_12_build_claim_taxonomy.py` remains a product-level classification step, while
 `db_summary.py` owns final aggregate reporting tables.
 
 **Rationale:** Product classification and reporting aggregation have different
@@ -458,14 +458,14 @@ analyze
     ↓
 load → SQLite
     ↓
-smart_sample
+stage_09_build_vision_sample
     ↓
-vision_extract
+stage_10_extract_pack_claims
     └─ OCR + structured claim extraction
     ↓
-merge_scores
+stage_11_merge_vision_results
     ↓
-tag_claims
+stage_12_build_claim_taxonomy
     └─ claim taxonomy + benchmark intersections
     ↓
 db_summary

@@ -128,7 +128,7 @@ positioning language.
 The initial 12,029-product clean sample was discarded after preflight showed
 2,177 of the 5,951 initially sampled US products (36.6%) had no usable `image_url`.
 Submitting `nan` to Azure OCR produced HTTP 400 errors labelled as
-`invalid_image`. The fix was applied to the sampler: `smart_sample.py` now
+`invalid_image`. The fix was applied to the sampler: `stage_09_build_vision_sample.py` now
 filters `image_url IS NOT NULL AND TRIM(image_url) <> '' AND LOWER(TRIM(image_url)) LIKE 'http%'`.
 A preflight HTTP check (`preflight_images.py`) confirmed 100% availability
 before the locked run was drawn.
@@ -170,7 +170,7 @@ the sample as intended.
 
 ### 2.6 Formulation families
 
-`classify_formulation_families.py` assigns each product to a mutually
+`stage_08_classify_formulation_families.py` assigns each product to a mutually
 exclusive formulation family within its category, using OFF sub-category tags
 and product name keywords under first-match-wins priority rules. The purpose is
 to prevent one dominant sub-type from consuming an entire sampling quota — not
@@ -185,7 +185,7 @@ is used where available (~16%).
 
 The taxonomy maps detected pack text to 34 boolean claim fields, grouped into
 five Cut-1 categories. Cut-2 assigns a sub-category to the highest-priority
-detected claim. Field → category mapping is defined in `tag_claims.py`.
+detected claim. Field → category mapping is defined in `stage_12_build_claim_taxonomy.py`.
 
 | Cut-1 category | Sub-categories included |
 |---|---|
@@ -204,7 +204,7 @@ fields in response to specific observed gaps.
 ## 4. Prompt version history
 
 All prompts live in `pipeline/prompts/`. The active version is loaded at
-run time by `vision_extract.py --language`; nothing is pasted inline. This
+run time by `stage_10_extract_pack_claims.py --language`; nothing is pasted inline. This
 means the file IS the record: the archive and the active prompt cannot drift
 apart.
 
@@ -564,7 +564,7 @@ non-front, even after the v5.1-fr fixes.
 **Prompt:** `prompt_v4.txt` (v4), no second-pass review  
 **Sample file:** `pipeline/sample_clean_run.csv` (RUN_ID `release-01-image-eligible`)  
 **Archived results:** `vision_results_us_canada_final.csv`, `vision_results_uk_ie_final.csv`  
-**Normalised results (feed merge_scores):** `*_normalised.csv`  
+**Normalised results (feed stage_11_merge_vision_results):** `*_normalised.csv`
 **Claim prevalence:** 45.7% sample proportion (n=11,408); 37.7% design-weighted
 estimate within the image-eligible OFF sampling frame (backbone n=4,679).
 Note: backbone weights are approximate design weights after brand capping; OFF
@@ -623,12 +623,12 @@ raw JSON
 
 → vision_results_<timestamp>.csv  (one row per product)
 
-→ merge_scores.py --release-id <id>
+→ stage_11_merge_vision_results.py --release-id <id>
     → pack_claims_found (pipe-separated claim keys)
     → sampling frame columns written to product_analysis
     → merged_results_<timestamp>.csv
 
-→ tag_claims.py
+→ stage_12_build_claim_taxonomy.py
     → claim_category_1, claim_category_2
     → claim_source = 'vision' for the 17,127 release products
     → nutrition_benchmark_flags, claim_benchmark_intersections
@@ -645,7 +645,7 @@ is required to preserve the distinction.
 
 **Release scoping:** `claim_source = 'vision'` correctly identifies the
 release population only because `clear_stale_vision.py` was run before
-`merge_scores.py`, retiring 3,858 superseded pilot rows (3,789 prompt-v2,
+`stage_11_merge_vision_results.py`, retiring 3,858 superseded pilot rows (3,789 prompt-v2,
 69 v4 test artifacts). For future releases, filter on `release_run_id`.
 
 ---
