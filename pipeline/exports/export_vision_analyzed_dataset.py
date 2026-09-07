@@ -26,7 +26,7 @@ actually use — claim_category_1/2 keeps only the highest-priority claim
 per product and would silently drop information for any product with more
 than one claim on pack.
 
-Usage: python pipeline/export_vision_analyzed_dataset.py
+Usage: python pipeline/exports/export_vision_analyzed_dataset.py
 Writes: pipeline/vision_analyzed_dataset.csv
 """
 
@@ -38,9 +38,9 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-OUT_CSV = Path(__file__).resolve().parent / "vision_analyzed_dataset.csv"
+OUT_CSV = ROOT / "pipeline" / "vision_analyzed_dataset.csv"
 
 # Import the live taxonomy rather than duplicating it — this script lives
 # in the same pipeline/ package, so a normal import is appropriate here
