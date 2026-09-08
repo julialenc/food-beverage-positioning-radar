@@ -26,7 +26,7 @@ ROOT = os.path.dirname(
         )
     )
 )
-AUDIT_DIR = os.path.join(ROOT, "data", "nutrition_outlier_review", "audits")
+AUDIT_DIR = os.path.join(ROOT, "data", "07_nutrition_quality_outputs", "audits")
 REVIEW_PATH = os.path.join(
     AUDIT_DIR, "market_overview_exclusion_reduction_review.csv"
 )

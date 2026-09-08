@@ -26,7 +26,7 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[3]
-REVIEW_DIR = ROOT / "data" / "brand_mapping_review"
+REVIEW_DIR = ROOT / "data" / "06_brand_governance_outputs"
 EXTERNAL_REVIEWED_PATH = Path(
     r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
     r"\top9_brand_prefix_orphan_candidates_reviewed.csv"
@@ -88,7 +88,7 @@ def source_review_path() -> Path:
     if LOCAL_REVIEWED_PATH.exists():
         return LOCAL_REVIEWED_PATH
     raise FileNotFoundError(
-        "Reviewed prefix-orphan file not found in Downloads_temp or data/brand_mapping_review."
+        "Reviewed prefix-orphan file not found in Downloads_temp or data/06_brand_governance_outputs."
     )
 
 

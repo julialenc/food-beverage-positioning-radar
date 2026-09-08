@@ -31,7 +31,7 @@ ROOT = os.path.dirname(
     )
 )
 PIPELINE_INTERMEDIATE_DIR = os.path.join(ROOT, "data", "03_pipeline_intermediates")
-AUDIT_DIR = os.path.join(ROOT, "data", "nutrition_outlier_review", "audits")
+AUDIT_DIR = os.path.join(ROOT, "data", "07_nutrition_quality_outputs", "audits")
 FLAGS_PATH = os.path.join(AUDIT_DIR, "nutrition_quality_flags.csv")
 
 SUMMARY_OUTPUT = os.path.join(

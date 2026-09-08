@@ -6,11 +6,11 @@ It is not part of the main production pipeline.
 
 Modes:
     --counts
-        Write data/reference/brand_counts.csv and print the largest brands.
+        Write data/06_brand_governance_outputs/brand_counts.csv and print the largest brands.
 
     --coverage
-        Write data/reference/brand_coverage_report.csv and
-        data/reference/brand_alias_candidates.csv.
+        Write data/06_brand_governance_outputs/brand_coverage_report.csv and
+        data/06_brand_governance_outputs/brand_alias_candidates.csv.
 
     --check-brand PREFIX
         Print brand variants whose primary_brand starts with PREFIX.
@@ -36,9 +36,10 @@ from pathlib import Path
 ROOT          = Path(__file__).resolve().parents[3]
 DB_PATH       = ROOT / "database" / "positioning_radar.db"
 MAPPING_PATH  = ROOT / "data" / "01_reference_inputs" / "03_company_brand_mapping.csv"
-BRAND_COUNTS_OUT = ROOT / "data" / "reference" / "brand_counts.csv"
-COVERAGE_OUT  = ROOT / "data" / "reference" / "brand_coverage_report.csv"
-ALIAS_OUT     = ROOT / "data" / "reference" / "brand_alias_candidates.csv"
+OUTPUT_DIR = ROOT / "data" / "06_brand_governance_outputs"
+BRAND_COUNTS_OUT = OUTPUT_DIR / "brand_counts.csv"
+COVERAGE_OUT  = OUTPUT_DIR / "brand_coverage_report.csv"
+ALIAS_OUT     = OUTPUT_DIR / "brand_alias_candidates.csv"
 
 # Geographic / legal suffixes whose removal reveals a canonical brand.
 # Ordered longest-first so "north america" is tried before "america".
@@ -93,6 +94,7 @@ def load_brand_counts() -> list[tuple[str, int, str]]:
 def run_counts() -> None:
     rows = load_brand_counts()
 
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     with open(BRAND_COUNTS_OUT, "w", newline="", encoding="utf-8-sig") as f:
         writer = csv.writer(f)
         writer.writerow(["primary_brand", "total_products", "categories", "action"])
@@ -513,6 +515,7 @@ def run_coverage() -> None:
         )
 
     if coverage_results:
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
         with open(COVERAGE_OUT, "w", newline="", encoding="utf-8-sig") as f:
             writer = csv.DictWriter(f, fieldnames=list(coverage_results[0].keys()))
             writer.writeheader()
@@ -548,6 +551,7 @@ def run_coverage() -> None:
         )
 
     if all_r:
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
         with open(ALIAS_OUT, "w", newline="", encoding="utf-8-sig") as f:
             writer = csv.DictWriter(
                 f, fieldnames=["variant_brand", "canonical_brand", "pattern",
@@ -561,7 +565,7 @@ def run_coverage() -> None:
     print(f"\n{'='*60}")
     print("NEXT STEPS")
     print(f"{'='*60}")
-    print(f"1. Open data/reference/brand_alias_candidates.csv")
+    print(f"1. Open data/06_brand_governance_outputs/brand_alias_candidates.csv")
     print(f"2. Review candidate rows individually; do not bulk-confirm by confidence alone")
     print(f"3. Append approved rows to the existing curated file:")
     print(f"   data/01_reference_inputs/02_brand_alias_mapping.csv")

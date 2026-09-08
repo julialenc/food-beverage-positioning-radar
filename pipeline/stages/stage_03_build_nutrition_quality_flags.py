@@ -32,7 +32,7 @@ if ROOT not in sys.path:
 from shared.beverage_segments import beverage_view_segment
 
 PIPELINE_INTERMEDIATE_DIR = os.path.join(ROOT, "data", "03_pipeline_intermediates")
-AUDIT_DIR = os.path.join(ROOT, "data", "nutrition_outlier_review", "audits")
+AUDIT_DIR = os.path.join(ROOT, "data", "07_nutrition_quality_outputs", "audits")
 COMPANY_MAPPING_PATH = os.path.join(
     ROOT, "data", "01_reference_inputs", "03_company_brand_mapping.csv"
 )

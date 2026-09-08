@@ -49,12 +49,12 @@ Usage
   Dry run using a completed France snack scope review:
     python pipeline/governance/category_scope/cat_01_apply_category_cleanup.py ^
       --france-snack-review C:\\path\\20.08.2026_france_snacks_or_not_snacks.csv ^
-      --france-snack-review-source data\\sample\\france_snacks_scope_review_YYYYMMDD_HHMMSS.csv
+      --france-snack-review-source data\\06_brand_governance_outputs\\category_scope\\france_snacks_scope_review_YYYYMMDD_HHMMSS.csv
 
   Dry run using a completed France cereal scope review:
     python pipeline/governance/category_scope/cat_01_apply_category_cleanup.py ^
       --france-cereal-review C:\\path\\france_cereals_review_classified.csv ^
-      --france-cereal-review-source data\\sample\\france_cereals_review_YYYYMMDD_HHMMSS.csv
+      --france-cereal-review-source data\\06_brand_governance_outputs\\category_scope\\france_cereals_review_YYYYMMDD_HHMMSS.csv
 
   Apply after reviewing the audit CSVs:
     python pipeline/governance/category_scope/cat_01_apply_category_cleanup.py --apply [same review args]
@@ -75,7 +75,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[3]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-AUDIT_DIR = ROOT / "data" / "sample"
+AUDIT_DIR = ROOT / "data" / "06_brand_governance_outputs" / "category_scope"
 
 
 CEREAL_BAR_TO_SNACK_RE = re.compile(
@@ -526,7 +526,7 @@ def main() -> None:
     parser.add_argument(
         "--output",
         default=None,
-        help="Output prefix. Defaults to data/sample/category_cleanup_<timestamp>",
+        help="Output prefix. Defaults to data/06_brand_governance_outputs/category_scope/category_cleanup_<timestamp>",
     )
     parser.add_argument(
         "--snack-high-confidence-review",

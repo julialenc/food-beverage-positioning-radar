@@ -30,7 +30,7 @@ DB_PATH = ROOT / "database" / "positioning_radar.db"
 AUDIT_DIR = (
     ROOT
     / "data"
-    / "nutrition_outlier_review"
+    / "07_nutrition_quality_outputs"
     / "audits"
     / "market_overview_chart_ranges"
 )

@@ -28,7 +28,7 @@ DEFAULT_INPUT = ROOT / "data" / "03_pipeline_intermediates" / "clean_20260822_22
 REFERENCE_INPUT_DIR = ROOT / "data" / "01_reference_inputs"
 ALIAS_PATH = REFERENCE_INPUT_DIR / "02_brand_alias_mapping.csv"
 PRIVATE_LABEL_MAPPING_PATH = REFERENCE_INPUT_DIR / "04_private_label_brand_mapping.csv"
-OUTPUT_DIR = ROOT / "data" / "brand_mapping_review"
+OUTPUT_DIR = ROOT / "data" / "06_brand_governance_outputs"
 DEFAULT_OUTPUT = OUTPUT_DIR / "brand_alias_suggestions_bottom_up.csv"
 DEFAULT_REVIEWED_OUTPUT = (
     OUTPUT_DIR / "brand_alias_suggestions_bottom_up_reviewed.csv"

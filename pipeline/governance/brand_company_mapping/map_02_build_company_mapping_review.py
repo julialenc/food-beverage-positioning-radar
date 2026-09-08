@@ -17,7 +17,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[3]
 PIPELINE_INTERMEDIATE_DIR = ROOT / "data" / "03_pipeline_intermediates"
-OUT_DIR = ROOT / "data" / "brand_mapping_review"
+OUT_DIR = ROOT / "data" / "06_brand_governance_outputs"
 OUT_PATH = OUT_DIR / "company_mapping_layer3_review.csv"
 SUMMARY_PATH = OUT_DIR / "company_mapping_layer3_summary.csv"
 REFERENCE_INPUT_DIR = ROOT / "data" / "01_reference_inputs"

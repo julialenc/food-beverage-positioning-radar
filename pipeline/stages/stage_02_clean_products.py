@@ -72,7 +72,7 @@ PRODUCT_MAPPING_OVERRIDE_PATH = os.path.join(
 PRIVATE_LABEL_MAPPING_PATH = os.path.join(
     REFERENCE_INPUT_DIR, "04_private_label_brand_mapping.csv"
 )
-BRAND_MAPPING_REVIEW_DIR = os.path.join(ROOT, "data", "brand_mapping_review")
+BRAND_MAPPING_REVIEW_DIR = os.path.join(ROOT, "data", "06_brand_governance_outputs")
 
 CURATED_MECHANICAL_BRAND_ALIASES = {
     "after eight": "After Eight",
@@ -2235,7 +2235,7 @@ def write_brand_entity_extraction_review(df):
     review.to_csv(output_path, index=False, encoding="utf-8-sig")
     print(
         f"  Brand entity extraction review -> "
-        f"data/brand_mapping_review/brand_entity_extraction_review.csv "
+        f"data/06_brand_governance_outputs/brand_entity_extraction_review.csv "
         f"({len(review):,} grouped rows)"
     )
 
@@ -2310,7 +2310,7 @@ def write_brand_alias_normalization_review(df):
     review.to_csv(output_path, index=False, encoding="utf-8-sig")
     print(
         f"  Brand alias normalization review -> "
-        f"data/brand_mapping_review/brand_alias_normalization_review.csv "
+        f"data/06_brand_governance_outputs/brand_alias_normalization_review.csv "
         f"({len(review):,} grouped rows)"
     )
 
@@ -2431,7 +2431,7 @@ def write_brand_alias_cleanup_audit(df):
     audit.to_csv(output_path, index=False, encoding="utf-8-sig")
     print(
         f"  Brand alias cleanup audit -> "
-        f"data/brand_mapping_review/brand_alias_cleanup_audit.csv "
+        f"data/06_brand_governance_outputs/brand_alias_cleanup_audit.csv "
         f"({len(audit):,} grouped rows)"
     )
 
@@ -2510,7 +2510,7 @@ def write_nestle_france_snacks_product_name_recovery_audit(df):
     summary.to_csv(summary_path, index=False, encoding="utf-8-sig")
     print(
         f"  Nestlé France snacks recovery audit -> "
-        f"data/brand_mapping_review/nestle_france_snacks_product_name_recovery_audit.csv "
+        f"data/06_brand_governance_outputs/nestle_france_snacks_product_name_recovery_audit.csv "
         f"({len(audit):,} rows)"
     )
     if not summary.empty:

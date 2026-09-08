@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-OUT_DIR = ROOT / "data" / "test"
+OUT_DIR = ROOT / "data" / "06_brand_governance_outputs"
 OTHER = "Other / not mapped to a company"
 DEFAULT_REGIONS = ("FRANCE", "UK_IE", "US_CANADA")
 NON_REVIEWABLE_BRAND_KEYS = {

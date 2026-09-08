@@ -17,6 +17,10 @@ created while running or auditing the pipeline.
 - `data/05_vision_release/` contains ignored release samples, preflight files,
   vision extraction outputs, merged release files, normalized files, and QA
   outputs for paid/manual pack-image runs.
+- `data/06_brand_governance_outputs/` contains ignored category-scope and
+  brand/company governance review exports.
+- `data/07_nutrition_quality_outputs/` contains ignored nutrition-quality
+  audit, candidate, report, and reviewed-output files.
 - All raw Open Food Facts downloads, intermediate CSVs, audit exports, release
   samples, and local review files are generated outputs and remain ignored
   unless explicitly promoted to production reference status.

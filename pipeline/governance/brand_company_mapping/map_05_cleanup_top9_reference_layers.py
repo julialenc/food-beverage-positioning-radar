@@ -21,7 +21,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[3]
 REFERENCE_DIR = ROOT / "data" / "01_reference_inputs"
-REVIEW_DIR = ROOT / "data" / "brand_mapping_review"
+REVIEW_DIR = ROOT / "data" / "06_brand_governance_outputs"
 DB_PATH = ROOT / "database" / "positioning_radar.db"
 
 ALIAS_PATH = REFERENCE_DIR / "02_brand_alias_mapping.csv"
