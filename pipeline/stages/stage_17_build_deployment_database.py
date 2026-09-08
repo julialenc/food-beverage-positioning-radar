@@ -26,6 +26,8 @@ MVP_CATEGORIES = ("snacks", "cereals", "dairies", "beverages")
 APP_TABLES = {
     "products",
     "product_analysis",
+    "axis_range_config",
+    "market_chart_bands",
     "region_category_benchmarks",
     "profile_intersections",
     "category_region_averages",
@@ -59,6 +61,15 @@ PUBLIC_PRODUCT_COLUMNS = (
     "nutriscore_grade",
     "nova_group",
     "completeness_score",
+    "nutrition_quality_status",
+    "outlier_type",
+    "include_in_product_table",
+    "include_in_aggregates",
+    "include_in_charts",
+    "nutrition_quality_reason",
+    "warning_flag",
+    "warning_types",
+    "warning_summary",
     "ingested_at",
 )
 
@@ -116,6 +127,15 @@ def copy_schema(src: sqlite3.Connection, dst: sqlite3.Connection, table: str) ->
                 nutriscore_grade TEXT,
                 nova_group REAL,
                 completeness_score INTEGER,
+                nutrition_quality_status TEXT,
+                outlier_type TEXT,
+                include_in_product_table INTEGER,
+                include_in_aggregates INTEGER,
+                include_in_charts INTEGER,
+                nutrition_quality_reason TEXT,
+                warning_flag INTEGER,
+                warning_types TEXT,
+                warning_summary TEXT,
                 ingested_at TEXT
             )
         """)
@@ -196,6 +216,10 @@ def create_indexes(dst: sqlite3.Connection) -> None:
         "ON profile_intersections(snapshot, region_code, category)",
         "CREATE INDEX IF NOT EXISTS idx_category_avg_snapshot "
         "ON category_region_averages(snapshot, region, query_category)",
+        "CREATE INDEX IF NOT EXISTS idx_axis_range_lookup "
+        "ON axis_range_config(snapshot, region_code, category, beverage_view_segment, metric_key)",
+        "CREATE INDEX IF NOT EXISTS idx_market_chart_bands_lookup "
+        "ON market_chart_bands(snapshot, region_code, category, beverage_view_segment, barcode)",
     ]
     for sql in index_sql:
         dst.execute(sql)
@@ -232,6 +256,10 @@ def main() -> None:
             copy_latest_snapshot_table(dst, "profile_intersections")
         if table_exists(src.cursor(), "category_region_averages"):
             copy_category_region_averages(dst)
+        if table_exists(src.cursor(), "axis_range_config"):
+            copy_latest_snapshot_table(dst, "axis_range_config")
+        if table_exists(src.cursor(), "market_chart_bands"):
+            copy_latest_snapshot_table(dst, "market_chart_bands")
 
         create_indexes(dst)
         dst.commit()

@@ -44,7 +44,7 @@ sys.path.insert(0, str(ROOT))
 from pipeline.stages.stage_05_load_database import (
     DDL_PRODUCTS, DDL_PRODUCT_ANALYSIS,
     DDL_WEEKLY_BRAND_SUMMARY, DDL_INGESTION_LOG,
-    DDL_MARKET_TREND_WEEKLY,
+    DDL_MARKET_TREND_WEEKLY, DDL_CATEGORY_REGION_AVERAGES,
 )
 from pipeline.stages.stage_13_build_app_summaries import (
     DDL_WEEKLY_BRAND_POSITIONING_SUMMARY, DDL_POSITIONING_EXAMPLE_PRODUCTS,
@@ -64,27 +64,23 @@ TABLE_DDL = {
     "weekly_brand_summary":             DDL_WEEKLY_BRAND_SUMMARY,
     "ingestion_log":                    DDL_INGESTION_LOG,
     "market_trend_weekly":              DDL_MARKET_TREND_WEEKLY,
+    "category_region_averages":         DDL_CATEGORY_REGION_AVERAGES,
     "weekly_brand_positioning_summary": DDL_WEEKLY_BRAND_POSITIONING_SUMMARY,
     "positioning_example_products":     DDL_POSITIONING_EXAMPLE_PRODUCTS,
     "axis_range_config":                DDL_AXIS_RANGE_CONFIG,
+    "market_chart_bands":               DDL_AXIS_RANGE_CONFIG,
     "region_category_benchmarks":       DDL_REGION_CATEGORY_BENCHMARKS,
     "profile_intersections":            DDL_PROFILE_INTERSECTIONS,
 }
 
 
-def get_table_name_from_ddl(ddl_sql):
-    match = re.search(r"CREATE TABLE IF NOT EXISTS\s+(\w+)", ddl_sql)
-    return match.group(1) if match else None
-
-
-def get_declared_columns(ddl_sql):
+def get_declared_columns(table_name, ddl_sql):
     """
     Build the table in a throwaway in-memory database and read back its
     actual column names — more reliable than regex-parsing column
     definitions out of the DDL text, since SQLite itself interprets
     the SQL exactly as it would for the real database.
     """
-    table_name = get_table_name_from_ddl(ddl_sql)
     ref_conn = sqlite3.connect(":memory:")
     ref_conn.executescript(ddl_sql)
     cols = {row[1] for row in ref_conn.execute(f"PRAGMA table_info({table_name})")}
@@ -118,7 +114,7 @@ def main():
     any_drift = False
 
     for table_name, ddl in TABLE_DDL.items():
-        declared_cols = get_declared_columns(ddl)
+        declared_cols = get_declared_columns(table_name, ddl)
 
         if table_name not in live_tables:
             print(f"[{table_name}] NOT FOUND in live database - "
