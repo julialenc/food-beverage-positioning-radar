@@ -814,7 +814,7 @@ def search_products_resolved(
     return filtered
 
 
-@st.cache_data(show_spinner=False, ttl=600)
+@st.cache_resource(show_spinner=False, ttl=600)
 def get_market_products(category: str, region_code: str) -> pd.DataFrame:
     """The full product set for one region x one category — the shared
     dataset behind Market Overview's Product Landscape and Product Profile
@@ -828,6 +828,11 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
     not via separate SQL calls, since a single region x category
     population is small enough to hold in memory (tens of thousands of
     rows, not millions).
+
+    This uses resource caching instead of data caching because the larger
+    beverage markets can hit Streamlit's pickle/unpickle memory path when
+    switching views. Callers must treat the returned frame as read-only and
+    copy before adding helper columns.
     """
     conn = get_connection()
     df = pd.read_sql_query("""

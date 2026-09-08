@@ -533,6 +533,94 @@ def _render_brand_compare_panel(
         st.caption(f"Showing 100 of {len(brand_df):,} product records for {brand}.")
 
 
+def _render_category_company_detail(
+    company_name: str,
+    company_df: pd.DataFrame,
+    reference_values: dict[str, float],
+    company_filter: str,
+    all_companies_label: str,
+    brand_filter: str,
+    all_brands_label: str,
+) -> None:
+    n_company_records = len(company_df)
+    n_company_brands = company_df["primary_brand"].nunique()
+
+    st.markdown(
+        f"#### {company_name} · {n_company_records:,} observed records · "
+        f"{n_company_brands:,} brands"
+    )
+    company_cols = st.columns(3)
+    with company_cols[0]:
+        _metric_card("Observed product records", f"{n_company_records:,}")
+    with company_cols[1]:
+        _metric_card("Number of brands", f"{n_company_brands:,}")
+    with company_cols[2]:
+        _metric_card(
+            "Nutrition data coverage",
+            _pct(_nutrition_any_mask(company_df).sum(), n_company_records),
+        )
+
+    st.markdown("**Brand summaries**")
+    brand_summary = _brand_summary(company_df, reference_values)
+    brand_event = st.dataframe(
+        brand_summary,
+        hide_index=True,
+        width="stretch",
+        column_config=_column_help_config(list(brand_summary.columns)),
+        on_select="rerun",
+        selection_mode="single-row",
+        key=f"cr_brands_{company_name}",
+    )
+
+    selected_brand = None
+    if (
+        company_filter == company_name
+        and brand_filter != all_brands_label
+    ):
+        selected_brand = brand_filter
+    else:
+        if hasattr(brand_event, "selection"):
+            selected_brand_rows = brand_event.selection.rows
+        else:
+            selected_brand_rows = brand_event.get("selection", {}).get("rows", [])
+        if selected_brand_rows:
+            selected_brand = brand_summary.iloc[selected_brand_rows[0]]["Brand"]
+
+    if selected_brand:
+        brand_products = company_df[company_df["primary_brand"] == selected_brand]
+        st.markdown(
+            f"**Product records: {selected_brand} · "
+            f"{len(brand_products):,} observed product records**"
+        )
+        product_records = brand_products.head(250)
+        product_view = _product_table(brand_products, reference_values, limit=250)
+        product_event = st.dataframe(
+            product_view,
+            hide_index=True,
+            width="stretch",
+            column_config=_column_help_config(list(product_view.columns)),
+            on_select="rerun",
+            selection_mode="single-row",
+            key=f"cr_products_{company_name}_{selected_brand}",
+        )
+        if hasattr(product_event, "selection"):
+            selected_rows = product_event.selection.rows
+        else:
+            selected_rows = product_event.get("selection", {}).get("rows", [])
+        if selected_rows:
+            _render_product_detail(product_records.iloc[selected_rows[0]])
+        if len(brand_products) > 250:
+            st.caption(
+                f"Showing 250 of {len(brand_products):,} product records "
+                f"for {selected_brand}. Use the Brand filter to narrow the drill-down."
+            )
+    else:
+        st.caption(
+            "Select one brand in the table above, or use the filters above "
+            "to display product records for a selected company / owner and brand."
+        )
+
+
 components.inject_base_css()
 components.render_header(
     "Market Overview",
@@ -595,25 +683,46 @@ _SECTION_BY_KEY = {section["key"]: section for section in _SECTIONS}
 _CATEGORY_REPORT_SECTION = "category_report"
 _BRAND_COMPARE_SECTION = "brand_compare"
 _PRODUCT_MAP_SECTION = "product_map"
+_REPORT_LABEL_TO_KEY = {section["view_label"]: section["key"] for section in _SECTIONS}
+
+
+def _sync_market_overview_section_from_selectbox() -> None:
+    selected_label = st.session_state.get("mo_report")
+    selected_key = _REPORT_LABEL_TO_KEY.get(selected_label)
+    if selected_key:
+        st.session_state["mo_active_section"] = selected_key
+
+
+def _set_market_overview_section(section_key: str) -> None:
+    st.session_state["mo_active_section"] = section_key
+    st.session_state["mo_report"] = _SECTION_BY_KEY[section_key]["view_label"]
 
 if (
     "mo_active_section" not in st.session_state
     or st.session_state["mo_active_section"] not in _SECTION_BY_KEY
 ):
     st.session_state["mo_active_section"] = _CATEGORY_REPORT_SECTION
+if st.session_state.get("mo_report") in _REPORT_LABEL_TO_KEY:
+    st.session_state["mo_active_section"] = _REPORT_LABEL_TO_KEY[
+        st.session_state["mo_report"]
+    ]
+else:
+    st.session_state["mo_report"] = _SECTION_BY_KEY[
+        st.session_state["mo_active_section"]
+    ]["view_label"]
 
 with st.sidebar:
     st.markdown("**Market Overview views**")
     for i, section in enumerate(_SECTIONS, start=1):
         is_active = st.session_state["mo_active_section"] == section["key"]
-        if st.button(
+        st.button(
             f"{'▶ ' if is_active else ''}{section['sidebar_label']}",
             key=f"mo_nav_{i}",
             use_container_width=True,
             type="primary" if is_active else "secondary",
-        ):
-            st.session_state["mo_active_section"] = section["key"]
-            st.rerun()
+            on_click=_set_market_overview_section,
+            args=(section["key"],),
+        )
         st.caption(section["caption"])
 
 active_section = st.session_state["mo_active_section"]
@@ -665,16 +774,24 @@ with col_view:
         report_labels,
         index=report_labels.index(active_view_label),
         key="mo_report",
+        on_change=_sync_market_overview_section_from_selectbox,
     )
     selected_section_key = report_keys[report_labels.index(report_label)]
     if selected_section_key != st.session_state["mo_active_section"]:
         st.session_state["mo_active_section"] = selected_section_key
-        st.rerun()
+    active_section = st.session_state["mo_active_section"]
     if selected_section_key != _CATEGORY_REPORT_SECTION:
         st.caption(report_descriptions.get(report_label, ""))
 
+scope_key = f"{region_code}|{category}"
+if st.session_state.get("mo_scope_key") != scope_key:
+    st.session_state["mo_scope_key"] = scope_key
+    for key in ("cr_company", "cr_brand", "mo_company", "mo_brand"):
+        st.session_state.pop(key, None)
+
 # ── Load the region x category population (cached; shared by all 3 sections) ─
-df_market = db.get_market_products(category, region_code)
+with st.spinner("Loading selected market data..."):
+    df_market = db.get_market_products(category, region_code)
 df_market_unsegmented = df_market
 selected_segment = None
 if category == "beverages":
@@ -981,94 +1098,57 @@ if active_section == _CATEGORY_REPORT_SECTION:
     )
     company_counts["_sort_key"] = company_counts["company"].map(_company_sort_key)
 
+    selected_company_for_detail = None
+    if company_filter != _ALL_COMPANIES_LABEL:
+        selected_company_for_detail = company_filter
+
+    st.caption(
+        "Select a company / owner below to load its brand summaries and product records."
+    )
+
     for block_label in ["Key Companies", "Key Private Labels", "All Others"]:
-        block_counts = company_counts[company_counts["_block"] == block_label].sort_values(
-            "_sort_key"
-        )
+        block_counts = company_counts[
+            company_counts["_block"] == block_label
+        ].sort_values("_sort_key")
         if block_counts.empty:
             continue
 
         st.markdown(f"#### {block_label}")
+        block_view = block_counts.rename(columns={
+            "company": "Company / owner",
+            "observed_records": "Observed records",
+            "brands": "Brands",
+        })[["Company / owner", "Observed records", "Brands"]]
+        block_event = st.dataframe(
+            block_view,
+            hide_index=True,
+            width="stretch",
+            on_select="rerun",
+            selection_mode="single-row",
+            key=f"cr_company_block_{region_code}_{category}_{block_label}",
+        )
+        if company_filter == _ALL_COMPANIES_LABEL:
+            if hasattr(block_event, "selection"):
+                selected_company_rows = block_event.selection.rows
+            else:
+                selected_company_rows = block_event.get("selection", {}).get("rows", [])
+            if selected_company_rows:
+                selected_company_for_detail = block_view.iloc[
+                    selected_company_rows[0]
+                ]["Company / owner"]
 
-        for company_name in block_counts["company"]:
-            company_df = drill_df[drill_df["company"] == company_name]
-            n_company_records = len(company_df)
-            n_company_brands = company_df["primary_brand"].nunique()
-            expander_label = (
-                f"{company_name} · {n_company_records:,} observed records · "
-                f"{n_company_brands:,} brands"
-            )
-            with st.expander(expander_label, expanded=(company_filter != _ALL_COMPANIES_LABEL)):
-                company_cols = st.columns(3)
-                with company_cols[0]:
-                    _metric_card("Observed product records", f"{n_company_records:,}")
-                with company_cols[1]:
-                    _metric_card("Number of brands", f"{n_company_brands:,}")
-                with company_cols[2]:
-                    _metric_card(
-                        "Nutrition data coverage",
-                        _pct(_nutrition_any_mask(company_df).sum(), n_company_records),
-                    )
-
-                st.markdown("**Brand summaries**")
-                brand_summary = _brand_summary(company_df, reference_values)
-                brand_event = st.dataframe(
-                    brand_summary,
-                    hide_index=True,
-                    width="stretch",
-                    column_config=_column_help_config(list(brand_summary.columns)),
-                    on_select="rerun",
-                    selection_mode="single-row",
-                    key=f"cr_brands_{company_name}",
-                )
-
-                selected_brand = None
-                if (
-                    company_filter == company_name
-                    and brand_filter != _ALL_BRANDS_LABEL
-                ):
-                    selected_brand = brand_filter
-                else:
-                    if hasattr(brand_event, "selection"):
-                        selected_brand_rows = brand_event.selection.rows
-                    else:
-                        selected_brand_rows = brand_event.get("selection", {}).get("rows", [])
-                    if selected_brand_rows:
-                        selected_brand = brand_summary.iloc[selected_brand_rows[0]]["Brand"]
-
-                if selected_brand:
-                    brand_products = company_df[company_df["primary_brand"] == selected_brand]
-                    st.markdown(
-                        f"**Product records: {selected_brand} · "
-                        f"{len(brand_products):,} observed product records**"
-                    )
-                    product_records = brand_products.head(250)
-                    product_view = _product_table(brand_products, reference_values, limit=250)
-                    product_event = st.dataframe(
-                        product_view,
-                        hide_index=True,
-                        width="stretch",
-                        column_config=_column_help_config(list(product_view.columns)),
-                        on_select="rerun",
-                        selection_mode="single-row",
-                        key=f"cr_products_{company_name}_{selected_brand}",
-                    )
-                    if hasattr(product_event, "selection"):
-                        selected_rows = product_event.selection.rows
-                    else:
-                        selected_rows = product_event.get("selection", {}).get("rows", [])
-                    if selected_rows:
-                        _render_product_detail(product_records.iloc[selected_rows[0]])
-                    if len(brand_products) > 250:
-                        st.caption(
-                            f"Showing 250 of {len(brand_products):,} product records "
-                            f"for {selected_brand}. Use the Brand filter to narrow the drill-down."
-                        )
-                else:
-                    st.caption(
-                        "Select one brand in the table above, or use the filters above "
-                        "to display product records for a selected company / owner and brand."
-                    )
+    if selected_company_for_detail:
+        st.divider()
+        company_df = drill_df[drill_df["company"] == selected_company_for_detail]
+        _render_category_company_detail(
+            selected_company_for_detail,
+            company_df,
+            reference_values,
+            company_filter,
+            _ALL_COMPANIES_LABEL,
+            brand_filter,
+            _ALL_BRANDS_LABEL,
+        )
 
     st.stop()
 
@@ -1340,6 +1420,8 @@ if db.COMPANY_OTHER_LABEL in all_companies_present:
     company_choices.append(db.COMPANY_OTHER_LABEL)
 
 col_company, col_brand = st.columns(2)
+if st.session_state.get("mo_company") not in company_choices:
+    st.session_state["mo_company"] = _ALL_COMPANIES_LABEL
 with col_company:
     selected_company = st.selectbox("Company", company_choices, index=0, key="mo_company")
 
@@ -1351,9 +1433,12 @@ else:
     brand_pool = sorted(df_company_scope["primary_brand"].dropna().unique())
 
 _ALL_BRANDS_LABEL = "All brands"
+brand_choices = [_ALL_BRANDS_LABEL] + brand_pool
+if st.session_state.get("mo_brand") not in brand_choices:
+    st.session_state["mo_brand"] = _ALL_BRANDS_LABEL
 with col_brand:
     selected_brand = st.selectbox(
-        "Brand", [_ALL_BRANDS_LABEL] + brand_pool, index=0, key="mo_brand",
+        "Brand", brand_choices, index=0, key="mo_brand",
     )
 
 if st.button("Reset filters", key="mo_reset_filters"):
@@ -1674,7 +1759,10 @@ fig.update_layout(
 )
 
 event = st.plotly_chart(
-    fig, use_container_width=True, on_select="rerun", key="mo_scatter",
+    fig,
+    use_container_width=True,
+    on_select="rerun",
+    key=f"mo_scatter_{region_code}_{category}_{selected_segment or 'all'}",
 )
 
 # ── Colour legend (only relevant when a colour-by option is active) ────────

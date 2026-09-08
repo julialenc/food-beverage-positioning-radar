@@ -549,22 +549,24 @@ if selected_companies and (not categories or not selected_region_codes):
     st.stop()
 
 # ── Query ─────────────────────────────────────────────────────────────────────
-total = db.count_products_resolved(
-    text, categories, direct_brands,
-    selected_companies, selected_region_codes, selected_pos_codes,
-    nova_choices, selected_nutriscore,
-)
+with st.spinner("Counting matching products..."):
+    total = db.count_products_resolved(
+        text, categories, direct_brands,
+        selected_companies, selected_region_codes, selected_pos_codes,
+        nova_choices, selected_nutriscore,
+    )
 
 if total == 0:
     st.warning("No products match these filters.")
     st.stop()
 
-results = db.search_products_resolved(
-    text, categories, direct_brands,
-    selected_companies, selected_region_codes, selected_pos_codes,
-    nova_choices, selected_nutriscore,
-    limit=1000,
-)
+with st.spinner("Loading product table..."):
+    results = db.search_products_resolved(
+        text, categories, direct_brands,
+        selected_companies, selected_region_codes, selected_pos_codes,
+        nova_choices, selected_nutriscore,
+        limit=1000,
+    )
 shown = len(results)
 
 # ── Match count + instruction ──────────────────────────────────────────────────
