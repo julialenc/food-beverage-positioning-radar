@@ -33,8 +33,14 @@ COMPANY_OTHER_LABEL    = "Other / not mapped to a company"
 COMPANY_MANUAL_REVIEW_LABEL = "Manual review"
 PRODUCT_BRAND_SQL = "COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_brand)"
 PRODUCT_BRAND_SQL_UNALIASED = "COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand)"
-CURRENT_PRODUCT_SQL = "p.ingested_at = (SELECT MAX(ingested_at) FROM products)"
-CURRENT_PRODUCT_SQL_UNALIASED = "ingested_at = (SELECT MAX(ingested_at) FROM products)"
+CURRENT_PRODUCT_SQL = (
+    "(p.ingested_at = (SELECT MAX(ingested_at) FROM products WHERE ingested_at IS NOT NULL) "
+    "OR (SELECT MAX(ingested_at) FROM products WHERE ingested_at IS NOT NULL) IS NULL)"
+)
+CURRENT_PRODUCT_SQL_UNALIASED = (
+    "(ingested_at = (SELECT MAX(ingested_at) FROM products WHERE ingested_at IS NOT NULL) "
+    "OR (SELECT MAX(ingested_at) FROM products WHERE ingested_at IS NOT NULL) IS NULL)"
+)
 CHART_BAND_COLUMNS = {
     "energy_kcal": "energy_chart_band",
     "protein_100g": "protein_chart_band",
@@ -422,12 +428,14 @@ def add_resolved_company(
 
 def _apply_display_brand(df: pd.DataFrame) -> pd.DataFrame:
     """Expose normalized_brand through primary_brand for UI compatibility."""
+    if "resolved_company" in df.columns:
+        df["company"] = df["resolved_company"]
+    elif "company" not in df.columns:
+        df["company"] = pd.Series(dtype="object")
     if df.empty or "primary_brand" not in df.columns or "normalized_brand" not in df.columns:
         return df
     normalized = df["normalized_brand"].astype("string").str.strip()
     df["primary_brand"] = normalized.where(normalized.notna() & (normalized != ""), df["primary_brand"])
-    if "resolved_company" in df.columns:
-        df["company"] = df["resolved_company"]
     return df
 
 
@@ -475,13 +483,35 @@ def get_filter_options() -> dict[str, list]:
     queries = {
         "query_category": """
             SELECT DISTINCT query_category FROM products
-            WHERE ingested_at = (SELECT MAX(ingested_at) FROM products)
+            WHERE (
+                ingested_at = (
+                    SELECT MAX(ingested_at)
+                    FROM products
+                    WHERE ingested_at IS NOT NULL
+                )
+                OR (
+                    SELECT MAX(ingested_at)
+                    FROM products
+                    WHERE ingested_at IS NOT NULL
+                ) IS NULL
+            )
               AND query_category IS NOT NULL AND TRIM(query_category) != ''
             ORDER BY 1
         """,
         "nutriscore_grade": """
             SELECT DISTINCT LOWER(nutriscore_grade) FROM products
-            WHERE ingested_at = (SELECT MAX(ingested_at) FROM products)
+            WHERE (
+                ingested_at = (
+                    SELECT MAX(ingested_at)
+                    FROM products
+                    WHERE ingested_at IS NOT NULL
+                )
+                OR (
+                    SELECT MAX(ingested_at)
+                    FROM products
+                    WHERE ingested_at IS NOT NULL
+                ) IS NULL
+            )
               AND nutriscore_grade IS NOT NULL AND TRIM(nutriscore_grade) != ''
             ORDER BY 1
         """,
@@ -863,7 +893,18 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
          AND b.snapshot = (SELECT MAX(snapshot) FROM market_chart_bands)
         WHERE p.query_category = ?
           AND p.observed_market_region_codes LIKE ?
-          AND p.ingested_at = (SELECT MAX(ingested_at) FROM products)
+          AND (
+              p.ingested_at = (
+                  SELECT MAX(ingested_at)
+                  FROM products
+                  WHERE ingested_at IS NOT NULL
+              )
+              OR (
+                  SELECT MAX(ingested_at)
+                  FROM products
+                  WHERE ingested_at IS NOT NULL
+              ) IS NULL
+          )
           AND COALESCE(p.include_in_product_table, 1) = 1
           AND COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_brand) IS NOT NULL
           AND TRIM(LOWER(COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_brand))) NOT IN ('unknown', '', 'nan')
