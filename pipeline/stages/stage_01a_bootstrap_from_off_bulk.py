@@ -27,7 +27,7 @@ Usage:
 
 Output:
     data/02_raw_off_downloads/en.openfoodfacts.org.products.csv.gz   (cached download)
-    data/sample/sample_all_<timestamp>.csv           (pipeline input)
+    data/03_pipeline_intermediates/sample_all_<timestamp>.csv           (pipeline input)
 
 Next step: python pipeline/stages/stage_02_clean_products.py
 """
@@ -57,7 +57,7 @@ CHUNK_SIZE = 50_000  # rows per chunk — ~200 MB RAM peak per chunk
 
 ROOT       = Path(__file__).resolve().parents[2]
 RAW_DIR    = ROOT / "data" / "02_raw_off_downloads"
-SAMPLE_DIR = ROOT / "data" / "sample"
+PIPELINE_INTERMEDIATE_DIR = ROOT / "data" / "03_pipeline_intermediates"
 GZ_PATH    = RAW_DIR / "en.openfoodfacts.org.products.csv.gz"
 
 # ── Column mapping: OFF CSV name → internal pipeline name ─────────────────────
@@ -193,7 +193,7 @@ def main() -> None:
     print(f"Target countries:  France, United Kingdom, United States")
     print(f"Target categories: {[label for label, _ in CATEGORY_MAP]}\n")
 
-    SAMPLE_DIR.mkdir(parents=True, exist_ok=True)
+    PIPELINE_INTERMEDIATE_DIR.mkdir(parents=True, exist_ok=True)
 
     # Step 1 — download
     download_if_needed()
@@ -255,7 +255,7 @@ def main() -> None:
     for cat, n in df["query_category"].value_counts().items():
         print(f"    {cat:<15} {n:>8,} products")
 
-    out = SAMPLE_DIR / f"sample_all_{timestamp}.csv"
+    out = PIPELINE_INTERMEDIATE_DIR / f"sample_all_{timestamp}.csv"
     df.to_csv(out, index=False, encoding="utf-8-sig")
     size_mb = out.stat().st_size / 1_048_576
     print(f"\n  Saved -> {out.name}  ({len(df):,} rows, {len(df.columns)} columns, {size_mb:.0f} MB)")

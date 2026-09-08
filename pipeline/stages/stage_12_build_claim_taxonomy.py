@@ -3,7 +3,7 @@ stage_12_build_claim_taxonomy.py
 --------------------------------
 Computes claim taxonomy and nutrition benchmark flags.
 Writes results back to the product_analysis table and updates the
-Power BI export.
+product-level tagged export.
 
 TWO-CUT CLAIM TAXONOMY:
 
@@ -42,7 +42,7 @@ NUTRITION BENCHMARK FLAGS (per 100g solid / per 100ml liquid):
     nutrition_benchmark_flags stores neutral codes (e.g.
     sugar_above_reference), not display text — consistent with
     claim_category_1/2. See docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md for the code-to-display
-    mapping used by app.py and the Power BI deck.
+    mapping used by the Streamlit app.
 
     Thresholds follow the UK Food Standards Agency's voluntary
     front-of-pack labelling guidance, used here as a single reference
@@ -81,8 +81,8 @@ Output:
     - Updates product_analysis table in SQLite (columns are already
       declared by stage_05_load_database.py — this script only UPDATEs, it does not
       ALTER TABLE)
-    - Saves data/sample/powerbi_tagged_<timestamp>.csv — a product-level
-      tagged export, not the final aggregated Power BI deck source (see
+    - Saves data/03_pipeline_intermediates/products_claim_tagged_<timestamp>.csv — a product-level
+      tagged export, not the final aggregated app summary source (see
       stage_13_build_app_summaries.py for that)
 """
 
@@ -95,7 +95,7 @@ from pathlib import Path
 
 ROOT       = Path(__file__).resolve().parents[2]
 DB_PATH    = ROOT / "database" / "positioning_radar.db"
-SAMPLE_DIR = ROOT / "data" / "sample"
+PIPELINE_INTERMEDIATE_DIR = ROOT / "data" / "03_pipeline_intermediates"
 
 # ── Nutrition benchmark thresholds ───────────────────────────────────────────
 # UK Food Standards Agency front-of-pack guidance — see module docstring
@@ -523,12 +523,12 @@ def main():
     conn.commit()
     print(f"  Total updated: {updated:,} rows")
 
-    # ── Power BI export ───────────────────────────────────────────────────────
+    # ── Product-level tagged export ───────────────────────────────────────────
     # This is a product-level tagged export, not the final aggregated
-    # Power BI deck source — see stage_13_build_app_summaries.py for that.
+    # app summary source — see stage_13_build_app_summaries.py for that.
     print("\n  Saving product-level tagged export...")
 
-    pbi_cols = [
+    export_cols = [
         "barcode", "product_name", "brands", "primary_brand",
         "query_category", "primary_country",
         "nova_group", "nutriscore_grade",
@@ -549,11 +549,12 @@ def main():
         "detected_claim_phrases", "prompt_version",
     ]
 
-    pbi_df = df[[c for c in pbi_cols if c in df.columns]].copy()
-    output_path = SAMPLE_DIR / f"powerbi_tagged_{timestamp}.csv"
-    pbi_df.to_csv(output_path, index=False, encoding="utf-8-sig")
-    print(f"  Saved -> powerbi_tagged_{timestamp}.csv")
-    print(f"  ({len(pbi_df):,} rows, {len(pbi_df.columns)} columns)")
+    export_df = df[[c for c in export_cols if c in df.columns]].copy()
+    PIPELINE_INTERMEDIATE_DIR.mkdir(parents=True, exist_ok=True)
+    output_path = PIPELINE_INTERMEDIATE_DIR / f"products_claim_tagged_{timestamp}.csv"
+    export_df.to_csv(output_path, index=False, encoding="utf-8-sig")
+    print(f"  Saved -> products_claim_tagged_{timestamp}.csv")
+    print(f"  ({len(export_df):,} rows, {len(export_df.columns)} columns)")
 
     conn.close()
     print(f"\n  Done. Updated columns in product_analysis:")

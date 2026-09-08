@@ -2,14 +2,14 @@
 stage_01b_ingest_from_off_api.py
 --------------------------------
 Pulls products from the Open Food Facts Live JSON API by category.
-Saves raw JSON to data/02_raw_off_downloads/ and a flat CSV to data/sample/.
+Saves raw JSON to data/02_raw_off_downloads/ and a flat CSV to data/03_pipeline_intermediates/.
 
 Usage:
     python pipeline/stages/stage_01b_ingest_from_off_api.py
 
 Output:
     data/02_raw_off_downloads/raw_<category>_<timestamp>.json   (one per category)
-    data/sample/sample_all_<timestamp>.csv     (all categories combined, flat)
+    data/03_pipeline_intermediates/sample_all_<timestamp>.csv     (all categories combined, flat)
 """
 
 import requests
@@ -66,7 +66,7 @@ FIELDS = ",".join([
 
 ROOT       = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RAW_DIR    = os.path.join(ROOT, "data", "02_raw_off_downloads")
-SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
+PIPELINE_INTERMEDIATE_DIR = os.path.join(ROOT, "data", "03_pipeline_intermediates")
 
 # ── Fetch ─────────────────────────────────────────────────────────────────────
 
@@ -272,6 +272,7 @@ def flatten_product(product: dict, category: str) -> dict | None:
 
 def save_raw(products: list[dict], category: str, timestamp: str) -> None:
     """Save raw API response to data/02_raw_off_downloads/ as JSON."""
+    os.makedirs(RAW_DIR, exist_ok=True)
     filename = f"raw_{category}_{timestamp}.json"
     path = os.path.join(RAW_DIR, filename)
     with open(path, "w", encoding="utf-8") as f:
@@ -280,9 +281,10 @@ def save_raw(products: list[dict], category: str, timestamp: str) -> None:
 
 
 def save_sample(df: pd.DataFrame, timestamp: str) -> None:
-    """Save combined flat CSV to data/sample/."""
+    """Save combined flat CSV to data/03_pipeline_intermediates/."""
+    os.makedirs(PIPELINE_INTERMEDIATE_DIR, exist_ok=True)
     filename = f"sample_all_{timestamp}.csv"
-    path = os.path.join(SAMPLE_DIR, filename)
+    path = os.path.join(PIPELINE_INTERMEDIATE_DIR, filename)
     df.to_csv(path, index=False, encoding="utf-8-sig")
     print(f"  Sample CSV saved -> {filename}  "
           f"({len(df):,} rows, {len(df.columns)} columns)")

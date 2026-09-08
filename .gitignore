@@ -1,5 +1,7 @@
 data/sample/*
 !data/sample/.gitkeep
+data/03_pipeline_intermediates/*
+!data/03_pipeline_intermediates/.gitkeep
 logs/*.log
 logs/*.txt
 !logs/.gitkeep

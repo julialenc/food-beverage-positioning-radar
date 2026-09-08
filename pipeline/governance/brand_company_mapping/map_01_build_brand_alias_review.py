@@ -24,7 +24,7 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_INPUT = ROOT / "data" / "sample" / "clean_20260822_220423.csv"
+DEFAULT_INPUT = ROOT / "data" / "03_pipeline_intermediates" / "clean_20260822_220423.csv"
 REFERENCE_INPUT_DIR = ROOT / "data" / "01_reference_inputs"
 ALIAS_PATH = REFERENCE_INPUT_DIR / "02_brand_alias_mapping.csv"
 PRIVATE_LABEL_MAPPING_PATH = REFERENCE_INPUT_DIR / "04_private_label_brand_mapping.csv"

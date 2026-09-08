@@ -11,7 +11,7 @@ nutrition values.
 
 Usage:
     python pipeline/stages/stage_03_build_nutrition_quality_flags.py
-    python pipeline/stages/stage_03_build_nutrition_quality_flags.py --input data/sample/clean_20260822_220423.csv
+    python pipeline/stages/stage_03_build_nutrition_quality_flags.py --input data/03_pipeline_intermediates/clean_20260822_220423.csv
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ if ROOT not in sys.path:
 
 from shared.beverage_segments import beverage_view_segment
 
-SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
+PIPELINE_INTERMEDIATE_DIR = os.path.join(ROOT, "data", "03_pipeline_intermediates")
 AUDIT_DIR = os.path.join(ROOT, "data", "nutrition_outlier_review", "audits")
 COMPANY_MAPPING_PATH = os.path.join(
     ROOT, "data", "01_reference_inputs", "03_company_brand_mapping.csv"
@@ -149,7 +149,7 @@ AUDIT_COLUMNS = [
 ]
 
 
-def find_latest_clean(sample_dir: str = SAMPLE_DIR) -> str:
+def find_latest_clean(sample_dir: str = PIPELINE_INTERMEDIATE_DIR) -> str:
     files = [
         f for f in os.listdir(sample_dir)
         if f.startswith("clean_") and f.endswith(".csv")
@@ -858,7 +858,7 @@ def main() -> None:
     parser.add_argument(
         "--input",
         default=None,
-        help="Clean CSV input. Defaults to latest data/sample/clean_*.csv.",
+        help="Clean CSV input. Defaults to latest data/03_pipeline_intermediates/clean_*.csv.",
     )
     args = parser.parse_args()
 

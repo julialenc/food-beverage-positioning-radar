@@ -35,7 +35,7 @@ Usage:
     python pipeline/stages/stage_05_load_database.py --source bulk_export
 
 Input:
-    data/sample/analyzed_<timestamp>.csv   (latest file auto-detected)
+    data/03_pipeline_intermediates/analyzed_<timestamp>.csv   (latest file auto-detected)
 
 Output:
     database/positioning_radar.db
@@ -65,7 +65,7 @@ from datetime import datetime
 # ── Paths ─────────────────────────────────────────────────────────────────────
 
 ROOT       = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
+PIPELINE_INTERMEDIATE_DIR = os.path.join(ROOT, "data", "03_pipeline_intermediates")
 DB_DIR     = os.path.join(ROOT, "database")
 DB_PATH    = os.path.join(DB_DIR, "positioning_radar.db")
 COMPANY_MAP_PATH = os.path.join(ROOT, "data", "01_reference_inputs", "03_company_brand_mapping.csv")
@@ -1276,7 +1276,7 @@ def main():
     print(f"Source: {args.source}")
 
     # ── Load analyzed CSV ─────────────────────────────────────────────────────
-    input_path = args.input or find_latest_analyzed(SAMPLE_DIR)
+    input_path = args.input or find_latest_analyzed(PIPELINE_INTERMEDIATE_DIR)
     print(f"\n  Input file: {os.path.basename(input_path)}")
     df = pd.read_csv(input_path, encoding="utf-8-sig")
     print(f"  Rows: {len(df)}")

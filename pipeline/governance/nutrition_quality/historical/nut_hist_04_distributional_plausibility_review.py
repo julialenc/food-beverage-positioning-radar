@@ -30,7 +30,7 @@ ROOT = os.path.dirname(
         )
     )
 )
-SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
+PIPELINE_INTERMEDIATE_DIR = os.path.join(ROOT, "data", "03_pipeline_intermediates")
 AUDIT_DIR = os.path.join(ROOT, "data", "nutrition_outlier_review", "audits")
 FLAGS_PATH = os.path.join(AUDIT_DIR, "nutrition_quality_flags.csv")
 
@@ -91,7 +91,7 @@ DATA_QUALITY_TOKENS = {
 }
 
 
-def find_latest_clean(sample_dir: str = SAMPLE_DIR) -> str | None:
+def find_latest_clean(sample_dir: str = PIPELINE_INTERMEDIATE_DIR) -> str | None:
     if not os.path.exists(sample_dir):
         return None
     files = [

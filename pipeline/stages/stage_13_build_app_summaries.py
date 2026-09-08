@@ -106,8 +106,6 @@ from pathlib import Path
 
 ROOT       = Path(__file__).resolve().parents[2]
 DB_PATH    = ROOT / "database" / "positioning_radar.db"
-SAMPLE_DIR = ROOT / "data" / "sample"
-
 SOURCE_SCOPE = "full_database_snapshot"
 
 # Minimum number of products in a brand/category grouping for it to be

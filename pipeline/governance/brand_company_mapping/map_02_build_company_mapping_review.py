@@ -16,7 +16,7 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[3]
-SAMPLE_DIR = ROOT / "data" / "sample"
+PIPELINE_INTERMEDIATE_DIR = ROOT / "data" / "03_pipeline_intermediates"
 OUT_DIR = ROOT / "data" / "brand_mapping_review"
 OUT_PATH = OUT_DIR / "company_mapping_layer3_review.csv"
 SUMMARY_PATH = OUT_DIR / "company_mapping_layer3_summary.csv"
@@ -44,10 +44,10 @@ def normalize_key(value: object) -> str:
 
 
 def latest_clean_file() -> Path:
-    files = sorted(SAMPLE_DIR.glob("clean_*.csv"), reverse=True)
+    files = sorted(PIPELINE_INTERMEDIATE_DIR.glob("clean_*.csv"), reverse=True)
     if not files:
         raise FileNotFoundError(
-            "No data/sample/clean_*.csv file found. "
+            "No data/03_pipeline_intermediates/clean_*.csv file found. "
             "Run stage_02_clean_products.py first."
         )
     return files[0]

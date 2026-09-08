@@ -30,11 +30,11 @@ Usage:
     python pipeline/stages/stage_04_build_product_analysis.py
 
 Input:
-    data/sample/clean_<timestamp>.csv   (latest file auto-detected)
-    OR data/sample/bulk_clean_<timestamp>.csv
+    data/03_pipeline_intermediates/clean_<timestamp>.csv   (latest file auto-detected)
+    OR data/03_pipeline_intermediates/bulk_clean_<timestamp>.csv
 
 Output:
-    data/sample/analyzed_<timestamp>.csv
+    data/03_pipeline_intermediates/analyzed_<timestamp>.csv
 """
 
 import pandas as pd
@@ -46,7 +46,7 @@ from collections import Counter
 # ── Paths ─────────────────────────────────────────────────────────────────────
 
 ROOT       = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
+PIPELINE_INTERMEDIATE_DIR = os.path.join(ROOT, "data", "03_pipeline_intermediates")
 
 
 # ── Dictionary scope ──────────────────────────────────────────────────────────
@@ -809,7 +809,7 @@ def main():
     print(f"Architecture:  Component A (ingredient composition) only")
     print(f"               Components B+C added in stage_11_merge_vision_results.py from vision results\n")
 
-    input_path = find_latest_clean(SAMPLE_DIR)
+    input_path = find_latest_clean(PIPELINE_INTERMEDIATE_DIR)
     df = analyze(input_path)
 
     eligible = df[df["ingredient_analysis_eligible"] == True].copy()
@@ -842,7 +842,8 @@ def main():
         else:
             print(f"    {label}: 0 products")
 
-    output_path = os.path.join(SAMPLE_DIR, f"analyzed_{timestamp}.csv")
+    os.makedirs(PIPELINE_INTERMEDIATE_DIR, exist_ok=True)
+    output_path = os.path.join(PIPELINE_INTERMEDIATE_DIR, f"analyzed_{timestamp}.csv")
     df.to_csv(output_path, index=False, encoding="utf-8-sig")
     print(f"\n  Saved -> analyzed_{timestamp}.csv")
     print(f"  ({len(df):,} rows, {len(df.columns)} columns)")

@@ -29,16 +29,16 @@ What this script does:
     13. Convert Unix timestamps to readable dates
     14. Add completeness_score (0-100) - data completeness indicator
     15. Add nullable product_segment_label column (v2 stub)
-    16. Save clean CSV to data/sample/
+    16. Save clean CSV to data/03_pipeline_intermediates/
  
 Usage:
     python pipeline/stages/stage_02_clean_products.py
  
 Input:
-    data/sample/sample_all_<timestamp>.csv   (latest file auto-detected)
+    data/03_pipeline_intermediates/sample_all_<timestamp>.csv   (latest file auto-detected)
  
 Output:
-    data/sample/clean_<timestamp>.csv
+    data/03_pipeline_intermediates/clean_<timestamp>.csv
 """
 
 import pandas as pd
@@ -57,7 +57,7 @@ if ROOT not in sys.path:
 
 from shared.beverage_segments import beverage_view_segment
 
-SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
+PIPELINE_INTERMEDIATE_DIR = os.path.join(ROOT, "data", "03_pipeline_intermediates")
 REFERENCE_INPUT_DIR = os.path.join(ROOT, "data", "01_reference_inputs")
 REGION_MAPPING_PATH = os.path.join(REFERENCE_INPUT_DIR, "01_country_region_mapping.csv")
 TOP_COMPANY_BRAND_MATRIX_PATH = os.path.join(
@@ -2526,7 +2526,7 @@ def main():
     print(f"\nFood & Beverage Positioning Radar - stage_02_clean_products.py")
     print(f"Run timestamp: {timestamp}")
 
-    input_path = find_latest_sample(SAMPLE_DIR)
+    input_path = find_latest_sample(PIPELINE_INTERMEDIATE_DIR)
     df = clean(input_path)
 
     # Summary
@@ -2555,7 +2555,8 @@ def main():
     # Save FIRST — previously the MemoryError on the low-completeness print
     # crashed stage_02_clean_products.py before the file was ever written, so aliases were lost.
     output_filename = f"clean_{timestamp}.csv"
-    output_path     = os.path.join(SAMPLE_DIR, output_filename)
+    os.makedirs(PIPELINE_INTERMEDIATE_DIR, exist_ok=True)
+    output_path     = os.path.join(PIPELINE_INTERMEDIATE_DIR, output_filename)
     df.to_csv(output_path, index=False, encoding="utf-8-sig")
     print(f"\n  Saved -> {output_filename}")
     print(f"  ({len(df)} rows, {len(df.columns)} columns)\n")
