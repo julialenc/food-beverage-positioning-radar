@@ -783,16 +783,6 @@ with col_view:
     if selected_section_key != _CATEGORY_REPORT_SECTION:
         st.caption(report_descriptions.get(report_label, ""))
 
-scope_key = f"{region_code}|{category}"
-if st.session_state.get("mo_scope_key") != scope_key:
-    st.session_state["mo_scope_key"] = scope_key
-    for key in ("cr_company", "cr_brand", "mo_company", "mo_brand"):
-        st.session_state.pop(key, None)
-
-# ── Load the region x category population (cached; shared by all 3 sections) ─
-with st.spinner("Loading selected market data..."):
-    df_market = db.get_market_products(category, region_code)
-df_market_unsegmented = df_market
 selected_segment = None
 if category == "beverages":
     st.subheader("Beverage view segment")
@@ -824,10 +814,6 @@ if category == "beverages":
         "interpreted as a separate market segment."
     )
     selected_segment = _BEVERAGE_SEGMENT_BY_LABEL.get(beverage_segment_label)
-    if selected_segment:
-        df_market = df_market[
-            df_market["beverage_view_segment"] == selected_segment
-        ].copy()
 else:
     st.session_state["mo_beverage_segment"] = SEGMENT_LABELS[
         READY_TO_DRINK_SEGMENT
@@ -836,6 +822,33 @@ else:
 selected_base = f"{region_label} · {_category_label(category)}"
 if category == "beverages" and selected_segment:
     selected_base = f"{selected_base} · {beverage_segment_label}"
+
+loaded_scope_key = f"{region_code}|{category}|{selected_segment or 'all'}"
+if st.session_state.get("mo_scope_key") != loaded_scope_key:
+    st.session_state["mo_scope_key"] = loaded_scope_key
+    for key in ("cr_company", "cr_brand", "mo_company", "mo_brand"):
+        st.session_state.pop(key, None)
+
+if st.session_state.get("mo_loaded_scope_key") != loaded_scope_key:
+    st.markdown(f"**Selected scope: {selected_base}**")
+    if st.button(
+        "Load selected market data",
+        key="mo_load_selected_scope",
+        type="primary",
+    ):
+        st.session_state["mo_loaded_scope_key"] = loaded_scope_key
+        st.rerun()
+    st.stop()
+
+# ── Load the region x category population (cached; shared by all 3 sections) ─
+with st.spinner("Loading selected market data..."):
+    df_market = db.get_market_products(category, region_code)
+df_market_unsegmented = df_market
+if category == "beverages" and selected_segment:
+    df_market = df_market[
+        df_market["beverage_view_segment"] == selected_segment
+    ].copy()
+
 st.caption(
     f"Current data snapshot: {_SNAPSHOT_LABEL} · "
     f"{len(df_market):,} products in selected scope"
