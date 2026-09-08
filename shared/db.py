@@ -51,16 +51,17 @@ CHART_BAND_COLUMNS = {
 }
 
 
-def _extracted_public_db_path() -> Path:
-    return Path(tempfile.gettempdir()) / "positioning_radar_public_mvp.db"
+def _extracted_public_db_path(gz_stat: os.stat_result) -> Path:
+    artifact_id = f"{gz_stat.st_mtime_ns}_{gz_stat.st_size}"
+    return Path(tempfile.gettempdir()) / f"positioning_radar_public_mvp_{artifact_id}.db"
 
 
 def _extract_public_db_if_needed() -> Path:
-    extracted = _extracted_public_db_path()
-    gz_mtime = PUBLIC_DB_GZ_PATH.stat().st_mtime
+    gz_stat = PUBLIC_DB_GZ_PATH.stat()
+    extracted = _extracted_public_db_path(gz_stat)
+    gz_mtime = gz_stat.st_mtime
     needs_extract = (
         not extracted.exists()
-        or extracted.stat().st_mtime < gz_mtime
         or extracted.stat().st_size == 0
     )
     if needs_extract:
@@ -75,12 +76,12 @@ def get_database_path() -> Path:
     configured = os.environ.get("POSITIONING_RADAR_DB_PATH", "").strip()
     if configured:
         return Path(configured)
+    if PUBLIC_DB_GZ_PATH.exists():
+        return _extract_public_db_if_needed()
     if LOCAL_DB_PATH.exists():
         return LOCAL_DB_PATH
     if PUBLIC_DB_PATH.exists():
         return PUBLIC_DB_PATH
-    if PUBLIC_DB_GZ_PATH.exists():
-        return _extract_public_db_if_needed()
     return LOCAL_DB_PATH
 
 
