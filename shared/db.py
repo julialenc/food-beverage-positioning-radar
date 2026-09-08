@@ -55,6 +55,13 @@ CHART_BAND_COLUMNS = {
     "fiber_per_kcal": "fiber_per_kcal_chart_band",
     "sugars_per_kcal": "sugars_per_kcal_chart_band",
 }
+_REQUIRED_PUBLIC_DB_TABLES = {
+    "products",
+    "product_analysis",
+    "market_chart_bands",
+    "region_category_benchmarks",
+    "profile_intersections",
+}
 
 
 def _extracted_public_db_path(gz_stat: os.stat_result) -> Path:
@@ -62,19 +69,55 @@ def _extracted_public_db_path(gz_stat: os.stat_result) -> Path:
     return Path(tempfile.gettempdir()) / f"positioning_radar_public_mvp_{artifact_id}.db"
 
 
+def _public_db_is_usable(path: Path) -> bool:
+    if not path.exists() or path.stat().st_size == 0:
+        return False
+    try:
+        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+        try:
+            tables = {
+                row[0]
+                for row in conn.execute(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'"
+                ).fetchall()
+            }
+            if not _REQUIRED_PUBLIC_DB_TABLES.issubset(tables):
+                return False
+            integrity = conn.execute("PRAGMA quick_check").fetchone()
+            return bool(integrity and integrity[0] == "ok")
+        finally:
+            conn.close()
+    except sqlite3.DatabaseError:
+        return False
+
+
 def _extract_public_db_if_needed() -> Path:
     gz_stat = PUBLIC_DB_GZ_PATH.stat()
     extracted = _extracted_public_db_path(gz_stat)
     gz_mtime = gz_stat.st_mtime
-    needs_extract = (
-        not extracted.exists()
-        or extracted.stat().st_size == 0
+    if _public_db_is_usable(extracted):
+        return extracted
+
+    tmp_fd, tmp_name = tempfile.mkstemp(
+        prefix=f"{extracted.name}.",
+        suffix=".tmp",
+        dir=extracted.parent,
     )
-    if needs_extract:
+    os.close(tmp_fd)
+    tmp = Path(tmp_name)
+    try:
         with gzip.open(PUBLIC_DB_GZ_PATH, "rb") as src:
-            with open(extracted, "wb") as dst:
+            with open(tmp, "wb") as dst:
                 shutil.copyfileobj(src, dst)
-        os.utime(extracted, (gz_mtime, gz_mtime))
+        os.utime(tmp, (gz_mtime, gz_mtime))
+        if not _public_db_is_usable(tmp):
+            raise sqlite3.DatabaseError(
+                "Extracted public database failed SQLite integrity check."
+            )
+        tmp.replace(extracted)
+    finally:
+        if tmp.exists():
+            tmp.unlink()
     return extracted
 
 
