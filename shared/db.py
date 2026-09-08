@@ -888,7 +888,11 @@ def search_products_resolved(
 
 
 @st.cache_resource(show_spinner=False, ttl=600)
-def get_market_products(category: str, region_code: str) -> pd.DataFrame:
+def get_market_products(
+    category: str,
+    region_code: str,
+    beverage_segment: str = "all",
+) -> pd.DataFrame:
     """The full product set for one region x one category — the shared
     dataset behind Market Overview's Product Landscape and Product Profile
     Landscape sections (spec section 10: reuse the same cleaned dataset
@@ -907,6 +911,7 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
     switching views. Callers must treat the returned frame as read-only and
     copy before adding helper columns.
     """
+    chart_band_segment = (beverage_segment or "all").strip() or "all"
     conn = get_connection()
     df = pd.read_sql_query("""
         SELECT p.barcode, p.product_name,
@@ -932,6 +937,7 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
           ON b.barcode = p.barcode
          AND b.region_code = ?
          AND b.category = p.query_category
+         AND b.beverage_view_segment = ?
          AND b.snapshot = (SELECT MAX(snapshot) FROM market_chart_bands)
         WHERE p.query_category = ?
           AND p.observed_market_region_codes LIKE ?
@@ -950,7 +956,7 @@ def get_market_products(category: str, region_code: str) -> pd.DataFrame:
           AND COALESCE(p.include_in_product_table, 1) = 1
           AND COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_brand) IS NOT NULL
           AND TRIM(LOWER(COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_brand))) NOT IN ('unknown', '', 'nan')
-    """, conn, params=[region_code, category, f"%{region_code}%"])
+    """, conn, params=[region_code, chart_band_segment, category, f"%{region_code}%"])
 
     for col in ["energy_kcal", "fat_100g", "saturated_fat_100g", "carbs_100g",
                 "sugars_100g", "fiber_100g", "protein_100g", "salt_100g"]:

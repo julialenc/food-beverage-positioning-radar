@@ -842,7 +842,10 @@ if st.session_state.get("mo_loaded_scope_key") != loaded_scope_key:
 
 # ── Load the region x category population (cached; shared by all 3 sections) ─
 with st.spinner("Loading selected market data..."):
-    df_market = db.get_market_products(category, region_code)
+    chart_band_segment = (
+        selected_segment if category == "beverages" and selected_segment else "all"
+    )
+    df_market = db.get_market_products(category, region_code, chart_band_segment)
 df_market_unsegmented = df_market
 if category == "beverages" and selected_segment:
     df_market = df_market[
