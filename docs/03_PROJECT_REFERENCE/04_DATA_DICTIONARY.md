@@ -52,7 +52,7 @@ the app and aggregate analysis, but source values should remain traceable.
 | `off_categories` | TEXT | The full, raw category string as recorded in Open Food Facts, often containing multiple nested category tags. Used to refine `query_category`. |
 | `countries` | TEXT | Pipe-separated list of country tags as recorded in Open Food Facts. |
 | `primary_country` | TEXT | The first country extracted from `countries`. Reflects where the product was recorded in Open Food Facts, not necessarily where it is sold (see `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md`). |
-| `observed_market_region_codes` | TEXT | Pipe-separated market-region codes derived from OFF country tags and `data/country_region_mapping.csv`. Used by Streamlit region filters and market-scoped ownership logic. |
+| `observed_market_region_codes` | TEXT | Pipe-separated market-region codes derived from OFF country tags and `data/01_reference_inputs/01_country_region_mapping.csv`. Used by Streamlit region filters and market-scoped ownership logic. |
 | `labels` | TEXT | Pipe-separated list of label/certification tags as recorded in Open Food Facts (e.g. organic, fair trade). |
 | `ingredients_text` | TEXT | Raw ingredients list as recorded in Open Food Facts, used as input for ingredient-based analysis. |
 | `additives_tags` | TEXT | Pipe-separated list of E-number additive tags, pre-parsed by Open Food Facts. |
@@ -84,8 +84,8 @@ the app and aggregate analysis, but source values should remain traceable.
 | `nutrition_quality_status` | TEXT | Launch nutrition-quality status, such as `valid`, `data_quality_error`, `energy_macro_inconsistency`, `genuine_outlier`, `category_scope_outlier`, or `manual_review`. |
 | `outlier_type` | TEXT | Optional grouped outlier type used for audit and downstream filtering. |
 | `include_in_product_table` | INTEGER (1/0) | Whether the product should be visible in product-level tables/Product Explorer. Hard data-quality errors are excluded; imperfect but useful records can remain visible. |
-| `include_in_aggregates` | INTEGER (1/0) | Whether the record is eligible for Market Overview aggregate calculations. Records with hard data-quality errors, material energy-macro inconsistency, or approved aggregate-exclusion outlier rules are excluded. |
-| `include_in_charts` | INTEGER (1/0) | Whether the record is eligible for Market Overview charts. This may be stricter than product-level visibility to avoid chart distortion. |
+| `include_in_aggregates` | INTEGER (1/0) | Compatibility/audit-history field. Current Market Overview calculations use the Product Explorer hard gate as the exclusion boundary; records that pass `include_in_product_table = 1` remain aggregate-eligible even when warning flags are present. |
+| `include_in_charts` | INTEGER (1/0) | Compatibility/audit-history field. Current Product Map display starts from Product Explorer-valid records with non-null selected axes and applies selected chart-range bands; chart ranges affect visualization only. |
 | `nutrition_quality_reason` | TEXT | Semicolon-separated or rule-style reasons for the nutrition-quality status and inclusion flags. |
 | `energy_kcal_missing` | INTEGER (1/0) | Whether the source/working energy value is missing. Missing is not zero. |
 | `fat_100g_missing` | INTEGER (1/0) | Whether total fat is missing. Missing is not zero. |

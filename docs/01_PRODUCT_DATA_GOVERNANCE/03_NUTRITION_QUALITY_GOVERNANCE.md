@@ -16,9 +16,9 @@ The project does **not** overwrite OFF nutrition values. Raw source values remai
 
 The governing principle is deliberately conservative:
 
-> \*\*Hide only products whose available nutrition data contains a high-confidence physical contradiction. Show physically possible products, with warnings where appropriate. Use all Product Explorer-valid products in Market Overview calculations. Use chart-range filtering only for visualization readability.\*\*
+> **Hide only products whose available nutrition data contains a high-confidence physical contradiction. Show physically possible products, with warnings where appropriate. Use all Product Explorer-valid products in Market Overview calculations. Use chart-range filtering only for visualization readability.**
 
-\---
+---
 
 # Governing hierarchy
 
@@ -68,31 +68,31 @@ The governing principle is deliberately conservative:
 3. If a product passes all hard gates, show it in Product Explorer and use it in Market Overview calculations. Product Explorer warnings do not invalidate it.
 4. Market Overview chart-range filters affect display only. They do not change Product Explorer eligibility or Market Overview calculations.
 
-\---
+---
 
 # Raw-value preservation
 
 Raw OFF values must not be silently corrected or replaced.
 
-Where available, raw provenance fields use the `\*\_off\_raw` convention. Derived fields can classify or exclude a record, but the original observation remains traceable.
+Where available, raw provenance fields use the `*_off_raw` convention. Derived fields can classify or exclude a record, but the original observation remains traceable.
 
 Core production fields:
 
 ```
-nutrition\_quality\_status
-nutrition\_quality\_reason
-outlier\_type
-include\_in\_product\_table
-include\_in\_aggregates
-include\_in\_charts
+nutrition_quality_status
+nutrition_quality_reason
+outlier_type
+include_in_product_table
+include_in_aggregates
+include_in_charts
 ```
 
 Product Explorer warning fields:
 
 ```
-warning\_flag
-warning\_types
-warning\_summary
+warning_flag
+warning_types
+warning_summary
 ```
 
 The Product Explorer table should expose only one compact `Warning` indicator. Specific warning names and explanations belong in the selected Product Card.
@@ -100,20 +100,20 @@ The Product Explorer table should expose only one compact `Warning` indicator. S
 Current governance semantics:
 
 ```
-include\_in\_product\_table = Product Explorer hard-gate result
+include_in_product_table = Product Explorer hard-gate result
 
 Market Overview calculation eligibility
-= include\_in\_product\_table = True
+= include_in_product_table = True
 
 Market Overview chart universe
-= include\_in\_product\_table = True
+= include_in_product_table = True
   plus selected-axis non-null requirements
   plus selected chart-range filters
 ```
 
-`include\_in\_aggregates` and `include\_in\_charts` may remain in the schema for compatibility or audit history, but the current nutrition-governance source of truth is the Product Explorer hard-gate result plus the chart-range logic documented below.
+`include_in_aggregates` and `include_in_charts` may remain in the schema for compatibility or audit history, but the current nutrition-governance source of truth is the Product Explorer hard-gate result plus the chart-range logic documented below.
 
-\---
+---
 
 # Product Explorer decision model
 
@@ -124,10 +124,10 @@ A hard exclusion is appropriate only when the available nutrition values contain
 Treatment:
 
 ```
-nutrition\_quality\_status = data\_quality\_error
-include\_in\_product\_table = False
-include\_in\_aggregates = False
-include\_in\_charts = False
+nutrition_quality_status = data_quality_error
+include_in_product_table = False
+include_in_aggregates = False
+include_in_charts = False
 ```
 
 The product remains in raw/QA data.
@@ -137,27 +137,27 @@ The product remains in raw/QA data.
 |Test|Product Explorer treatment|Rationale|
 |-|-|-|
 |Any tracked nutrient < 0|Hide|Negative nutrient mass is physically impossible|
-|`energy\_kcal\_100g > 900`|Hide|Exceeds the energy density of pure fat|
+|`energy_kcal_100g > 900`|Hide|Exceeds the energy density of pure fat|
 |Any tracked nutrient > 100g/100g|Hide|More than 100g of one nutrient in 100g product is impossible|
-|`energy\_kcal\_100g = 0` with meaningful positive macros|Hide|Positive energy-yielding macros cannot coexist with true zero energy|
+|`energy_kcal_100g = 0` with meaningful positive macros|Hide|Positive energy-yielding macros cannot coexist with true zero energy|
 |Reported energy below minimum implied energy|Hide|Available protein plus parent/subset macro lower bounds require more energy than reported|
 |`protein + carbs + fat > 105g/100g`|Hide|Allows modest rounding tolerance; larger excess is structurally impossible|
 |Minimum known nutrient mass >105g/100g|Hide|Available protein, effective carbs, effective fat, and salt cannot exceed product mass after tolerance|
-|`salt\_g\_100g > 50`|Hide|Conservative launch-scope sanity boundary for extreme salt records|
+|`salt_g_100g > 50`|Hide|Conservative launch-scope sanity boundary for extreme salt records|
 |`sugars > carbs + tolerance`|Hide|Sugars are part of total carbohydrate|
-|`saturated\_fat > fat + tolerance`|Hide|Saturated fat is part of total fat|
-|`protein\_g\_per\_100kcal > 28`|Hide|Clearly exceeds the approximate physical energy-density limit after tolerance|
-|`fat\_g\_per\_100kcal > 12.5`|Hide|Clearly exceeds the approximate physical energy-density limit after tolerance|
+|`saturated_fat > fat + tolerance`|Hide|Saturated fat is part of total fat|
+|`protein_g_per_100kcal > 28`|Hide|Clearly exceeds the approximate physical energy-density limit after tolerance|
+|`fat_g_per_100kcal > 12.5`|Hide|Clearly exceeds the approximate physical energy-density limit after tolerance|
 
 ### Relational tolerance
 
-The relationships `sugars <= carbs` and `saturated\_fat <= fat` should not use exact equality as the exclusion boundary because independently rounded label values can differ slightly.
+The relationships `sugars <= carbs` and `saturated_fat <= fat` should not use exact equality as the exclusion boundary because independently rounded label values can differ slightly.
 
 For the Product Explorer hard gate, use a small absolute tolerance before declaring a contradiction:
 
 ```
-sugars\_g\_100g > carbs\_g\_100g + 0.5
-saturated\_fat\_g\_100g > fat\_g\_100g + 0.5
+sugars_g_100g > carbs_g_100g + 0.5
+saturated_fat_g_100g > fat_g_100g + 0.5
 ```
 
 Values within the tolerance are not hard-excluded on this basis alone.
@@ -167,7 +167,7 @@ Values within the tolerance are not hard-excluded on this basis alone.
 The hard Product Explorer rule is:
 
 ```
-protein\_g\_100g + carbs\_g\_100g + fat\_g\_100g > 105
+protein_g_100g + carbs_g_100g + fat_g_100g > 105
 ```
 
 The earlier `>100g` version is too strict for a hard-hide rule because independent label rounding can push the reported sum slightly above 100g.
@@ -179,20 +179,20 @@ The 105g threshold is therefore the current conservative Product Explorer gate.
 When total fat or total carbohydrate is missing, available subset nutrients provide a lower bound:
 
 ```
-effective\_fat =
-    fat\_g\_100g if present
-    else saturated\_fat\_g\_100g if present
+effective_fat =
+    fat_g_100g if present
+    else saturated_fat_g_100g if present
     else 0
 
-effective\_carbs =
-    carbs\_g\_100g if present
-    else sugars\_g\_100g if present
+effective_carbs =
+    carbs_g_100g if present
+    else sugars_g_100g if present
     else 0
 
-minimum\_implied\_energy\_kcal\_100g =
-      protein\_g\_100g \* 4
-    + effective\_carbs \* 4
-    + effective\_fat \* 9
+minimum_implied_energy_kcal_100g =
+      protein_g_100g * 4
+    + effective_carbs * 4
+    + effective_fat * 9
 ```
 
 This is a minimum estimate, not a full energy reconstruction. It must not double-count parent and subset nutrients.
@@ -200,8 +200,8 @@ This is a minimum estimate, not a full energy reconstruction. It must not double
 Hard-exclude only when both conditions hold:
 
 ```
-minimum\_implied\_energy\_kcal\_100g > energy\_kcal\_100g \* 1.25
-minimum\_implied\_energy\_kcal\_100g - energy\_kcal\_100g > 20
+minimum_implied_energy_kcal_100g > energy_kcal_100g * 1.25
+minimum_implied_energy_kcal_100g - energy_kcal_100g > 20
 ```
 
 This rule is evaluated when reported energy is non-null and non-negative and at least one contributing nutrient is available. Alcohol can explain additional reported energy omitted from the simple 4/4/9 formula, but it cannot explain reported energy being below the minimum already implied by reported nutrients.
@@ -209,7 +209,7 @@ This rule is evaluated when reported energy is non-null and non-negative and at 
 Reason code:
 
 ```
-reported\_energy\_below\_minimum\_implied\_energy
+reported_energy_below_minimum_implied_energy
 ```
 
 ### Salt-aware mass balance
@@ -217,40 +217,40 @@ reported\_energy\_below\_minimum\_implied\_energy
 Use the same non-double-counting parent/subset logic for fat and carbohydrates, then add salt as independent known mass:
 
 ```
-minimum\_known\_mass\_g\_100g =
-      protein\_g\_100g
-    + effective\_carbs
-    + effective\_fat
-    + salt\_g\_100g
+minimum_known_mass_g_100g =
+      protein_g_100g
+    + effective_carbs
+    + effective_fat
+    + salt_g_100g
 ```
 
 Hard-exclude when:
 
 ```
-minimum\_known\_mass\_g\_100g > 105
+minimum_known_mass_g_100g > 105
 ```
 
 Reason code:
 
 ```
-minimum\_known\_nutrient\_mass\_exceeds\_105g
+minimum_known_nutrient_mass_exceeds_105g
 ```
 
 Also hard-exclude extreme salt values:
 
 ```
-salt\_g\_100g > 50
+salt_g_100g > 50
 ```
 
 Reason code:
 
 ```
-salt\_above\_50g\_per\_100
+salt_above_50g_per_100
 ```
 
 The `>50g` salt boundary is a conservative launch-scope sanity check, not a claim about a universal physical maximum for all imaginable foods.
 
-\---
+---
 
 ## Layer 2 — Per-100 kcal density checks
 
@@ -259,9 +259,9 @@ Per-100g values alone can look extreme while still being valid. Energy density p
 Calculate only when reported energy is available and greater than zero:
 
 ```
-protein\_g\_per\_100kcal = protein\_g\_100g / energy\_kcal\_100g \* 100
-carbs\_g\_per\_100kcal   = carbs\_g\_100g   / energy\_kcal\_100g \* 100
-fat\_g\_per\_100kcal     = fat\_g\_100g     / energy\_kcal\_100g \* 100
+protein_g_per_100kcal = protein_g_100g / energy_kcal_100g * 100
+carbs_g_per_100kcal   = carbs_g_100g   / energy_kcal_100g * 100
+fat_g_per_100kcal     = fat_g_100g     / energy_kcal_100g * 100
 ```
 
 Approximate theoretical references from the simple 4/4/9 energy model are:
@@ -275,19 +275,19 @@ fat:     11.1 g / 100 kcal
 Production hard gates retain tolerance:
 
 ```
-protein\_g\_per\_100kcal > 28
-fat\_g\_per\_100kcal > 12.5
+protein_g_per_100kcal > 28
+fat_g_per_100kcal > 12.5
 ```
 
 ### Carbohydrate density is not a hard-exclusion rule
 
-`carbs\_g\_per\_100kcal > 27/28` must **not** be used as a Product Explorer physical-impossibility gate.
+`carbs_g_per_100kcal > 27/28` must **not** be used as a Product Explorer physical-impossibility gate.
 
 Reported carbohydrate can include components such as polyols whose energy yield is materially below the simple 4 kcal/g assumption. A high reported carbohydrate-per-100-kcal value can therefore be physically possible.
 
 The carbohydrate-density field can remain available for QA diagnostics, but it does not independently hide a product and does not create a separate user-facing warning type.
 
-\---
+---
 
 # Product Explorer warnings
 
@@ -296,19 +296,19 @@ A warning applies only after the product has passed every hard validity gate.
 There are two Product Explorer nutrition warning types:
 
 ```
-energy\_macro\_mismatch
-within\_brand\_nutrition\_outlier
+energy_macro_mismatch
+within_brand_nutrition_outlier
 ```
 
 No other warning type should share the same `!` indicator.
 
 The warning means:
 
-> \*\*The product is physically possible enough to display, but one or more nutrition relationships deserve caution.\*\*
+> **The product is physically possible enough to display, but one or more nutrition relationships deserve caution.**
 
 It does **not** mean that the product itself is wrong, misleading, unhealthy, or invalid.
 
-\---
+---
 
 ## Warning 1 — Energy-macro mismatch
 
@@ -319,22 +319,22 @@ This warning detects cases where all individual values may be physically possibl
 Simple diagnostic formula:
 
 ```
-energy\_kcal\_macro\_calculated\_100g =
-    fat\_g\_100g \* 9
-  + protein\_g\_100g \* 4
-  + carbs\_g\_100g \* 4
+energy_kcal_macro_calculated_100g =
+    fat_g_100g * 9
+  + protein_g_100g * 4
+  + carbs_g_100g * 4
 
-energy\_kcal\_macro\_diff\_abs =
-    energy\_kcal\_100g - energy\_kcal\_macro\_calculated\_100g
+energy_kcal_macro_diff_abs =
+    energy_kcal_100g - energy_kcal_macro_calculated_100g
 
-energy\_kcal\_macro\_diff\_pct =
-    energy\_kcal\_macro\_diff\_abs / energy\_kcal\_100g
+energy_kcal_macro_diff_pct =
+    energy_kcal_macro_diff_abs / energy_kcal_100g
 ```
 
 Baseline detection:
 
 ```
-abs(energy\_kcal\_macro\_diff\_pct) >= 0.15
+abs(energy_kcal_macro_diff_pct) >= 0.15
 ```
 
 This is a **warning candidate**, not a physical-impossibility test.
@@ -363,7 +363,7 @@ For Product Explorer:
 
 ```
 known alcohol / fermented beverage
-    -> do not generate energy\_macro\_mismatch solely from the 4/4/9 formula
+    -> do not generate energy_macro_mismatch solely from the 4/4/9 formula
 ```
 
 Do not loosen the formula until an alcoholic product happens to pass. Treat the formula as **not fully applicable** when a known energy source is omitted.
@@ -376,7 +376,7 @@ Other nutrition rules still apply. An alcoholic product can still fail a hard ga
 
 > Reported kcal and macro-derived kcal differ materially. The product is still useful to inspect, but nutrition interpretation should be cautious.
 
-\---
+---
 
 ## Warning 2 — Within-brand nutrition outlier
 
@@ -397,26 +397,26 @@ The comparison therefore needs a narrower peer context.
 Compare products within:
 
 ```
-normalized\_brand x region x category
+normalized_brand x region x category
 ```
 
 Use only products that already pass the Product Explorer hard gate.
 
-For products present in more than one launch region, evaluate each region-category occurrence separately against its own `normalized\_brand × region × category` peer set. The same GTIN may therefore be flagged in one region and not in another.
+For products present in more than one launch region, evaluate each region-category occurrence separately against its own `normalized_brand × region × category` peer set. The same GTIN may therefore be flagged in one region and not in another.
 
 Do not run this warning for known broad ready-to-drink beverage portfolios maintained in the implementation skip list, such as Coca-Cola- or Pepsi-style portfolios. These brands can legitimately contain regular, low-sugar, zero-sugar, flavoured, and other variants with very wide nutrition ranges, so a single brand median would create misleading warnings. Large non-beverage brands are not skipped solely because they are large.
 
 ### Metrics
 
 ```
-energy\_kcal\_100g
-protein\_g\_100g
-carbs\_g\_100g
-fat\_g\_100g
-sugars\_g\_100g
-saturated\_fat\_g\_100g
-fiber\_g\_100g
-salt\_g\_100g
+energy_kcal_100g
+protein_g_100g
+carbs_g_100g
+fat_g_100g
+sugars_g_100g
+saturated_fat_g_100g
+fiber_g_100g
+salt_g_100g
 ```
 
 Use per-100g / per-100ml values only. Do not use per-100 kcal values for this warning.
@@ -448,21 +448,21 @@ The metric has at least:
 The product value is statistically extreme within the peer set:
 
 ```
-abs(robust\_z) >= 4.5
+abs(robust_z) >= 4.5
 ```
 
 where:
 
 ```
-robust\_z = (value - median) / (1.4826 \* MAD)
+robust_z = (value - median) / (1.4826 * MAD)
 ```
 
 Use robust z when MAD is positive and finite. If MAD is zero, missing, or otherwise unusable, use an outer IQR fence instead:
 
 ```
-value < Q1 - 3 \* IQR
+value < Q1 - 3 * IQR
 or
-value > Q3 + 3 \* IQR
+value > Q3 + 3 * IQR
 ```
 
 If IQR is also zero, missing, or unusable, the metric is not flagged by the statistical-extremeness criterion.
@@ -489,14 +489,14 @@ abs(value - median) >= metric-specific floor
 
 |Metric|Floor|
 |-|-:|
-|`energy\_kcal\_100g`|75 kcal|
-|`protein\_g\_100g`|5g|
-|`carbs\_g\_100g`|15g|
-|`fat\_g\_100g`|7.5g|
-|`sugars\_g\_100g`|12g|
-|`saturated\_fat\_g\_100g`|5g|
-|`fiber\_g\_100g`|5g|
-|`salt\_g\_100g`|0.8g|
+|`energy_kcal_100g`|75 kcal|
+|`protein_g_100g`|5g|
+|`carbs_g_100g`|15g|
+|`fat_g_100g`|7.5g|
+|`sugars_g_100g`|12g|
+|`saturated_fat_g_100g`|5g|
+|`fiber_g_100g`|5g|
+|`salt_g_100g`|0.8g|
 
 The warning applies if one or more metrics pass all five criteria.
 
@@ -527,13 +527,13 @@ This rule does not remove products from Market Overview calculations or charts. 
 
 > One or more nutrition values differ substantially from comparable products in the same brand/category/region. This may reflect a distinct product line or format, or an unusual source-data observation.
 
-\---
+---
 
 # What is not a Product Explorer nutrition warning
 
 ## Fresh / in-store prepared products
 
-`fresh\_instore\_prepared` is removed from `warning\_types`.
+`fresh_instore_prepared` is removed from `warning_types`.
 
 Fresh or retailer-prepared format is not evidence that the nutrition data is wrong. It is a product-format / merchandising distinction, not a nutrition quality warning.
 
@@ -548,7 +548,7 @@ do not add a special Product Card badge solely for this purpose
 
 If fresh-versus-packaged format later proves analytically useful, implement it as a separate governed product-format dimension, not as a nutrition warning.
 
-\---
+---
 
 # Product Explorer inclusion logic
 
@@ -556,19 +556,19 @@ If fresh-versus-packaged format later proves analytically useful, implement it a
 1. Preserve raw OFF nutrition values.
 2. Run hard physical/structural gates.
 3. If any hard gate fails:
-      include\_in\_product\_table = False
+      include_in_product_table = False
       hide from Product Explorer
       keep in raw/QA data
       exclude from Market Overview display
       exclude from Market Overview calculations
 4. If hard gates pass:
-      include\_in\_product\_table = True
+      include_in_product_table = True
       show in Product Explorer
       include in Market Overview calculations
       keep eligible for Market Overview chart display
 5. Evaluate warning logic:
-      energy\_macro\_mismatch
-      within\_brand\_nutrition\_outlier
+      energy_macro_mismatch
+      within_brand_nutrition_outlier
 6. Show one Warning = ! marker when one or both warning types are present.
 7. Explain warnings only in the selected Product Card.
 ```
@@ -583,7 +583,7 @@ Product Explorer therefore has three outcomes:
 
 Hard-excluded products remain available for QA/audit exports.
 
-\---
+---
 
 # QA and validation approach
 
@@ -628,8 +628,8 @@ Historical Scenario results:
 |Scenario|Treatment|Excluded records|Excluded %|
 |-|-|-:|-:|
 |Scenario A|Current rules|19,635|5.18%|
-|Scenario B|Re-include `small\_absolute\_kcal\_gap`|14,011|3.70%|
-|Scenario C|Re-include `small\_absolute\_kcal\_gap` + `beverage\_energy\_not\_captured\_by\_macros`|8,574|2.26%|
+|Scenario B|Re-include `small_absolute_kcal_gap`|14,011|3.70%|
+|Scenario C|Re-include `small_absolute_kcal_gap` + `beverage_energy_not_captured_by_macros`|8,574|2.26%|
 
 Scenario C was then tightened into Scenario C2 after review showed that the broad re-inclusion bucket mixed non-material cases with records that still needed exclusion or audit.
 
@@ -643,7 +643,7 @@ Final Scenario C2 result recorded in the existing governance:
 
 These tests remain useful historical audit evidence. They no longer define Market Overview calculation exclusions. In the final governance, energy-macro inconsistency is a **warning layer after the hard gate**, with known alcohol/fermentation formula limitations handled before the warning is generated.
 
-\---
+---
 
 # Market Overview governance
 
@@ -652,7 +652,7 @@ These tests remain useful historical audit evidence. They no longer define Marke
 Market Overview calculations use the complete Product Explorer-valid population:
 
 ```
-include\_in\_product\_table = True
+include_in_product_table = True
 ```
 
 No additional nutrition-outlier exclusion is applied to calculations.
@@ -660,8 +660,8 @@ No additional nutrition-outlier exclusion is applied to calculations.
 Therefore:
 
 ```
-energy\_macro\_mismatch
-within\_brand\_nutrition\_outlier
+energy_macro_mismatch
+within_brand_nutrition_outlier
 ```
 
 do **not** exclude products from Market Overview calculations.
@@ -670,18 +670,18 @@ Likewise, a product is not excluded from calculations merely because it falls in
 
 This is the final MVP rule:
 
-> \*\*If the product passes Product Explorer impossibility gates, it is used in Market Overview calculations.\*\*
+> **If the product passes Product Explorer impossibility gates, it is used in Market Overview calculations.**
 
 The only nutrition-governance products excluded from Market Overview calculations are products that fail Product Explorer hard validity gates.
 
-\---
+---
 
 ## Chart universe
 
 Market Overview charts use the same Product Explorer-valid population:
 
 ```
-include\_in\_product\_table = True
+include_in_product_table = True
 ```
 
 Product Explorer warnings do not invalidate products for chart display.
@@ -690,7 +690,7 @@ Chart readability is controlled separately through **precomputed, metric-specifi
 
 This is visualization governance, not data-quality governance.
 
-\---
+---
 
 ## Chart-range views
 
@@ -730,15 +730,15 @@ region × category × metric
 For beverages, calculate separately by:
 
 ```
-region × beverage\_view\_segment × metric
+region × beverage_view_segment × metric
 ```
 
 Launch regions:
 
 ```
 FRANCE
-UK\_IE
-US\_CANADA
+UK_IE
+US_CANADA
 ```
 
 Launch categories:
@@ -754,17 +754,17 @@ For non-beverage categories, the implementation may represent the beverage segme
 
 ### Beverage segmentation
 
-Beverages use the same four chart-range views as other categories, but percentile bounds are calculated independently inside each `beverage\_view\_segment`.
+Beverages use the same four chart-range views as other categories, but percentile bounds are calculated independently inside each `beverage_view_segment`.
 
 This prevents ready-to-drink beverages and beverage preparation/alcohol products from borrowing one another's percentile boundaries.
 
 Existing beverage segments:
 
 ```
-ready\_to\_drink\_beverages
-beverage\_preparations\_and\_alcohol
-unknown\_beverage\_segment
-not\_beverage
+ready_to_drink_beverages
+beverage_preparations_and_alcohol
+unknown_beverage_segment
+not_beverage
 ```
 
 Existing Market Overview beverage filter:
@@ -781,7 +781,7 @@ Unknown beverage segment
 
 The segmentation remains an MVP readability layer rather than a final beverage taxonomy.
 
-\---
+---
 
 ## Precomputed P03 / P97 boundaries
 
@@ -797,7 +797,7 @@ Persist:
 ```
 P03
 P97
-non\_null\_n
+non_null_n
 ```
 
 There must be **no interactive percentile calculation in Streamlit**.
@@ -827,7 +827,7 @@ Do not rank-break tied values to force exactly 3% into each tail.
 
 The user-facing names describe **percentile boundaries**, not guaranteed row shares. This is especially important for zero-heavy distributions such as ready-to-drink beverage protein density, where many products can legitimately equal the P03 boundary.
 
-\---
+---
 
 ## Two-axis scatter logic
 
@@ -884,7 +884,7 @@ outside P03/P97 on any metric -> hide product everywhere
 
 A product outside the fibre range can still appear on an Energy × Protein chart if its energy and protein bands match the selected ranges.
 
-\---
+---
 
 ## Chart terminology and user-facing wording
 
@@ -921,7 +921,7 @@ Actual plotted share can differ because:
 
 Use actual plotted counts in the UI.
 
-\---
+---
 
 ## Performance rule
 
@@ -960,14 +960,14 @@ APP TIME
     plot
 ```
 
-\---
+---
 
 ## Locked beverage boundary validation — September 2026
 
 A diagnostic review confirmed that beverage chart ranges are calculated and applied correctly by:
 
 ```
-region × beverage\_view\_segment × metric
+region × beverage_view_segment × metric
 ```
 
 The implementation trace confirmed:
@@ -993,12 +993,12 @@ After correction, RTD Energy × Protein, g/100 kcal Middle 94% intersection rate
 |Region|Energy M|Protein/kcal M|Both M|
 |-|-:|-:|-:|
 |FRANCE|96.78%|97.01%|94.15%|
-|UK\_IE|96.87%|97.43%|94.39%|
-|US\_CANADA|96.40%|96.99%|93.78%|
+|UK_IE|96.87%|97.43%|94.39%|
+|US_CANADA|96.40%|96.99%|93.78%|
 
 This confirms mathematically coherent selected-axis retention while preserving large legitimate zero-value modes.
 
-\---
+---
 
 ## Market Overview calculation and display summary
 
@@ -1011,37 +1011,36 @@ This confirms mathematically coherent selected-axis retention while preserving l
 |Middle 94% on selected metric|Show|Include|Display by default when both selected axes are Middle 94%|
 |`All` selected|Show|Include|Show all Product Explorer-valid, non-null selected-axis values|
 
-\---
+---
 
 # Audit outputs
 
 The nutrition-quality workflow currently writes local audit files such as:
 
 ```
-data/nutrition\_outlier\_review/audits/hard\_data\_quality\_errors.csv
-data/nutrition\_outlier\_review/audits/energy\_macro\_inconsistency\_15pct.csv
-data/nutrition\_outlier\_review/audits/energy\_macro\_accepted\_exceptions.csv
-data/nutrition\_outlier\_review/audits/genuine\_outliers.csv
-data/nutrition\_outlier\_review/audits/category\_scope\_outliers.csv
-data/nutrition\_outlier\_review/audits/nutrition\_quality\_summary\_by\_region\_category.csv
-data/nutrition\_outlier\_review/audits/nutrition\_quality\_flags.csv
-data/nutrition\_outlier\_review/audits/distributional\_plausibility\_tail\_summary.csv
-data/nutrition\_outlier\_review/audits/distributional\_plausibility\_tail\_examples.csv
-data/nutrition\_outlier\_review/audits/beverage\_view\_segment\_audit.csv
+data/07_nutrition_quality_outputs/audits/hard_data_quality_errors.csv
+data/07_nutrition_quality_outputs/audits/energy_macro_inconsistency_15pct.csv
+data/07_nutrition_quality_outputs/audits/energy_macro_accepted_exceptions.csv
+data/07_nutrition_quality_outputs/audits/genuine_outliers.csv
+data/07_nutrition_quality_outputs/audits/category_scope_outliers.csv
+data/07_nutrition_quality_outputs/audits/nutrition_quality_summary_by_region_category.csv
+data/07_nutrition_quality_outputs/audits/nutrition_quality_flags.csv
+data/07_nutrition_quality_outputs/audits/distributional_plausibility_tail_summary.csv
+data/07_nutrition_quality_outputs/audits/distributional_plausibility_tail_examples.csv
+data/07_nutrition_quality_outputs/audits/beverage_view_segment_audit.csv
 ```
 
 Chart-range QA outputs include or may include:
 
 ```
-market\_overview\_chart\_percentile\_bounds.csv
-market\_overview\_chart\_band\_summary.csv
-beverage\_percentile\_bounds\_verification.csv
-beverage\_band\_validation\_summary.csv
+data/07_nutrition_quality_outputs/audits/market_overview_chart_ranges/market_overview_chart_percentile_bounds.csv
+data/07_nutrition_quality_outputs/audits/market_overview_chart_ranges/market_overview_percentile_bounds.csv
+data/07_nutrition_quality_outputs/audits/market_overview_chart_ranges/market_overview_chart_band_summary.csv
 ```
 
 These remain QA / governance artifacts rather than public Product Explorer outputs.
 
-\---
+---
 
 # Historical implementation record
 
@@ -1052,15 +1051,15 @@ The following points are retained because they explain how the current approach 
 Initial hard checks covered:
 
 ```
-energy\_kcal < 0
-energy\_kcal > 900
-protein\_100g < 0
-carbs\_100g < 0
-fat\_100g < 0
-sugars\_100g < 0
-saturated\_fat\_100g < 0
-fiber\_100g < 0
-salt\_100g < 0
+energy_kcal < 0
+energy_kcal > 900
+protein_100g < 0
+carbs_100g < 0
+fat_100g < 0
+sugars_100g < 0
+saturated_fat_100g < 0
+fiber_100g < 0
+salt_100g < 0
 ```
 
 Raw OFF values were preserved before compatibility transformations.
@@ -1070,14 +1069,14 @@ Raw OFF values were preserved before compatibility transformations.
 The initial implementation tested:
 
 ```
-protein\_100g > 100
-carbs\_100g > 100
-fat\_100g > 100
-fiber\_100g > 100
-salt\_100g > 100
-sugars\_100g > carbs\_100g
-saturated\_fat\_100g > fat\_100g
-protein\_100g + carbs\_100g + fat\_100g > 105
+protein_100g > 100
+carbs_100g > 100
+fat_100g > 100
+fiber_100g > 100
+salt_100g > 100
+sugars_100g > carbs_100g
+saturated_fat_100g > fat_100g
+protein_100g + carbs_100g + fat_100g > 105
 ```
 
 The macro-sum threshold had already been moved from `>100g` to `>105g` after review found small excesses attributable to rounding.
@@ -1103,7 +1102,7 @@ Protein and fat retain conservative hard thresholds.
 The energy formula:
 
 ```
-4 \* protein + 4 \* carbs + 9 \* fat
+4 * protein + 4 * carbs + 9 * fat
 ```
 
 was tested with progressively tighter percentage thresholds and then reviewed through a 36-row image-backed sample stratified across MVP region-category combinations.
@@ -1130,9 +1129,9 @@ Extreme is not the same as wrong.
 
 Category tails often contain stable, legitimate product-format clusters. Therefore broad percentile or category thresholds should not automatically hide products from Product Explorer.
 
-This review motivated the now-locked `within\_brand\_nutrition\_outlier` Product Explorer warning layer.
+This review motivated the now-locked `within_brand_nutrition_outlier` Product Explorer warning layer.
 
-\---
+---
 
 # Current implementation status
 
@@ -1153,7 +1152,7 @@ This review motivated the now-locked `within\_brand\_nutrition\_outlier` Product
 |Energy-macro mismatch|Locked Product Explorer warning|
 |Alcohol/fermented 4/4/9 handling|Locked exception logic|
 |Within-brand nutrition outlier|Locked Product Explorer warning|
-|`fresh\_instore\_prepared` warning|Removed|
+|`fresh_instore_prepared` warning|Removed|
 |Product Explorer Warning column|One `!` marker for two warning types|
 |Market Overview calculation population|All Product Explorer-valid products|
 |Market Overview chart universe|All Product Explorer-valid products|
@@ -1164,7 +1163,7 @@ This review motivated the now-locked `within\_brand\_nutrition\_outlier` Product
 |P03/P97 boundary equality|Middle 94%|
 |Inline percentile calculation in Streamlit|Not allowed|
 
-\---
+---
 
 # Final working principle
 

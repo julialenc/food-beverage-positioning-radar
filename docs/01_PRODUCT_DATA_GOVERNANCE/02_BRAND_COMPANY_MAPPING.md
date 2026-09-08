@@ -115,31 +115,31 @@ Core rules:
 
 # Reference files
 
-### `brand_alias_mapping.csv`
+### `data/01_reference_inputs/02_brand_alias_mapping.csv`
 
 Validated observed variants -> canonical consumer-facing brands. A reusable variant should have one unambiguous canonical outcome.
 
-### `company_brand_mapping.csv`
+### `data/01_reference_inputs/03_company_brand_mapping.csv`
 
 Reusable brand -> company routing rules, including explicit scope where it can be represented safely. Unsafe historical relationships should be removed or retained only as non-executable/manual-review guardrails.
 
 After the September 2026 Top-9, retailer/private-label, France, and US/Canada regional-category orphan cleanup, the launch file contains **3,631 rows across 208 parent-company values**.
 
-### `private_label_brand_mapping.csv`
+### `data/01_reference_inputs/04_private_label_brand_mapping.csv`
 
 Curated private-label brand architecture. It preserves meaningful consumer-facing private-label brands and sub-brands separately from retailer ownership, which is resolved later at the company layer.
 
 After the completed September 2026 retailer review, the file contains **1,388 reviewed rows**.
 
-### `reviewed_product_mapping_overrides.csv`
+### `data/01_reference_inputs/05_reviewed_product_mapping_overrides.csv`
 
 Authoritative reviewed GTIN-level decisions and the highest-precedence reference for product-specific corrections. The optional `region` field scopes the override.
 
 After the September 2026 Top-9 and France/US-Canada orphan audits, the file contains **12,577 active reviewed override rows**.
 
-### `top_company_brand_portfolio_matrix.csv`
+### `data/01_reference_inputs/06_top_company_brand_portfolio_matrix.csv`
 
-Portfolio-research and candidate-generation reference for the priority manufacturer universe. It is **not final execution truth** for complex or licensed portfolios; final routing comes from `company_brand_mapping.csv` plus higher-precedence product overrides.
+Portfolio-research and candidate-generation reference for the priority manufacturer universe. It is **not final execution truth** for complex or licensed portfolios; final routing comes from `data/01_reference_inputs/03_company_brand_mapping.csv` plus higher-precedence product overrides.
 
 The current launch matrix contains **247 portfolio/discovery rows**.
 

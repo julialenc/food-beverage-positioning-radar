@@ -207,23 +207,27 @@ Implemented launch checks include:
 - per-100 kcal nutrient-density checks;
 - energy-versus-macro consistency checks;
 - Scenario C2 safeguards for low-energy beverages and small absolute kcal gaps;
+- within-brand plausibility warnings;
 - distributional plausibility review before stable tail patterns become
-  deterministic rules.
+  deterministic rules;
+- chart-range bands for display readability.
 
 Current treatment:
 
-- hard data-quality errors are excluded from Product Explorer, aggregates, and
-  charts;
-- material energy-macro inconsistencies can remain visible at product level but
-  are excluded from aggregates and charts;
-- genuine but chart-distorting tails can remain visible in Product Explorer
-  while being excluded from charts when a documented rule exists.
+- hard data-quality errors are excluded from Product Explorer, Market Overview
+  calculations, and Market Overview charts;
+- products that pass the hard gate remain visible in Product Explorer and
+  eligible for Market Overview calculations, even when warning fields flag
+  energy-macro mismatch or within-brand nutrition plausibility concerns;
+- Product Map chart ranges filter what is drawn for readability only; they do
+  not redefine aggregate eligibility;
+- `include_in_aggregates` and `include_in_charts` remain in the schema for
+  compatibility and audit history, while the current source of truth is
+  `include_in_product_table` plus selected-axis non-null values and chart-range
+  display filters.
 
-The final launch exclusion rate from Market Overview calculations is
-approximately **3.02%**.
-
-Within-brand nutrition plausibility checks are not yet fully implemented in the
-launch MVP.
+The September 2026 nutrition-governance rule does not use a separate Market
+Overview calculation exclusion rate beyond the Product Explorer hard gate.
 
 See `docs/01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md` for the detailed rules.
 

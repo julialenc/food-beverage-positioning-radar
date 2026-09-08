@@ -13,7 +13,7 @@ metric definitions, `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md` for interpreta
 `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md` for the full OCR/LLM sampling and prompt history.
 
 **Launch documentation note:** this file is a durable observation register, not
-the controlling MVP methodology. For the August 2026 launch state, use
+the controlling MVP methodology. For the September 2026 launch state, use
 `docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md`, `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md`,
 `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md`, and
 `docs/01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md` as the current source of truth. Older

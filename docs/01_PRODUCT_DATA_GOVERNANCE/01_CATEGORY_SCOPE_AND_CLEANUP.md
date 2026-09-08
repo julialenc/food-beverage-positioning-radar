@@ -48,7 +48,7 @@ implemented rather than left under an incorrect category.
 Category cleanup rules are implemented through shared category logic in
 `pipeline/rules/category_rules.py` and consumed by bulk and incremental ingestion.
 Reviewed product-specific category corrections are stored in
-`data/reference/reviewed_product_mapping_overrides.csv`.
+`data/01_reference_inputs/05_reviewed_product_mapping_overrides.csv`.
 
 ## General Principles
 
@@ -428,6 +428,6 @@ The September 2026 retailer/company and regional-category orphan audits added a
 second category-governance mechanism: exact reviewed product overrides for
 isolated category errors that should not become broad reusable taxonomy rules.
 The durable rules from those audits are incorporated above; detailed GTIN-level
-decisions remain in `data/reference/reviewed_product_mapping_overrides.csv` and
+decisions remain in `data/01_reference_inputs/05_reviewed_product_mapping_overrides.csv` and
 the corresponding local review artifacts rather than being duplicated here as a
 worklog.

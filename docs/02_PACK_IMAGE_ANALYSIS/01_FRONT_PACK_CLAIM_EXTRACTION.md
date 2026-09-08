@@ -186,6 +186,24 @@ into `other_cereals` because OFF's category data is sparse for standard cereal
 products. Cereals uses positioning and reality bands as primary strata; family
 is used where available (~16%).
 
+### 2.7 Current implementation mapping
+
+The sampling methodology maps to the current pipeline as follows:
+
+- `pipeline/stages/stage_06_detect_sampling_signals.py` detects positioning and
+  formulation candidate signals;
+- `pipeline/stages/stage_07_assign_sampling_bands.py` assigns sampling bands and
+  reality bands;
+- `pipeline/stages/stage_08_classify_formulation_families.py` assigns mutually
+  exclusive formulation families;
+- `pipeline/stages/stage_09_build_vision_sample.py` builds release sample files
+  under `data/04_vision_sampling/`.
+
+Operational release files then move through
+`pipeline/vision_ops/op_04_normalize_results.py`, optional/when-needed
+`pipeline/vision_ops/op_05_clear_stale_observations.py` before merge, and
+`pipeline/stages/stage_11_merge_vision_results.py`.
+
 ---
 
 ## 3. Claim taxonomy
@@ -568,11 +586,11 @@ non-front, even after the v5.1-fr fixes.
 | Non-front | 155 | 114 | 269 |
 | Failed/not attempted | 79 | 94 | 173 |
 
-**Release ID:** `release_2026_01_us_uk`  
-**Prompt:** `prompt_v5_en.txt` (`prompt_version = v4`), no second-pass review
-**Sample file:** `pipeline/sample_clean_run.csv` (RUN_ID `release-01-image-eligible`)  
-**Archived results:** `vision_results_us_canada_final.csv`, `vision_results_uk_ie_final.csv`  
-**Normalised results (feed stage_11_merge_vision_results):** `*_normalised.csv`
+- **Release ID:** `release_2026_01_us_uk`
+- **Prompt:** `prompt_v5_en.txt` (`prompt_version = v4`), no second-pass review
+- **Sample file:** `data/04_vision_sampling/sample_clean_run.csv` (RUN_ID `release-01-image-eligible`)
+- **Archived results:** `data/05_vision_release/vision_results_us_canada_final.csv`, `data/05_vision_release/vision_results_uk_ie_final.csv`
+- **Normalised results (feed stage_11_merge_vision_results):** `data/05_vision_release/*_normalised.csv`
 **Claim prevalence:** 45.7% sample proportion (n=11,408); 37.7% design-weighted
 estimate within the image-eligible OFF sampling frame (backbone n=4,679).
 Note: backbone weights are approximate design weights after brand capping; OFF
@@ -592,10 +610,10 @@ snacks 39.7% / 33.8%; beverages 38.5% / 33.5%
 | Non-front | 269 |
 | Failed/not attempted | 182 |
 
-**Release ID:** `release_2026_01_fr`  
-**Prompt:** `prompt_v5_fr.txt` (`prompt_version = v5.1-fr`) with `prompt_fr_context_review.txt`
-**Sample file:** `pipeline/sample_france_run.csv` (RUN_ID `release-02-france`)  
-**Archived results:** `vision_results_20260724_014247.csv`  
+- **Release ID:** `release_2026_01_fr`
+- **Prompt:** `prompt_v5_fr.txt` (`prompt_version = v5.1-fr`) with `prompt_fr_context_review.txt`
+- **Sample file:** `data/04_vision_sampling/sample_france_run.csv` (RUN_ID `release-02-france`)
+- **Archived results:** `data/05_vision_release/vision_results_20260724_014247.csv`
 **Context review:** 243 triggered, 187 rescued  
 **Claim prevalence:** 40.6% sample proportion (France); weighted estimate
 pending backbone weight analysis  
@@ -643,7 +661,7 @@ raw JSON
 
 → stage_13_build_app_summaries.py
     → weekly_brand_positioning_summary
-    → powerbi_final_*.csv
+    → positioning_example_products
 ```
 
 **Key invariant:** `pack_claims_found = None` means no valid observation.

@@ -444,42 +444,34 @@ The pipeline is deliberately layered so stages can evolve without requiring a
 full redesign:
 
 ```text
-OFF bulk/API
-    ↓
-ingest / bootstrap
-    ↓
-clean
-    ├─ category governance
-    ├─ brand normalization
-    └─ company routing
-    ↓
-analyze
-    └─ ingredient-based analysis
-    ↓
-load → SQLite
-    ↓
-stage_09_build_vision_sample
-    ↓
-stage_10_extract_pack_claims
-    └─ OCR + structured claim extraction
-    ↓
-stage_11_merge_vision_results
-    ↓
-stage_12_build_claim_taxonomy
-    └─ claim taxonomy + benchmark intersections
-    ↓
-stage_13_build_app_summaries
-    └─ final reporting aggregates
-    ↓
-Streamlit / QA / exports
+stage_01a_bootstrap_from_off_bulk.py OR stage_01b_ingest_from_off_api.py
+    -> stage_02_clean_products.py
+    -> stage_03_build_nutrition_quality_flags.py
+    -> stage_04_build_product_analysis.py
+    -> stage_05_load_database.py
+    -> stage_06_detect_sampling_signals.py
+    -> stage_07_assign_sampling_bands.py
+    -> stage_08_classify_formulation_families.py
+    -> stage_09_build_vision_sample.py
+    -> stage_10_extract_pack_claims.py
+    -> pipeline/vision_ops/op_04_normalize_results.py
+    -> pipeline/vision_ops/op_05_clear_stale_observations.py when needed before merge
+    -> stage_11_merge_vision_results.py
+    -> stage_12_build_claim_taxonomy.py
+    -> stage_13_build_app_summaries.py
+    -> stage_14_compute_region_benchmarks.py
+    -> stage_15_compute_profile_intersections.py
+    -> stage_16_build_chart_ranges.py
+    -> stage_17_build_deployment_database.py
+    -> Streamlit / QA / exports
 ```
 
 Cross-cutting governance layers include:
 
-- `data/reference/brand_alias_mapping.csv`;
-- `data/reference/company_brand_mapping.csv`;
-- `data/reference/private_label_brand_mapping.csv`;
-- `data/reference/reviewed_product_mapping_overrides.csv`;
+- `data/01_reference_inputs/02_brand_alias_mapping.csv`;
+- `data/01_reference_inputs/03_company_brand_mapping.csv`;
+- `data/01_reference_inputs/04_private_label_brand_mapping.csv`;
+- `data/01_reference_inputs/05_reviewed_product_mapping_overrides.csv`;
 - nutrition-quality flags and category rules.
 
 The contract principle is stable identifiers plus explicit derived fields:

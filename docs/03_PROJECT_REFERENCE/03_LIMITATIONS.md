@@ -141,19 +141,19 @@ does not claim to identify which source field is wrong in every inconsistent
 record, and raw OFF values remain traceable where provenance fields are
 available.
 
-Some records can therefore remain visible at product level while being excluded
-from aggregate analysis.
+Under the September 2026 rule, Product Explorer hard-gate failure is the
+exclusion boundary for Market Overview calculations. Products that pass the hard
+gate can still carry warning flags; those warnings are audit signals, not
+aggregate exclusions.
 
 See `docs/01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md` for the detailed rules.
 
-### Within-brand plausibility is not fully implemented
+### Within-brand plausibility is a warning layer
 
-The launch MVP handles hard impossibilities, per-100 kcal nutrient-density
-checks, energy-macro consistency, Scenario C2 safeguards, and documented
-distributional rules.
-
-It does not yet systematically flag every unusually low or high nutrition value
-relative to comparable products from the same brand.
+The launch MVP flags within-brand nutrition plausibility concerns for audit and
+review. Passing the hard gate remains the Product Explorer and Market Overview
+calculation boundary, so these warnings are not independent aggregate
+exclusions.
 
 ### Benchmark thresholds are analytical references
 
