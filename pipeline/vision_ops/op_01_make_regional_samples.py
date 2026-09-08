@@ -15,7 +15,7 @@ from pathlib import Path
 import pandas as pd
 
 REPO_ROOT  = Path(__file__).resolve().parents[2]
-INPUT      = REPO_ROOT / "pipeline" / "sample_clean_run.csv"
+INPUT      = REPO_ROOT / "data" / "04_vision_sampling" / "sample_clean_run.csv"
 OUTPUT_DIR = REPO_ROOT / "data" / "sample"
 
 REGIONS = {

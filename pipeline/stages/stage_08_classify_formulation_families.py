@@ -28,7 +28,7 @@ order). Every product that matches no family gets "other_<category>".
 The classifier records which rule matched (family_source) for audit.
 
 Usage: python pipeline/stages/stage_08_classify_formulation_families.py
-Writes: pipeline/formulation_families.csv
+Writes: data/04_vision_sampling/formulation_families.csv
 """
 
 from __future__ import annotations
@@ -41,7 +41,8 @@ import pandas as pd
 
 ROOT    = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-OUT_CSV = ROOT / "pipeline" / "formulation_families.csv"
+VISION_SAMPLING_DIR = ROOT / "data" / "04_vision_sampling"
+OUT_CSV = VISION_SAMPLING_DIR / "formulation_families.csv"
 
 RULE_VERSION = "family-v1"
 
@@ -324,6 +325,7 @@ def main():
     # numeric type on read, causing barcode mismatches on downstream merges.
     df["barcode"] = df["barcode"].astype(str)
 
+    VISION_SAMPLING_DIR.mkdir(parents=True, exist_ok=True)
     df[["barcode", "category", "formulation_family", "family_source",
         "family_rule_version"]].to_csv(OUT_CSV, index=False)
     print(f"Classified {len(df):,} products.\nWrote {OUT_CSV}\n")

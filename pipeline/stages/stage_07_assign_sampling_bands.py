@@ -40,7 +40,7 @@ sampler and any later audit can see which products got the normal
 quartile rule vs. a fallback.
 
 Usage: python pipeline/stages/stage_07_assign_sampling_bands.py
-Writes: pipeline/reality_bands.csv
+Writes: data/04_vision_sampling/reality_bands.csv
 """
 
 from __future__ import annotations
@@ -52,7 +52,8 @@ import pandas as pd
 
 ROOT    = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-OUT_CSV = ROOT / "pipeline" / "reality_bands.csv"
+VISION_SAMPLING_DIR = ROOT / "data" / "04_vision_sampling"
+OUT_CSV = VISION_SAMPLING_DIR / "reality_bands.csv"
 
 DOWNLOAD_SCOPE_REGIONS = {"FRANCE", "UK_IE", "US_CANADA"}
 
@@ -201,6 +202,7 @@ def main():
         out_rows.append(row)
 
     out = pd.DataFrame(out_rows)
+    VISION_SAMPLING_DIR.mkdir(parents=True, exist_ok=True)
     out.to_csv(OUT_CSV, index=False)
     print(f"Banded {len(out):,} products (US/UK/FR in-scope with a benchmark).")
     print(f"Wrote {OUT_CSV}\n")

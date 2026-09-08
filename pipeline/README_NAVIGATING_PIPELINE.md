@@ -13,11 +13,11 @@ pipeline/ # Production pipeline code, governance utilities, validation checks, p
 |   |-- stage_03_build_nutrition_quality_flags.py # Build nutrition-quality flags and audit outputs
 |   |-- stage_04_build_product_analysis.py # Compute derived nutrition, category, brand, and positioning fields
 |   |-- stage_05_load_database.py # Load processed product data into the project SQLite database
-|   |-- stage_06_detect_sampling_signals.py # Detect candidate positioning signals for pack-image sampling
+|   |-- stage_06_detect_sampling_signals.py # Detect candidate positioning signals for pack-image sampling outputs
 |   |-- stage_07_assign_sampling_bands.py # Assign sampling bands used to balance the vision sample
-|   |-- stage_08_classify_formulation_families.py # Classify products into formulation families for sampling and review
-|   |-- stage_09_build_vision_sample.py # Build the targeted product sample for pack-image analysis
-|   |-- stage_10_extract_pack_claims.py # Run OCR and LLM extraction on selected pack images
+|   |-- stage_08_classify_formulation_families.py # Classify products into formulation families for sampling outputs
+|   |-- stage_09_build_vision_sample.py # Build the targeted product sample in data/04_vision_sampling
+|   |-- stage_10_extract_pack_claims.py # Run OCR and LLM extraction on selected pack-image sample files
 |   |-- stage_11_merge_vision_results.py # Merge extracted pack-image results back into product analysis
 |   |-- stage_12_build_claim_taxonomy.py # Convert extracted signals into claim tags and benchmark fields
 |   |-- stage_13_build_app_summaries.py # Build app-facing summary tables and example-product records

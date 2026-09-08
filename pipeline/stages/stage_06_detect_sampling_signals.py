@@ -43,8 +43,8 @@ Usage:
     python pipeline/stages/stage_06_detect_sampling_signals.py --region us_uk
     python pipeline/stages/stage_06_detect_sampling_signals.py --region france
 
-Writes: pipeline/positioning_signals_us_uk.csv
-        pipeline/positioning_signals_fr.csv
+Writes: data/04_vision_sampling/positioning_signals_us_uk.csv
+        data/04_vision_sampling/positioning_signals_fr.csv
 """
 
 from __future__ import annotations
@@ -58,14 +58,14 @@ from pathlib import Path
 import pandas as pd
 
 ROOT    = Path(__file__).resolve().parents[2]
-PIPELINE_DIR = ROOT / "pipeline"
+VISION_SAMPLING_DIR = ROOT / "data" / "04_vision_sampling"
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-OUT_CSV = PIPELINE_DIR / "positioning_signals_us_uk.csv"
+OUT_CSV = VISION_SAMPLING_DIR / "positioning_signals_us_uk.csv"
 
 # Rebound in main() from the selected profile — do not edit directly.
 RULE_VERSION     = "positioning-v1-en"
 IN_SCOPE_REGIONS = {"US_CANADA", "UK_IE"}
-OUT_CSV          = PIPELINE_DIR / "positioning_signals_us_uk.csv"
+OUT_CSV          = VISION_SAMPLING_DIR / "positioning_signals_us_uk.csv"
 STRIP_ACCENTS    = False
 
 # ── EXPLICIT positioning terms (communication-like text ONLY) ───────────────
@@ -535,7 +535,7 @@ def main():
     profile          = REGION_PROFILES[args.region]
     RULE_VERSION     = profile["rule_version"]
     IN_SCOPE_REGIONS = profile["regions"]
-    OUT_CSV          = PIPELINE_DIR / profile["out_csv"]
+    OUT_CSV          = VISION_SAMPLING_DIR / profile["out_csv"]
     STRIP_ACCENTS    = profile["strip_accents"]
     EXPLICIT_TERMS               = _prepare_terms(profile["explicit_terms"])
     FORMULATION_INGREDIENT_TERMS = _prepare_terms(profile["formulation_terms"])
@@ -573,6 +573,7 @@ def main():
 
     signals = df.apply(detect_row, axis=1, result_type="expand")
     out = pd.concat([df[["barcode", "product_name", "query_category"]], signals], axis=1)
+    VISION_SAMPLING_DIR.mkdir(parents=True, exist_ok=True)
     out.to_csv(OUT_CSV, index=False)
     print(f"Wrote {len(out)} rows to {OUT_CSV}\n")
 

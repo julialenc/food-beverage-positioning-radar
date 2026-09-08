@@ -11,14 +11,14 @@ France: deferred pending a French keyword dictionary for the positioning
 proxy. See llm_sampling_design_log.md for the reasoning.
 
 INPUTS (all pre-computed pipeline outputs — run these first):
-  pipeline/positioning_signals_us_uk.csv  (stage_06_detect_sampling_signals.py)
-  pipeline/reality_bands.csv              (stage_07_assign_sampling_bands.py)
-  pipeline/formulation_families.csv       (stage_08_classify_formulation_families.py)
+  data/04_vision_sampling/positioning_signals_us_uk.csv  (stage_06_detect_sampling_signals.py)
+  data/04_vision_sampling/reality_bands.csv              (stage_07_assign_sampling_bands.py)
+  data/04_vision_sampling/formulation_families.csv       (stage_08_classify_formulation_families.py)
   database/positioning_radar.db           (for prompt calibration panel)
 
 OUTPUTS:
-  pipeline/sample_clean_run.csv           (selected products + full metadata)
-  pipeline/sample_clean_run_summary.csv   (quota fill report)
+  data/04_vision_sampling/sample_clean_run.csv           (selected products + full metadata)
+  data/04_vision_sampling/sample_clean_run_summary.csv   (quota fill report)
 
 THREE SAMPLING COMPONENTS per region-category:
   35% BACKBONE   -- proportional to formulation-family distribution, random
@@ -58,9 +58,9 @@ import pandas as pd
 ROOT    = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
 
-PIPELINE_DIR    = ROOT / "pipeline"
-REALITY_CSV     = PIPELINE_DIR / "reality_bands.csv"
-FAMILIES_CSV    = PIPELINE_DIR / "formulation_families.csv"
+VISION_SAMPLING_DIR = ROOT / "data" / "04_vision_sampling"
+REALITY_CSV     = VISION_SAMPLING_DIR / "reality_bands.csv"
+FAMILIES_CSV    = VISION_SAMPLING_DIR / "formulation_families.csv"
 
 RANDOM_SEED = 42
 
@@ -111,9 +111,9 @@ REGION_PROFILES: dict[str, dict] = {
 }
 
 # Rebound in main() from the selected profile — do not edit directly.
-POSITIONING_CSV  = PIPELINE_DIR / REGION_PROFILES["us_uk"]["positioning_csv"]
-OUT_SAMPLE_CSV   = PIPELINE_DIR / REGION_PROFILES["us_uk"]["out_sample"]
-OUT_SUMMARY_CSV  = PIPELINE_DIR / REGION_PROFILES["us_uk"]["out_summary"]
+POSITIONING_CSV  = VISION_SAMPLING_DIR / REGION_PROFILES["us_uk"]["positioning_csv"]
+OUT_SAMPLE_CSV   = VISION_SAMPLING_DIR / REGION_PROFILES["us_uk"]["out_sample"]
+OUT_SUMMARY_CSV  = VISION_SAMPLING_DIR / REGION_PROFILES["us_uk"]["out_summary"]
 RUN_ID           = REGION_PROFILES["us_uk"]["run_id"]
 IN_SCOPE_REGIONS = REGION_PROFILES["us_uk"]["regions"]
 QUOTA_TARGET: dict[tuple[str, str], int] = REGION_PROFILES["us_uk"]["quotas"]
@@ -521,9 +521,9 @@ def main():
     global POSITIONING_CSV, OUT_SAMPLE_CSV, OUT_SUMMARY_CSV
     global RUN_ID, IN_SCOPE_REGIONS, QUOTA_TARGET
     profile          = REGION_PROFILES[args.region]
-    POSITIONING_CSV  = PIPELINE_DIR / profile["positioning_csv"]
-    OUT_SAMPLE_CSV   = PIPELINE_DIR / profile["out_sample"]
-    OUT_SUMMARY_CSV  = PIPELINE_DIR / profile["out_summary"]
+    POSITIONING_CSV  = VISION_SAMPLING_DIR / profile["positioning_csv"]
+    OUT_SAMPLE_CSV   = VISION_SAMPLING_DIR / profile["out_sample"]
+    OUT_SUMMARY_CSV  = VISION_SAMPLING_DIR / profile["out_summary"]
     RUN_ID           = profile["run_id"]
     IN_SCOPE_REGIONS = profile["regions"]
     QUOTA_TARGET     = profile["quotas"]
@@ -622,6 +622,7 @@ def main():
     ]
     out = pd.concat(all_parts)
     cols = [c for c in OUTPUT_COLS if c in out.columns]
+    VISION_SAMPLING_DIR.mkdir(parents=True, exist_ok=True)
     out[cols].to_csv(OUT_SAMPLE_CSV, index=False)
     pd.DataFrame(summary_rows).to_csv(OUT_SUMMARY_CSV, index=False)
 

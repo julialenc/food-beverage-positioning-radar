@@ -14,7 +14,8 @@ __pycache__/
 .claude/
 data/02_raw_off_downloads/*
 !data/02_raw_off_downloads/.gitkeep
-pipeline/*.csv
+data/04_vision_sampling/*
+!data/04_vision_sampling/.gitkeep
 data/reference/brand_counts.csv
 data/reference/brand_coverage_report.csv
 data/reference/company_brand_mapping_pre_layer3_merge_*.csv
