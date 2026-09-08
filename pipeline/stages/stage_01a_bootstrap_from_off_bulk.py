@@ -13,7 +13,7 @@ categories, and writes a sample_all_<timestamp>.csv in exactly the same
 format as stage_01b_ingest_from_off_api.py produces, so
 stage_02_clean_products.py and the rest of the pipeline are unaffected.
 
-The compressed file is cached in data/raw/ after the first download. Delete
+The compressed file is cached in data/02_raw_off_downloads/ after the first download. Delete
 it manually to force a fresh download (e.g. for a quarterly refresh). Do
 not commit it to git — it is gitignored.
 
@@ -26,7 +26,7 @@ Usage:
     python pipeline/stages/stage_01a_bootstrap_from_off_bulk.py
 
 Output:
-    data/raw/en.openfoodfacts.org.products.csv.gz   (cached download)
+    data/02_raw_off_downloads/en.openfoodfacts.org.products.csv.gz   (cached download)
     data/sample/sample_all_<timestamp>.csv           (pipeline input)
 
 Next step: python pipeline/stages/stage_02_clean_products.py
@@ -56,7 +56,7 @@ CHUNK_SIZE = 50_000  # rows per chunk — ~200 MB RAM peak per chunk
 # ── Paths ──────────────────────────────────────────────────────────────────────
 
 ROOT       = Path(__file__).resolve().parents[2]
-RAW_DIR    = ROOT / "data" / "raw"
+RAW_DIR    = ROOT / "data" / "02_raw_off_downloads"
 SAMPLE_DIR = ROOT / "data" / "sample"
 GZ_PATH    = RAW_DIR / "en.openfoodfacts.org.products.csv.gz"
 

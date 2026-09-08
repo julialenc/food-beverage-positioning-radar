@@ -2,13 +2,13 @@
 stage_01b_ingest_from_off_api.py
 --------------------------------
 Pulls products from the Open Food Facts Live JSON API by category.
-Saves raw JSON to data/raw/ and a flat CSV to data/sample/.
+Saves raw JSON to data/02_raw_off_downloads/ and a flat CSV to data/sample/.
 
 Usage:
     python pipeline/stages/stage_01b_ingest_from_off_api.py
 
 Output:
-    data/raw/raw_<category>_<timestamp>.json   (one per category)
+    data/02_raw_off_downloads/raw_<category>_<timestamp>.json   (one per category)
     data/sample/sample_all_<timestamp>.csv     (all categories combined, flat)
 """
 
@@ -65,7 +65,7 @@ FIELDS = ",".join([
 # ── Paths ─────────────────────────────────────────────────────────────────────
 
 ROOT       = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-RAW_DIR    = os.path.join(ROOT, "data", "raw")
+RAW_DIR    = os.path.join(ROOT, "data", "02_raw_off_downloads")
 SAMPLE_DIR = os.path.join(ROOT, "data", "sample")
 
 # ── Fetch ─────────────────────────────────────────────────────────────────────
@@ -271,7 +271,7 @@ def flatten_product(product: dict, category: str) -> dict | None:
 # ── Save ──────────────────────────────────────────────────────────────────────
 
 def save_raw(products: list[dict], category: str, timestamp: str) -> None:
-    """Save raw API response to data/raw/ as JSON."""
+    """Save raw API response to data/02_raw_off_downloads/ as JSON."""
     filename = f"raw_{category}_{timestamp}.json"
     path = os.path.join(RAW_DIR, filename)
     with open(path, "w", encoding="utf-8") as f:

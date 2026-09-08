@@ -10,8 +10,8 @@ __pycache__/
 .env
 .venv/
 .claude/
-data/raw/*
-!data/raw/.gitkeep
+data/02_raw_off_downloads/*
+!data/02_raw_off_downloads/.gitkeep
 pipeline/*.csv
 data/reference/brand_counts.csv
 data/reference/brand_coverage_report.csv
