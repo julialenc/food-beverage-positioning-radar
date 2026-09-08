@@ -1,8 +1,5 @@
 data/03_pipeline_intermediates/*
 !data/03_pipeline_intermediates/.gitkeep
-logs/*.log
-logs/*.txt
-!logs/.gitkeep
 database/*.db
 !database/positioning_radar_public_mvp.db.gz
 *.pyc
