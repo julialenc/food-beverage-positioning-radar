@@ -167,20 +167,22 @@ compressed public MVP database artifact included for deployment.
 app.py                  Streamlit entry point
 pages/                  Streamlit pages
 shared/                 Shared UI, labels, beverage segments, and DB helpers
-pipeline/               Production and maintenance pipeline scripts
-data/reference/         Production reference mappings and lookup files
-database/               Schema reference and compressed public MVP DB artifact
-docs/                   Methodology, limitations, governance, and ADRs
+pipeline/               Production stages, validation checks, governance tools, prompts, and exports
+data/                   Committed reference inputs plus ignored generated output homes
+database/               Schema reference, local build DB, and compressed public MVP DB artifact
+docs/                   Product governance, pack-image analysis, and project reference documents
 ```
 
 Generated local workspaces are kept as empty committed folders with `.gitkeep`
 placeholders:
 
 ```
-data/raw/                         Cached OFF/API inputs when regenerated
-data/sample/                      Local pipeline outputs and release samples
-data/brand_mapping_review/        Local brand/company review exports
-data/nutrition_outlier_review/    Local nutrition-quality review exports
+data/02_raw_off_downloads/            Cached OFF/API inputs when regenerated
+data/03_pipeline_intermediates/       Core OFF pipeline CSV outputs
+data/04_vision_sampling/              Pre-extraction sampling outputs
+data/05_vision_release/               Vision release samples, results, merge files, and QA outputs
+data/06_brand_governance_outputs/     Category and brand/company governance review exports
+data/07_nutrition_quality_outputs/    Nutrition-quality audit and review outputs
 ```
 
 Generated CSVs, raw Open Food Facts downloads, local audit exports, and the full
@@ -190,50 +192,70 @@ promoted to production reference status.
 
 ## Production Reference Files
 
-The production reference layer is under `data/reference/`:
+The production reference layer is under `data/01_reference_inputs/`:
 
-- `company_brand_mapping.csv` - reusable brand-to-company routing rules;
-- `brand_alias_mapping.csv` - reviewed brand-string aliases;
-- `private_label_brand_mapping.csv` - reviewed retailer/private-label brand
+- `01_country_region_mapping.csv` - OFF country to project region-code mapping;
+- `02_brand_alias_mapping.csv` - reviewed brand-string aliases;
+- `03_company_brand_mapping.csv` - reusable brand-to-company routing rules;
+- `04_private_label_brand_mapping.csv` - reviewed retailer/private-label brand
   architecture;
-- `reviewed_product_mapping_overrides.csv` - exact GTIN-level reviewed brand,
+- `05_reviewed_product_mapping_overrides.csv` - exact GTIN-level reviewed brand,
   company, category, and `OUT_OF_SCOPE` overrides;
-- `top_company_brand_portfolio_matrix.csv` - priority manufacturer portfolio and
+- `06_top_company_brand_portfolio_matrix.csv` - priority manufacturer portfolio and
   discovery reference;
 - `README.md` - reference-file descriptions and provenance notes.
 
-These files are project-maintained derived inputs, not raw Open Food Facts data.
-They preserve brand, company, and product-specific governance decisions used by
-`pipeline/stages/stage_02_clean_products.py`,
-`pipeline/stages/stage_05_load_database.py`, and the Streamlit app.
+These files are project-maintained derived inputs used by the cleaning and
+governance layers. Their resolved outputs are subsequently loaded into SQLite
+and consumed by the Streamlit app.
 
 ## Pipeline Overview
 
 The standard local build path is:
 
 ```
-1. pipeline/stages/stage_01a_bootstrap_from_off_bulk.py or pipeline/stages/stage_01b_ingest_from_off_api.py
-2. pipeline/stages/stage_02_clean_products.py
-3. pipeline/stages/stage_03_build_nutrition_quality_flags.py
-4. pipeline/stages/stage_04_build_product_analysis.py
-5. pipeline/stages/stage_05_load_database.py
-6. pipeline/stages/stage_09_build_vision_sample.py  [manual when refreshing vision sample]
-7. pipeline/stages/stage_10_extract_pack_claims.py  [paid/manual vision stage]
-8. pipeline/stages/stage_11_merge_vision_results.py
-9. pipeline/stages/stage_12_build_claim_taxonomy.py
-10. pipeline/stages/stage_13_build_app_summaries.py
-11. pipeline/stages/stage_14_compute_region_benchmarks.py
-12. pipeline/stages/stage_15_compute_profile_intersections.py
-13. pipeline/stages/stage_16_build_chart_ranges.py
-14. pipeline/stages/stage_17_build_deployment_database.py
+01A. pipeline/stages/stage_01a_bootstrap_from_off_bulk.py
+     or
+01B. pipeline/stages/stage_01b_ingest_from_off_api.py
+02.  pipeline/stages/stage_02_clean_products.py
+03.  pipeline/stages/stage_03_build_nutrition_quality_flags.py
+04.  pipeline/stages/stage_04_build_product_analysis.py
+05.  pipeline/stages/stage_05_load_database.py
+06.  pipeline/stages/stage_06_detect_sampling_signals.py
+07.  pipeline/stages/stage_07_assign_sampling_bands.py
+08.  pipeline/stages/stage_08_classify_formulation_families.py
+09.  pipeline/stages/stage_09_build_vision_sample.py
+10.  pipeline/stages/stage_10_extract_pack_claims.py  [paid/manual vision stage]
+11.  pipeline/stages/stage_11_merge_vision_results.py
+12.  pipeline/stages/stage_12_build_claim_taxonomy.py
+13.  pipeline/stages/stage_13_build_app_summaries.py
+14.  pipeline/stages/stage_14_compute_region_benchmarks.py
+15.  pipeline/stages/stage_15_compute_profile_intersections.py
+16.  pipeline/stages/stage_16_build_chart_ranges.py
+17.  pipeline/stages/stage_17_build_deployment_database.py
 ```
 
 Some scripts are maintenance or review utilities rather than automatic pipeline
 steps. Use them deliberately when refreshing mappings, category rules,
-nutrition governance, or the vision sample. `stage_09_build_vision_sample.py`
-and `stage_10_extract_pack_claims.py` are shown in the build path for completeness but are run
-only when vision results are intentionally refreshed. The vision/OCR stage calls
-paid Azure services and should not be run as part of an automatic loop.
+nutrition governance, or the vision sample. Stages 06-10 form the vision
+sampling/extraction branch and are run when that branch is intentionally
+refreshed. Stage 10 is the paid Azure OCR + LLM step.
+
+Vision Ops can also prepare regional release files, preflight image URLs, and
+reset selected database rows before extraction.
+After extraction, release files may be normalized or retired with
+`pipeline/vision_ops/op_04_normalize_results.py` and
+`pipeline/vision_ops/op_05_clear_stale_observations.py` before Stage 11 merges
+the current release into the database.
+
+Independent validation checks sit alongside the pipeline as quality guardrails:
+they are not data dependencies, but they are important for production
+confidence.
+
+Navigation files:
+
+- `pipeline/README_NAVIGATING_PIPELINE.md` - one-line map of every pipeline script;
+- `data/README_NAVIGATING_DATA.md` - data-folder tree and generated-output contract.
 
 ## Documentation
 
@@ -247,8 +269,11 @@ paid Azure services and should not be run as part of an automatic loop.
   treatment rules
 - `docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md` - database/output field definitions
 - `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md` - OCR/LLM front-pack claim extraction methodology
+- `docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md` - claim taxonomy label definitions
 - `docs/03_PROJECT_REFERENCE/01_ADR.md` - architecture decision records
-- `data/reference/README.md` - reference mapping files and provenance notes
+- `data/01_reference_inputs/README.md` - reference mapping files and provenance notes
+- `pipeline/README_NAVIGATING_PIPELINE.md` - pipeline folder and script map
+- `data/README_NAVIGATING_DATA.md` - data folder and output-home map
 
 ## Data Source, License, And Attribution
 
