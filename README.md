@@ -62,9 +62,8 @@ beverage records.
 market, brand, company, nutrition status, NOVA, Nutri-Score, and detected
 positioning signals, then inspect product-level evidence.
 
-**Methodology**, **Limitations**, and **About** explain how to read the data,
-what the app does not claim, and where Open Food Facts source limitations
-matter.
+**Methodology** and **About** explain how to read the data, what the app does
+not claim, and where Open Food Facts source limitations matter.
 
 ## Governance Status
 
@@ -210,6 +209,10 @@ governance layers. Their resolved outputs are subsequently loaded into SQLite
 and consumed by the Streamlit app.
 
 ## Pipeline Overview
+
+![Food & Beverage Positioning Radar end-to-end pipeline](docs/04_ASSETS/food_beverage_radar_e2e_pipeline.png)
+
+*End-to-end architecture: modular data processing, selected-product OCR/LLM enrichment, and independent quality guardrails.*
 
 The standard local build path is:
 

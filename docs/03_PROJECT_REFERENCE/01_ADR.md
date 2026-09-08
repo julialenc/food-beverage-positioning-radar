@@ -438,6 +438,45 @@ See `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md`.
 
 ---
 
+## ADR-016 — Keep public Streamlit loading scoped and cache-light
+
+**Date:** 8 September 2026
+**Status:** Active
+
+**Decision:** The public Streamlit app should load from the compressed public
+SQLite artifact, defer large Market Overview data loads until the user confirms
+the selected scope, and avoid Streamlit cache wrappers for the largest
+Market Overview dataframe. That dataframe uses a small bounded in-process cache
+instead.
+
+**Rationale:** Streamlit Community Cloud has tighter CPU and memory limits than
+local development. Cold starts became unreliable when the app eagerly loaded a
+large region-category dataframe and when Streamlit's cache layer wrapped that
+large dataframe. Deferring the load, using the deployment database artifact, and
+caching only a few active scopes keep the public app responsive while preserving
+the same analytical source.
+
+**Implementation notes:**
+
+- `shared/db.py` prefers `database/positioning_radar_public_mvp.db.gz` and
+  extracts it to a validated temporary SQLite database for public deployment;
+- `pages/overview.py` waits for `Load selected market data` before loading the
+  selected Market Overview scope;
+- `shared/db.py::get_market_products()` joins `market_chart_bands` using the
+  full indexed key, including `beverage_view_segment`, so chart-band lookups are
+  scoped to the selected market/category/segment;
+- `shared/db.py::get_market_products()` uses a bounded process cache rather
+  than `st.cache_data` or `st.cache_resource` for the large Market Overview
+  dataframe.
+
+**Consequences:** The first load of a large selected scope can still take longer
+than a small Product Explorer query, but it should stay within the beta launch
+performance promise. The manual cache is intentionally small and should not be
+used as a substitute for future database/API pagination if the public dataset
+grows materially.
+
+---
+
 # Modular pipeline contract
 
 The pipeline is deliberately layered so stages can evolve without requiring a

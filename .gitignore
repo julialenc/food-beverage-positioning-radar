@@ -7,6 +7,7 @@ __pycache__/
 .env
 .venv/
 .claude/
+.streamlit/secrets.toml
 data/02_raw_off_downloads/*
 !data/02_raw_off_downloads/.gitkeep
 data/04_vision_sampling/*
