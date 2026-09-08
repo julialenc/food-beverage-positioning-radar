@@ -1,5 +1,3 @@
-data/sample/*
-!data/sample/.gitkeep
 data/03_pipeline_intermediates/*
 !data/03_pipeline_intermediates/.gitkeep
 logs/*.log
@@ -30,13 +28,7 @@ data/07_nutrition_quality_outputs/reports/*
 !data/07_nutrition_quality_outputs/reports/.gitkeep
 data/07_nutrition_quality_outputs/reviewed/*
 !data/07_nutrition_quality_outputs/reviewed/.gitkeep
-data/reference/brand_counts.csv
-data/reference/brand_coverage_report.csv
-data/reference/company_brand_mapping_pre_layer3_merge_*.csv
-data/reference/nestle_brand_portfolio_matrix.csv
-data/brand_mapping_review/*.csv
-data/nutrition_outlier_review/audits/*.csv
-data/nutrition_outlier_review/candidates/*.csv
+data/nutrition_outlier_review/
 database/*.db-shm
 database/*.db-wal
 llm_sampling_design_log.md
