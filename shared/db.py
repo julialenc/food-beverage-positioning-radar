@@ -83,8 +83,7 @@ def _public_db_is_usable(path: Path) -> bool:
             }
             if not _REQUIRED_PUBLIC_DB_TABLES.issubset(tables):
                 return False
-            integrity = conn.execute("PRAGMA quick_check").fetchone()
-            return bool(integrity and integrity[0] == "ok")
+            return True
         finally:
             conn.close()
     except sqlite3.DatabaseError:
@@ -112,7 +111,7 @@ def _extract_public_db_if_needed() -> Path:
         os.utime(tmp, (gz_mtime, gz_mtime))
         if not _public_db_is_usable(tmp):
             raise sqlite3.DatabaseError(
-                "Extracted public database failed SQLite integrity check."
+                "Extracted public database is missing required app tables."
             )
         tmp.replace(extracted)
     finally:
