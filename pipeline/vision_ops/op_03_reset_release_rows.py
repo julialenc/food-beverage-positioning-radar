@@ -32,13 +32,13 @@ Release-run order (per region):
   2. Remove or rename any existing vision_results_checkpoint.csv
   3. python pipeline/stages/stage_10_extract_pack_claims.py  (full run, no --test)
   4. Review run-level QA output
-  5. python pipeline/stages/stage_11_merge_vision_results.py --input data/sample/vision_results_<ts>.csv
+  5. python pipeline/stages/stage_11_merge_vision_results.py --input data/05_vision_release/vision_results_<ts>.csv
   After both US and UK are merged:
   6. python pipeline/stages/stage_12_build_claim_taxonomy.py
 
 Usage:
-    python pipeline/vision_ops/op_03_reset_release_rows.py --input data/sample/us_release_sample.csv
-    python pipeline/vision_ops/op_03_reset_release_rows.py --input data/sample/us_release_sample.csv --dry-run
+    python pipeline/vision_ops/op_03_reset_release_rows.py --input data/05_vision_release/us_release_sample.csv
+    python pipeline/vision_ops/op_03_reset_release_rows.py --input data/05_vision_release/us_release_sample.csv --dry-run
 """
 
 import argparse
@@ -195,10 +195,10 @@ def main():
         print(f"\n  Reset complete: {matched:,} rows cleared in product_analysis.")
         print(f"\n  Next steps:")
         print(f"    1. Remove or rename any existing vision_results_checkpoint.csv")
-        print(f"       in data/sample/ before starting the vision run.")
+        print(f"       in data/05_vision_release/ before starting the vision run.")
         print(f"    2. python pipeline/stages/stage_10_extract_pack_claims.py")
         print(f"    3. Review QA output, then:")
-        print(f"       python pipeline/stages/stage_11_merge_vision_results.py --input data/sample/vision_results_<ts>.csv")
+        print(f"       python pipeline/stages/stage_11_merge_vision_results.py --input data/05_vision_release/vision_results_<ts>.csv")
         print(f"    4. After all regions are merged: python pipeline/stages/stage_12_build_claim_taxonomy.py")
 
     print()

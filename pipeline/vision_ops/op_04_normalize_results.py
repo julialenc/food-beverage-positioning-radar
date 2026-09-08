@@ -38,8 +38,8 @@ Rules applied
 Idempotent: running twice produces the same output.
 
 Usage:
-    python pipeline/vision_ops/op_04_normalize_results.py --input data/sample/vision_results_us_canada_final.csv
-    python pipeline/vision_ops/op_04_normalize_results.py --input data/sample/vision_results_uk_ie_final.csv
+    python pipeline/vision_ops/op_04_normalize_results.py --input data/05_vision_release/vision_results_us_canada_final.csv
+    python pipeline/vision_ops/op_04_normalize_results.py --input data/05_vision_release/vision_results_uk_ie_final.csv
 
 Output:
     <input>_normalised.csv   plus a per-rule change log
@@ -51,7 +51,6 @@ from pathlib import Path
 import pandas as pd
 
 REPO_ROOT  = Path(__file__).resolve().parents[2]
-SAMPLE_DIR = REPO_ROOT / "data" / "sample"
 P = "v3_"   # flattened extraction-schema prefix
 
 # Must mirror PACK_CLAIM_FIELDS in stage_11_merge_vision_results.py.

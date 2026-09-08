@@ -12,7 +12,7 @@ It reuses review_image_context() from stage_10_extract_pack_claims.py, so the ch
 the production path cannot drift apart.
 
 Usage:
-    python pipeline/vision_ops/op_07_review_panel_context.py --input data/sample/vision_results_<ts>.csv
+    python pipeline/vision_ops/op_07_review_panel_context.py --input data/05_vision_release/vision_results_<ts>.csv
     python pipeline/vision_ops/op_07_review_panel_context.py --input <file> --all-categories
     python pipeline/vision_ops/op_07_review_panel_context.py --input <file> --language fr
 

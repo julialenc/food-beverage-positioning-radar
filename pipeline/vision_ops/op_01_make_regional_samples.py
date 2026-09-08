@@ -5,8 +5,8 @@ Splits sample_clean_run.csv into one file per region.
 Reads in chunks to stay within memory limits.
 
 Output:
-    data/sample/us_release_sample.csv   (US_CANADA rows)
-    data/sample/uk_release_sample.csv   (UK_IE rows)
+    data/05_vision_release/us_release_sample.csv   (US_CANADA rows)
+    data/05_vision_release/uk_release_sample.csv   (UK_IE rows)
 
 Usage:
     python pipeline/vision_ops/op_01_make_regional_samples.py
@@ -16,7 +16,7 @@ import pandas as pd
 
 REPO_ROOT  = Path(__file__).resolve().parents[2]
 INPUT      = REPO_ROOT / "data" / "04_vision_sampling" / "sample_clean_run.csv"
-OUTPUT_DIR = REPO_ROOT / "data" / "sample"
+OUTPUT_DIR = REPO_ROOT / "data" / "05_vision_release"
 
 REGIONS = {
     "US_CANADA": OUTPUT_DIR / "us_release_sample.csv",

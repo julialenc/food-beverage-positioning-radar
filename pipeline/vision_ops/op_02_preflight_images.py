@@ -6,11 +6,11 @@ Writes a preflight CSV with HTTP status, content type, and image size for
 each barcode. Use the results to exclude unavailable images before the run.
 
 Usage:
-    python pipeline/vision_ops/op_02_preflight_images.py --input data/sample/us_release_sample.csv
-    python pipeline/vision_ops/op_02_preflight_images.py --input data/sample/us_release_sample.csv --workers 32
+    python pipeline/vision_ops/op_02_preflight_images.py --input data/05_vision_release/us_release_sample.csv
+    python pipeline/vision_ops/op_02_preflight_images.py --input data/05_vision_release/us_release_sample.csv --workers 32
 
 Output:
-    data/sample/us_release_sample_preflight.csv
+    data/05_vision_release/us_release_sample_preflight.csv
 
 Retention rule: keep only rows where image_preflight_status == "available".
 """

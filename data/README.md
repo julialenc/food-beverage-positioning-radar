@@ -14,6 +14,9 @@ created while running or auditing the pipeline.
   `sample_all_*`, `clean_*`, `analyzed_*`, and `products_claim_tagged_*`.
 - `data/04_vision_sampling/` contains ignored pre-extraction sampling outputs
   used to select products for pack-image analysis.
+- `data/05_vision_release/` contains ignored release samples, preflight files,
+  vision extraction outputs, merged release files, normalized files, and QA
+  outputs for paid/manual pack-image runs.
 - All raw Open Food Facts downloads, intermediate CSVs, audit exports, release
   samples, and local review files are generated outputs and remain ignored
   unless explicitly promoted to production reference status.

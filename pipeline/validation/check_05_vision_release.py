@@ -6,9 +6,9 @@ first release (US + UK). Hard checks fail the run; soft checks warn.
 
 Usage:
     python pipeline/validation/check_05_vision_release.py
-    python pipeline/validation/check_05_vision_release.py --us-merged data/sample/merged_results_20260722_210439.csv ^
-                                                         --uk-merged data/sample/merged_results_20260722_210446.csv
-    python pipeline/validation/check_05_vision_release.py --output-dir data/sample/qa
+    python pipeline/validation/check_05_vision_release.py --us-merged data/05_vision_release/merged_results_20260722_210439.csv ^
+                                                         --uk-merged data/05_vision_release/merged_results_20260722_210446.csv
+    python pipeline/validation/check_05_vision_release.py --output-dir data/05_vision_release/qa
 
 Exit code is 1 if any hard check fails, else 0.
 
@@ -30,7 +30,7 @@ from pathlib import Path
 import pandas as pd
 
 REPO_ROOT  = Path(__file__).resolve().parents[2]
-SAMPLE_DIR = REPO_ROOT / "data" / "sample"
+VISION_RELEASE_DIR = REPO_ROOT / "data" / "05_vision_release"
 P = "v3_"   # flattened extraction-schema prefix
 
 # ── Expected contracts ────────────────────────────────────────────────────────
@@ -469,13 +469,13 @@ def check_combined(us, uk):
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     ap = argparse.ArgumentParser(description="Release QA for the US/UK vision run.")
-    ap.add_argument("--us-vision", default=str(SAMPLE_DIR / "vision_results_us_canada_final.csv"))
-    ap.add_argument("--uk-vision", default=str(SAMPLE_DIR / "vision_results_uk_ie_final.csv"))
-    ap.add_argument("--us-sample", default=str(SAMPLE_DIR / "us_release_sample.csv"))
-    ap.add_argument("--uk-sample", default=str(SAMPLE_DIR / "uk_release_sample.csv"))
+    ap.add_argument("--us-vision", default=str(VISION_RELEASE_DIR / "vision_results_us_canada_final.csv"))
+    ap.add_argument("--uk-vision", default=str(VISION_RELEASE_DIR / "vision_results_uk_ie_final.csv"))
+    ap.add_argument("--us-sample", default=str(VISION_RELEASE_DIR / "us_release_sample.csv"))
+    ap.add_argument("--uk-sample", default=str(VISION_RELEASE_DIR / "uk_release_sample.csv"))
     ap.add_argument("--us-merged", default=None)
     ap.add_argument("--uk-merged", default=None)
-    ap.add_argument("--output-dir", default=str(SAMPLE_DIR / "qa"))
+    ap.add_argument("--output-dir", default=str(VISION_RELEASE_DIR / "qa"))
     args = ap.parse_args()
 
     out_dir = Path(args.output_dir)

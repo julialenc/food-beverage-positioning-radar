@@ -32,10 +32,10 @@ The pilot results remain available in the archived run CSVs — nothing
 irrecoverable is lost.
 
 Usage:
-    python pipeline/vision_ops/op_05_clear_stale_observations.py --release data/sample/us_release_sample.csv ^
-                                                                 --release data/sample/uk_release_sample.csv --dry-run
-    python pipeline/vision_ops/op_05_clear_stale_observations.py --release data/sample/us_release_sample.csv ^
-                                                                 --release data/sample/uk_release_sample.csv
+    python pipeline/vision_ops/op_05_clear_stale_observations.py --release data/05_vision_release/us_release_sample.csv ^
+                                                                 --release data/05_vision_release/uk_release_sample.csv --dry-run
+    python pipeline/vision_ops/op_05_clear_stale_observations.py --release data/05_vision_release/us_release_sample.csv ^
+                                                                 --release data/05_vision_release/uk_release_sample.csv
 """
 
 import argparse

@@ -22,7 +22,7 @@ written here — they are populated by stage_12_build_claim_taxonomy.py.
 
 Usage:
     python pipeline/stages/stage_11_merge_vision_results.py
-    python pipeline/stages/stage_11_merge_vision_results.py --input data/sample/vision_results_<ts>.csv
+    python pipeline/stages/stage_11_merge_vision_results.py --input data/05_vision_release/vision_results_<ts>.csv
 """
 
 import argparse
@@ -33,8 +33,7 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT       = Path(__file__).resolve().parents[2]
-SAMPLE_DIR = ROOT / "data" / "sample"
-REF_DIR    = ROOT / "data" / "reference"
+VISION_RELEASE_DIR = ROOT / "data" / "05_vision_release"
 DB_PATH    = ROOT / "database" / "positioning_radar.db"
 
 
@@ -90,14 +89,13 @@ def safe_text(val):
 
 def find_latest_vision_results():
     """
-    Find the most recent vision results CSV across reference and sample
-    folders, excluding vision_results_checkpoint.csv — an in-progress
-    checkpoint file should never be auto-selected as the final result
-    set, even if it happens to have the latest modification time. Use
-    --input to target a checkpoint file explicitly if ever needed.
+    Find the most recent vision results CSV in the vision release folder,
+    excluding vision_results_checkpoint.csv — an in-progress checkpoint file
+    should never be auto-selected as the final result set, even if it happens
+    to have the latest modification time. Use --input to target a checkpoint
+    file explicitly if ever needed.
     """
-    files = list(REF_DIR.glob("vision_results_*.csv")) + \
-            list(SAMPLE_DIR.glob("vision_results_*.csv"))
+    files = list(VISION_RELEASE_DIR.glob("vision_results_*.csv"))
     files = [f for f in files if "checkpoint" not in f.name]
     if not files:
         raise FileNotFoundError(
@@ -404,12 +402,13 @@ def main():
     conn.close()
 
     # ── Save merged CSV ───────────────────────────────────────────────────────
-    output_path = SAMPLE_DIR / f"merged_results_{timestamp}.csv"
+    VISION_RELEASE_DIR.mkdir(parents=True, exist_ok=True)
+    output_path = VISION_RELEASE_DIR / f"merged_results_{timestamp}.csv"
     merged.to_csv(output_path, index=False, encoding="utf-8-sig")
     print(f"\n  Saved -> merged_results_{timestamp}.csv")
     print(f"  ({len(merged):,} rows)")
 
-    # Power BI QA export — vision-analyzed products only.
+    # Product-level QA export — vision-analyzed products only.
     # Final reporting comes from stage_13_build_app_summaries.py after stage_12_build_claim_taxonomy.py has run.
     pbi_cols = [
         "barcode", "product_name", "brands", "primary_brand",
@@ -424,9 +423,9 @@ def main():
     vision_scored = merged[merged["pack_claims_found"].notna()].copy()
     pbi_cols = [c for c in pbi_cols if c in vision_scored.columns]
     pbi_df = vision_scored[pbi_cols].copy()
-    pbi_path = SAMPLE_DIR / f"powerbi_merged_{timestamp}.csv"
-    pbi_df.to_csv(pbi_path, index=False, encoding="utf-8-sig")
-    print(f"  Power BI export (intermediate QA) -> powerbi_merged_{timestamp}.csv")
+    qa_path = VISION_RELEASE_DIR / f"products_vision_merged_{timestamp}.csv"
+    pbi_df.to_csv(qa_path, index=False, encoding="utf-8-sig")
+    print(f"  Product-level QA export -> products_vision_merged_{timestamp}.csv")
     print(f"  ({len(pbi_df):,} rows)\n")
     print(f"  Done. pack_claims_found is now in the database.\n")
 
