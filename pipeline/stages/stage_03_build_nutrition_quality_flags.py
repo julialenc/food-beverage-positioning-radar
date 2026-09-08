@@ -5,13 +5,20 @@ Builds nutrition-quality flags and audit exports without overwriting raw
 Open Food Facts nutrition values.
 
 This script is the audited nutrition-governance layer. It reads a cleaned
-pipeline CSV, derives nutrition quality fields from preserved OFF values, and
-writes review/audit outputs. It does not delete products or correct source
-nutrition values.
+pipeline CSV, derives nutrition quality fields from preserved OFF values, writes
+the next pipeline handoff CSV, and writes review/audit outputs. It does not
+delete products or correct source nutrition values.
 
 Usage:
     python pipeline/stages/stage_03_build_nutrition_quality_flags.py
     python pipeline/stages/stage_03_build_nutrition_quality_flags.py --input data/03_pipeline_intermediates/clean_20260822_220423.csv
+
+Input:
+    data/03_pipeline_intermediates/clean_<timestamp>.csv   (latest file auto-detected)
+
+Output:
+    data/03_pipeline_intermediates/nutrition_quality_<timestamp>.csv
+    data/07_nutrition_quality_outputs/audits/*.csv
 """
 
 from __future__ import annotations
@@ -36,6 +43,7 @@ AUDIT_DIR = os.path.join(ROOT, "data", "07_nutrition_quality_outputs", "audits")
 COMPANY_MAPPING_PATH = os.path.join(
     ROOT, "data", "01_reference_inputs", "03_company_brand_mapping.csv"
 )
+NUTRITION_QUALITY_OUTPUT_PREFIX = "nutrition_quality_"
 
 SOURCE_NUTRITION_COLS = {
     "energy_kcal_100g": "energy_kcal",
@@ -170,6 +178,24 @@ def normalize_key(value) -> str:
     return text
 
 
+def as_bool_series(values, index: pd.Index, default: bool = True) -> pd.Series:
+    if isinstance(values, pd.Series):
+        series = values.reindex(index)
+    else:
+        series = pd.Series(default, index=index)
+
+    if pd.api.types.is_bool_dtype(series):
+        return series.fillna(default).astype(bool)
+    if pd.api.types.is_numeric_dtype(series):
+        return pd.to_numeric(series, errors="coerce").fillna(int(default)).ne(0)
+
+    text = series.fillna("").astype(str).str.strip().str.lower()
+    parsed = pd.Series(default, index=index)
+    parsed.loc[text.isin(["true", "1", "yes", "y"])] = True
+    parsed.loc[text.isin(["false", "0", "no", "n", ""])] = False
+    return parsed.astype(bool)
+
+
 def load_company_map(path: str = COMPANY_MAPPING_PATH) -> dict[str, str]:
     if not os.path.exists(path):
         return {}
@@ -231,6 +257,15 @@ def apply_hard_error(df: pd.DataFrame, mask: pd.Series, reason: str) -> None:
     df.loc[mask, "include_in_product_explorer"] = False
     df.loc[mask, "include_in_market_overview_calculations"] = False
     df.loc[mask, "include_in_market_overview_charts"] = False
+    for col in [
+        "include_in_product_table",
+        "include_in_aggregates",
+        "include_in_charts",
+    ]:
+        if col in df.columns:
+            df.loc[mask, col] = False
+    if "outlier_type" in df.columns:
+        df.loc[mask, "outlier_type"] = "data_quality_error"
 
 
 def effective_parent_or_subset(parent: pd.Series, subset: pd.Series) -> pd.Series:
@@ -333,7 +368,7 @@ def known_broad_beverage_portfolio_mask(frame: pd.DataFrame) -> pd.Series:
 
 def within_brand_warning_mask(df: pd.DataFrame) -> pd.Series:
     eligible = df[
-        df["include_in_product_explorer"].astype(bool)
+        as_bool_series(df["include_in_product_explorer"], df.index)
         & df["category"].fillna("").astype(str).str.strip().ne("")
         & df["region"].fillna("").astype(str).str.strip().ne("")
         & df["brand"].fillna("").astype(str).str.strip().ne("")
@@ -415,12 +450,27 @@ def build_nutrition_quality_flags(df: pd.DataFrame) -> pd.DataFrame:
     for derived_col, clean_col in SOURCE_NUTRITION_COLS.items():
         out[derived_col] = raw_nutrition_series(out, clean_col)
 
+    if "outlier_type" not in out.columns:
+        out["outlier_type"] = ""
+    if "include_in_product_table" not in out.columns:
+        out["include_in_product_table"] = True
+    if "include_in_aggregates" not in out.columns:
+        out["include_in_aggregates"] = True
+    if "include_in_charts" not in out.columns:
+        out["include_in_charts"] = True
+
     out["nutrition_quality_status"] = "valid"
     out["nutrition_quality_reason"] = ""
     out["energy_macro_exception_type"] = ""
-    out["include_in_product_explorer"] = True
-    out["include_in_market_overview_calculations"] = True
-    out["include_in_market_overview_charts"] = True
+    out["include_in_product_explorer"] = as_bool_series(
+        out["include_in_product_table"], out.index
+    )
+    out["include_in_market_overview_calculations"] = as_bool_series(
+        out["include_in_aggregates"], out.index
+    )
+    out["include_in_market_overview_charts"] = as_bool_series(
+        out["include_in_charts"], out.index
+    )
     out["warning_flag"] = False
     out["warning_types"] = ""
     out["warning_summary"] = ""
@@ -645,7 +695,7 @@ def build_nutrition_quality_flags(df: pd.DataFrame) -> pd.DataFrame:
     )
     product_explorer_energy_macro_warning = (
         excluded_energy_macro
-        & out["include_in_product_explorer"].astype(bool)
+        & as_bool_series(out["include_in_product_explorer"], out.index)
         & ~is_alcohol_like
     )
     append_warning(
@@ -703,15 +753,15 @@ def build_summary(df: pd.DataFrame) -> pd.DataFrame:
             total_records=("barcode", "count"),
             excluded_from_product_explorer_n=(
                 "include_in_product_explorer",
-                lambda s: int((~s.astype(bool)).sum()),
+                lambda s: int((~as_bool_series(s, s.index)).sum()),
             ),
             excluded_from_market_overview_calculations_n=(
                 "include_in_market_overview_calculations",
-                lambda s: int((~s.astype(bool)).sum()),
+                lambda s: int((~as_bool_series(s, s.index)).sum()),
             ),
             excluded_from_market_overview_charts_n=(
                 "include_in_market_overview_charts",
-                lambda s: int((~s.astype(bool)).sum()),
+                lambda s: int((~as_bool_series(s, s.index)).sum()),
             ),
         )
         .reset_index()
@@ -846,6 +896,20 @@ def write_audits(df: pd.DataFrame, audit_dir: str = AUDIT_DIR) -> dict[str, str]
     return written
 
 
+def write_pipeline_output(
+    df: pd.DataFrame,
+    timestamp: str,
+    output_dir: str = PIPELINE_INTERMEDIATE_DIR,
+) -> str:
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(
+        output_dir,
+        f"{NUTRITION_QUALITY_OUTPUT_PREFIX}{timestamp}.csv",
+    )
+    df.to_csv(output_path, index=False, encoding="utf-8-sig")
+    return output_path
+
+
 def quality_counts(df: pd.DataFrame) -> pd.DataFrame:
     counts = df["nutrition_quality_status"].value_counts(dropna=False)
     return counts.rename_axis("nutrition_quality_status").reset_index(name="records")
@@ -870,11 +934,16 @@ def main() -> None:
 
     df = pd.read_csv(input_path, encoding="utf-8-sig", low_memory=False)
     flagged = build_nutrition_quality_flags(df)
+    pipeline_output = write_pipeline_output(flagged, timestamp)
     written = write_audits(flagged)
 
     total = len(flagged)
     excluded_calc = int(
-        (~flagged["include_in_market_overview_calculations"].astype(bool)).sum()
+        (
+            ~as_bool_series(
+                flagged["include_in_market_overview_calculations"], flagged.index
+            )
+        ).sum()
     )
     excluded_calc_pct = excluded_calc / total * 100 if total else 0.0
 
@@ -884,7 +953,7 @@ def main() -> None:
     print(f"  Total records: {total:,}")
     print(
         "  Excluded from Product Explorer: "
-        f"{(~flagged['include_in_product_explorer'].astype(bool)).sum():,}"
+        f"{(~as_bool_series(flagged['include_in_product_explorer'], flagged.index)).sum():,}"
     )
     print(
         "  Excluded from Market Overview calculations: "
@@ -892,13 +961,16 @@ def main() -> None:
     )
     print(
         "  Excluded from Market Overview charts: "
-        f"{(~flagged['include_in_market_overview_charts'].astype(bool)).sum():,}"
+        f"{(~as_bool_series(flagged['include_in_market_overview_charts'], flagged.index)).sum():,}"
     )
     if excluded_calc_pct > 3.0:
         print(
             "  REVIEW NOTE: Market Overview calculation exclusion is above "
             "the 2-3% comfort range; audit files were produced for review."
         )
+
+    print("\nPipeline output:")
+    print(f"  {os.path.basename(pipeline_output)}: {pipeline_output}")
 
     print("\nAudit outputs:")
     for filename, path in written.items():

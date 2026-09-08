@@ -30,8 +30,7 @@ Usage:
     python pipeline/stages/stage_04_build_product_analysis.py
 
 Input:
-    data/03_pipeline_intermediates/clean_<timestamp>.csv   (latest file auto-detected)
-    OR data/03_pipeline_intermediates/bulk_clean_<timestamp>.csv
+    data/03_pipeline_intermediates/nutrition_quality_<timestamp>.csv   (latest file auto-detected)
 
 Output:
     data/03_pipeline_intermediates/analyzed_<timestamp>.csv
@@ -451,15 +450,15 @@ ABSENCE_REDUCTION_CLAIM_MARKERS = [
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def find_latest_clean(sample_dir):
+def find_latest_nutrition_quality(sample_dir):
     files = [
         f for f in os.listdir(sample_dir)
-        if (f.startswith("clean_") or f.startswith("bulk_clean_"))
-        and f.endswith(".csv")
+        if f.startswith("nutrition_quality_") and f.endswith(".csv")
     ]
     if not files:
         raise FileNotFoundError(
-            f"No clean_*.csv found in {sample_dir}. Run stage_02_clean_products.py first."
+            "No nutrition_quality_*.csv found in "
+            f"{sample_dir}. Run stage_03_build_nutrition_quality_flags.py first."
         )
     files.sort(reverse=True)
     return os.path.join(sample_dir, files[0])
@@ -809,7 +808,7 @@ def main():
     print(f"Architecture:  Component A (ingredient composition) only")
     print(f"               Components B+C added in stage_11_merge_vision_results.py from vision results\n")
 
-    input_path = find_latest_clean(PIPELINE_INTERMEDIATE_DIR)
+    input_path = find_latest_nutrition_quality(PIPELINE_INTERMEDIATE_DIR)
     df = analyze(input_path)
 
     eligible = df[df["ingredient_analysis_eligible"] == True].copy()

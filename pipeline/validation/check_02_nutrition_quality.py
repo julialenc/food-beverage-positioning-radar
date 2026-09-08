@@ -142,6 +142,9 @@ def main():
         zero_energy_macro_case["include_in_market_overview_calculations"]
     ) is False
     assert bool(zero_energy_macro_case["include_in_market_overview_charts"]) is False
+    assert bool(zero_energy_macro_case["include_in_product_table"]) is False
+    assert bool(zero_energy_macro_case["include_in_aggregates"]) is False
+    assert bool(zero_energy_macro_case["include_in_charts"]) is False
 
     zero_energy_rounding_case = flag_single(
         row_with(
@@ -218,6 +221,7 @@ def main():
     assert "energy_macro_mismatch" in energy_case["warning_types"]
     assert bool(energy_case["include_in_market_overview_calculations"]) is False
     assert bool(energy_case["include_in_market_overview_charts"]) is False
+    assert bool(energy_case["include_in_product_table"]) is True
 
     small_gap_case = flag_single(
         row_with(
@@ -297,6 +301,20 @@ def main():
     ) is False
     assert bool(high_energy_alcohol_case["warning_flag"]) is False
     assert "energy_macro_mismatch" not in high_energy_alcohol_case["warning_types"]
+
+    pre_excluded_case = flag_single(
+        row_with(
+            include_in_product_table="False",
+            include_in_aggregates="0",
+            include_in_charts=0,
+        )
+    )
+    assert bool(pre_excluded_case["include_in_product_explorer"]) is False
+    assert (
+        bool(pre_excluded_case["include_in_market_overview_calculations"])
+        is False
+    )
+    assert bool(pre_excluded_case["include_in_market_overview_charts"]) is False
 
     within_brand_rows = []
     for i in range(9):

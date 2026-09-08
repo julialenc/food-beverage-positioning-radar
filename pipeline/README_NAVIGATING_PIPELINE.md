@@ -10,8 +10,8 @@ pipeline/ # Production pipeline code, governance utilities, validation checks, p
 |   |-- stage_01a_bootstrap_from_off_bulk.py # Bulk one-off download from Open Food Facts zip files
 |   |-- stage_01b_ingest_from_off_api.py # Ongoing download from Open Food Facts via API
 |   |-- stage_02_clean_products.py # Clean raw OFF data into analysis-ready product records
-|   |-- stage_03_build_nutrition_quality_flags.py # Build nutrition-quality flags and audit outputs
-|   |-- stage_04_build_product_analysis.py # Compute derived nutrition, category, brand, and positioning fields
+|   |-- stage_03_build_nutrition_quality_flags.py # Build nutrition-quality handoff file and audit outputs
+|   |-- stage_04_build_product_analysis.py # Compute ingredient, claim-signal, and positioning-analysis fields
 |   |-- stage_05_load_database.py # Load processed product data into the project SQLite database
 |   |-- stage_06_detect_sampling_signals.py # Detect candidate positioning signals for pack-image sampling outputs
 |   |-- stage_07_assign_sampling_bands.py # Assign sampling bands used to balance the vision sample
