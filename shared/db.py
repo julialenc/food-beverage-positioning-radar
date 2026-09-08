@@ -9,6 +9,7 @@ import os
 import shutil
 import sqlite3
 import tempfile
+from collections import OrderedDict
 from pathlib import Path
 from typing import Optional
 
@@ -62,6 +63,10 @@ _REQUIRED_PUBLIC_DB_TABLES = {
     "region_category_benchmarks",
     "profile_intersections",
 }
+_MARKET_PRODUCTS_CACHE_MAX = 4
+_MARKET_PRODUCTS_CACHE: OrderedDict[
+    tuple[str, str, str, str], pd.DataFrame
+] = OrderedDict()
 
 
 def _extracted_public_db_path(gz_stat: os.stat_result) -> Path:
@@ -887,7 +892,6 @@ def search_products_resolved(
     return filtered
 
 
-@st.cache_resource(show_spinner=False, ttl=600)
 def get_market_products(
     category: str,
     region_code: str,
@@ -906,12 +910,22 @@ def get_market_products(
     population is small enough to hold in memory (tens of thousands of
     rows, not millions).
 
-    This uses resource caching instead of data caching because the larger
-    beverage markets can hit Streamlit's pickle/unpickle memory path when
-    switching views. Callers must treat the returned frame as read-only and
-    copy before adding helper columns.
+    This uses a small in-process cache instead of Streamlit's cache wrappers:
+    the dataframe is large enough that Streamlit Cloud's cache layer can be
+    slower or less stable on cold starts. Callers must treat the returned frame
+    as read-only and copy before adding helper columns.
     """
     chart_band_segment = (beverage_segment or "all").strip() or "all"
+    cache_key = (
+        str(get_database_path()),
+        category,
+        region_code,
+        chart_band_segment,
+    )
+    if cache_key in _MARKET_PRODUCTS_CACHE:
+        _MARKET_PRODUCTS_CACHE.move_to_end(cache_key)
+        return _MARKET_PRODUCTS_CACHE[cache_key]
+
     conn = get_connection()
     df = pd.read_sql_query("""
         SELECT p.barcode, p.product_name,
@@ -986,6 +1000,11 @@ def get_market_products(
     df = _apply_reviewed_product_overrides_for_display(df, [region_code])
     if "query_category" in df.columns:
         df = df[df["query_category"].fillna("").eq(category)].copy()
+
+    _MARKET_PRODUCTS_CACHE[cache_key] = df
+    _MARKET_PRODUCTS_CACHE.move_to_end(cache_key)
+    while len(_MARKET_PRODUCTS_CACHE) > _MARKET_PRODUCTS_CACHE_MAX:
+        _MARKET_PRODUCTS_CACHE.popitem(last=False)
     return df
 
 
