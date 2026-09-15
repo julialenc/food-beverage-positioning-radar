@@ -329,7 +329,7 @@ Aldi,specially selected,Specially Selected,private_label_line,France,food_bevera
 Aldi,sun snacks,Sun Snacks,private_label_line,France,food_beverage,confirm,reviewed Aldi France extract 2026-08-31; n=18; example:
 Aldi,sweet valley,Sweet Valley,private_label_line,France,food_beverage,confirm,reviewed Aldi France extract 2026-08-31; n=1; example: Zitronensaft Aus Konzentrat
 Aldi,tante odile,Tante Odile,private_label_line,France,food_beverage,confirm,reviewed Aldi supplemental France extract 2026-08-31; n=32; example: 10 Gaufres Fourrage Goût Caramel
-Aldi,trader joe s,Trader Joe's,private_label_line,France,food_beverage,confirm,reviewed Aldi France extract 2026-08-31; n=110; example: Chocolate chip cookies
+Aldi,trader joe s,Trader Joe's,private_label_line,France,food_beverage,confirm,"Reviewed Aldi France / ALDI-Nord private-label line, but Trader Joe's is ambiguous in OFF. Company routing must be controlled by exact GTIN overrides from aldi_trader_joes_mapping_correction_20260914; do not use this row as blanket ownership evidence."
 Aldi,ursi,Ursi,private_label_line,France,food_beverage,confirm,reviewed Aldi supplemental France extract 2026-08-31; n=18; example: Crème dessert chocolat
 Aldi,valerie,Valérie,private_label_line,France,food_beverage,confirm,reviewed Aldi supplemental France extract 2026-08-31; n=3; example: Soft wafels
 Aldi,veritable delice,Véritable Délice,private_label_line,France,food_beverage,confirm,reviewed Aldi France extract 2026-08-31; n=25; example: Langue de Chat

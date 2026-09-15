@@ -65,6 +65,8 @@ Examples include:
 
 * `Starbucks` — at-home coffee, North American RTD, EMEA chilled RTD, and direct Starbucks products use different routes;
 
+* `Trader Joe's` — European ALDI-Nord private-label products and U.S. Trader Joe's retailer/private-label products share the same brand string, so exact GTIN-level evidence is required;
+
 * former Unilever tea and ice-cream portfolios — current ownership differs from historical Unilever ownership.
 
 Project region is evidence, not proof of product market. Imported products can require exact product-level routing.
@@ -135,7 +137,7 @@ After the completed September 2026 retailer review, the file contains **1,388 re
 
 Authoritative reviewed GTIN-level decisions and the highest-precedence reference for product-specific corrections. The optional `region` field scopes the override.
 
-After the September 2026 Top-9 and France/US-Canada orphan audits, the file contains **12,577 active reviewed override rows**.
+After the September 2026 Top-9, France/US-Canada orphan audits, and Aldi / Trader Joe's correction, the file contains **12,652 active reviewed override rows**.
 
 ### `data/01_reference_inputs/06_top_company_brand_portfolio_matrix.csv`
 
@@ -154,6 +156,8 @@ Retailer ownership does not mean collapsing private-label architecture to the re
 Examples: `Carrefour Bio -> Carrefour`, `Milbona -> Lidl`, `Kirkland Signature -> Costco`, `Good & Gather -> Target`, `Tesco Finest -> Tesco`.
 
 Retailer portfolios can differ by market; a private label validated in one market must not automatically become a global alias.
+
+`Trader Joe's` is a locked exception to blanket retailer routing: ALDI-Nord products keep `Aldi` only through reviewed GTIN overrides, while U.S. Trader Joe's portfolio products route to `Trader Joe's`.
 
 Suppliers, co-packers, distributors, and retailer availability are evidence but do not by themselves establish private-label ownership.
 

@@ -634,7 +634,7 @@ st.warning(
     "BETA version. This launch build uses Open Food Facts data and "
     "rule-based cleaning and mapping layers. Some records may remain "
     "incomplete or imperfect. Page refreshes and large filter changes may "
-    "take up to 90 seconds.",
+    "take up to 30 seconds.",
     icon="ℹ️",
 )
 
@@ -740,7 +740,7 @@ category_options = db.get_filter_options()["query_category"]
 
 st.subheader("Select scope")
 st.caption(
-    "Initial load may take around 30-90 seconds because the app prepares the "
+    "Initial load may take up to 30 seconds because the app prepares the "
     "selected country-category dataset for drill-down. After the first load, "
     "filters are usually faster."
 )

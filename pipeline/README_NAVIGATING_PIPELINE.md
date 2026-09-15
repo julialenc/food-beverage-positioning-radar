@@ -41,7 +41,8 @@ pipeline/ # Production pipeline code, governance utilities, validation checks, p
 |   |-- op_04_normalize_results.py # Apply deterministic cleanup to final vision result CSVs
 |   |-- op_05_clear_stale_observations.py # Clear superseded vision observations outside the current release
 |   |-- op_06_summarize_release.py # Summarize release-scoped claim prevalence and brand misses
-|   `-- op_07_review_panel_context.py # Test panel-context review logic on saved OCR text
+|   |-- op_07_review_panel_context.py # Test panel-context review logic on saved OCR text
+|   `-- op_08_prepare_targeted_retailer_ocr_llm_run.py # Resolve reviewed retailer OCR-LLM selections to GTIN sample files
 |-- governance/ # Audit and maintenance tools for category, brand/company, and nutrition governance
 |   |-- __init__.py # Package marker for governance imports
 |   |-- category_scope/ # Category-scope cleanup and audit utilities

@@ -3181,8 +3181,8 @@ specially selected,Specially Selected,reviewed_aldi_private_label,11,,high,confi
 sun snacks,Sun Snacks,reviewed_aldi_private_label,18,,high,confirm,reviewed Aldi France decision; company_decision=Aldi; source=aldi_private_label_review_20260831
 sweet valley,Sweet Valley,reviewed_aldi_private_label,1,,high,confirm,reviewed Aldi France decision; company_decision=Aldi; source=aldi_private_label_review_20260831
 tante odile,Tante Odile,reviewed_aldi_private_label,32,,high,confirm,reviewed Aldi supplemental France decision; company_decision=Aldi; source=aldi_supplemental_private_label_review_20260831
-trader joe s,Trader Joe's,reviewed_aldi_private_label,110,,high,confirm,reviewed Aldi France decision; company_decision=Aldi; source=aldi_private_label_review_20260831
-trader joes,Trader Joe's,reviewed_aldi_private_label,77,,high,confirm,reviewed Aldi France decision; company_decision=Aldi; source=aldi_private_label_review_20260831
+trader joe s,Trader Joe's,ambiguous_trader_joes_brand_alias,110,,high,confirm,Brand alias only. Trader Joe's company routing requires exact reviewed GTIN evidence; do not infer Aldi or Trader Joe's ownership from this brand string alone. source=aldi_trader_joes_mapping_correction_20260914
+trader joes,Trader Joe's,ambiguous_trader_joes_brand_alias,77,,high,confirm,Brand alias only. Trader Joe's company routing requires exact reviewed GTIN evidence; do not infer Aldi or Trader Joe's ownership from this brand string alone. source=aldi_trader_joes_mapping_correction_20260914
 ursi,Ursi,reviewed_aldi_private_label,18,,high,confirm,reviewed Aldi supplemental France decision; company_decision=Aldi; source=aldi_supplemental_private_label_review_20260831
 valerie,Valérie,reviewed_aldi_private_label,3,,high,confirm,reviewed Aldi supplemental France decision; company_decision=Aldi; source=aldi_supplemental_private_label_review_20260831
 veritable delice,Véritable Délice,reviewed_aldi_private_label,25,,high,confirm,reviewed Aldi France decision; company_decision=Aldi; source=aldi_private_label_review_20260831

@@ -725,6 +725,10 @@ def main():
                         help="Resume from checkpoint file")
     parser.add_argument("--input",  type=str, default=None,
                         help="Path to sample CSV (default: auto-detect latest)")
+    parser.add_argument("--output", type=str, default=None,
+                        help="Path for final vision_results CSV "
+                             "(default: data/05_vision_release/"
+                             "vision_results_<timestamp>.csv)")
     parser.add_argument("--language", choices=sorted(LANGUAGE_PROFILES),
                         default="en",
                         help="Language profile — selects the prompt and "
@@ -874,7 +878,11 @@ def main():
 
     # Checkpoint / resume
     VISION_RELEASE_DIR.mkdir(parents=True, exist_ok=True)
-    output_path = VISION_RELEASE_DIR / f"vision_results_{timestamp}.csv"
+    output_path = (
+        Path(args.output)
+        if args.output
+        else VISION_RELEASE_DIR / f"vision_results_{timestamp}.csv"
+    )
     checkpoint_path = VISION_RELEASE_DIR / "vision_results_checkpoint.csv"
 
     results = []

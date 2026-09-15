@@ -395,7 +395,7 @@ st.warning(
     "BETA version. This launch build uses Open Food Facts data and "
     "rule-based cleaning and mapping layers. Some records may remain "
     "incomplete or imperfect. Page refreshes and large filter changes may "
-    "take up to 90 seconds.",
+    "take up to 30 seconds.",
     icon="ℹ️",
 )
 
@@ -418,9 +418,8 @@ _COUNTRY_REGION = {
 with st.sidebar:
     st.subheader("Filters")
     st.caption(
-        "Initial load may take around 60-90 seconds. Brand-only filtering can "
-        "also take around 1-2 minutes; selecting Company / owner first usually "
-        "makes filtering faster."
+        "Initial load and large filter changes may take up to 30 seconds. "
+        "Selecting Company / owner first usually makes filtering faster."
     )
     text = st.text_input("Search product or brand")
     options = db.get_filter_options()

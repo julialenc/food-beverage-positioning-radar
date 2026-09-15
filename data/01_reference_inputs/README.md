@@ -36,6 +36,11 @@ Rows that still require review should use a mapped company or
 `Other / not mapped to a company` as the visible owner, with review status kept
 in metadata.
 
+Collision-prone rows can also be retained as non-executable guardrails. For
+example, the `Trader Joe's` brand string requires exact GTIN overrides because
+European ALDI-Nord private-label products and U.S. Trader Joe's retailer
+products both appear in Open Food Facts.
+
 Full governance notes are documented in `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md`.
 
 ### `02_brand_alias_mapping.csv`
@@ -91,8 +96,9 @@ rule. These rows can correct derived display brand, resolved company / owner,
 or project category for a specific product, including `OUT_OF_SCOPE`.
 The optional `region` column supports market-specific reviewed outcomes for
 the same GTIN; blank `region` means the override is unscoped.
-After the September 2026 Top 9 audits and France/US-Canada regional-category
-orphan cleanup, this file contains 12,577 active reviewed override rows.
+After the September 2026 Top 9 audits, France/US-Canada regional-category
+orphan cleanup, and Aldi / Trader Joe's correction, this file contains 12,652
+active reviewed override rows.
 
 The file must not be used to infer broad brand aliases. Raw Open Food Facts
 fields remain unchanged.
