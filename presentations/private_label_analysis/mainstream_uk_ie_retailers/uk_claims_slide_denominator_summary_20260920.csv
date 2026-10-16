@@ -1,0 +1,6 @@
+﻿retailer,total_products,analyzed_products_including_no_claim,claimed_products_denominator_requested,no_claim_identified_products,claim_detection_rate_among_analyzed_pct
+Tesco,1021,380,233,147,61.3
+Asda,678,256,173,83,67.6
+Sainsbury's,910,322,191,131,59.3
+Morrisons,600,226,180,46,79.6
+Waitrose,600,237,140,97,59.1

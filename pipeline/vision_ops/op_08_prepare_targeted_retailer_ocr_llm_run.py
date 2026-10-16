@@ -5,7 +5,8 @@ Resolve reviewed retailer OCR-LLM selections to GTINs and prepare the
 explicit input files used by stage_10_extract_pack_claims.py.
 
 The reviewed CSVs are treated as data only. Sampling decisions are not
-recomputed here: rows marked OCR_LLM_Run == "run" are the execution list.
+recomputed here: rows marked OCR_LLM_Run == "run", run == "run", or
+vision_additional_run == "run" are the execution list.
 
 Default mode validates and writes stage-10-ready sample files without making
 Azure calls. Use --execute to run stage 10 from this wrapper after validation.
@@ -23,7 +24,11 @@ Usage:
 
     python pipeline/vision_ops/op_08_prepare_targeted_retailer_ocr_llm_run.py --retailer-set mainstream_uk_ie
 
+    python pipeline/vision_ops/op_08_prepare_targeted_retailer_ocr_llm_run.py --retailer-set mainstream_uk_ie_topup
+
     python pipeline/vision_ops/op_08_prepare_targeted_retailer_ocr_llm_run.py --retailer-set mainstream_us_canada
+
+    python pipeline/vision_ops/op_08_prepare_targeted_retailer_ocr_llm_run.py --retailer-set mainstream_us_canada_topup
 
 After a successful extraction run, merge the produced vision_results files with
 stage_11_merge_vision_results.py, then run stage_12_build_claim_taxonomy.py and
@@ -58,27 +63,27 @@ DEFAULT_INPUTS = {
     ),
     "Carrefour": Path(
         r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
-        r"\carrefour_france_products_ocr_llm_run_sample.csv"
+        r"\carrefour_france_products_full_macro_positioning_details_OCR_run_selection.csv"
     ),
     "Groupe Casino": Path(
         r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
-        r"\groupe_casino_france_current_products_ocr_llm_tagged.csv"
+        r"\groupe_casino_france_products_full_macro_positioning_details_OCR_run_selection.csv"
     ),
     "Groupe U": Path(
         r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
-        r"\groupe_u_france_products_ocr_llm_run_sample.csv"
+        r"\groupe_u_france_products_full_macro_positioning_details_OCR_run_selection.csv"
     ),
     "Auchan": Path(
         r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
-        r"\auchan_france_products_ocr_llm_run_sample.csv"
+        r"\auchan_france_products_full_macro_positioning_details_OCR_run_selection_FINAL.csv"
     ),
     "Intermarch\u00e9": Path(
         r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
-        r"\intermarche_france_products_ocr_llm_run_sample_v2.csv"
+        r"\intermarche_france_products_full_macro_positioning_details_OCR_run_selection.csv"
     ),
     "E.Leclerc": Path(
         r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
-        r"\e_leclerc_france_products_ocr_llm_run_sample_v2.csv"
+        r"\e_leclerc_france_products_full_macro_positioning_details_OCR_run_selection.csv"
     ),
     "Tesco": Path(
         r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
@@ -100,6 +105,26 @@ DEFAULT_INPUTS = {
         r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
         r"\waitrose_uk_ie_products_ocr_llm_tagged.csv"
     ),
+    "Tesco UK_IE topup": Path(
+        r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
+        r"\tesco_uk_ie_products_vision_topup.csv"
+    ),
+    "Asda UK_IE topup": Path(
+        r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
+        r"\asda_uk_ie_products_vision_topup.csv"
+    ),
+    "Sainsbury's UK_IE topup": Path(
+        r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
+        r"\sainsbury_uk_ie_products_vision_topup.csv"
+    ),
+    "Morrisons UK_IE topup": Path(
+        r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
+        r"\morrisons_uk_ie_products_vision_topup.csv"
+    ),
+    "Waitrose UK_IE topup": Path(
+        r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
+        r"\waitrose_uk_ie_products_vision_topup.csv"
+    ),
     "Walmart": Path(
         r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
         r"\walmart_us_canada_products_ocr_llm_tagged.csv"
@@ -120,33 +145,54 @@ DEFAULT_INPUTS = {
         r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
         r"\walgreens_us_canada_products_ocr_llm_tagged.csv"
     ),
+    "Walmart US_CANADA topup": Path(
+        r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
+        r"\walmart_us_canada_products_full_macro_positioning_details_VISION_TOPUP.csv"
+    ),
+    "Kroger US_CANADA topup": Path(
+        r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
+        r"\kroger_us_canada_VISION_TOPUP.csv"
+    ),
+    "Target US_CANADA topup": Path(
+        r"C:\Users\julia\OneDrive\Desktop\Downloads_temp"
+        r"\target_us_canada_VISION_TOPUP.csv"
+    ),
 }
 
 EXPECTED_TAGGED_ROWS = {
     "Aldi": 500,
     "Lidl": 350,
-    "Carrefour": 520,
-    "Groupe Casino": 560,
-    "Groupe U": 440,
-    "Auchan": 430,
-    "Intermarch\u00e9": 228,
-    "E.Leclerc": 379,
+    "Carrefour": 238,
+    "Groupe Casino": 189,
+    "Groupe U": 211,
+    "Auchan": 268,
+    "Intermarch\u00e9": 153,
+    "E.Leclerc": 265,
     "Tesco": 163,
     "Asda": 111,
     "Sainsbury's": 148,
     "Morrisons": 90,
     "Waitrose": 82,
+    "Tesco UK_IE topup": 65,
+    "Asda UK_IE topup": 33,
+    "Sainsbury's UK_IE topup": 46,
+    "Morrisons UK_IE topup": 41,
+    "Waitrose UK_IE topup": 36,
     "Walmart": 414,
     "Costco": 45,
     "Kroger": 334,
     "Target": 280,
     "Walgreens": 39,
+    "Walmart US_CANADA topup": 20,
+    "Kroger US_CANADA topup": 80,
+    "Target US_CANADA topup": 2,
 }
 
 RETAILER_SETS = {
     "aldi_lidl": ["Aldi", "Lidl"],
     "carrefour": ["Carrefour"],
     "mainstream_france": [
+        "Carrefour",
         "Groupe Casino",
         "Groupe U",
         "Auchan",
@@ -160,6 +206,13 @@ RETAILER_SETS = {
         "Morrisons",
         "Waitrose",
     ],
+    "mainstream_uk_ie_topup": [
+        "Tesco UK_IE topup",
+        "Asda UK_IE topup",
+        "Sainsbury's UK_IE topup",
+        "Morrisons UK_IE topup",
+        "Waitrose UK_IE topup",
+    ],
     "mainstream_us_canada": [
         "Walmart",
         "Costco",
@@ -167,14 +220,37 @@ RETAILER_SETS = {
         "Target",
         "Walgreens",
     ],
+    "mainstream_us_canada_topup": [
+        "Walmart US_CANADA topup",
+        "Kroger US_CANADA topup",
+        "Target US_CANADA topup",
+    ],
 }
 
 DEFAULT_RUN_SLUGS = {
     "aldi_lidl": "aldi_lidl_targeted",
     "carrefour": "carrefour_targeted",
-    "mainstream_france": "mainstream_france_targeted",
+    "mainstream_france": "mainstream_france_additional_targeted",
     "mainstream_uk_ie": "mainstream_uk_ie_targeted",
+    "mainstream_uk_ie_topup": "mainstream_uk_ie_additional_targeted",
     "mainstream_us_canada": "mainstream_us_canada_targeted",
+    "mainstream_us_canada_topup": "mainstream_us_canada_additional_targeted",
+}
+
+LANGUAGE_PROFILE_OVERRIDES = {
+    "mainstream_uk_ie": {"en": "uk_test_09_2026_final"},
+    "mainstream_uk_ie_topup": {"en": "uk_test_09_2026_final"},
+}
+
+DB_COMPANY_BY_SELECTION = {
+    "Tesco UK_IE topup": "Tesco",
+    "Asda UK_IE topup": "Asda",
+    "Sainsbury's UK_IE topup": "Sainsbury's",
+    "Morrisons UK_IE topup": "Morrisons",
+    "Waitrose UK_IE topup": "Waitrose",
+    "Walmart US_CANADA topup": "Walmart",
+    "Kroger US_CANADA topup": "Kroger",
+    "Target US_CANADA topup": "Target",
 }
 
 REGION_ORDER = ["FRANCE", "UK_IE", "US_CANADA"]
@@ -198,6 +274,8 @@ BASE_COLUMNS = [
     "Nutriscore",
     "Positioning",
 ]
+
+RUN_COLUMN_CANDIDATES = ["OCR_LLM_Run", "run", "vision_additional_run"]
 
 
 def clean_num(value: object) -> str:
@@ -255,10 +333,22 @@ def load_review_csv(path: Path) -> list[dict[str, str]]:
         raise FileNotFoundError(path)
     with path.open("r", encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
-        missing = [c for c in [*BASE_COLUMNS, "OCR_LLM_Run"] if c not in (reader.fieldnames or [])]
+        fieldnames = reader.fieldnames or []
+        missing = [c for c in BASE_COLUMNS if c not in fieldnames]
         if missing:
             raise ValueError(f"{path} is missing columns: {missing}")
-        return [{k: str(v or "") for k, v in row.items()} for row in reader]
+        run_column = next((c for c in RUN_COLUMN_CANDIDATES if c in fieldnames), None)
+        if not run_column:
+            raise ValueError(
+                f"{path} is missing a run marker column. Expected one of: "
+                f"{RUN_COLUMN_CANDIDATES}"
+            )
+        rows = []
+        for row in reader:
+            cleaned = {k: str(v or "") for k, v in row.items()}
+            cleaned["OCR_LLM_Run"] = cleaned.get(run_column, "")
+            rows.append(cleaned)
+        return rows
 
 
 def load_company_extract_from_db(conn: sqlite3.Connection, company: str) -> list[dict[str, str]]:
@@ -342,17 +432,18 @@ def infer_language(row: dict[str, str]) -> str:
 
 def resolve_company(
     conn: sqlite3.Connection,
-    company: str,
+    selection_name: str,
+    db_company: str,
     review_path: Path,
     expected_tagged_rows: int,
 ) -> tuple[list[dict[str, str]], dict[str, object]]:
     review_rows = load_review_csv(review_path)
-    db_rows = load_company_extract_from_db(conn, company)
+    db_rows = load_company_extract_from_db(conn, db_company)
     tagged_indexes = [i for i, row in enumerate(review_rows) if is_run(row["OCR_LLM_Run"])]
 
     if len(tagged_indexes) != expected_tagged_rows:
         raise ValueError(
-            f"{company}: expected {expected_tagged_rows} OCR_LLM_Run == 'run' rows, "
+            f"{selection_name}: expected {expected_tagged_rows} OCR_LLM_Run == 'run' rows, "
             f"found {len(tagged_indexes)}"
         )
 
@@ -417,11 +508,11 @@ def resolve_company(
                 "sampling_category": review_row["category"],
                 "sample_component": "targeted_private_label",
                 "primary_stratum_id": (
-                    f"{company}|{review_row['region']}|{review_row['category']}"
+                    f"{db_company}|{review_row['region']}|{review_row['category']}"
                 ),
                 "sampling_weight": "",
                 "weight_status": "targeted_unweighted",
-                "target_company": company,
+                "target_company": db_company,
                 "source_review_file": review_path.name,
                 "source_review_row": str(idx + 2),
                 "reviewed_positioning": review_row["Positioning"],
@@ -435,7 +526,8 @@ def resolve_company(
     image_url_missing = sum(1 for row in resolved if row["image_url_present"] != "1")
 
     summary = {
-        "company": company,
+        "company": selection_name,
+        "db_company": db_company,
         "review_rows": len(review_rows),
         "db_rows": len(db_rows),
         "tagged_rows": len(tagged_indexes),
@@ -492,20 +584,26 @@ def result_path_for(run_slug: str, language: str) -> Path:
     return VISION_RELEASE_DIR / f"vision_results_{run_slug}_{language}.csv"
 
 
+def result_path_for_profile(run_slug: str, profile: str) -> Path:
+    return VISION_RELEASE_DIR / f"vision_results_{run_slug}_{profile}.csv"
+
+
 def run_stage_10(
     python_exe: str,
     sample_path: Path,
     run_slug: str,
     language: str,
+    language_profile: str | None = None,
 ) -> None:
-    output_path = result_path_for(run_slug, language)
+    profile = language_profile or language
+    output_path = result_path_for_profile(run_slug, profile)
     cmd = [
         python_exe,
         str(STAGE_10_PATH),
         "--input",
         str(sample_path),
         "--language",
-        language,
+        profile,
         "--output",
         str(output_path),
     ]
@@ -571,6 +669,7 @@ def main() -> None:
     args = ap.parse_args()
 
     run_slug = args.run_slug or DEFAULT_RUN_SLUGS[args.retailer_set]
+    language_profiles = LANGUAGE_PROFILE_OVERRIDES.get(args.retailer_set, {})
     selected_companies = RETAILER_SETS[args.retailer_set]
     review_inputs = {
         "Aldi": Path(args.aldi_input),
@@ -592,6 +691,8 @@ def main() -> None:
         "Target": Path(args.target_input),
         "Walgreens": Path(args.walgreens_input),
     }
+    for selection_name, default_path in DEFAULT_INPUTS.items():
+        review_inputs.setdefault(selection_name, default_path)
 
     print("\nFood & Beverage Positioning Radar - targeted retailer OCR-LLM prep")
     print(f"Retailer set: {args.retailer_set}")
@@ -604,9 +705,11 @@ def main() -> None:
     all_records: list[dict[str, str]] = []
     summaries = []
     for company in selected_companies:
+        db_company = DB_COMPANY_BY_SELECTION.get(company, company)
         records, summary = resolve_company(
             conn,
             company,
+            db_company,
             review_inputs[company],
             EXPECTED_TAGGED_ROWS[company],
         )
@@ -681,16 +784,23 @@ def main() -> None:
         for language in ["fr", "en"]:
             path = output_paths.get(language)
             if path:
-                run_stage_10(args.python, path, run_slug, language)
+                run_stage_10(
+                    args.python,
+                    path,
+                    run_slug,
+                    language,
+                    language_profiles.get(language),
+                )
     else:
         print("\nNo OCR/LLM calls made. To run extraction from cmd:")
         for language in ["fr", "en"]:
             path = output_paths.get(language)
             if path:
+                profile = language_profiles.get(language, language)
                 print(
                     "  python pipeline\\stages\\stage_10_extract_pack_claims.py "
-                    f"--input {path} --language {language} "
-                    f"--output {result_path_for(run_slug, language)}"
+                    f"--input {path} --language {profile} "
+                    f"--output {result_path_for_profile(run_slug, profile)}"
                 )
         print("\nOr run this wrapper with --execute:")
         print(
@@ -702,9 +812,10 @@ def main() -> None:
         release_id = f"release_2026_09_{run_slug}"
         for language in ["fr", "en"]:
             if language in output_paths:
+                profile = language_profiles.get(language, language)
                 print(
                     "  python pipeline\\stages\\stage_11_merge_vision_results.py "
-                    f"--input {result_path_for(run_slug, language)} "
+                    f"--input {result_path_for_profile(run_slug, profile)} "
                     f"--release-id {release_id}"
                 )
 

@@ -96,12 +96,22 @@ rule. These rows can correct derived display brand, resolved company / owner,
 or project category for a specific product, including `OUT_OF_SCOPE`.
 The optional `region` column supports market-specific reviewed outcomes for
 the same GTIN; blank `region` means the override is unscoped.
-After the September 2026 Top 9 audits, France/US-Canada regional-category
-orphan cleanup, and Aldi / Trader Joe's correction, this file contains 12,652
+As checked on 2026-10-16, after the launch audits, Aldi / Trader Joe's
+correction and September Auchan corrections, this file contains 12,730
 active reviewed override rows.
 
 The file must not be used to infer broad brand aliases. Raw Open Food Facts
 fields remain unchanged.
+
+## Post-launch Auchan corrections
+
+The earlier checkpoint contained 12,652 active override rows. The additional
+78 exact reviewed rows are identified by source:
+`auchan_france_brand_renaming_20260916` (70) and
+`auchan_less_sugar_brand_correction_20260916` (8). The maintenance script
+`pipeline/maintenance/apply_auchan_brand_renaming.py` records the correction
+workflow. These are derived GTIN-level decisions, not changes to raw OFF brand
+values or permission to reopen the locked mapping architecture.
 
 ## Generated Outputs Elsewhere
 

@@ -1,0 +1,97 @@
+{
+  "captured_on": "2026-10-15",
+  "description": "Original local evidence before cleanup. SHA-256 identifies content, not historical creation date. PDF is the original presentation awaiting revision.",
+  "files": [
+    {
+      "original_path": "aldi_lidl_dairies_subtype.csv",
+      "retained_path": "aldi_lidl/source_snapshots/aldi_lidl_dairies_subtype.csv",
+      "sha256": "17424565d00792457b3ebf57dc617a5afacbc981bd5ef34a5fef4ad24366f75d",
+      "bytes": 678251,
+      "action": "moved_unchanged"
+    },
+    {
+      "original_path": "aldi_products_full_macro_positioning_details.csv",
+      "retained_path": "aldi_lidl/source_snapshots/aldi_products_full_macro_positioning_details.csv",
+      "sha256": "26e1c3d28eabea4c9653416383acfcb35b1894d3e063801431f38af0f7e5146f",
+      "bytes": 1642732,
+      "action": "moved_unchanged"
+    },
+    {
+      "original_path": "conclusion_02_aldi_positioning_evidence.csv",
+      "retained_path": "aldi_lidl/source_snapshots/conclusion_02_aldi_positioning_evidence.csv",
+      "sha256": "3030e71f89b0a0e33f61d2e65645ce7dcf177ca5e18526847f426e02361bb187",
+      "bytes": 175604,
+      "action": "moved_unchanged"
+    },
+    {
+      "original_path": "conclusion_03_lidl_positioning_evidence.csv",
+      "retained_path": "aldi_lidl/source_snapshots/conclusion_03_lidl_positioning_evidence.csv",
+      "sha256": "d69608f597d605b8efebfaf7ad0b579dac87e84cc13590f719cbbe31b2775ce6",
+      "bytes": 301487,
+      "action": "moved_unchanged"
+    },
+    {
+      "original_path": "lidl_products_full_macro_positioning_details.csv",
+      "retained_path": "aldi_lidl/source_snapshots/lidl_products_full_macro_positioning_details.csv",
+      "sha256": "cadac9b241559e81bfe9550c4fcb44f89f2f23d60d57e41bba92f82cbad95ac7",
+      "bytes": 2208983,
+      "action": "moved_unchanged"
+    },
+    {
+      "original_path": "aldi_products_investigation_details.csv",
+      "retained_path": "aldi_lidl/archive/aldi_products_investigation_details.csv",
+      "sha256": "478b1e19ed8a66a4b6c5a6d8d53d06f5658a20dabc7025da95ea0ca6a419063e",
+      "bytes": 61848,
+      "action": "moved_unchanged"
+    },
+    {
+      "original_path": "lidl_products_investigation_details.csv",
+      "retained_path": "aldi_lidl/archive/lidl_products_investigation_details.csv",
+      "sha256": "d7de7e8e4c6bb5e9517dd8e9b55454887719e3dc3fde3366b87aafeef6099343",
+      "bytes": 58601,
+      "action": "moved_unchanged"
+    },
+    {
+      "original_path": "lidl_products_macro_positioning.csv",
+      "retained_path": "aldi_lidl/archive/lidl_products_macro_positioning.csv",
+      "sha256": "c4f594bd4e67839ec01c7e9e77d04b687d9da310144ae4b518a1cfd7058c51d9",
+      "bytes": 594586,
+      "action": "moved_unchanged"
+    },
+    {
+      "original_path": "retailer_brand_protein_levels_by_region_category.csv",
+      "retained_path": "aldi_lidl/archive/retailer_brand_protein_levels_by_region_category.csv",
+      "sha256": "19e2ac46d397fc36900d4db08c6cf12f700f82919a6527fc73467e680a727718",
+      "bytes": 51407,
+      "action": "moved_unchanged"
+    },
+    {
+      "original_path": "selected_retailer_products_protein_pull.csv",
+      "retained_path": "aldi_lidl/archive/selected_retailer_products_protein_pull.csv",
+      "sha256": "768645096cca6588a12fa345df6f1977ef3b8c8c182dcbc459f05c192c333fb7",
+      "bytes": 29550,
+      "action": "moved_unchanged"
+    },
+    {
+      "original_path": "aldi_lidl_architecture.pdf",
+      "retained_path": "aldi_lidl/aldi_lidl_architecture.pdf",
+      "sha256": "f678134a7349afe509ef5a2142c794836306348d7531c2802eda5cce6be1d33f",
+      "bytes": 794722,
+      "action": "moved_unchanged"
+    },
+    {
+      "original_path": "nutrition_values_vs_market_median_all_retailers.csv",
+      "retained_path": "nutrition_values_vs_market_median_all_retailers.csv",
+      "sha256": "83c633cb91fe1f0cdbe84afb6de44b448c7eb305bde91335c6589fcbdb7ec5bd",
+      "bytes": 18028,
+      "action": "retained_unchanged"
+    },
+    {
+      "original_path": "aldi_products_macro_positioning.csv",
+      "retained_path": "",
+      "sha256": "33f99102034e14134e277d5033786a991fc596bc31be748910407cf6d6931795",
+      "bytes": 427351,
+      "action": "removed_redundant_projection"
+    }
+  ]
+}

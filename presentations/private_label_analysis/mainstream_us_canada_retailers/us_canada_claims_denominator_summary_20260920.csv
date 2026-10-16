@@ -1,0 +1,6 @@
+﻿retailer,total_products,analyzed_products_including_no_claim,claimed_products_denominator,no_claim_identified_products,claim_detection_rate_among_analyzed_pct
+Walmart,1914,527,174,353,33.0
+Costco,321,81,45,36,55.6
+Kroger,1514,476,284,192,59.7
+Target,1287,328,126,202,38.4
+Walgreens,173,40,7,33,17.5

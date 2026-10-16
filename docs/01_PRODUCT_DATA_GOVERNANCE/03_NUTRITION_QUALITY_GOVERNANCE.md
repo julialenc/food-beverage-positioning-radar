@@ -1,7 +1,9 @@
 # Nutrition Outlier Governance
 
 **Status:** Product Explorer and Market Overview nutrition governance locked for MVP
-**Last updated:** 2026-09-06
+**Governance locked:** 2026-09-06
+
+**Documentation updated:** 2026-10-16 (historical archive navigation; rules unchanged)
 
 ## Purpose
 
@@ -368,7 +370,7 @@ known alcohol / fermented beverage
 
 Do not loosen the formula until an alcoholic product happens to pass. Treat the formula as **not fully applicable** when a known energy source is omitted.
 
-Other nutrition rules still apply. An alcoholic product can still fail a hard gate for a separate physical contradiction or receive a future peer-based warning.
+Other nutrition rules still apply. An alcoholic product can still fail a hard gate for a separate physical contradiction or receive a within-brand plausibility warning.
 
 ### Product Card wording
 
@@ -627,7 +629,7 @@ Historical Scenario results:
 
 |Scenario|Treatment|Excluded records|Excluded %|
 |-|-|-:|-:|
-|Scenario A|Current rules|19,635|5.18%|
+|Scenario A|Rules at the experiment checkpoint|19,635|5.18%|
 |Scenario B|Re-include `small_absolute_kcal_gap`|14,011|3.70%|
 |Scenario C|Re-include `small_absolute_kcal_gap` + `beverage_energy_not_captured_by_macros`|8,574|2.26%|
 
@@ -637,9 +639,16 @@ Final Scenario C2 result recorded in the existing governance:
 
 |Scenario|Treatment|Excluded records|Excluded %|
 |-|-|-:|-:|
-|Scenario A|Current rules|19,635|5.18%|
+|Scenario A|Rules at the experiment checkpoint|19,635|5.18%|
 |Scenario C|Broad re-include of small-gap and beverage-formula buckets|8,574|2.26%|
 |Scenario C2 locked|Guarded kcal-gap and beverage formula exceptions, with alcohol/fermented beverage auto-include capped at <=100 kcal/100g|11,437|3.02%|
+
+The scripts supporting these experiments are retained locally under
+`pipeline/local_only/nutrition_quality/historical/` following the 2026-10-16
+dependency review. Their generated review evidence remains under
+`data/07_nutrition_quality_outputs/` (or retained legacy local output paths).
+Production stage 03 defines its own current rules; it does not import the
+historical scripts. See `pipeline/PIPELINE_RETENTION_AUDIT.md`.
 
 These tests remain useful historical audit evidence. They no longer define Market Overview calculation exclusions. In the final governance, energy-macro inconsistency is a **warning layer after the hard gate**, with known alcohol/fermentation formula limitations handled before the warning is generated.
 

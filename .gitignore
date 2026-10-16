@@ -35,3 +35,34 @@ notes_data_quality_local.md
 AGENTS.md
 AGENTS_ONGOING_WORK.md
 docs/ONBOARDING.md
+
+# Historical experiments are retained on this machine, outside publication.
+/pipeline/local_only/
+
+# Presentation evidence: publish only reviewed files; product inputs stay local.
+/presentations/private_label_analysis/*
+!/presentations/private_label_analysis/aldi_lidl/
+/presentations/private_label_analysis/aldi_lidl/*
+!/presentations/private_label_analysis/mainstream_france_retailers/
+/presentations/private_label_analysis/mainstream_france_retailers/*
+!/presentations/private_label_analysis/mainstream_uk_ie_retailers/
+/presentations/private_label_analysis/mainstream_uk_ie_retailers/*
+!/presentations/private_label_analysis/mainstream_us_canada_retailers/
+/presentations/private_label_analysis/mainstream_us_canada_retailers/*
+!/presentations/private_label_analysis/README.md
+!/presentations/private_label_analysis/nutrition_values_vs_market_median_all_retailers.csv
+!/presentations/private_label_analysis/aldi_lidl/README.md
+!/presentations/private_label_analysis/aldi_lidl/aldi_lidl_architecture.pdf
+!/presentations/private_label_analysis/aldi_lidl/aldi_lidl_claims_denominator_check.csv
+!/presentations/private_label_analysis/aldi_lidl/aldi_lidl_claims_denominator_summary.csv
+!/presentations/private_label_analysis/aldi_lidl/reviewed_territory_decisions.csv
+!/presentations/private_label_analysis/aldi_lidl/snapshot_manifest.json
+!/presentations/private_label_analysis/mainstream_france_retailers/private_labels_france_top 5_retailers.pdf
+!/presentations/private_label_analysis/mainstream_france_retailers/france_claims_slide_denominator_check_20260920.csv
+!/presentations/private_label_analysis/mainstream_france_retailers/france_claims_slide_denominator_summary_20260920.csv
+!/presentations/private_label_analysis/mainstream_uk_ie_retailers/private_labels_uk_top_5_retailers.pdf
+!/presentations/private_label_analysis/mainstream_uk_ie_retailers/uk_claims_slide_denominator_check_20260920.csv
+!/presentations/private_label_analysis/mainstream_uk_ie_retailers/uk_claims_slide_denominator_summary_20260920.csv
+!/presentations/private_label_analysis/mainstream_us_canada_retailers/private_labels_us_top 5_retailers.pdf
+!/presentations/private_label_analysis/mainstream_us_canada_retailers/us_canada_claims_denominator_check_20260920.csv
+!/presentations/private_label_analysis/mainstream_us_canada_retailers/us_canada_claims_denominator_summary_20260920.csv

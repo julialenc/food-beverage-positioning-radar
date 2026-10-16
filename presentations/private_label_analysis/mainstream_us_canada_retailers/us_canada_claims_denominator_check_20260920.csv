@@ -1,0 +1,66 @@
+﻿benefit_territory,retailer,claim_codes_counted,numerator_products_with_territory,denominator_claimed_products,pct_among_claimed_products_exact,pct_among_claimed_products_rounded_0dp,denominator_analyzed_products_including_no_claim,pct_among_analyzed_products_including_no_claim_exact,pct_among_analyzed_products_including_no_claim_rounded_0dp
+Organic / natural,Walmart,natural_claim|organic_claim,50,174,28.735632183908045,29,527,9.487666034155598,9
+Origin / provenance / quality,Walmart,artisan_claim|heritage_claim|origin_quality_claim,1,174,0.5747126436781609,1,527,0.18975332068311196,0
+Clean label / no-additives,Walmart,clean_label_claim|no_artificial|no_palm_oil,27,174,15.517241379310345,16,527,5.1233396584440225,5
+Plant-based / vegan,Walmart,plant_based_claim|vegan_claim,4,174,2.2988505747126435,2,527,0.7590132827324478,1
+Sustainability,Walmart,sustainability_halo,2,174,1.1494252873563218,1,527,0.3795066413662239,0
+Protein,Walmart,protein_claim,21,174,12.068965517241379,12,527,3.984819734345351,4
+Fibre / wholegrain,Walmart,fibre_claim|whole_grain_claim,22,174,12.643678160919542,13,527,4.174573055028463,4
+Fortification,Walmart,fortification_claim,34,174,19.54022988505747,20,527,6.451612903225806,6
+Energy,Walmart,energy_claim|vitalite_concept,1,174,0.5747126436781609,1,527,0.18975332068311196,0
+Gut health,Walmart,gut_health_claim|prebiotic_claim|probiotic_claim,3,174,1.7241379310344827,2,527,0.5692599620493358,1
+Immune,Walmart,immune_claim,3,174,1.7241379310344827,2,527,0.5692599620493358,1
+Sugar / fat reduction,Walmart,comparative_claim|reduced_fat_claim|reduced_sugar|sugar_free_claim,47,174,27.011494252873565,27,527,8.918406072106261,9
+Free-from (gluten / lactose / dairy),Walmart,dairy_free_claim|gluten_free_claim|lactose_free_claim,23,174,13.218390804597702,13,527,4.364326375711575,4
+Organic / natural,Costco,natural_claim|organic_claim,29,45,64.44444444444444,64,81,35.80246913580247,36
+Origin / provenance / quality,Costco,artisan_claim|heritage_claim|origin_quality_claim,6,45,13.333333333333334,13,81,7.4074074074074066,7
+Clean label / no-additives,Costco,clean_label_claim|no_artificial|no_palm_oil,5,45,11.11111111111111,11,81,6.172839506172839,6
+Plant-based / vegan,Costco,plant_based_claim|vegan_claim,7,45,15.555555555555555,16,81,8.641975308641975,9
+Sustainability,Costco,sustainability_halo,0,45,0.0,0,81,0.0,0
+Protein,Costco,protein_claim,9,45,20.0,20,81,11.11111111111111,11
+Fibre / wholegrain,Costco,fibre_claim|whole_grain_claim,2,45,4.444444444444445,4,81,2.4691358024691357,2
+Fortification,Costco,fortification_claim,13,45,28.888888888888886,29,81,16.049382716049383,16
+Energy,Costco,energy_claim|vitalite_concept,0,45,0.0,0,81,0.0,0
+Gut health,Costco,gut_health_claim|prebiotic_claim|probiotic_claim,0,45,0.0,0,81,0.0,0
+Immune,Costco,immune_claim,1,45,2.2222222222222223,2,81,1.2345679012345678,1
+Sugar / fat reduction,Costco,comparative_claim|reduced_fat_claim|reduced_sugar|sugar_free_claim,10,45,22.22222222222222,22,81,12.345679012345679,12
+Free-from (gluten / lactose / dairy),Costco,dairy_free_claim|gluten_free_claim|lactose_free_claim,19,45,42.22222222222222,42,81,23.456790123456788,23
+Organic / natural,Kroger,natural_claim|organic_claim,156,284,54.929577464788736,55,476,32.773109243697476,33
+Origin / provenance / quality,Kroger,artisan_claim|heritage_claim|origin_quality_claim,6,284,2.112676056338028,2,476,1.2605042016806722,1
+Clean label / no-additives,Kroger,clean_label_claim|no_artificial|no_palm_oil,31,284,10.915492957746478,11,476,6.512605042016808,7
+Plant-based / vegan,Kroger,plant_based_claim|vegan_claim,19,284,6.690140845070422,7,476,3.9915966386554618,4
+Sustainability,Kroger,sustainability_halo,0,284,0.0,0,476,0.0,0
+Protein,Kroger,protein_claim,29,284,10.211267605633804,10,476,6.092436974789916,6
+Fibre / wholegrain,Kroger,fibre_claim|whole_grain_claim,27,284,9.507042253521126,10,476,5.6722689075630255,6
+Fortification,Kroger,fortification_claim,46,284,16.19718309859155,16,476,9.663865546218489,10
+Energy,Kroger,energy_claim|vitalite_concept,1,284,0.35211267605633806,0,476,0.21008403361344538,0
+Gut health,Kroger,gut_health_claim|prebiotic_claim|probiotic_claim,9,284,3.169014084507042,3,476,1.8907563025210083,2
+Immune,Kroger,immune_claim,0,284,0.0,0,476,0.0,0
+Sugar / fat reduction,Kroger,comparative_claim|reduced_fat_claim|reduced_sugar|sugar_free_claim,66,284,23.239436619718308,23,476,13.865546218487395,14
+Free-from (gluten / lactose / dairy),Kroger,dairy_free_claim|gluten_free_claim|lactose_free_claim,68,284,23.943661971830984,24,476,14.285714285714285,14
+Organic / natural,Target,natural_claim|organic_claim,57,126,45.23809523809524,45,328,17.378048780487802,17
+Origin / provenance / quality,Target,artisan_claim|heritage_claim|origin_quality_claim,0,126,0.0,0,328,0.0,0
+Clean label / no-additives,Target,clean_label_claim|no_artificial|no_palm_oil,36,126,28.57142857142857,29,328,10.975609756097562,11
+Plant-based / vegan,Target,plant_based_claim|vegan_claim,5,126,3.968253968253968,4,328,1.524390243902439,2
+Sustainability,Target,sustainability_halo,0,126,0.0,0,328,0.0,0
+Protein,Target,protein_claim,5,126,3.968253968253968,4,328,1.524390243902439,2
+Fibre / wholegrain,Target,fibre_claim|whole_grain_claim,13,126,10.317460317460316,10,328,3.9634146341463414,4
+Fortification,Target,fortification_claim,12,126,9.523809523809524,10,328,3.6585365853658534,4
+Energy,Target,energy_claim|vitalite_concept,0,126,0.0,0,328,0.0,0
+Gut health,Target,gut_health_claim|prebiotic_claim|probiotic_claim,0,126,0.0,0,328,0.0,0
+Immune,Target,immune_claim,1,126,0.7936507936507936,1,328,0.3048780487804878,0
+Sugar / fat reduction,Target,comparative_claim|reduced_fat_claim|reduced_sugar|sugar_free_claim,20,126,15.873015873015872,16,328,6.097560975609756,6
+Free-from (gluten / lactose / dairy),Target,dairy_free_claim|gluten_free_claim|lactose_free_claim,22,126,17.46031746031746,17,328,6.707317073170732,7
+Organic / natural,Walgreens,natural_claim|organic_claim,1,7,14.285714285714285,14,40,2.5,3
+Origin / provenance / quality,Walgreens,artisan_claim|heritage_claim|origin_quality_claim,0,7,0.0,0,40,0.0,0
+Clean label / no-additives,Walgreens,clean_label_claim|no_artificial|no_palm_oil,1,7,14.285714285714285,14,40,2.5,3
+Plant-based / vegan,Walgreens,plant_based_claim|vegan_claim,0,7,0.0,0,40,0.0,0
+Sustainability,Walgreens,sustainability_halo,0,7,0.0,0,40,0.0,0
+Protein,Walgreens,protein_claim,1,7,14.285714285714285,14,40,2.5,3
+Fibre / wholegrain,Walgreens,fibre_claim|whole_grain_claim,3,7,42.857142857142854,43,40,7.5,8
+Fortification,Walgreens,fortification_claim,0,7,0.0,0,40,0.0,0
+Energy,Walgreens,energy_claim|vitalite_concept,0,7,0.0,0,40,0.0,0
+Gut health,Walgreens,gut_health_claim|prebiotic_claim|probiotic_claim,0,7,0.0,0,40,0.0,0
+Immune,Walgreens,immune_claim,0,7,0.0,0,40,0.0,0
+Sugar / fat reduction,Walgreens,comparative_claim|reduced_fat_claim|reduced_sugar|sugar_free_claim,3,7,42.857142857142854,43,40,7.5,8
+Free-from (gluten / lactose / dairy),Walgreens,dairy_free_claim|gluten_free_claim|lactose_free_claim,1,7,14.285714285714285,14,40,2.5,3

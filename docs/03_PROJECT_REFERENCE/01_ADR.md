@@ -477,6 +477,53 @@ grows materially.
 
 ---
 
+## ADR-017 — Separate presentation evidence from the Streamlit build
+
+**Date:** 16 October 2026
+**Status:** Active; records the approved private-label migration and cleanup.
+
+**Decision:** Standalone business analyses live in `presentations/`, beginning
+with `private_label_analysis/`. Streamlit does not consume these PDFs or CSVs.
+Selected PDFs, aggregate evidence, review decisions, manifests and guides are
+eligible for GitHub through an explicit allowlist. Product-level source exports
+and experiments remain local.
+
+**Rationale:** Business analyses need discoverable public navigation and
+traceable evidence without treating frozen presentation inputs as disposable
+pipeline outputs. Architecture is analyst-reviewed qualitative work; code and
+aggregate evidence do not reproduce the original chat interpretation.
+
+**Consequences:** Aldi/Lidl reconstruction uses retained input hashes and exact
+review decisions. Its original PDF remains explicitly unreconciled with four
+reviewed claims cells. Fresh database exports require separate paths and cannot
+overwrite this evidence. Benchmark refreshes preserve the historical regional
+baseline while recalculating retailer rows. A public checkout lacks the local
+product snapshots needed for a full reconstruction.
+
+## ADR-018 — Retain pipeline code by dependency and evidentiary role
+
+**Date:** 16 October 2026
+**Status:** Active.
+
+**Decision:** Production stages, supporting governance/validation utilities and
+private-label evidence tools remain public candidates. Superseded nutrition
+experiments, older prompts and the exploratory modeling exporter remain in the
+ignored `pipeline/local_only/` archive. Only regenerable caches were deleted;
+two caches with missing source were preserved locally as historical remnants.
+
+**Rationale:** A manually invoked audit script can support production reference
+decisions even without an import consumer. Retention therefore follows
+dependencies and evidence, not age or automatic invocation alone.
+
+**Consequences:** Public code does not import the archive. Some retained public
+tools require local data and deliberate execution, including paid vision runs.
+The final UK prompt remains active despite its historical "test" filename.
+The detailed inventory and validation are in
+`pipeline/PIPELINE_RETENTION_AUDIT.md`. This retention decision does not itself
+stage, commit or publish anything.
+
+---
+
 # Modular pipeline contract
 
 The pipeline is deliberately layered so stages can evolve without requiring a
@@ -548,7 +595,8 @@ For interpretation details, use `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md`.
 | Top-9 manufacturer mapping | Complete and locked |
 | Regional orphan-brand completion | Complete and locked |
 | Nutrition-quality governance | Active |
-| Vision/OCR/LLM claim extraction | Active |
+| Vision/OCR/LLM claim extraction | Active, including targeted retailer coverage and the approved UK rescue profile |
+| Standalone private-label presentations | Four publicly shared analyses; retained GitHub candidates, with Aldi/Lidl revisions pending |
 | Final reporting aggregation | Active |
 | Product segmentation | Deferred / future |
 

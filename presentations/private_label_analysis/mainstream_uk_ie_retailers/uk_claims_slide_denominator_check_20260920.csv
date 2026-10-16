@@ -1,0 +1,66 @@
+﻿benefit_territory,retailer,claim_codes_counted,numerator_products_with_territory,denominator_claimed_products_requested,pct_among_claimed_products_requested_exact,pct_among_claimed_products_requested_rounded_0dp,denominator_analyzed_products_including_no_claim,pct_among_analyzed_products_including_no_claim_exact,pct_among_analyzed_products_including_no_claim_rounded_0dp,slide_pct,slide_minus_requested_pct_points_exact,slide_matches_analyzed_denominator_rounded_0dp
+Protein,Tesco,protein_claim,9,233,3.862660944206009,4,380,2.368421052631579,2,2,-1.862660944206009,True
+Fibre / wholegrain,Tesco,fibre_claim|whole_grain_claim,19,233,8.15450643776824,8,380,5.0,5,5,-3.154506437768241,True
+Fortification,Tesco,fortification_claim,25,233,10.72961373390558,11,380,6.578947368421052,7,7,-3.7296137339055804,True
+Gut health,Tesco,gut_health_claim|prebiotic_claim|probiotic_claim,7,233,3.004291845493562,3,380,1.8421052631578945,2,2,-1.004291845493562,True
+Energy,Tesco,energy_claim,22,233,9.44206008583691,9,380,5.7894736842105265,6,6,-3.4420600858369106,True
+Immune,Tesco,immune_claim,1,233,0.4291845493562232,0,380,0.2631578947368421,0,0,-0.4291845493562232,True
+Sugar / fat reduction,Tesco,reduced_fat_claim|reduced_sugar|sugar_free_claim,44,233,18.88412017167382,19,380,11.578947368421053,12,12,-6.884120171673821,True
+Free-from (gluten / lactose / dairy),Tesco,dairy_free_claim|gluten_free_claim|lactose_free_claim,26,233,11.158798283261802,11,380,6.842105263157896,7,7,-4.1587982832618025,True
+Plant-based / vegan,Tesco,plant_based_claim|vegan_claim,18,233,7.725321888412018,8,380,4.736842105263158,5,5,-2.725321888412018,True
+Clean label / no-additives,Tesco,clean_label_claim|no_artificial,25,233,10.72961373390558,11,380,6.578947368421052,7,7,-3.7296137339055804,True
+Origin / provenance / quality,Tesco,artisan_claim|heritage_claim|origin_quality_claim,70,233,30.042918454935624,30,380,18.421052631578945,18,18,-12.042918454935624,True
+Sustainability,Tesco,sustainability_halo,1,233,0.4291845493562232,0,380,0.2631578947368421,0,0,-0.4291845493562232,True
+Organic / natural,Tesco,natural_claim|organic_claim,22,233,9.44206008583691,9,380,5.7894736842105265,6,6,-3.4420600858369106,True
+Protein,Asda,protein_claim,14,173,8.092485549132949,8,256,5.46875,5,5,-3.092485549132949,True
+Fibre / wholegrain,Asda,fibre_claim|whole_grain_claim,21,173,12.138728323699421,12,256,8.203125,8,8,-4.1387283236994215,True
+Fortification,Asda,fortification_claim,28,173,16.184971098265898,16,256,10.9375,11,11,-5.184971098265898,True
+Gut health,Asda,gut_health_claim|prebiotic_claim|probiotic_claim,4,173,2.312138728323699,2,256,1.5625,2,2,-0.31213872832369915,True
+Energy,Asda,energy_claim,20,173,11.560693641618498,12,256,7.8125,8,8,-3.5606936416184976,True
+Immune,Asda,immune_claim,0,173,0.0,0,256,0.0,0,0,0.0,True
+Sugar / fat reduction,Asda,reduced_fat_claim|reduced_sugar|sugar_free_claim,29,173,16.76300578034682,17,256,11.328125,11,12,-4.76300578034682,False
+Free-from (gluten / lactose / dairy),Asda,dairy_free_claim|gluten_free_claim|lactose_free_claim,21,173,12.138728323699421,12,256,8.203125,8,8,-4.1387283236994215,True
+Plant-based / vegan,Asda,plant_based_claim|vegan_claim,18,173,10.404624277456648,10,256,7.03125,7,7,-3.404624277456648,True
+Clean label / no-additives,Asda,clean_label_claim|no_artificial,29,173,16.76300578034682,17,256,11.328125,11,11,-5.76300578034682,True
+Origin / provenance / quality,Asda,artisan_claim|heritage_claim|origin_quality_claim,28,173,16.184971098265898,16,256,10.9375,11,11,-5.184971098265898,True
+Sustainability,Asda,sustainability_halo,0,173,0.0,0,256,0.0,0,0,0.0,True
+Organic / natural,Asda,natural_claim|organic_claim,15,173,8.670520231213873,9,256,5.859375,6,6,-2.6705202312138727,True
+Protein,Sainsbury's,protein_claim,8,191,4.18848167539267,4,322,2.484472049689441,2,2,-2.18848167539267,True
+Fibre / wholegrain,Sainsbury's,fibre_claim|whole_grain_claim,19,191,9.947643979057592,10,322,5.900621118012422,6,6,-3.9476439790575917,True
+Fortification,Sainsbury's,fortification_claim,28,191,14.659685863874344,15,322,8.695652173913043,9,9,-5.659685863874344,True
+Gut health,Sainsbury's,gut_health_claim|prebiotic_claim|probiotic_claim,2,191,1.0471204188481675,1,322,0.6211180124223602,1,1,-0.04712041884816753,True
+Energy,Sainsbury's,energy_claim,23,191,12.041884816753926,12,322,7.142857142857142,7,7,-5.041884816753926,True
+Immune,Sainsbury's,immune_claim,0,191,0.0,0,322,0.0,0,0,0.0,True
+Sugar / fat reduction,Sainsbury's,reduced_fat_claim|reduced_sugar|sugar_free_claim,30,191,15.706806282722512,16,322,9.316770186335404,9,9,-6.706806282722512,True
+Free-from (gluten / lactose / dairy),Sainsbury's,dairy_free_claim|gluten_free_claim|lactose_free_claim,35,191,18.32460732984293,18,322,10.869565217391305,11,11,-7.32460732984293,True
+Plant-based / vegan,Sainsbury's,plant_based_claim|vegan_claim,11,191,5.7591623036649215,6,322,3.4161490683229814,3,3,-2.7591623036649215,True
+Clean label / no-additives,Sainsbury's,clean_label_claim|no_artificial,8,191,4.18848167539267,4,322,2.484472049689441,2,2,-2.18848167539267,True
+Origin / provenance / quality,Sainsbury's,artisan_claim|heritage_claim|origin_quality_claim,43,191,22.5130890052356,23,322,13.354037267080745,13,13,-9.5130890052356,True
+Sustainability,Sainsbury's,sustainability_halo,4,191,2.094240837696335,2,322,1.2422360248447204,1,1,-1.094240837696335,True
+Organic / natural,Sainsbury's,natural_claim|organic_claim,36,191,18.848167539267017,19,322,11.180124223602485,11,11,-7.848167539267017,True
+Protein,Morrisons,protein_claim,5,180,2.7777777777777777,3,226,2.2123893805309733,2,2,-0.7777777777777777,True
+Fibre / wholegrain,Morrisons,fibre_claim|whole_grain_claim,9,180,5.0,5,226,3.982300884955752,4,4,-1.0,True
+Fortification,Morrisons,fortification_claim,9,180,5.0,5,226,3.982300884955752,4,4,-1.0,True
+Gut health,Morrisons,gut_health_claim|prebiotic_claim|probiotic_claim,3,180,1.6666666666666667,2,226,1.3274336283185841,1,1,-0.6666666666666667,True
+Energy,Morrisons,energy_claim,27,180,15.0,15,226,11.946902654867257,12,12,-3.0,True
+Immune,Morrisons,immune_claim,1,180,0.5555555555555556,1,226,0.4424778761061947,0,0,-0.5555555555555556,True
+Sugar / fat reduction,Morrisons,reduced_fat_claim|reduced_sugar|sugar_free_claim,22,180,12.222222222222221,12,226,9.734513274336283,10,10,-2.2222222222222214,True
+Free-from (gluten / lactose / dairy),Morrisons,dairy_free_claim|gluten_free_claim|lactose_free_claim,19,180,10.555555555555555,11,226,8.4070796460177,8,8,-2.5555555555555554,True
+Plant-based / vegan,Morrisons,plant_based_claim|vegan_claim,18,180,10.0,10,226,7.964601769911504,8,8,-2.0,True
+Clean label / no-additives,Morrisons,clean_label_claim|no_artificial,46,180,25.555555555555554,26,226,20.353982300884958,20,20,-5.555555555555554,True
+Origin / provenance / quality,Morrisons,artisan_claim|heritage_claim|origin_quality_claim,49,180,27.22222222222222,27,226,21.68141592920354,22,22,-5.222222222222221,True
+Sustainability,Morrisons,sustainability_halo,0,180,0.0,0,226,0.0,0,0,0.0,True
+Organic / natural,Morrisons,natural_claim|organic_claim,16,180,8.88888888888889,9,226,7.079646017699115,7,7,-1.8888888888888893,True
+Protein,Waitrose,protein_claim,6,140,4.285714285714286,4,237,2.5316455696202533,3,3,-1.2857142857142856,True
+Fibre / wholegrain,Waitrose,fibre_claim|whole_grain_claim,19,140,13.571428571428571,14,237,8.016877637130802,8,8,-5.571428571428571,True
+Fortification,Waitrose,fortification_claim,6,140,4.285714285714286,4,237,2.5316455696202533,3,3,-1.2857142857142856,True
+Gut health,Waitrose,gut_health_claim|prebiotic_claim|probiotic_claim,9,140,6.428571428571428,6,237,3.79746835443038,4,4,-2.428571428571428,True
+Energy,Waitrose,energy_claim,18,140,12.857142857142856,13,237,7.59493670886076,8,8,-4.857142857142856,True
+Immune,Waitrose,immune_claim,0,140,0.0,0,237,0.0,0,0,0.0,True
+Sugar / fat reduction,Waitrose,reduced_fat_claim|reduced_sugar|sugar_free_claim,13,140,9.285714285714286,9,237,5.485232067510549,5,5,-4.2857142857142865,True
+Free-from (gluten / lactose / dairy),Waitrose,dairy_free_claim|gluten_free_claim|lactose_free_claim,9,140,6.428571428571428,6,237,3.79746835443038,4,4,-2.428571428571428,True
+Plant-based / vegan,Waitrose,plant_based_claim|vegan_claim,1,140,0.7142857142857143,1,237,0.42194092827004215,0,0,-0.7142857142857143,True
+Clean label / no-additives,Waitrose,clean_label_claim|no_artificial,1,140,0.7142857142857143,1,237,0.42194092827004215,0,0,-0.7142857142857143,True
+Origin / provenance / quality,Waitrose,artisan_claim|heritage_claim|origin_quality_claim,30,140,21.428571428571427,21,237,12.658227848101266,13,13,-8.428571428571427,True
+Sustainability,Waitrose,sustainability_halo,1,140,0.7142857142857143,1,237,0.42194092827004215,0,0,-0.7142857142857143,True
+Organic / natural,Waitrose,natural_claim|organic_claim,47,140,33.57142857142857,34,237,19.831223628691983,20,20,-13.57142857142857,True

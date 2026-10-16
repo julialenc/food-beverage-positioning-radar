@@ -16,11 +16,24 @@ formulation and nutrition reality.
 (`prompt_version = v4`, English, US+UK release);
 `pipeline/vision_prompts/current/prompt_v5_fr.txt`
 (`prompt_version = v5.1-fr`, French release), plus the current English and
-French context-review prompts.
+French context-review prompts. The latest approved UK/Ireland profile is
+`uk_test_09_2026_final`, loading
+`pipeline/vision_prompts/current/prompt_uk_test_09.2026_final.txt`
+(`prompt_version = uk_test_09.2026_final`). Its historical "test" filename is
+retained; it includes the approved deterministic rescue rules described below.
 
 Prompt filenames are repository organization labels. `prompt_version` is the
 analytical extraction-method version written to data; it changes only when
 prompt text changes, not when files are renamed or moved.
+
+**Current coverage — checked 2026-10-16:** the local working database contains
+**23,403** rows in `product_analysis` with `claim_source = 'vision'`. The initial
+country samples were expanded with targeted private-label coverage. This is
+current stored coverage, including valid no-claim observations, not a new
+representative country sample or a verification of the live Streamlit deployment.
+The original **17,127** observations remain the historical release denominator
+in section 7. Later runs can replace earlier product observations, so release
+totals must not simply be added together.
 
 **Release naming:** "Release 01" and "Release 02" refer to extraction runs
 in ordinal order. `release_2026_01_us_uk` and `release_2026_01_fr` are the
@@ -33,7 +46,7 @@ together form one analytical release.
 - The sampling universe and design rationale
 - Prompt version history and the reasoning behind each change
 - Extraction pipeline mechanics
-- Release record for all three runs
+- Original regional release records and subsequent targeted retailer coverage
 - Known limitations specific to the extraction process
 
 **What to read elsewhere:**
@@ -56,18 +69,19 @@ that leads with "SUPPORTS GUT HEALTH" in a green callout.
 
 The extraction layer closes that gap. It uses OCR on the Open Food Facts
 product image followed by an LLM extraction call to read what the pack
-actually communicates, independently of the ingredient list. This is the
-independent measurement that makes the sampling design valid (see section 2).
+actually communicates, independently of the ingredient list. This separates pack observation from ingredient-derived signals (see section 2).
+The later UK rescue rules also use product-name and brand text; their outputs
+must not be described as independent OCR-only measurements of those fields.
 
-OBS-016 (Dinosaurus Chocolat, May 2026) was the first documented product
-where this distinction mattered: pea protein detected in ingredients, no
-front-of-pack protein claim visible.
+An early working example was Dinosaurus Chocolat (May 2026): pea protein was
+detected in ingredients without a visible front-of-pack protein claim. The
+earlier OBS-016 citation is obsolete; current OBS-016 concerns unmapped claims.
 
 ---
 
 ## 2. Sampling design
 
-### 2.1 The non-circularity constraint
+### 2.1 The original sampling design: non-circularity constraint
 
 The purpose of the LLM run is to compare, per product, what the pack
 communicates against what the product actually is. For that comparison to remain interpretable, the sampling proxy, formulation
@@ -228,8 +242,10 @@ fields in response to specific observed gaps.
 
 ## 4. Prompt version history
 
-Current prompts live in `pipeline/vision_prompts/current/`; older prompt files
-live in `pipeline/vision_prompts/historical/`. The active version is loaded at
+Current prompts live in `pipeline/vision_prompts/current/`, including the final
+September 2026 UK profile. Older prompt files are retained locally in
+`pipeline/local_only/vision_prompts/historical/` and excluded from new GitHub
+commits. The active version is loaded at
 run time by `stage_10_extract_pack_claims.py --language`; nothing is pasted
 inline. This means the file IS the record: the archive and the active prompt
 cannot drift apart.
@@ -384,7 +400,7 @@ French and English signal rates (9.0% vs 12.4%) may partly reflect genuine
 differences in pack communication. The EU nutrition and health-claims regime
 (Regulation 432/2012) is one plausible contributor — it constrains what
 manufacturers can say on French packs more tightly than FDA/FTC standards in
-the US, particularly for protein and energy claims (OBS-025) — but this
+the US, particularly for protein and energy claims (see OBS-022 for market-communication context) — but this
 pipeline does not isolate regulatory effects from category mix, sampling-frame
 differences, or other market factors. The gap is an observation, not a
 causal finding.
@@ -486,8 +502,9 @@ label dominated by the health mark `FR 25.039.003`, a manufacturer address,
 and a full ingredient list.
 
 `--no-context-review` disables the step. `CONTEXT_REVIEW_CATEGORIES` is a
-visible module constant. The English review prompt is wired but not yet
-tested on release-01.
+visible module constant. At the original release checkpoint, the English
+review prompt was wired but had not been tested on release-01; this is a
+historical status, separate from the completed September UK recall run.
 
 ---
 
@@ -508,8 +525,8 @@ manage: with no visual hierarchy, only text signals are available.
 One HTTP call per product, conditional on OCR success. The system prompt is
 the active language profile prompt. The user message contains:
 
-- Reference identity (brand and product name) — for panel context only,
-  never as claim evidence
+- Reference identity (brand and product name) — panel context for the original
+  English/French profiles; also text evidence in the later UK rescue step below
 - Deterministic OCR context hints (word count, comma count, semicolon count,
   starts-with-ingredients flag, ingredient-header flag, nutrition term count,
   currency detection, brand token overlap, product name token overlap)
@@ -544,9 +561,9 @@ is written. The validator enforces:
    → `no_claims_detected = True`, `unmapped_pack_text = True`. The model
    was using `no_claims_detected = False` to mean "I noted text worth
    recording"; the pipeline needs it to mean "a taxonomy claim is present."
-   ~1,127 rows in release-01 were resolved this way; ~2% of those carried
-   genuinely mappable content (estimated ~2pp understatement of claim
-   prevalence).
+   Approximately 1,127 rows in release-01 were resolved this way. Earlier
+   notes disagree on the proportion with mappable content; no validated
+   correction rate is asserted here (see section 9).
 
 4. Numeric-implies-flag (range check runs FIRST): if `protein_amount_g` is
    set and within 0–100, `protein_claim = True`. If out of range, null the
@@ -556,7 +573,38 @@ is written. The validator enforces:
 
 5. `unmapped_pack_text` and `numeric_out_of_range` audit flags written per row.
 
-### 6.4 Cost and throughput
+### 6.4 Approved UK/Ireland rescue rules — September 2026
+
+After UK testing, Julia Lenc approved the latest UK prompt and
+`apply_uk_claim_rescue_rules()` in `stage_10_extract_pack_claims.py`.
+The UK prompt itself permits explicit product-name/brand text as claim evidence;
+the deterministic function applies the rules below after extraction. It runs only
+for the UK profile and observations whose extraction status is `completed`.
+It examines combined product-name, brand and OCR text, in lowercase:
+
+- The literal phrase `free from` sets `clean_label_claim`. Julia approved
+  treating this shopper-facing proposition as a claim even when it is also
+  the range/brand name. The current regex matches the spaced phrase; this
+  documentation does not imply that every hyphenated spelling is normalized.
+  It does not infer a specific gluten-free or dairy-free claim from that phrase.
+- Origin text sets `origin_quality_claim`: nationality terms `British`, `Irish`,
+  `English`, `French`, `Cypriot` or `Cyprus`, `product of ...`, `made in ...`,
+  or the implemented `made from ... by ...` pattern. Review of packs such as
+  "British Milk", sometimes accompanied by a flag, motivated this rule.
+  The function reads text; it does not detect flag images.
+- Explicit fat-reduction wording sets `reduced_fat_claim`; a skimmed or
+  semi-skimmed descriptor alone does not. When explicit fat-reduction wording
+  is present without a recognized origin phrase, an origin flag is cleared.
+- Detected phrases and the no-claim/unmapped-text state are updated after these
+  rules. This does not turn non-front or failed observations into valid packs.
+
+The UK profile prefers the full-size OFF image when the URL is a 400px
+derivative, retaining the original URL as a fallback. OCR still loses visual
+hierarchy. These are approved, market-specific interpretation rules, not a
+claim that all releases use identical OCR-only evidence. Earlier English and
+French release methods remain part of the historical record.
+
+### 6.5 Cost and throughput (original releases)
 
 | Metric | Release-01 US+UK | Release-02 France |
 |---|---|---|
@@ -620,10 +668,28 @@ pending backbone weight analysis
 **By category:** cereals 46.8% (contaminated by pasta/bread — see section 9);
 dairies 41.2%; snacks 38.2%; beverages 35.5%
 
-**Combined release denominator:** 11,408 (US/UK) + 5,719 (France) = **17,127**
+**Historical combined release denominator:** 11,408 (US/UK) + 5,719 (France) = **17,127**
 valid front-of-pack observations.
 
 ---
+
+### Subsequent retailer coverage and final UK recall run
+
+Targeted September runs expanded private-label coverage for Aldi/Lidl and
+mainstream retailers in France, UK/Ireland and US/Canada. Current coverage is
+**23,403** stored vision observations as of 2026-10-16. Original backbone
+weights apply only to their original eligible design, not to these combined
+targeted observations.
+
+The working database records **919** vision observations for
+`release_2026_09_mainstream_uk_ie_claim_recall_final`, all with
+`prompt_version = uk_test_09.2026_final`. This confirms a recorded run; the
+preparation script's current input guard is not evidence of an unfinished run.
+`op_12_prepare_uk_claim_recall_final_09_2026.py` expects the original 919
+`NO_CLAIM_IDENTIFIED` candidates, whereas the retained current input exports
+contain 504. Rerunning preparation against that changed population is refused
+by design. A future run needs a separately reviewed selection; do not relax
+the guard to reproduce historical inputs.
 
 ## 8. Data flow
 
@@ -647,6 +713,10 @@ raw JSON
   → if rescued: extract_claims(forced_context=...)
     → claims re-extracted from saved OCR
 
+[UK profile only, completed observations]
+  → apply_uk_claim_rescue_rules() on OCR + product name + brand
+    → reviewed text rules applied to claim flags and phrases
+
 → vision_results_<timestamp>.csv  (one row per product)
 
 → stage_11_merge_vision_results.py --release-id <id>
@@ -656,7 +726,7 @@ raw JSON
 
 → stage_12_build_claim_taxonomy.py
     → claim_category_1, claim_category_2
-    → claim_source = 'vision' for the 17,127 release products
+    → claim_source = 'vision' for valid stored observations (23,403 at current checkpoint)
     → nutrition_benchmark_flags, claim_benchmark_intersections
 
 → stage_13_build_app_summaries.py
@@ -669,10 +739,12 @@ raw JSON
 taxonomy claim. These are distinct states. Loading with `keep_default_na=False`
 is required to preserve the distinction.
 
-**Release scoping:** `claim_source = 'vision'` correctly identifies the
-release population only because `pipeline/vision_ops/op_05_clear_stale_observations.py` was run before
+**Historical release scoping:** `claim_source = 'vision'` identified the original
+release population after stale pilot observations were cleared with
+`pipeline/vision_ops/op_05_clear_stale_observations.py` before
 `stage_11_merge_vision_results.py`, retiring 3,858 superseded pilot rows (3,789 prompt-v2,
-69 v4 test artifacts). For future releases, filter on `release_run_id`.
+69 v4 test artifacts). The current database includes later targeted runs; filter on `release_run_id`
+and inspect `prompt_version` when auditing a particular release.
 
 ---
 
@@ -681,7 +753,7 @@ release population only because `pipeline/vision_ops/op_05_clear_stale_observati
 **OCR quality and pack design.** Azure AI Vision's Read API performs well on
 standard packs but degrades on: white text on dark backgrounds, angled or
 edge-cropped images, small thumbnail images, and highly stylized typography.
-OBS-021 documents the Oatly case: all 23 products returned near-zero
+OBS-014 documents the Oatly case: all 23 products returned near-zero
 claim scores because large artistic typography fragmented into disconnected
 tokens. The OCR text is present in `v3_ocr_text` and auditable per product.
 The limitation biases the results against brands that use dark-background or
@@ -698,27 +770,22 @@ the dairy category the review targets. The same panel-classification problem
 is likely present at low rates in release-01 (English v4, no panel priority
 block, brand not passed to the model). 141 candidates identified for review.
 
-**Unmapped claims (~2pp understatement).** Approximately 20–25% of the 1,127
-release-01 products resolved to `pack_claims_found = ""` by the validator
-carried genuine taxonomy-relevant text in `other_claims` or
-`detected_claim_phrases` (e.g., "FAT FREE FOOD", "GF|V|DF", "No Added Sugars",
-"PROTEIN BALLS"). These were not rescued because the census is incomplete and
-non-random — only the products where the model happened to record something
-in `other_claims`, not all products carrying those claims. Rescuing them would
-inflate specific fields by an unknown and non-uniform fraction of the true
-miss rate. The estimated understatement is ~2 percentage points.
+**Unmapped claims in the original release.** About 1,127 release-01 observations
+were reconciled to no mapped claim despite recorded text. Historical notes
+gave inconsistent estimates: approximately 2% versus 20–25% of those rows,
+alongside an asserted approximately two-percentage-point prevalence effect.
+Those figures do not establish one validated miss rate and are not carried
+forward as a current correction estimate. The review was incomplete and
+non-random. The later UK rescue was a separately tested and approved rule
+change; it does not retrospectively validate a miss-rate estimate for all markets.
 
-**Cereals category contamination.** The cereals category in all three releases
-contains pasta, bread, flour, rusks, breadsticks, and puff pastry products. In
-OFF, `en:cereals-and-their-products` is a parent category covering far more
-than breakfast cereal; the exclusion list in `stage_01a_bootstrap_from_off_bulk.py` correctly removes
-`en:cereal-pastas` and `en:cereal-semolinas` but not plain `en:pastas`, which
-most pasta products carry. The contamination is especially visible in the
-France run, which included many Italian products via the FRANCE|SOUTHERN_EUROPE
-multi-region tag. Cereals claim figures in all releases describe a
-contaminated category. The fix requires both updating `stage_01a_bootstrap_from_off_bulk.py` and
-explicitly re-categorising existing contaminated rows, since `stage_05_load_database.py` never
-removes products. Deferred to the next bootstrap/cleansing cycle.
+**Historical cereals contamination.** Original release category figures included
+pasta, bread and other products outside the project's breakfast-cereal scope.
+The September category cleanup is completed and locked, as documented in
+`docs/01_PRODUCT_DATA_GOVERNANCE/01_CATEGORY_SCOPE_AND_CLEANUP.md`.
+Original release tables above remain historical and have not been recalculated
+here. Their category percentages must not be presented as measurements of the
+cleaned current cereal population. New OFF refreshes can still reintroduce noise.
 
 **Validator override rate.** The deterministic validator overrode the model's
 self-reported `claim_extraction_status` on 33.3% of US, 34.6% of UK and
@@ -746,7 +813,8 @@ English keywords remain valid for multilingual packs.
 - **English v5:** apply the v5.1-fr panel-classification improvements
   (PANEL CLASSIFICATION PRIORITY block, brand identity hints) to the English
   prompt, which ran on v4 without these fixes. Label as `v5-en` to distinguish
-  it from the locked release-01 v4 run.
+  it from the locked release-01 v4 run. The later UK-specific profile is already
+  implemented; it is not an uncompleted part of this proposed general English refresh.
 - **English calibration panel:** re-extract a set of already-processed English
   products through the French prompt and compare against stored v4 results.
   Measures prompt drift. Should be run before any future multilingual release.
@@ -758,8 +826,6 @@ English keywords remain valid for multilingual packs.
   prompt entirely and derive it deterministically from `image_context` in the
   validator. The model's self-reported value is overridden a third of the time
   and adds noise without improving accuracy.
-- **Cereals contamination fix:** update `_EXCLUDE_FROM_CEREALS` in
-  `stage_01a_bootstrap_from_off_bulk.py` and run an explicit DB cleanup. See section 9.
 - **Panel-context review for English:** run `pipeline/vision_ops/op_07_review_panel_context.py` with
   `--language en --all-categories` on the release-01 CSVs to measure the
   false-exclusion rate. 141 candidate rows identified.

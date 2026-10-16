@@ -1,0 +1,9 @@
+region,retailer,total_products,analyzed_products_including_no_claim,claimed_products_denominator,no_claim_identified_products,not_analyzed_products,claim_detection_rate_among_analyzed_pct,stacked_claimed_products_ge2_tags,stacking_pct_among_claimed_products,rules_version,source_sha256
+FRANCE,Aldi,1625,279,67,212,1346,24.0,20,29.9,2026-10-15_reviewed_v1,26e1c3d28eabea4c9653416383acfcb35b1894d3e063801431f38af0f7e5146f
+UK_IE,Aldi,1159,367,128,239,792,34.9,37,28.9,2026-10-15_reviewed_v1,26e1c3d28eabea4c9653416383acfcb35b1894d3e063801431f38af0f7e5146f
+US_CANADA,Aldi,1320,249,129,120,1071,51.8,67,51.9,2026-10-15_reviewed_v1,26e1c3d28eabea4c9653416383acfcb35b1894d3e063801431f38af0f7e5146f
+ALL_REGIONS_RECORDS,Aldi,4104,895,324,571,3209,36.2,124,38.3,2026-10-15_reviewed_v1,26e1c3d28eabea4c9653416383acfcb35b1894d3e063801431f38af0f7e5146f
+FRANCE,Lidl,4581,416,176,240,4165,42.3,43,24.4,2026-10-15_reviewed_v1,cadac9b241559e81bfe9550c4fcb44f89f2f23d60d57e41bba92f82cbad95ac7
+UK_IE,Lidl,1119,309,132,177,810,42.7,44,33.3,2026-10-15_reviewed_v1,cadac9b241559e81bfe9550c4fcb44f89f2f23d60d57e41bba92f82cbad95ac7
+US_CANADA,Lidl,193,53,26,27,140,49.1,13,50.0,2026-10-15_reviewed_v1,cadac9b241559e81bfe9550c4fcb44f89f2f23d60d57e41bba92f82cbad95ac7
+ALL_REGIONS_RECORDS,Lidl,5893,778,334,444,5115,42.9,100,29.9,2026-10-15_reviewed_v1,cadac9b241559e81bfe9550c4fcb44f89f2f23d60d57e41bba92f82cbad95ac7

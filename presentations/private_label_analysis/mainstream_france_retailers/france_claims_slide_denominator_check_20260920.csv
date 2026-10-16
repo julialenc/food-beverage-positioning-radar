@@ -1,0 +1,79 @@
+﻿benefit_territory,retailer,claim_codes_counted,numerator_products_with_territory,denominator_claimed_products,pct_among_claimed_products_exact,pct_among_claimed_products_rounded_0dp,denominator_analyzed_products_including_no_claim,pct_among_analyzed_products_including_no_claim_exact,pct_among_analyzed_products_including_no_claim_rounded_0dp,slide_pct,slide_minus_claimed_pct_points_exact,slide_matches_claimed_denominator_rounded_0dp,slide_matches_analyzed_denominator_rounded_0dp
+Organic / natural,Intermarché,natural_claim|organic_claim,66,134,49.25373134328358,49,413,15.980629539951574,16,49,-0.25373134328358304,True,False
+Origin / provenance / quality,Intermarché,artisan_claim|heritage_claim|origin_quality_claim,25,134,18.65671641791045,19,413,6.053268765133172,6,19,0.34328358208955123,True,False
+Clean label / no-additives,Intermarché,clean_label_claim|no_artificial|no_palm_oil,10,134,7.462686567164178,7,413,2.4213075060532687,2,8,0.5373134328358216,False,False
+Plant-based / vegan,Intermarché,plant_based_claim|vegan_claim,2,134,1.4925373134328357,1,413,0.48426150121065376,0,2,0.5074626865671643,False,False
+Sustainability,Intermarché,sustainability_halo,3,134,2.2388059701492535,2,413,0.7263922518159807,1,2,-0.23880597014925353,True,False
+Protein,Intermarché,protein_claim,10,134,7.462686567164178,7,413,2.4213075060532687,2,8,0.5373134328358216,False,False
+Fibre / wholegrain,Intermarché,fibre_claim|whole_grain_claim,13,134,9.701492537313433,10,413,3.14769975786925,3,10,0.29850746268656714,True,False
+Fortification,Intermarché,fortification_claim,23,134,17.16417910447761,17,413,5.569007263922518,6,17,-0.1641791044776113,True,False
+Energy,Intermarché,energy_claim|vitalite_concept,1,134,0.7462686567164178,1,413,0.24213075060532688,0,1,0.25373134328358216,True,False
+Gut health,Intermarché,gut_health_claim|prebiotic_claim|probiotic_claim,0,134,0.0,0,413,0.0,0,0,0.0,True,True
+Immune,Intermarché,immune_claim,0,134,0.0,0,413,0.0,0,0,0.0,True,True
+Sugar / fat reduction,Intermarché,comparative_claim|reduced_fat_claim|reduced_sugar|sugar_free_claim,26,134,19.402985074626866,19,413,6.2953995157385,6,19,-0.4029850746268657,True,False
+Free-from (gluten / lactose / dairy),Intermarché,dairy_free_claim|gluten_free_claim|lactose_free_claim,4,134,2.9850746268656714,3,413,0.9685230024213075,1,3,0.014925373134328623,True,False
+Organic / natural,E.Leclerc,natural_claim|organic_claim,67,199,33.66834170854271,34,677,9.896602658788774,10,34,0.33165829145728765,True,False
+Origin / provenance / quality,E.Leclerc,artisan_claim|heritage_claim|origin_quality_claim,69,199,34.67336683417086,35,677,10.19202363367799,10,35,0.3266331658291435,True,False
+Clean label / no-additives,E.Leclerc,clean_label_claim|no_artificial|no_palm_oil,5,199,2.512562814070352,3,677,0.7385524372230428,1,3,0.487437185929648,True,False
+Plant-based / vegan,E.Leclerc,plant_based_claim|vegan_claim,5,199,2.512562814070352,3,677,0.7385524372230428,1,3,0.487437185929648,True,False
+Sustainability,E.Leclerc,sustainability_halo,5,199,2.512562814070352,3,677,0.7385524372230428,1,3,0.487437185929648,True,False
+Protein,E.Leclerc,protein_claim,27,199,13.5678391959799,14,677,3.9881831610044314,4,14,0.43216080402009993,True,False
+Fibre / wholegrain,E.Leclerc,fibre_claim|whole_grain_claim,29,199,14.572864321608039,15,677,4.283604135893649,4,15,0.4271356783919611,True,False
+Fortification,E.Leclerc,fortification_claim,19,199,9.547738693467336,10,677,2.806499261447563,3,10,0.45226130653266416,True,False
+Energy,E.Leclerc,energy_claim|vitalite_concept,2,199,1.0050251256281406,1,677,0.29542097488921715,0,1,-0.005025125628140614,True,False
+Gut health,E.Leclerc,gut_health_claim|prebiotic_claim|probiotic_claim,2,199,1.0050251256281406,1,677,0.29542097488921715,0,1,-0.005025125628140614,True,False
+Immune,E.Leclerc,immune_claim,0,199,0.0,0,677,0.0,0,0,0.0,True,True
+Sugar / fat reduction,E.Leclerc,comparative_claim|reduced_fat_claim|reduced_sugar|sugar_free_claim,35,199,17.587939698492463,18,677,5.1698670605613,5,18,0.4120603015075375,True,False
+Free-from (gluten / lactose / dairy),E.Leclerc,dairy_free_claim|gluten_free_claim|lactose_free_claim,6,199,3.015075376884422,3,677,0.8862629246676514,1,3,-0.015075376884421843,True,False
+Organic / natural,Carrefour,natural_claim|organic_claim,42,190,22.105263157894736,22,774,5.426356589147287,5,22,-0.10526315789473628,True,False
+Origin / provenance / quality,Carrefour,artisan_claim|heritage_claim|origin_quality_claim,57,190,30.0,30,774,7.3643410852713185,7,30,0.0,True,False
+Clean label / no-additives,Carrefour,clean_label_claim|no_artificial|no_palm_oil,22,190,11.578947368421053,12,774,2.842377260981912,3,12,0.4210526315789469,True,False
+Plant-based / vegan,Carrefour,plant_based_claim|vegan_claim,9,190,4.736842105263158,5,774,1.1627906976744187,1,5,0.2631578947368416,True,False
+Sustainability,Carrefour,sustainability_halo,1,190,0.5263157894736842,1,774,0.12919896640826875,0,1,0.4736842105263158,True,False
+Protein,Carrefour,protein_claim,25,190,13.157894736842104,13,774,3.229974160206718,3,13,-0.15789473684210442,True,False
+Fibre / wholegrain,Carrefour,fibre_claim|whole_grain_claim,29,190,15.263157894736842,15,774,3.7467700258397936,4,15,-0.2631578947368425,True,False
+Fortification,Carrefour,fortification_claim,18,190,9.473684210526317,9,774,2.3255813953488373,2,10,0.5263157894736832,False,False
+Energy,Carrefour,energy_claim|vitalite_concept,14,190,7.368421052631578,7,774,1.8087855297157622,2,7,-0.36842105263157787,True,False
+Gut health,Carrefour,gut_health_claim|prebiotic_claim|probiotic_claim,1,190,0.5263157894736842,1,774,0.12919896640826875,0,1,0.4736842105263158,True,False
+Immune,Carrefour,immune_claim,0,190,0.0,0,774,0.0,0,0,0.0,True,True
+Sugar / fat reduction,Carrefour,comparative_claim|reduced_fat_claim|reduced_sugar|sugar_free_claim,27,190,14.210526315789473,14,774,3.488372093023256,3,15,0.7894736842105274,False,False
+Free-from (gluten / lactose / dairy),Carrefour,dairy_free_claim|gluten_free_claim|lactose_free_claim,4,190,2.1052631578947367,2,774,0.516795865633075,1,2,-0.10526315789473673,True,False
+Organic / natural,Groupe Casino,natural_claim|organic_claim,76,211,36.018957345971565,36,805,9.440993788819876,9,36,-0.01895734597156462,True,False
+Origin / provenance / quality,Groupe Casino,artisan_claim|heritage_claim|origin_quality_claim,59,211,27.96208530805687,28,805,7.329192546583851,7,28,0.03791469194312924,True,False
+Clean label / no-additives,Groupe Casino,clean_label_claim|no_artificial|no_palm_oil,13,211,6.161137440758294,6,805,1.6149068322981366,2,6,-0.16113744075829395,True,False
+Plant-based / vegan,Groupe Casino,plant_based_claim|vegan_claim,1,211,0.47393364928909953,0,805,0.12422360248447205,0,1,0.5260663507109005,False,False
+Sustainability,Groupe Casino,sustainability_halo,5,211,2.3696682464454977,2,805,0.6211180124223602,1,2,-0.3696682464454977,True,False
+Protein,Groupe Casino,protein_claim,19,211,9.004739336492891,9,805,2.360248447204969,2,9,-0.004739336492891155,True,False
+Fibre / wholegrain,Groupe Casino,fibre_claim|whole_grain_claim,38,211,18.009478672985782,18,805,4.720496894409938,5,18,-0.00947867298578231,True,False
+Fortification,Groupe Casino,fortification_claim,18,211,8.530805687203792,9,805,2.236024844720497,2,9,0.4691943127962084,True,False
+Energy,Groupe Casino,energy_claim|vitalite_concept,3,211,1.4218009478672986,1,805,0.37267080745341613,0,1,-0.4218009478672986,True,False
+Gut health,Groupe Casino,gut_health_claim|prebiotic_claim|probiotic_claim,3,211,1.4218009478672986,1,805,0.37267080745341613,0,1,-0.4218009478672986,True,False
+Immune,Groupe Casino,immune_claim,2,211,0.9478672985781991,1,805,0.2484472049689441,0,1,0.05213270142180093,True,False
+Sugar / fat reduction,Groupe Casino,comparative_claim|reduced_fat_claim|reduced_sugar|sugar_free_claim,29,211,13.744075829383887,14,805,3.602484472049689,4,14,0.2559241706161135,True,False
+Free-from (gluten / lactose / dairy),Groupe Casino,dairy_free_claim|gluten_free_claim|lactose_free_claim,9,211,4.265402843601896,4,805,1.1180124223602486,1,4,-0.2654028436018958,True,False
+Organic / natural,Groupe U,natural_claim|organic_claim,97,227,42.731277533039645,43,698,13.896848137535816,14,43,0.2687224669603552,True,False
+Origin / provenance / quality,Groupe U,artisan_claim|heritage_claim|origin_quality_claim,75,227,33.03964757709251,33,698,10.744985673352435,11,33,-0.03964757709250932,True,False
+Clean label / no-additives,Groupe U,clean_label_claim|no_artificial|no_palm_oil,32,227,14.096916299559473,14,698,4.584527220630372,5,14,-0.09691629955947256,True,False
+Plant-based / vegan,Groupe U,plant_based_claim|vegan_claim,3,227,1.3215859030837005,1,698,0.42979942693409745,0,1,-0.3215859030837005,True,False
+Sustainability,Groupe U,sustainability_halo,28,227,12.334801762114537,12,698,4.011461318051576,4,12,-0.3348017621145374,True,False
+Protein,Groupe U,protein_claim,20,227,8.81057268722467,9,698,2.865329512893983,3,9,0.18942731277532943,True,False
+Fibre / wholegrain,Groupe U,fibre_claim|whole_grain_claim,27,227,11.894273127753303,12,698,3.8681948424068766,4,12,0.10572687224669686,True,False
+Fortification,Groupe U,fortification_claim,18,227,7.929515418502203,8,698,2.5787965616045847,3,8,0.07048458149779702,True,False
+Energy,Groupe U,energy_claim|vitalite_concept,7,227,3.0837004405286343,3,698,1.002865329512894,1,3,-0.08370044052863435,True,False
+Gut health,Groupe U,gut_health_claim|prebiotic_claim|probiotic_claim,1,227,0.4405286343612335,0,698,0.14326647564469913,0,0,-0.4405286343612335,True,True
+Immune,Groupe U,immune_claim,0,227,0.0,0,698,0.0,0,0,0.0,True,True
+Sugar / fat reduction,Groupe U,comparative_claim|reduced_fat_claim|reduced_sugar|sugar_free_claim,27,227,11.894273127753303,12,698,3.8681948424068766,4,12,0.10572687224669686,True,False
+Free-from (gluten / lactose / dairy),Groupe U,dairy_free_claim|gluten_free_claim|lactose_free_claim,18,227,7.929515418502203,8,698,2.5787965616045847,3,8,0.07048458149779702,True,False
+Organic / natural,Auchan,natural_claim|organic_claim,85,246,34.552845528455286,35,724,11.740331491712707,12,35,0.44715447154471377,True,False
+Origin / provenance / quality,Auchan,artisan_claim|heritage_claim|origin_quality_claim,95,246,38.61788617886179,39,724,13.121546961325967,13,39,0.382113821138212,True,False
+Clean label / no-additives,Auchan,clean_label_claim|no_artificial|no_palm_oil,7,246,2.8455284552845526,3,724,0.9668508287292817,1,3,0.15447154471544744,True,False
+Plant-based / vegan,Auchan,plant_based_claim|vegan_claim,16,246,6.504065040650407,7,724,2.209944751381215,2,7,0.49593495934959275,True,False
+Sustainability,Auchan,sustainability_halo,5,246,2.0325203252032518,2,724,0.6906077348066298,1,2,-0.032520325203251765,True,False
+Protein,Auchan,protein_claim,16,246,6.504065040650407,7,724,2.209944751381215,2,7,0.49593495934959275,True,False
+Fibre / wholegrain,Auchan,fibre_claim|whole_grain_claim,40,246,16.260162601626014,16,724,5.524861878453039,6,16,-0.2601626016260141,True,False
+Fortification,Auchan,fortification_claim,20,246,8.130081300813007,8,724,2.7624309392265194,3,8,-0.13008130081300706,True,False
+Energy,Auchan,energy_claim|vitalite_concept,3,246,1.2195121951219512,1,724,0.4143646408839779,0,1,-0.2195121951219512,True,False
+Gut health,Auchan,gut_health_claim|prebiotic_claim|probiotic_claim,1,246,0.40650406504065045,0,724,0.13812154696132595,0,0,-0.40650406504065045,True,True
+Immune,Auchan,immune_claim,0,246,0.0,0,724,0.0,0,0,0.0,True,True
+Sugar / fat reduction,Auchan,comparative_claim|reduced_fat_claim|reduced_sugar|sugar_free_claim,32,246,13.008130081300814,13,724,4.41988950276243,4,13,-0.008130081300814496,True,False
+Free-from (gluten / lactose / dairy),Auchan,dairy_free_claim|gluten_free_claim|lactose_free_claim,8,246,3.2520325203252036,3,724,1.1049723756906076,1,3,-0.2520325203252036,True,False

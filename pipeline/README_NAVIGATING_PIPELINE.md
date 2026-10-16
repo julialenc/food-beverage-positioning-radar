@@ -2,6 +2,7 @@
 pipeline/ # Production pipeline code, governance utilities, validation checks, prompts, and exports
 |-- __init__.py # Package marker for pipeline imports
 |-- README_NAVIGATING_PIPELINE.md # Tree map of pipeline folders and files
+|-- PIPELINE_RETENTION_AUDIT.md # File classifications and dependency checks from the 2026-10-16 cleanup
 |-- rules/ # Shared rules imported by pipeline stages and checks
 |   |-- __init__.py # Package marker for rules imports
 |   `-- category_rules.py # Category query, inclusion, exclusion, and cleanup rules
@@ -42,44 +43,95 @@ pipeline/ # Production pipeline code, governance utilities, validation checks, p
 |   |-- op_05_clear_stale_observations.py # Clear superseded vision observations outside the current release
 |   |-- op_06_summarize_release.py # Summarize release-scoped claim prevalence and brand misses
 |   |-- op_07_review_panel_context.py # Test panel-context review logic on saved OCR text
-|   `-- op_08_prepare_targeted_retailer_ocr_llm_run.py # Resolve reviewed retailer OCR-LLM selections to GTIN sample files
-|-- governance/ # Audit and maintenance tools for category, brand/company, and nutrition governance
+|   |-- op_08_prepare_targeted_retailer_ocr_llm_run.py # Resolve reviewed retailer OCR-LLM selections to GTIN sample files
+|   `-- op_12_prepare_uk_claim_recall_final_09_2026.py # Final UK recall run provenance; original population guard retained
+|-- governance/ # Audit and maintenance tools for category and brand/company governance
 |   |-- __init__.py # Package marker for governance imports
 |   |-- category_scope/ # Category-scope cleanup and audit utilities
 |   |   |-- __init__.py # Package marker for category-scope imports
 |   |   `-- cat_01_apply_category_cleanup.py # Audit or apply conservative category cleanup in SQLite
-|   |-- brand_company_mapping/ # Brand, company, private-label, and orphan-mapping governance tools
-|   |   |-- __init__.py # Package marker for brand/company governance imports
-|   |   |-- map_01_build_brand_alias_review.py # Generate bottom-up brand alias review candidates
-|   |   |-- map_02_build_company_mapping_review.py # Audit normalized-brand company mapping coverage
-|   |   |-- map_03_build_top9_prefix_orphan_candidates.py # Find unmapped brands resembling Top 9 portfolio prefixes
-|   |   |-- map_04_apply_top9_prefix_orphan_decisions.py # Apply reviewed Top 9 prefix-orphan decisions to reference CSVs
-|   |   |-- map_05_cleanup_top9_reference_layers.py # Clean Top 9 reference mapping layers while preserving mapped output
-|   |   |-- map_06_diagnose_brand_extraction.py # Diagnose alternative primary-brand extraction candidates
-|   |   |-- map_07_export_orphan_candidates.py # Export high-volume unmapped regional/category brand candidates
-|   |   `-- map_08_diagnose_brand_mapping.py # Run brand mapping counts, coverage, brand checks, and unmapped diagnostics
-|   `-- nutrition_quality/ # Nutrition-quality governance helpers and historical reviews
-|       |-- __init__.py # Package marker for nutrition-quality governance imports
-|       `-- historical/ # Historical nutrition-quality review scripts retained for audit traceability
-|           |-- __init__.py # Package marker for historical nutrition review imports
-|           |-- nut_hist_01_exclusion_reduction_review.py # Review exclusion-rate impact from nutrition hard gates
-|           |-- nut_hist_02_scenario_c_review.py # Review historical Scenario C nutrition governance candidates
-|           |-- nut_hist_03_scenario_c2_review.py # Review historical Scenario C2 nutrition governance candidates
-|           `-- nut_hist_04_distributional_plausibility_review.py # Review distributional plausibility thresholds
+|   `-- brand_company_mapping/ # Brand, company, private-label, and orphan-mapping governance tools
+|       |-- __init__.py # Package marker for brand/company governance imports
+|       |-- map_01_build_brand_alias_review.py # Generate bottom-up brand alias review candidates
+|       |-- map_02_build_company_mapping_review.py # Audit normalized-brand company mapping coverage
+|       |-- map_03_build_top9_prefix_orphan_candidates.py # Find unmapped brands resembling Top 9 portfolio prefixes
+|       |-- map_04_apply_top9_prefix_orphan_decisions.py # Apply reviewed Top 9 prefix-orphan decisions to reference CSVs
+|       |-- map_05_cleanup_top9_reference_layers.py # Clean Top 9 reference mapping layers while preserving mapped output
+|       |-- map_06_diagnose_brand_extraction.py # Diagnose alternative primary-brand extraction candidates
+|       |-- map_07_export_orphan_candidates.py # Export high-volume unmapped regional/category brand candidates
+|       `-- map_08_diagnose_brand_mapping.py # Run brand mapping counts, coverage, brand checks, and unmapped diagnostics
+|-- maintenance/ # Reviewed mapping corrections and private-label analysis refresh tools
+|   |-- apply_aldi_trader_joes_mapping_correction.py # Apply exact reviewed Aldi/Trader Joe's GTIN corrections
+|   |-- validate_aldi_trader_joes_mapping_correction.py # Check those corrections in local database outputs
+|   |-- apply_auchan_brand_renaming.py # Apply reviewed Auchan brand overrides
+|   |-- expand_private_label_macro_benchmarks.py # Refresh retailer medians using the retained regional baseline
+|   `-- refresh_aldi_private_label_analysis_exports.py # Refresh Aldi detail, investigation and protein exports into a new directory
 |-- exports/ # Read-only exports for documentation and downstream analysis
 |   |-- __init__.py # Package marker for export imports
+|   |-- export_aldi_lidl_claims_evidence.py # Reconstruct reviewed Aldi/Lidl claims from frozen local snapshots; --check validates without writes
 |   |-- export_schema.py # Export live SQLite schema to database/schema.sql
-|   `-- export_vision_analyzed_dataset.py # Export vision-analyzed products for modeling and analysis
-`-- vision_prompts/ # Versioned OCR and LLM prompt files for pack-image analysis
-    |-- current/ # Active prompt files loaded by the vision extraction stage
-    |   |-- prompt_en_context_review.txt # Active English panel-context review prompt
-    |   |-- prompt_fr_context_review.txt # Active French panel-context review prompt
-    |   |-- prompt_v5_en.txt # Active English claim-extraction prompt
-    |   `-- prompt_v5_fr.txt # Active French claim-extraction prompt
-    `-- historical/ # Older prompt versions retained for audit traceability
-        |-- prompt_v1_v2.txt # Historical prompt versions 1 and 2
-        |-- prompt_v3.txt # Historical prompt version 3
-        `-- prompt_v4.txt # Historical prompt version 4
+|   `-- export_retailer_product_details.py # Export local product inputs for mainstream-retailer analysis
+|-- vision_prompts/ # Prompts used by the current extraction profiles
+|   `-- current/
+|       |-- prompt_en_context_review.txt # Active English panel-context review prompt
+|       |-- prompt_fr_context_review.txt # Active French panel-context review prompt
+|       |-- prompt_v5_en.txt # Active English claim-extraction prompt
+|       |-- prompt_v5_fr.txt # Active French claim-extraction prompt
+|       `-- prompt_uk_test_09.2026_final.txt # Active final UK profile; historical name/version preserved
+`-- local_only/ # Ignored by Git; retained on Julia's machine
+    |-- README.md # Archive inventory and usage cautions
+    |-- export_vision_analyzed_dataset.py # Exploratory modeling export; output also stays here
+    |-- nutrition_quality/historical/ # Four historical nutrition review scripts and original package markers
+    |-- vision_prompts/historical/ # Three superseded prompt files
+    `-- orphaned_bytecode/ # Two earlier UK test caches whose Python source files were not found
 ```
 
 
+
+## Private-label analysis maintenance
+
+- `exports/export_aldi_lidl_claims_evidence.py` rebuilds or validates the Aldi/Lidl
+  aggregate evidence from local snapshots and exact reviewed territory decisions.
+  It is a standalone analysis export, not a production pipeline stage.
+- `maintenance/refresh_aldi_private_label_analysis_exports.py` requires a new
+  `--output-dir` outside `presentations/private_label_analysis/`. Its investigation
+  selection comes from `presentations/private_label_analysis/aldi_lidl/archive/`
+  by default. It no longer
+  creates the redundant Aldi reduced macro export.
+- `maintenance/expand_private_label_macro_benchmarks.py` requires a new `--output`
+  outside `presentations/private_label_analysis/`. It reads the retained regional baseline and
+  recalculates retailer rows from SQLite without overwriting publication evidence.
+
+`exports/export_retailer_product_details.py` writes local-only retailer exports
+under `presentations/private_label_analysis/mainstream_*`. The optional
+`vision_ops/op_12_prepare_uk_claim_recall_final_09_2026.py` reads its UK exports
+there. These are supporting analysis workflows, not Streamlit dependencies.
+
+Migration validation on 2026-10-16 found that the UK recall script's retained
+guard expects 919 `NO_CLAIM_IDENTIFIED` rows, while current exports contain 504.
+Subsequent read-only verification found the completed 919-observation release
+in the working database. Preparation cannot be repeated on the changed current
+population without a new selection review; the historical run is not unfinished.
+
+See `presentations/private_label_analysis/aldi_lidl/README.md`
+for local evidence locations, run examples and publication status.
+
+## Operating boundaries
+
+Ordered stages build the app dataset. Manual governance and maintenance tools
+are retained for their dependency or audit role, not scheduled for automatic
+execution. Private-label exporters support the independent
+[presentation evidence collection](../presentations/private_label_analysis/README.md).
+Its frozen inputs and PDFs are separate from fresh pipeline output.
+
+The latest UK extraction profile uses the final September prompt and approved
+text rescues. The final recall release has 919 observations recorded in the
+working database. Its preparation script's 919-row guard rejects the current
+504-candidate input population; that is not an unfinished historical run.
+See the [extraction guide](../docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md)
+before planning any new paid run.
+
+The [retention audit](PIPELINE_RETENTION_AUDIT.md) explains the public/local
+split. Historical nutrition scripts and old prompts remain under the ignored
+`local_only/` archive. A public checkout does not contain all local inputs
+needed by retained manual tools.

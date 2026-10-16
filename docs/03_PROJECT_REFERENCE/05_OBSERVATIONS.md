@@ -79,7 +79,9 @@ Physically impossible values are flagged through nutrition-quality governance
 and excluded from normal aggregate use where appropriate. Raw OFF values remain
 preserved where provenance fields are available. More subtle errors, such as a
 product reporting a value several times higher than comparable brand/category
-peers, require future data-quality flagging rather than silent correction.
+peers, are handled by the implemented within-brand warning layer rather than
+silent correction. Passing the hard gate remains the aggregate eligibility
+boundary; warnings do not independently exclude products.
 
 ### OBS-005 - Category assignment needs active cleansing
 
@@ -88,7 +90,7 @@ useful for broad retrieval but are not clean retail shelf definitions. Products
 can inherit broad parent tags that put them into analytical categories where
 they do not belong.
 
-The most important current issues are:
+The main issues that motivated the completed category cleanup were:
 
 - **Cereals contamination:** `en:cereals-and-their-products` includes pasta,
   bread, flour, rusks, breadsticks, puff pastry, and related grain products.
@@ -98,7 +100,7 @@ The most important current issues are:
   `snacks`, not `cereals`. Earlier cereals release figures were therefore
   contaminated and are retained here as context for the cleanup work.
 - **Snacks contamination:** noodles and related products appear to contaminate
-  snacks. This is narrower than cereals contamination because many bread,
+  snacks in the earlier retrieval. This was narrower than cereals contamination because many bread,
   flour, tortilla, and breadstick terms are legitimate snack products
   (gingerbread, shortbread, tortilla chips, breadstick snack packs).
 
@@ -315,6 +317,9 @@ This distinction explains several design choices:
   evidence.
 
 The distinction is central to interpreting claim-benchmark intersections.
+The later approved UK profile also uses brand/product-name text in the prompt
+and deterministic rescue rules; this contextual exception is documented in
+OBS-026 and must not be described as OCR-only evidence.
 
 ### OBS-011 - Ingredient dictionaries need validation before scaling
 
@@ -379,6 +384,8 @@ In release-01 this likely understated claim prevalence by a small amount.
 
 The current approach is conservative: do not rescue a non-random subset of
 unmapped text unless the rescue rule can be applied consistently and audited.
+The latest UK rules are an approved, documented application of that principle
+(OBS-026), not a retrospective correction to every original release.
 
 ### OBS-017 - Composite scores are legacy/internal
 
@@ -467,3 +474,112 @@ This is a market-positioning signal, not a claim about product quality.
 Named products and brands in this document are examples used to explain
 methodology or interpretation. They should not be treated as representative
 samples, endorsements, criticisms, or legal assessments.
+
+
+## 4. Private-label analysis review
+
+### OBS-025 - Aldi/Lidl territory decisions and retained publication evidence
+
+**Reviewed:** 2026-10-15. **Reviewer:** Julia Lenc, repo owner.
+**Scope:** private-label analytical reporting only; no OFF source, production
+brand/company/category mapping, database, or application eligibility changes.
+
+The review records a manual override and three confirmations. Source claim
+codes and original CSV bytes are preserved in
+`presentations/private_label_analysis/aldi_lidl/source_snapshots/`.
+The machine-readable decisions live in the adjacent
+`reviewed_territory_decisions.csv`; the reviewed classification is applied in
+aggregate reporting rather than silently replacing the historical field.
+
+| Retailer / region | GTIN | Product | Historical territory | Reviewed decision |
+|---|---|---|---|---|
+| Aldi / UK_IE | `4088600438580` | Chocolate orange brownies | Empty | **Manual override to vegan**, reported under Plant-based / vegan. Original codes: `vegan_claim`, `dairy_free_claim`, `plant_based_claim`. Julia identified it as a Veganuary SKU. |
+| Aldi / FRANCE | `22152473` | Bio Haferdrink Mandel | Includes plant/vegan | Confirm vegan from plant-drink identity and dairy-free context. No explicit vegan/plant-based code is added. |
+| Aldi / US_CANADA | `4099100221275` | Organic Almond Unsweetened Original | Includes plant/vegan | Confirm vegan from plant-drink identity and dairy-free context. No explicit vegan/plant-based code is added. |
+| Lidl / UK_IE | `20917821` | Soya sweetened | Includes plant/vegan | Confirm vegan from plant-drink identity and dairy-free context. No explicit vegan/plant-based code is added. |
+
+The brownies have three recorded claim codes and three counted tags, but their
+historical derived territory is empty. No retained generator or relevant Git
+history explains the omission; a collision between vegan and free-from has not
+been established as its technical cause. Overlapping territories are allowed.
+The manual decision changes its analytical classification without removing its
+free-from claim or changing any denominator or stacking count.
+
+The three drinks are reviewed product-specific interpretations, not a blanket
+inference from dairy-free to vegan. Relative to explicit code detection, these
+confirmations add one Plant-based / vegan product in each affected scope.
+
+The rebuilt aggregate retains the original slide-4 percentages alongside both
+code-only and reviewed calculations. Four reviewed Plant-based / vegan cells
+differ from the original PDF:
+
+| Scope | Original PDF | Code-only numerator / claim-bearing base | Reviewed numerator / base | Reviewed rounded share |
+|---|---:|---:|---:|---:|
+| Aldi / FRANCE | 10% | 7 / 67 | 8 / 67 | 12% |
+| Aldi / UK_IE | 5% | 8 / 128 | 8 / 128 | 6% |
+| Aldi / US_CANADA | 6% | 8 / 129 | 9 / 129 | 7% |
+| Lidl / UK_IE | 9% | 12 / 132 | 13 / 132 | 10% |
+
+The original PDF remains unchanged pending Julia's revision. The new evidence
+must not be represented as an exact reproduction of every original slide cell.
+Rules and original PDF SHA-256 are recorded with the aggregate evidence.
+
+Julia confirmed that the Harvest Morn Cookie Dough Bar example came from Aldi
+UK website information, supplementing OFF with a newer item. It is illustrative
+and is not added to CSV-based denominators or medians. The original source URL
+and access date are not available in this cleanup; they have not been invented.
+Julia also plans to revise the broad sugars-versus-market wording. Small Lidl
+US/Canada samples remain an interpretation limitation; the dairy-mix explanation
+is strongest for France and is not established uniformly in every scope.
+
+The local folder guide and `snapshot_manifest.json` record the retained inputs,
+archives, original hashes, and removal of the redundant Aldi reduced export.
+Refresh scripts now require separate new output destinations so later database
+refreshes cannot overwrite this evidence through their command-line workflow.
+
+### OBS-026 - Targeted private-label coverage and UK claim rescue
+
+**Documentation checkpoint:** 2026-10-16.
+
+The local working database contains 23,403 vision-sourced observations after
+targeted private-label enrichment. The original 17,127-observation country
+release remains historical; the enlarged sample is not a representative
+market-prevalence base. Later observations can replace earlier product states.
+
+Julia Lenc confirmed the latest UK rescue method after testing: shopper-facing
+"free from" branding counts as a proposition even when also a brand/range name,
+and origin wording such as "British Milk" can communicate provenance. Flag-plus-
+wording examples informed that review, but the implementation detects text,
+not flag images. The function combines product-name, brand and OCR text and
+also distinguishes explicit fat-reduction wording from skimmed descriptors.
+This is an explicit exception to the original OCR-only claim-evidence rule,
+not a silent alteration of source brand data. Exact behavior is documented in
+section 6.4 of the front-pack extraction guide.
+
+The database records 919 observations under the final UK recall release and
+prompt version. Its preparation script still guards the original 919-candidate
+population; retained current exports have 504 no-claim candidates. That mismatch
+does not mean the historical run failed or remains unfinished. Future recall
+work needs a reviewed new population.
+
+### OBS-027 - Documentation alignment after private-label and pipeline cleanup
+
+**Date:** 2026-10-16.
+
+Documentation was aligned with the standalone `presentations/` collection,
+local-only product snapshots and experiments, the current extraction rules and
+coverage, and the 12,730 active mapping override rows including the 78 September
+Auchan corrections. The pipeline retention audit records file dispositions and
+dependency validation; historical experiment notes remain local with superseded
+status banners.
+
+This was a documentation pass, not an analytical refresh. The root README,
+production code, reference values, databases, CSV evidence and PDFs were not
+changed by this pass. The original Aldi/Lidl PDF still awaits the revisions
+recorded in OBS-025. Commit/push is a separate step.
+
+The retained UK denominator-check CSV records 64/65 rounded slide matches to
+its all-analyzed base. The Asda Sugar / fat reduction cell records 12% on the
+slide versus 29/256 = 11.328125% (11% rounded). This existing discrepancy is
+now explicit in the evidence guide and methodology; neither the PDF nor the
+CSV was changed. It remains a presentation-review item.

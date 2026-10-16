@@ -137,7 +137,7 @@ After the completed September 2026 retailer review, the file contains **1,388 re
 
 Authoritative reviewed GTIN-level decisions and the highest-precedence reference for product-specific corrections. The optional `region` field scopes the override.
 
-After the September 2026 Top-9, France/US-Canada orphan audits, and Aldi / Trader Joe's correction, the file contains **12,652 active reviewed override rows**.
+As checked on 2026-10-16, after the launch audits, Aldi / Trader Joe's correction and the September Auchan corrections, the file contains **12,730 active reviewed override rows**.
 
 ### `data/01_reference_inputs/06_top_company_brand_portfolio_matrix.csv`
 
@@ -206,6 +206,16 @@ Use a **first-party-first, research-enhanced** approach:
 4. Open Food Facts as product-observation evidence, not primary ownership authority.
 
 Current ownership is preferred over historical ownership unless a historical view is explicitly required.
+
+## Post-launch Auchan corrections
+
+The earlier checkpoint contained 12,652 active override rows. The additional
+78 exact reviewed rows are identified by source:
+`auchan_france_brand_renaming_20260916` (70) and
+`auchan_less_sugar_brand_correction_20260916` (8). The maintenance script
+`pipeline/maintenance/apply_auchan_brand_renaming.py` records the correction
+workflow. These are derived GTIN-level decisions, not changes to raw OFF brand
+values or permission to reopen the locked mapping architecture.
 
 ## Maintenance
 

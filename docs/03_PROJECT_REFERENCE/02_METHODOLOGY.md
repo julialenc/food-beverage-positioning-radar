@@ -206,11 +206,16 @@ Implemented launch checks include:
   saturated fat above total fat, and impossible energy values;
 - per-100 kcal nutrient-density checks;
 - energy-versus-macro consistency checks;
-- Scenario C2 safeguards for low-energy beverages and small absolute kcal gaps;
+- guarded treatment of energy-formula limitations for low-energy and
+  alcohol/fermented beverages before generating mismatch warnings;
 - within-brand plausibility warnings;
 - distributional plausibility review before stable tail patterns become
   deterministic rules;
 - chart-range bands for display readability.
+
+Scenario A/B/C/C2 exclusion rates describe historical experiments. They do not
+define the current Market Overview calculation population; the final hard-gate
+and warning policy below is authoritative.
 
 Current treatment:
 
@@ -261,12 +266,28 @@ OFF image
 → claim taxonomy
 ```
 
-As of the August 2026 launch build, the current US/UK and France analytical
-releases contain **17,127 valid front-of-pack observations**.
+As checked on 2026-10-16, the local working database contains **23,403**
+`product_analysis` rows with `claim_source = 'vision'`, including confirmed
+no-claim observations. The original country samples were supplemented with
+targeted private-label coverage. The combined coverage is not a representative
+market sample; original backbone weights do not apply to all these records.
+The original 17,127-observation denominator is retained only as historical
+release information. This count does not verify the live deployed app.
 
 These releases are samples from the image-eligible OFF universe. They are not
 retail-sales samples, market-share estimates, or a census of all packaged
 products.
+
+The latest approved UK/Ireland prompt permits explicit product-name/brand
+claim evidence and adds deterministic text rescues after completed OCR/LLM
+extraction. It uses product-name, brand and OCR
+text: "free from" branding counts as a shopper-facing proposition, and origin
+wording such as "British Milk" can count as provenance positioning. Flag-plus-
+wording pack examples motivated the review, but the implemented rescue detects
+text, not flag images. Explicit fat-reduction wording is distinguished from a
+skimmed descriptor alone. These rules are market-specific and broader than
+the original OCR-only claim-evidence restriction; see section 6.4 of the
+extraction guide for exact behavior.
 
 Two prevalence views must remain distinct:
 
@@ -285,7 +306,8 @@ release details, and OCR/LLM limitations.
 **Status:** Implemented; Streamlit displays vision-based positioning signals.
 
 **Measures:** Explicit front-of-pack positioning territories detected from valid
-OCR/LLM observations, such as protein, fibre, vitamins/fortification, no added
+OCR/LLM observations, including the approved UK text rescues, such as protein,
+fibre, vitamins/fortification, no added
 or reduced sugar, organic, plant-based, heritage, sustainability, and other
 pack cues.
 
@@ -420,6 +442,162 @@ A small curated set of neutral product examples used by Streamlit overview
 pages. It is refreshed rather than treated as a historical time series.
 
 See `docs/03_PROJECT_REFERENCE/01_ADR.md` for the architectural rationale behind the reporting layers.
+
+## Private-label analysis
+
+These standalone business analyses and supporting evidence live in
+[`presentations/private_label_analysis/`](../../presentations/private_label_analysis/README.md).
+They are independent of the Streamlit application; the app does not consume
+the presentations or their evidence files.
+
+The private-label analyses cover Aldi and Lidl across the project regions,
+alongside top mainstream retailers for France (6), UK (5), US (5). They examine
+three complementary dimensions: **portfolio architecture, product composition,
+and on-pack claims**.
+
+### Portfolio architecture
+
+Architecture analysis used retailer-level product CSV exports containing
+product names, brand/company mappings, nutrition, ingredients, pack sizes,
+image URLs, and available positioning fields. These exports are retained
+locally as the analysis inputs.
+
+The analysis was conducted interactively using GPT-5.5 through chat. It examined
+how brands, subranges, categories, price/quality tiers, and consumer needs
+organize each retailer's observed portfolio. External retailer websites and
+packshots supplemented the Open Food Facts records when checking current
+ranges and specialist propositions.
+
+Open Food Facts inputs were supplemented with retailer-published information
+and newer product examples, including product descriptions, nutrition
+information and packshots. Consequently, some presentation examples may not
+appear in the retained OFF-derived CSV exports. Supplementary examples support
+qualitative architecture analysis and illustration; they are not automatically
+included in the CSV-based composition benchmarks or claims denominators. The
+Harvest Morn Cookie Dough Bar on the Aldi slide is an example supplied from the
+Aldi UK website, as confirmed by Julia Lenc. Its original website URL and access
+date have not been recovered in this cleanup.
+
+Julia Lenc, the repo owner, reviewed and aligned the resulting interpretations
+before publication. The architecture was also reviewed by retail professionals.
+Architecture conclusions are qualitative, analyst-reviewed interpretations;
+they are not deterministic classifications generated by the production
+pipeline. Different prompts or model runs may produce different groupings or
+wording.
+
+The retained onboarding documents record the analytical framework at particular
+stages. They do not capture every subsequent correction or the complete chat
+history. Exact prompts were not retained, so the original analysis cannot be
+reproduced verbatim. Any prompt template reconstructed from these documents
+must be identified as a reconstruction.
+
+### Product composition
+
+Composition comparisons use retailer-category nutrition medians and the
+corresponding regional-category medians, recorded in
+`nutrition_values_vs_market_median_all_retailers.csv`.
+
+The retained CSV is the presentation evidence. The optional
+`pipeline/maintenance/expand_private_label_macro_benchmarks.py` refresh preserves
+its `total region` baseline rows and recalculates retailer-category rows from
+the selected local database; it does not rebuild that regional baseline.
+Retailer rows use the latest `ingested_at`, resolved company, region/category,
+and `COALESCE(include_in_product_table, 1) = 1`. Nutrient medians exclude missing
+values independently and retain declared zeros. Fresh outputs require a new path
+outside the retained evidence tree.
+
+“Market median” refers to the project's eligible observed Open Food Facts
+records for that region and category. It is not a sales-weighted or
+representative estimate of the entire retail market.
+
+Category medians are sensitive to assortment composition. For example, a higher
+dairy protein median may reflect a larger share of cheese rather than different
+formulation within comparable products. These comparisons describe observed
+composition and do not establish nutritional superiority or reformulation.
+
+### On-pack claims
+
+Claims analysis uses the available OCR/LLM pack observations and distinguishes
+two measures:
+
+- **Claim incidence:** packs with at least one detected positioning claim
+  divided by all valid analyzed packs, including confirmed no-claim observations.
+- **Territory share:** claim-bearing packs carrying a given territory divided
+  by all claim-bearing analyzed packs.
+
+Products not analyzed are excluded from both denominators. Invalid or unreadable
+observations are not treated as confirmed no-claim observations. A pack may carry
+multiple territories, so territory shares can sum to more than 100%.
+
+The denominator-check and summary CSVs document the counts and calculations
+supporting the analyses. Some check files include both denominator views for
+comparison; the denominator stated for each published measure determines which
+column applies.
+
+These percentages describe the analyzed samples. They do not estimate claim
+prevalence across the entire retailer assortment or market.
+
+#### Aldi/Lidl reviewed claims evidence
+
+The Aldi/Lidl evidence rebuilt on 2026-10-15 uses frozen product exports and
+explicit claim-code groupings. This is a reconstruction of the analysis, not
+the original chat calculation code. The full 13-territory mapping is recorded
+in `presentations/private_label_analysis/aldi_lidl/README.md` and in each
+row of `aldi_lidl_claims_denominator_check.csv`. In particular, Energy uses
+`energy_claim`; Sugar / fat reduction uses `sugar_free_claim`, `reduced_sugar`
+and `reduced_fat_claim`. The broader groupings used in later mainstream US
+analysis must not silently replace these Aldi/Lidl definitions.
+
+Territories may overlap. A product can count in both Plant-based / vegan and
+Free-from; a territory counts a product once even when several codes support
+it. Stacking counts distinct original positioning tags, not reviewed territories.
+
+Julia Lenc reviewed four region-specific GTIN decisions: an empty derived
+territory for Aldi UK chocolate orange brownies was overridden to vegan, and
+three existing plant/vegan assignments for plant drinks were confirmed from
+product context and dairy-free claims. These are exact reviewed interpretations,
+not a general rule that dairy-free means vegan. Original claim codes and
+historical source snapshots remain unchanged. The decisions are recorded in
+`reviewed_territory_decisions.csv` and OBS-025 in
+`docs/03_PROJECT_REFERENCE/05_OBSERVATIONS.md`.
+
+The aggregate check separates code-only numerators from reviewed contextual
+additions. Thus the reviewed Plant-based / vegan shares include three
+product-specific interpretations that are not explicit vegan/plant-based
+claim-code detections. Users examining detection alone should use the code-only
+columns. The reviewed figures differ from four cells of the original PDF;
+those differences are explicit in the check file. The PDF is retained unchanged
+pending Julia's revision and must not be described as reconciled with the new
+reviewed evidence.
+
+The summary includes regional counts and `ALL_REGIONS_RECORDS` totals to
+reconstruct the original pooled headline incidence. A GTIN observed in several
+regions contributes to each region; pooled totals count region records, not
+globally distinct GTINs. They are not used for retailer comparisons of territory
+shares across different regional mixes.
+
+### Evidence and interpretation
+
+The UK denominator-check file preserves both the requested claim-bearing base
+and the all-analyzed base, with a slide comparison column. Those views are not
+interchangeable: the retained UK slide percentages are checked against the
+all-analyzed denominator: 64 of 65 recorded cells match after rounding.
+The remaining Asda Sugar / fat reduction cell is 12% in the slide comparison,
+versus 29/256 = 11.328125% (11% rounded) in the retained evidence. This difference
+remains unresolved. A future presentation revision must explicitly label
+the chosen denominator rather than silently substitute the requested view.
+The final retained CSV evidence takes precedence over incomplete onboarding
+instructions; no PDF percentages were changed during documentation alignment.
+
+
+Published PDFs contain the reviewed conclusions. Supporting aggregate CSVs
+document composition benchmarks and claim calculations, while product-level
+input exports are retained locally.
+
+Historical onboarding instructions may differ from the final method because
+the analysis was refined during review. The methodology and evidence
+accompanying each published analysis should reflect the final calculations and
+reviewed decisions.
 
 ## Interpretation limits
 

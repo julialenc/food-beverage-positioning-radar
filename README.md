@@ -1,39 +1,89 @@
 # Food & Beverage Positioning Radar
 
-**A beta open-data market-intelligence board for exploring how packaged foods
-and beverages position themselves through nutrition, ingredients, processing,
-brand / company mapping, and front-of-pack communication.**
+**An open-data market-intelligence project combining an interactive Streamlit
+board with standalone business analyses of how packaged foods and beverages
+position themselves through portfolio architecture, nutrition, ingredients,
+processing, and on-pack communication.**
 
 [![Data License: ODbL](https://img.shields.io/badge/Data%20License-ODbL-blue)](https://opendatacommons.org/licenses/odbl/)
 [![Code License: Apache 2.0](https://img.shields.io/badge/Code%20License-Apache%202.0-blue)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-green)](https://www.python.org/)
 [![Data: Open Food Facts](https://img.shields.io/badge/Data-Open%20Food%20Facts-orange)](https://world.openfoodfacts.org/)
 
-> **Beta MVP launch build.** This project is built on Open Food Facts records.
-> It includes governed cleaning, nutrition-quality, category, brand, company,
-> and front-pack evidence layers. Open Food Facts remains crowdsourced, so some
-> product records can still be incomplete, inconsistent, or unresolved.
+[Explore the app](https://food-beverage-positioning-radar.streamlit.app/) ·
+[Read the presentations](presentations/README.md) ·
+[Review the methodology](docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md)
+
+> **The Streamlit app is in beta.** The project also delivers completed,
+> publicly shared business presentations, beginning with private-label analysis.
+> Open Food Facts provides the core product data, with governed analytical
+> layers and supplementary retailer research for the business analyses.
 
 ## What This Is
 
-Food & Beverage Positioning Radar is a neutral analytical board for exploring
-packaged food and beverage products. It helps users inspect what products
-contain, how they are classified, which consumer-facing brands and company
-routes they map to, and what they communicate on pack where image evidence is
-available.
+Food & Beverage Positioning Radar turns open product data into an interactive
+analytical board and reviewed business presentations. The app helps users
+inspect product composition, categories, brands, company mappings and pack
+communication. The presentations bring these evidence layers together to
+interpret retailer portfolios and positioning patterns.
 
 The central question is:
 
 **How do packaged foods and beverages position themselves through claims,
 ingredients, nutrition, processing, and design?**
 
-The tool does not judge products, assess legal compliance, recommend purchases,
+The project does not judge products, assess legal compliance, recommend purchases,
 rank brands, or estimate market share. It organizes open product data so users
 can inspect patterns and make their own interpretation.
 
-## Current Scope
+## Private-Label Analyses
 
-The beta MVP focuses on observed Open Food Facts records in:
+Four publicly shared presentations examine private-label positioning across
+**Aldi and Lidl France, UK and US; top 6 retailers in France, top 5 in UK and
+top 5 in US**.
+
+Each analysis covers three dimensions:
+
+- **Architecture:** how brands and ranges organize the retailer's portfolio
+  across value, quality, premium and specialist propositions.
+- **Composition:** category-level nutrition medians compared with the observed
+  regional-category market median.
+- **Claims:** the incidence of detected claims and the mix of positioning
+  territories, with the analyzed-pack or claim-bearing denominator stated
+  in the supporting evidence.
+
+![Summary of private-label portfolio architecture across the UK, France, US, Aldi and Lidl](docs/04_ASSETS/private_labels_portfolios.png)
+
+*Visual summary of the private-label analyses, prepared separately from the
+presentation PDFs. Product examples illustrate portfolio propositions.*
+
+| Analysis | Presentation |
+|---|---|
+| Aldi and Lidl — France, UK and US | [Read the Aldi and Lidl analysis (PDF)](presentations/private_label_analysis/aldi_lidl/aldi_lidl_architecture.pdf) |
+| Top 6 retailers in France | [Read the France analysis (PDF)](<presentations/private_label_analysis/mainstream_france_retailers/private_labels_france_top 5_retailers.pdf>) |
+| Top 5 retailers in UK | [Read the UK analysis (PDF)](presentations/private_label_analysis/mainstream_uk_ie_retailers/private_labels_uk_top_5_retailers.pdf) |
+| Top 5 retailers in US | [Read the US analysis (PDF)](<presentations/private_label_analysis/mainstream_us_canada_retailers/private_labels_us_top 5_retailers.pdf>) |
+
+These standalone analyses are independent of Streamlit. Architecture was
+developed with GPT-5.5 through chat, reviewed and aligned by Julia Lenc, the repo
+owner, and reviewed by retail professionals. Retailer websites and packshots
+supplemented Open Food Facts inputs. Aggregate CSVs support composition and
+claims calculations; product-level input exports are retained locally.
+
+The underlying data uses the project's France, UK/Ireland and US/Canada
+regional groupings. The France PDF retains its historical "top 5" filename
+despite the six-retailer analytical scope.
+
+See the [private-label methodology](docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md#private-label-analysis)
+and [evidence guide](presentations/private_label_analysis/README.md) for
+denominators, source limitations and documented PDF/evidence differences.
+The original Aldi/Lidl PDF awaits revision; its reviewed evidence is not an
+exact reproduction of every slide value. The evidence guide also records an
+unresolved Asda discrepancy in the UK presentation.
+
+## App Scope
+
+The beta Streamlit app focuses on observed Open Food Facts records in:
 
 - France
 - UK & Ireland
@@ -67,40 +117,24 @@ not claim, and where Open Food Facts source limitations matter.
 
 ## Governance Status
 
-The major launch governance layers are documented for the current MVP scope;
-reviewed mapping and category scopes are locked where stated:
+The core governance layers are documented and locked for the reviewed MVP
+scope:
 
-- category cleanup is locked for France, UK/Ireland, and US/Canada snacks and
-  cereals, with additional GTIN-level corrections from the September 2026
-  mapping/orphan audits;
-- retailer/private-label mapping is complete and locked;
-- the nine priority manufacturer portfolios are locked after product-level
-  audit and regression validation;
-- regional-category orphan-brand review is complete across France, UK/Ireland,
-  and US/Canada;
-- nutrition-quality and outlier governance is locked for Product Explorer and
-  Market Overview: Product Explorer hard gates define the usable population,
-  all passing products are used in Market Overview calculations, and
-  chart-range controls affect visualization only;
-- beverage segmentation is an MVP chart-readability layer, not a final beverage
-  taxonomy.
+- category cleanup and exact product-level category corrections;
+- retailer/private-label mapping, nine priority manufacturer portfolios and
+  regional-category orphan-brand review;
+- nutrition-quality hard gates for Product Explorer and Market Overview,
+  with warnings retained separately;
+- beverage view segmentation and chart-range controls for display readability.
 
-The regional orphan threshold was:
+Exact reviewed GTIN corrections take precedence over broad rules. Products
+can remain under `Other / not mapped to a company` when evidence is ambiguous.
+Company routing is directional analytical metadata, not legal ownership truth.
 
-```
-normalized brand assigned to Other / not mapped to a company
-AND at least 100 products in one specific region x category bucket
-```
-
-France and US/Canada had qualifying candidates and were audited, implemented,
-and validated. UK/Ireland had no qualifying orphan candidates at that threshold.
-The final residual review confirms that no normalized brand with at least 100
-products in a single launch region-category remains under
-`Other / not mapped to a company` without reviewed resolution.
-
-Individual products can still remain under `Other / not mapped to a company`
-when ownership is genuinely ambiguous. The project deliberately prefers a false
-negative to a false-positive owner assignment.
+Detailed rules, review thresholds and historical results are recorded in
+[category governance](docs/01_PRODUCT_DATA_GOVERNANCE/01_CATEGORY_SCOPE_AND_CLEANUP.md),
+[brand/company governance](docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md)
+and [nutrition governance](docs/01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md).
 
 ## Methodology In Brief
 
@@ -111,9 +145,22 @@ project-derived metadata. It includes composition data such as nutrition values,
 ingredients, Nutri-Score, and NOVA group, alongside category scope, market tags,
 brand normalization, and company / owner routing.
 
-**Pack-communication evidence** comes from OCR and LLM analysis of selected
-front-pack images. It is shown at product level where available and should not
-be read as representative market-level claim prevalence.
+**Pack-communication evidence** comes from Azure OCR and structured LLM
+extraction on selected front-pack images. The latest approved UK profile also
+uses product-name and brand text to recognize shopper-facing "free from"
+branding and origin wording such as "British Milk". These contextual rules are
+documented in the [extraction methodology](docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md);
+they do not automatically detect flag images.
+
+As checked on **16 October 2026**, the local working database contains
+**23,403 vision-sourced observations**, including confirmed no-claim
+observations. Targeted private-label enrichment expanded the original country
+samples. This combined coverage is not representative market-level claim
+prevalence and does not establish the current live-app coverage.
+
+The qualitative GPT-5.5 architecture research used in the presentations is a
+separate process from Azure pack-claim extraction. Exact architecture prompts
+were not retained; the methodology explains the limits of reproduction.
 
 Core data principles:
 
@@ -127,7 +174,7 @@ Core data principles:
   chart-range controls for visualization readability;
 - exact reviewed GTIN overrides outrank broad brand/company/category rules.
 
-## Known Beta Limitations
+## Known Limitations
 
 - Open Food Facts is crowdsourced; records can be incomplete, duplicated,
   outdated, or inconsistent.
@@ -141,7 +188,10 @@ Core data principles:
 - Some products remain under `Other / not mapped to a company` after review.
 - Beverage segmentation is rule-based and not a complete commercial beverage
   taxonomy.
-- Front-pack claim extraction covers selected image-analyzed products only.
+- Front-pack claim extraction covers selected image-analyzed products only;
+  targeted retailer enrichment and differing prompt rules affect comparability.
+- Presentation architecture is qualitative and reviewed; category medians can
+  reflect assortment mix, and small retailer samples limit generalization.
 - Cold starts and broad filter changes can be slower on the public beta
   deployment.
 
@@ -170,6 +220,7 @@ pipeline/               Production stages, validation checks, governance tools, 
 data/                   Committed reference inputs plus ignored generated output homes
 database/               Schema reference, local build DB, and compressed public MVP DB artifact
 docs/                   Product governance, pack-image analysis, and project reference documents
+presentations/          Standalone business analyses, presentation PDFs, and supporting evidence
 ```
 
 Generated local workspaces are kept as empty committed folders with `.gitkeep`
@@ -184,10 +235,21 @@ data/06_brand_governance_outputs/     Category and brand/company governance revi
 data/07_nutrition_quality_outputs/    Nutrition-quality audit and review outputs
 ```
 
-Generated CSVs, raw Open Food Facts downloads, local audit exports, and the full
-local SQLite build database are not part of the public data surface. They can be
-regenerated when needed and should not be committed unless a file is explicitly
-promoted to production reference status.
+The publication set includes the presentation PDFs, selected aggregate CSV
+evidence, documented review decisions and guides under `presentations/`,
+alongside production reference inputs and the compressed app database.
+An explicit allowlist controls the private-label evidence files.
+
+Raw Open Food Facts downloads, pipeline intermediates, product-level analysis
+inputs, local audit exports and the full working SQLite database remain local.
+Historical pipeline experiments and superseded prompts are retained in the
+ignored `pipeline/local_only/` archive.
+
+Frozen presentation inputs must not be overwritten by fresh exports. A new OFF
+download or database run can differ from historical evidence, and a public
+checkout lacks the local inputs needed to reproduce every analysis.
+See the [evidence guide](presentations/private_label_analysis/README.md) and
+[pipeline retention audit](pipeline/PIPELINE_RETENTION_AUDIT.md).
 
 ## Production Reference Files
 
@@ -238,11 +300,11 @@ The standard local build path is:
 17.  pipeline/stages/stage_17_build_deployment_database.py
 ```
 
-Some scripts are maintenance or review utilities rather than automatic pipeline
-steps. Use them deliberately when refreshing mappings, category rules,
-nutrition governance, or the vision sample. Stages 06-10 form the vision
-sampling/extraction branch and are run when that branch is intentionally
-refreshed. Stage 10 is the paid Azure OCR + LLM step.
+The ordered stages build the app dataset. Separate maintenance, governance and
+analysis tools support mapping reviews, targeted retailer extraction and
+standalone presentation evidence. Run them deliberately when refreshing the
+relevant inputs. Stages 06-10 form the vision sampling/extraction branch and
+are run when that branch is intentionally refreshed. Stage 10 is the paid Azure OCR + LLM step.
 
 Vision Ops can also prepare regional release files, preflight image URLs, and
 reset selected database rows before extraction.
@@ -257,26 +319,40 @@ confidence.
 
 Navigation files:
 
-- `pipeline/README_NAVIGATING_PIPELINE.md` - one-line map of every pipeline script;
-- `data/README_NAVIGATING_DATA.md` - data-folder tree and generated-output contract.
+- [Pipeline navigation](pipeline/README_NAVIGATING_PIPELINE.md) — stages,
+  supporting analysis tools and local archive locations.
+- [Pipeline retention audit](pipeline/PIPELINE_RETENTION_AUDIT.md) — dependency
+  review and public/local retention decisions.
+- [Data navigation](data/README_NAVIGATING_DATA.md) — data-folder tree and
+  generated-output contract.
 
 ## Documentation
 
-- `docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md` - metric definitions, evidence layers, and
-  interpretation rules
-- `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md` - source-data, coverage, and methodology limitations
-- `docs/01_PRODUCT_DATA_GOVERNANCE/01_CATEGORY_SCOPE_AND_CLEANUP.md` - category cleanup and routing governance
-- `docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md` - brand normalization and company mapping
-  governance
-- `docs/01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md` - nutrition-quality and outlier
-  treatment rules
-- `docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md` - database/output field definitions
-- `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md` - OCR/LLM front-pack claim extraction methodology
-- `docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md` - claim taxonomy label definitions
-- `docs/03_PROJECT_REFERENCE/01_ADR.md` - architecture decision records
-- `data/01_reference_inputs/README.md` - reference mapping files and provenance notes
-- `pipeline/README_NAVIGATING_PIPELINE.md` - pipeline folder and script map
-- `data/README_NAVIGATING_DATA.md` - data folder and output-home map
+- [Presentations and business analyses](presentations/README.md) — PDFs and
+  analysis navigation.
+- [Private-label evidence](presentations/private_label_analysis/README.md) —
+  composition benchmarks, claims denominators and review status.
+- [Methodology](docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md) — evidence layers,
+  metric definitions and interpretation rules.
+- [Limitations](docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md) — source quality,
+  coverage and reproduction limits.
+- [Category governance](docs/01_PRODUCT_DATA_GOVERNANCE/01_CATEGORY_SCOPE_AND_CLEANUP.md) —
+  category scope and reviewed corrections.
+- [Brand/company governance](docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md) —
+  normalization, ownership routing and exact overrides.
+- [Nutrition governance](docs/01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md) —
+  hard gates, warnings and chart treatment.
+- [Data dictionary](docs/03_PROJECT_REFERENCE/04_DATA_DICTIONARY.md) — working
+  and deployment schemas, reporting tables and presentation CSV fields.
+- [Front-pack extraction](docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md) —
+  sampling, prompts, UK rescue rules and release history.
+- [Claim labels](docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md) —
+  canonical display labels read by the app.
+- [Architecture decisions](docs/03_PROJECT_REFERENCE/01_ADR.md) and
+  [observations](docs/03_PROJECT_REFERENCE/05_OBSERVATIONS.md) — decisions and
+  analytical review records.
+- [Reference inputs](data/01_reference_inputs/README.md) — mapping files
+  and provenance.
 
 ## Data Source, License, And Attribution
 
@@ -284,7 +360,7 @@ Product data is sourced from [Open Food Facts](https://world.openfoodfacts.org/)
 licensed under the **Open Database License (ODbL)**.
 
 Repository code and original project documentation are licensed under the
-**Apache License, Version 2.0**. See `LICENSE` and `NOTICE`.
+**Apache License, Version 2.0**. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
 If you reuse or redistribute this project, retain the Apache 2.0 license and
 notice files and credit:
@@ -299,7 +375,7 @@ Data attribution:
 Data from Open Food Facts - https://world.openfoodfacts.org
 ```
 
-See `CITATION.md` for citation guidance.
+See [CITATION.md](CITATION.md) for project and presentation citation guidance.
 
 ---
 

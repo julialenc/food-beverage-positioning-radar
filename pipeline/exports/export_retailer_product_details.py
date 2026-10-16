@@ -8,6 +8,8 @@ vision-derived claims; otherwise the product remains NOT_ANALYZED or
 NO_CLAIM_IDENTIFIED according to the existing product_analysis state.
 
 Usage:
+    python pipeline/exports/export_retailer_product_details.py --retailer-set france_mainstream
+
     python pipeline/exports/export_retailer_product_details.py --retailer-set uk_ie_mainstream
 
     python pipeline/exports/export_retailer_product_details.py --retailer-set us_canada_top5
@@ -23,9 +25,21 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-OUTPUT_ROOT = ROOT / "data" / "06_brand_governance_outputs" / "private_label_analysis"
+OUTPUT_ROOT = ROOT / "presentations" / "private_label_analysis"
 
 RETAILER_SETS = {
+    "france_mainstream": {
+        "region": "FRANCE",
+        "output_dir": OUTPUT_ROOT / "mainstream_france_retailers",
+        "companies": [
+            ("Carrefour", "carrefour"),
+            ("E.Leclerc", "e_leclerc"),
+            ("Intermarché", "intermarche"),
+            ("Groupe Casino", "groupe_casino"),
+            ("Groupe U", "groupe_u"),
+            ("Auchan", "auchan"),
+        ],
+    },
     "uk_ie_mainstream": {
         "region": "UK_IE",
         "output_dir": OUTPUT_ROOT / "mainstream_uk_ie_retailers",

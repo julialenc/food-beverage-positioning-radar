@@ -1,0 +1,101 @@
+﻿scope,region,category,company,brand,product,energy_kcal_per_100g,protein_per_100g,fat_per_100g,saturated_fat_per_100g,carbohydrates_per_100g,sugars_per_100g,fiber_per_100g,NOVA,Nutriscore
+total region,FRANCE,beverages,ALL_COMPANIES,ALL_BRANDS,CATEGORY_MEDIAN,40.0,0.1,0.0,0.0,8.0,7.0,0.0037,1: 29.2% | 2: 0.1% | 3: 21.3% | 4: 49.4%,A: 5.4% | B: 20.8% | C: 28.8% | D: 16.8% | E: 28.2%
+total region,FRANCE,cereals,ALL_COMPANIES,ALL_BRANDS,CATEGORY_MEDIAN,389.419,9.3333,7.6,1.5,64.0,17.0,7.5,1: 14.2% | 2: 0.0% | 3: 28.8% | 4: 56.9%,A: 22.9% | B: 8.1% | C: 31.5% | D: 31.7% | E: 5.7%
+total region,FRANCE,dairies,ALL_COMPANIES,ALL_BRANDS,CATEGORY_MEDIAN,225.0,6.5,15.0,9.5,3.9,3.1,0.0,1: 10.0% | 2: 5.8% | 3: 35.1% | 4: 49.1%,A: 5.7% | B: 10.0% | C: 31.6% | D: 40.8% | E: 11.8%
+total region,FRANCE,snacks,ALL_COMPANIES,ALL_BRANDS,CATEGORY_MEDIAN,471.0,6.4,22.0,8.9,57.0,30.0,2.94,1: 0.1% | 2: 0.0% | 3: 15.9% | 4: 84.0%,A: 0.7% | B: 0.7% | C: 5.3% | D: 24.4% | E: 68.9%
+total region,UK_IE,beverages,ALL_COMPANIES,ALL_BRANDS,CATEGORY_MEDIAN,26.0,0.1,0.0,0.0,4.4,3.6,0.1,1: 25.1% | 2: 0.1% | 3: 16.3% | 4: 58.5%,A: 4.8% | B: 23.3% | C: 38.8% | D: 15.7% | E: 17.4%
+total region,UK_IE,cereals,ALL_COMPANIES,ALL_BRANDS,CATEGORY_MEDIAN,381.0,10.0,6.0,1.2,64.3,15.0,7.5988,1: 15.7% | 2: 0.1% | 3: 24.8% | 4: 59.4%,A: 32.5% | B: 13.4% | C: 32.9% | D: 18.5% | E: 2.7%
+total region,UK_IE,dairies,ALL_COMPANIES,ALL_BRANDS,CATEGORY_MEDIAN,154.0,5.5,8.5,5.2,4.8,4.0,0.2,1: 14.7% | 2: 7.0% | 3: 26.6% | 4: 51.7%,A: 10.8% | B: 13.9% | C: 27.5% | D: 35.3% | E: 12.6%
+total region,UK_IE,snacks,ALL_COMPANIES,ALL_BRANDS,CATEGORY_MEDIAN,477.0,6.2,22.3,6.3,58.8,27.2,3.2,1: 0.3% | 2: 0.0% | 3: 16.1% | 4: 83.6%,A: 1.5% | B: 1.3% | C: 11.7% | D: 26.3% | E: 59.2%
+total region,US_CANADA,beverages,ALL_COMPANIES,ALL_BRANDS,CATEGORY_MEDIAN,35.0,0.0,0.0,0.0,6.0,4.5685,0.0,1: 18.9% | 2: 0.0% | 3: 7.3% | 4: 73.7%,A: 1.0% | B: 30.1% | C: 24.0% | D: 9.8% | E: 35.2%
+total region,US_CANADA,cereals,ALL_COMPANIES,ALL_BRANDS,CATEGORY_MEDIAN,384.6154,9.0909,5.814,0.88,73.9115,20.0,7.1429,1: 10.0% | 2: 0.0% | 3: 24.2% | 4: 65.7%,A: 15.1% | B: 4.6% | C: 25.0% | D: 40.7% | E: 14.6%
+total region,US_CANADA,dairies,ALL_COMPANIES,ALL_BRANDS,CATEGORY_MEDIAN,92.0,6.94,2.3333,1.4583,8.75,6.6667,0.0,1: 12.0% | 2: 2.0% | 3: 27.7% | 4: 58.2%,A: 8.7% | B: 16.0% | C: 20.2% | D: 37.7% | E: 17.3%
+total region,US_CANADA,snacks,ALL_COMPANIES,ALL_BRANDS,CATEGORY_MEDIAN,464.2857,6.8966,20.0,5.3004,60.7,22.5176,3.5714,1: 0.8% | 2: 0.0% | 3: 16.0% | 4: 83.2%,A: 1.3% | B: 0.9% | C: 8.6% | D: 28.5% | E: 60.7%
+aldi,FRANCE,beverages,Aldi,ALL_BRANDS,CATEGORY_MEDIAN,42.0,0.5,0.5,0.0,8.8,8.7,0.0,1: 32.5% | 3: 6.0% | 4: 61.6%,A: 3.6% | B: 10.0% | C: 25.9% | D: 17.1% | E: 19.5%
+aldi,FRANCE,cereals,Aldi,ALL_BRANDS,CATEGORY_MEDIAN,407.0,8.9,8.35,2.3,64.5,19.0,6.6,1: 9.5% | 3: 12.7% | 4: 77.8%,A: 10.3% | B: 9.2% | C: 27.6% | D: 44.8% | E: 1.1%
+aldi,FRANCE,dairies,Aldi,ALL_BRANDS,CATEGORY_MEDIAN,292.0,14.0,24.0,16.0,1.85,1.0,0.0,1: 8.7% | 2: 3.8% | 3: 35.0% | 4: 52.6%,A: 4.5% | B: 6.3% | C: 27.3% | D: 50.1% | E: 7.2%
+aldi,FRANCE,snacks,Aldi,ALL_BRANDS,CATEGORY_MEDIAN,476.0,6.3,23.0,11.0,57.0,32.0,2.4,3: 7.3% | 4: 92.7%,A: 0.7% | C: 3.1% | D: 18.8% | E: 72.9%
+aldi,UK_IE,beverages,Aldi,ALL_BRANDS,CATEGORY_MEDIAN,23.0,0.4,0.1,0.0384,4.35,2.5,0.2,1: 35.1% | 3: 6.1% | 4: 58.8%,A: 1.7% | B: 14.0% | C: 26.2% | D: 8.7% | E: 8.7%
+aldi,UK_IE,cereals,Aldi,ALL_BRANDS,CATEGORY_MEDIAN,380.0,9.25,4.7,1.0,67.0,17.0,6.8444,1: 10.3% | 3: 21.8% | 4: 67.8%,A: 25.7% | B: 11.9% | C: 24.8% | D: 24.8% | E: 1.0%
+aldi,UK_IE,dairies,Aldi,ALL_BRANDS,CATEGORY_MEDIAN,136.0,6.6667,7.6,4.67,4.9,4.4,0.3,1: 13.0% | 2: 5.9% | 3: 18.5% | 4: 62.6%,A: 16.6% | B: 10.4% | C: 22.9% | D: 29.4% | E: 7.8%
+aldi,UK_IE,snacks,Aldi,ALL_BRANDS,CATEGORY_MEDIAN,484.0,6.3,23.0,6.0,59.15,25.5881,2.8571,1: 0.2% | 3: 16.0% | 4: 83.8%,A: 1.8% | B: 1.2% | C: 10.4% | D: 29.9% | E: 44.7%
+aldi,US_CANADA,beverages,Aldi,ALL_BRANDS,CATEGORY_MEDIAN,20.0,0.1,0.0,0.0,3.3333,2.7811,0.0,1: 26.9% | 3: 6.9% | 4: 66.2%,A: 0.7% | B: 24.8% | C: 20.8% | D: 4.4% | E: 17.9%
+aldi,US_CANADA,cereals,Aldi,ALL_BRANDS,CATEGORY_MEDIAN,395.3488,8.478,6.25,0.5,72.5,22.0202,6.6667,1: 6.3% | 3: 24.3% | 4: 69.4%,A: 6.7% | B: 4.4% | C: 18.5% | D: 42.2% | E: 14.1%
+aldi,US_CANADA,dairies,Aldi,ALL_BRANDS,CATEGORY_MEDIAN,106.6667,8.6667,5.2941,2.9412,5.0,3.5044,0.0,1: 19.3% | 2: 3.4% | 3: 25.8% | 4: 51.5%,A: 10.3% | B: 14.2% | C: 19.2% | D: 32.4% | E: 13.4%
+aldi,US_CANADA,snacks,Aldi,ALL_BRANDS,CATEGORY_MEDIAN,464.2857,7.1429,21.4286,3.5714,58.3333,13.0789,3.5714,1: 0.2% | 3: 18.9% | 4: 80.9%,A: 0.6% | B: 0.6% | C: 10.5% | D: 30.1% | E: 48.0%
+lidl,FRANCE,beverages,Lidl,ALL_BRANDS,CATEGORY_MEDIAN,40.0,0.2,0.1,0.0,8.85,8.0,0.1483,1: 43.8% | 3: 11.7% | 4: 44.5%,A: 3.9% | B: 13.5% | C: 20.3% | D: 13.1% | E: 15.4%
+lidl,FRANCE,cereals,Lidl,ALL_BRANDS,CATEGORY_MEDIAN,392.0,9.4,7.0,1.85,65.6,19.8,7.35,1: 10.3% | 3: 9.5% | 4: 80.2%,A: 12.8% | B: 8.3% | C: 26.3% | D: 34.6% | E: 5.1%
+lidl,FRANCE,dairies,Lidl,ALL_BRANDS,CATEGORY_MEDIAN,279.0,11.0,22.0,15.0,2.5,1.5,0.0,1: 8.9% | 2: 4.2% | 3: 36.0% | 4: 50.9%,A: 6.5% | B: 8.2% | C: 27.9% | D: 42.1% | E: 9.7%
+lidl,FRANCE,snacks,Lidl,ALL_BRANDS,CATEGORY_MEDIAN,483.0,6.4,23.0,9.3,57.0,31.0,2.526,1: 0.1% | 2: 0.1% | 3: 10.4% | 4: 89.4%,A: 0.4% | B: 0.3% | C: 4.7% | D: 23.2% | E: 64.5%
+lidl,UK_IE,beverages,Lidl,ALL_BRANDS,CATEGORY_MEDIAN,23.0,0.1,0.1,0.0909,4.5,2.9,0.2,1: 35.9% | 3: 6.9% | 4: 57.2%,A: 2.5% | B: 14.4% | C: 25.8% | D: 11.0% | E: 8.5%
+lidl,UK_IE,cereals,Lidl,ALL_BRANDS,CATEGORY_MEDIAN,385.7287,9.8,7.0,1.2725,64.2,17.0,6.8889,1: 10.5% | 3: 22.8% | 4: 66.7%,A: 24.3% | B: 12.9% | C: 37.1% | D: 20.0%
+lidl,UK_IE,dairies,Lidl,ALL_BRANDS,CATEGORY_MEDIAN,250.0,7.5,14.35,7.1,4.7,3.4,0.5,1: 13.3% | 2: 6.0% | 3: 32.9% | 4: 47.8%,A: 13.5% | B: 12.5% | C: 18.6% | D: 39.2% | E: 8.9%
+lidl,UK_IE,snacks,Lidl,ALL_BRANDS,CATEGORY_MEDIAN,466.0,6.3,21.15,6.0,58.05,26.7458,3.3,1: 0.7% | 2: 0.3% | 3: 13.7% | 4: 85.3%,A: 1.0% | B: 1.2% | C: 9.3% | D: 31.0% | E: 46.4%
+lidl,US_CANADA,beverages,Lidl,ALL_BRANDS,CATEGORY_MEDIAN,40.5,0.3,0.3,0.1,9.3,9.25,0.5,1: 40.0% | 3: 5.0% | 4: 55.0%,A: 3.6% | B: 9.1% | C: 14.5% | D: 9.1% | E: 9.1%
+lidl,US_CANADA,cereals,Lidl,ALL_BRANDS,CATEGORY_MEDIAN,410.0,9.5,11.8644,1.7544,66.2,14.8,7.7,1: 12.5% | 3: 25.0% | 4: 62.5%,A: 18.8% | B: 6.2% | C: 43.8% | D: 12.5%
+lidl,US_CANADA,dairies,Lidl,ALL_BRANDS,CATEGORY_MEDIAN,69.0,8.0,0.2,0.1,5.0,4.8,0.0,1: 27.3% | 3: 22.7% | 4: 50.0%,A: 22.2% | B: 13.3% | C: 13.3% | D: 26.7% | E: 4.4%
+lidl,US_CANADA,snacks,Lidl,ALL_BRANDS,CATEGORY_MEDIAN,451.0,7.0,23.0,9.4,52.7,25.35,3.25,3: 15.0% | 4: 85.0%,C: 6.5% | D: 36.4% | E: 39.0%
+carrefour,FRANCE,beverages,Carrefour,ALL_BRANDS,CATEGORY_MEDIAN,41.0,0.4,0.0,0.0,8.9,8.4,0.4051,1: 40.7% | 3: 9.8% | 4: 49.5%,A: 5.0% | B: 10.2% | C: 20.5% | D: 10.4% | E: 11.6%
+carrefour,FRANCE,cereals,Carrefour,ALL_BRANDS,CATEGORY_MEDIAN,390.0,8.6,7.0,1.9,68.0,19.5,6.65,1: 9.7% | 3: 34.9% | 4: 55.4%,A: 16.2% | B: 5.3% | C: 25.9% | D: 41.2% | E: 3.5%
+carrefour,FRANCE,dairies,Carrefour,ALL_BRANDS,CATEGORY_MEDIAN,271.0,7.5,21.0,15.0,3.0,2.45,0.0,1: 8.5% | 2: 5.8% | 3: 41.1% | 4: 44.5%,A: 4.1% | B: 7.8% | C: 24.5% | D: 42.9% | E: 9.7%
+carrefour,FRANCE,snacks,Carrefour,ALL_BRANDS,CATEGORY_MEDIAN,477.0,6.2,23.0,9.4,56.0,31.0,2.6,1: 0.1% | 2: 0.1% | 3: 10.3% | 4: 89.6%,A: 0.3% | B: 0.5% | C: 5.6% | D: 24.1% | E: 58.1%
+e_leclerc,FRANCE,beverages,E.Leclerc,ALL_BRANDS,CATEGORY_MEDIAN,40.0,0.5,0.5,0.1,9.2399,8.7,0.5,1: 28.9% | 2: 0.1% | 3: 30.7% | 4: 40.2%,A: 2.9% | B: 6.1% | C: 20.1% | D: 9.8% | E: 11.0%
+e_leclerc,FRANCE,cereals,E.Leclerc,ALL_BRANDS,CATEGORY_MEDIAN,393.0,8.5,7.0,1.8,68.0,21.5,6.2,1: 7.6% | 3: 31.1% | 4: 61.3%,A: 9.7% | B: 1.4% | C: 28.5% | D: 42.4% | E: 6.9%
+e_leclerc,FRANCE,dairies,E.Leclerc,ALL_BRANDS,CATEGORY_MEDIAN,320.0,18.0,25.0,17.0,1.2,0.5,0.0,1: 7.8% | 2: 5.1% | 3: 39.7% | 4: 47.5%,A: 3.2% | B: 6.3% | C: 28.7% | D: 45.3% | E: 7.8%
+e_leclerc,FRANCE,snacks,E.Leclerc,ALL_BRANDS,CATEGORY_MEDIAN,420.0,6.4,21.0,10.0,49.15,19.0,2.6193,3: 10.3% | 4: 89.7%,A: 0.1% | B: 0.2% | C: 3.7% | D: 26.8% | E: 56.5%
+intermarche,FRANCE,beverages,Intermarché,ALL_BRANDS,CATEGORY_MEDIAN,37.0,0.1,0.0,0.0,6.2,5.4,0.0,1: 38.6% | 2: 0.4% | 3: 12.4% | 4: 48.6%,A: 3.5% | B: 8.9% | C: 20.3% | D: 9.3% | E: 10.3%
+intermarche,FRANCE,cereals,Intermarché,ALL_BRANDS,CATEGORY_MEDIAN,409.0,8.8,11.7,2.65,63.1,20.55,7.15,1: 7.2% | 3: 15.9% | 4: 76.8%,A: 9.8% | B: 1.1% | C: 37.0% | D: 43.5% | E: 1.1%
+intermarche,FRANCE,dairies,Intermarché,ALL_BRANDS,CATEGORY_MEDIAN,179.35,5.0,10.0,7.0,4.4,3.5,0.0,1: 9.2% | 2: 6.9% | 3: 33.9% | 4: 50.0%,A: 3.8% | B: 10.1% | C: 31.1% | D: 38.3% | E: 9.9%
+intermarche,FRANCE,snacks,Intermarché,ALL_BRANDS,CATEGORY_MEDIAN,455.2,6.5,21.75,8.2,57.0,27.0,2.6,3: 12.7% | 4: 87.3%,A: 0.7% | B: 0.8% | C: 5.3% | D: 26.8% | E: 58.8%
+groupe_casino,FRANCE,beverages,Groupe Casino,ALL_BRANDS,CATEGORY_MEDIAN,40.0,0.0,0.0,0.0,9.4,8.7,0.0,1: 47.3% | 2: 0.1% | 3: 11.1% | 4: 41.6%,A: 2.7% | B: 14.6% | C: 26.1% | D: 9.3% | E: 15.0%
+groupe_casino,FRANCE,cereals,Groupe Casino,ALL_BRANDS,CATEGORY_MEDIAN,405.0,8.7,9.55,2.0,66.0,20.0,6.5,1: 8.1% | 3: 22.4% | 4: 69.6%,A: 13.5% | B: 2.9% | C: 29.3% | D: 44.2% | E: 6.2%
+groupe_casino,FRANCE,dairies,Groupe Casino,ALL_BRANDS,CATEGORY_MEDIAN,278.0,9.0,22.0,15.0,2.5,1.5,0.0,1: 10.2% | 2: 4.5% | 3: 41.7% | 4: 43.7%,A: 4.4% | B: 7.4% | C: 27.8% | D: 44.2% | E: 8.5%
+groupe_casino,FRANCE,snacks,Groupe Casino,ALL_BRANDS,CATEGORY_MEDIAN,477.0,6.5,23.0,8.5,57.0,29.0,3.4,3: 13.9% | 4: 86.1%,A: 0.7% | B: 0.5% | C: 3.3% | D: 25.7% | E: 64.0%
+groupe_u,FRANCE,beverages,Groupe U,ALL_BRANDS,CATEGORY_MEDIAN,41.0,0.5,0.5,0.1,8.7,8.1,0.5,1: 32.3% | 3: 28.3% | 4: 39.4%,A: 2.2% | B: 7.9% | C: 18.6% | D: 9.7% | E: 10.3%
+groupe_u,FRANCE,cereals,Groupe U,ALL_BRANDS,CATEGORY_MEDIAN,393.0,8.8,6.7,1.4,67.0,20.0,6.7,1: 4.5% | 3: 18.9% | 4: 76.5%,A: 20.7% | B: 5.7% | C: 28.6% | D: 38.6% | E: 2.9%
+groupe_u,FRANCE,dairies,Groupe U,ALL_BRANDS,CATEGORY_MEDIAN,254.5,6.2,20.0,13.0,3.2,3.0,0.0,1: 10.7% | 2: 6.3% | 3: 37.4% | 4: 45.6%,A: 4.6% | B: 7.5% | C: 25.6% | D: 36.5% | E: 12.7%
+groupe_u,FRANCE,snacks,Groupe U,ALL_BRANDS,CATEGORY_MEDIAN,478.0,6.4,23.0,8.8,59.0,31.0,2.7,3: 10.6% | 4: 89.4%,A: 0.7% | B: 0.3% | C: 4.2% | D: 20.7% | E: 68.8%
+auchan,FRANCE,beverages,Auchan,ALL_BRANDS,CATEGORY_MEDIAN,41.0,0.5,0.5,0.1,8.8,8.65,0.5,1: 40.2% | 3: 13.9% | 4: 45.9%,A: 4.3% | B: 8.0% | C: 20.2% | D: 11.9% | E: 13.3%
+auchan,FRANCE,cereals,Auchan,ALL_BRANDS,CATEGORY_MEDIAN,398.5,8.35,7.0,1.6,70.0,24.0,5.9,1: 9.8% | 3: 15.2% | 4: 75.0%,A: 10.8% | B: 7.2% | C: 34.2% | D: 37.8% | E: 3.6%
+auchan,FRANCE,dairies,Auchan,ALL_BRANDS,CATEGORY_MEDIAN,178.5,4.1,11.0,7.2,4.35,3.65,0.5,1: 6.9% | 2: 8.1% | 3: 33.7% | 4: 51.3%,A: 4.1% | B: 14.1% | C: 23.3% | D: 36.0% | E: 9.6%
+auchan,FRANCE,snacks,Auchan,ALL_BRANDS,CATEGORY_MEDIAN,468.0,6.4,22.6,6.6,57.0,29.0,2.8,3: 13.2% | 4: 86.8%,A: 0.7% | B: 0.7% | C: 8.7% | D: 26.6% | E: 49.1%
+tesco,UK_IE,beverages,Tesco,ALL_BRANDS,CATEGORY_MEDIAN,24.8,0.1,0.1,0.0,1.7,1.2,0.1,1: 31.6% | 3: 9.8% | 4: 58.6%,A: 4.3% | B: 11.6% | C: 26.1% | D: 14.0% | E: 6.8%
+tesco,UK_IE,cereals,Tesco,ALL_BRANDS,CATEGORY_MEDIAN,375.75,9.1,4.15,1.0,65.45,15.8,7.4,1: 14.5% | 3: 28.9% | 4: 56.6%,A: 37.6% | B: 16.1% | C: 32.3% | D: 10.8% | E: 1.1%
+tesco,UK_IE,dairies,Tesco,ALL_BRANDS,CATEGORY_MEDIAN,269.0,9.1,18.5,11.1765,3.4,1.95,0.0,1: 22.0% | 2: 6.5% | 3: 36.5% | 4: 35.0%,A: 8.0% | B: 9.8% | C: 21.0% | D: 38.8% | E: 10.4%
+tesco,UK_IE,snacks,Tesco,ALL_BRANDS,CATEGORY_MEDIAN,480.0,6.0,22.3,7.5,59.9,23.75,2.6667,1: 0.3% | 3: 17.2% | 4: 82.4%,A: 2.1% | B: 1.8% | C: 8.4% | D: 24.3% | E: 52.5%
+asda,UK_IE,beverages,Asda,ALL_BRANDS,CATEGORY_MEDIAN,31.0,0.5,0.5,0.1,4.5,3.75,0.5,1: 44.0% | 3: 4.0% | 4: 52.0%,A: 0.9% | B: 23.5% | C: 20.9% | D: 8.7% | E: 10.4%
+asda,UK_IE,cereals,Asda,ALL_BRANDS,CATEGORY_MEDIAN,376.5,9.8,4.5,0.8,67.0,16.0,7.6333,1: 9.0% | 3: 26.9% | 4: 64.2%,A: 31.6% | B: 10.1% | C: 36.7% | D: 8.9% | E: 1.3%
+asda,UK_IE,dairies,Asda,ALL_BRANDS,CATEGORY_MEDIAN,267.5,7.8,19.0,10.0,4.5,2.7,0.5,1: 19.0% | 2: 7.4% | 3: 36.2% | 4: 37.4%,A: 7.1% | B: 10.5% | C: 19.7% | D: 42.3% | E: 7.5%
+asda,UK_IE,snacks,Asda,ALL_BRANDS,CATEGORY_MEDIAN,480.0,6.3,22.0,6.5,58.0,25.0,2.6,1: 0.6% | 3: 14.8% | 4: 84.7%,A: 1.2% | B: 1.6% | C: 5.3% | D: 30.2% | E: 47.8%
+sainsbury,UK_IE,beverages,Sainsbury's,ALL_BRANDS,CATEGORY_MEDIAN,39.0,0.5,0.5,0.1,4.9,2.7,0.5,1: 50.5% | 3: 13.1% | 4: 36.4%,A: 2.9% | B: 13.8% | C: 15.7% | D: 6.2% | E: 5.7%
+sainsbury,UK_IE,cereals,Sainsbury's,ALL_BRANDS,CATEGORY_MEDIAN,380.2778,9.7,6.5,1.3,65.5778,15.55,7.0556,1: 13.2% | 3: 35.3% | 4: 51.5%,A: 31.0% | B: 9.5% | C: 27.4% | D: 17.9% | E: 2.4%
+sainsbury,UK_IE,dairies,Sainsbury's,ALL_BRANDS,CATEGORY_MEDIAN,273.0,7.6,19.05,10.6667,3.3,2.3333,0.5,1: 16.1% | 2: 6.1% | 3: 49.4% | 4: 28.3%,A: 5.2% | B: 10.8% | C: 22.3% | D: 38.7% | E: 11.1%
+sainsbury,UK_IE,snacks,Sainsbury's,ALL_BRANDS,CATEGORY_MEDIAN,470.0,6.1,22.0,8.2,59.9,21.6808,2.8,3: 19.5% | 4: 80.5%,A: 1.6% | B: 1.6% | C: 7.1% | D: 26.7% | E: 52.4%
+morrisons,UK_IE,beverages,Morrisons,ALL_BRANDS,CATEGORY_MEDIAN,38.5,0.2,0.0,0.0,4.7,3.4,0.25,1: 36.5% | 3: 7.7% | 4: 55.8%,A: 3.0% | B: 17.0% | C: 32.0% | D: 4.0% | E: 8.0%
+morrisons,UK_IE,cereals,Morrisons,ALL_BRANDS,CATEGORY_MEDIAN,385.0,9.0,5.8,1.0,66.0,16.2445,6.7944,1: 16.7% | 3: 33.3% | 4: 50.0%,A: 22.6% | B: 9.7% | C: 27.4% | D: 19.4% | E: 6.5%
+morrisons,UK_IE,dairies,Morrisons,ALL_BRANDS,CATEGORY_MEDIAN,255.4118,7.0,18.35,11.95,3.85,2.9,0.3,1: 21.6% | 2: 12.5% | 3: 28.4% | 4: 37.5%,A: 6.4% | B: 11.8% | C: 20.5% | D: 35.9% | E: 10.9%
+morrisons,UK_IE,snacks,Morrisons,ALL_BRANDS,CATEGORY_MEDIAN,489.0,6.1,22.8934,9.5278,59.5,26.75,2.5,3: 16.4% | 4: 83.6%,A: 0.9% | B: 2.3% | C: 6.4% | D: 21.6% | E: 55.0%
+waitrose,UK_IE,beverages,Waitrose,ALL_BRANDS,CATEGORY_MEDIAN,42.0,0.49,0.1,0.0,7.7,7.3,0.4667,1: 36.4% | 3: 9.1% | 4: 54.5%,B: 12.8% | C: 27.9% | D: 11.6% | E: 14.0%
+waitrose,UK_IE,cereals,Waitrose,ALL_BRANDS,CATEGORY_MEDIAN,374.0,10.5,6.0,1.2,62.6,12.75,8.1,1: 19.1% | 3: 29.8% | 4: 51.1%,A: 40.0% | B: 16.9% | C: 23.1% | D: 9.2%
+waitrose,UK_IE,dairies,Waitrose,ALL_BRANDS,CATEGORY_MEDIAN,277.0,10.0,20.4,13.4,3.7,2.4167,0.0,1: 18.5% | 2: 7.4% | 3: 52.8% | 4: 21.3%,A: 3.9% | B: 10.9% | C: 18.3% | D: 44.8% | E: 9.1%
+waitrose,UK_IE,snacks,Waitrose,ALL_BRANDS,CATEGORY_MEDIAN,494.5,6.15,25.9,13.5,54.05,25.15,3.0,1: 0.7% | 3: 31.9% | 4: 67.4%,A: 0.9% | B: 1.8% | C: 4.1% | D: 19.2% | E: 64.4%
+walmart,US_CANADA,beverages,Walmart,ALL_BRANDS,CATEGORY_MEDIAN,45.8333,0.0,0.0,0.0,2.0833,0.0,0.0,1: 22.7% | 3: 2.4% | 4: 74.9%,A: 2.0% | B: 14.1% | C: 23.3% | D: 9.3% | E: 19.7%
+walmart,US_CANADA,cereals,Walmart,ALL_BRANDS,CATEGORY_MEDIAN,375.0,8.9357,4.879,0.0,76.7033,22.8608,6.6667,1: 5.9% | 3: 25.4% | 4: 68.6%,A: 8.0% | B: 0.8% | C: 17.6% | D: 53.6% | E: 15.2%
+walmart,US_CANADA,dairies,Walmart,ALL_BRANDS,CATEGORY_MEDIAN,155.3571,8.2353,8.06,6.125,5.4167,4.0,0.0,1: 11.5% | 2: 2.3% | 3: 39.5% | 4: 46.7%,A: 5.0% | B: 14.0% | C: 16.7% | D: 42.2% | E: 15.4%
+walmart,US_CANADA,snacks,Walmart,ALL_BRANDS,CATEGORY_MEDIAN,451.6129,5.88,20.0,5.0,60.3571,19.6154,3.3,1: 0.1% | 3: 10.0% | 4: 89.8%,A: 0.4% | B: 0.4% | C: 4.9% | D: 26.8% | E: 61.5%
+costco,US_CANADA,beverages,Costco,ALL_BRANDS,CATEGORY_MEDIAN,2.8178,0.0,0.0,0.0,0.2818,0.0,0.0,1: 33.3% | 3: 5.4% | 4: 61.3%,A: 2.3% | B: 26.7% | C: 26.0% | D: 3.1% | E: 6.1%
+costco,US_CANADA,cereals,Costco,ALL_BRANDS,CATEGORY_MEDIAN,452.8302,10.3774,16.36,2.3585,67.9245,16.36,10.9,1: 25.0% | 4: 75.0%,A: 25.0% | C: 75.0%
+costco,US_CANADA,dairies,Costco,ALL_BRANDS,CATEGORY_MEDIAN,250.0,4.0,3.75,2.5,4.5833,3.4286,0.0,1: 41.4% | 2: 11.4% | 3: 22.9% | 4: 24.3%,A: 3.6% | B: 17.3% | C: 24.5% | D: 32.7% | E: 12.7%
+costco,US_CANADA,snacks,Costco,ALL_BRANDS,CATEGORY_MEDIAN,493.8388,7.1429,24.7059,8.75,47.0588,16.4706,3.3333,3: 15.2% | 4: 84.8%,A: 1.3% | B: 3.9% | C: 3.9% | D: 22.4% | E: 46.1%
+kroger,US_CANADA,beverages,Kroger,ALL_BRANDS,CATEGORY_MEDIAN,37.5,0.0,0.0,0.0,5.042,4.0169,0.0,1: 20.8% | 3: 4.4% | 4: 74.9%,A: 0.4% | B: 24.1% | C: 19.6% | D: 6.2% | E: 29.6%
+kroger,US_CANADA,cereals,Kroger,ALL_BRANDS,CATEGORY_MEDIAN,390.2439,9.7561,6.25,0.0,73.3333,20.0,6.6667,1: 12.5% | 3: 25.0% | 4: 62.5%,A: 15.8% | B: 3.5% | C: 16.7% | D: 46.5% | E: 13.2%
+kroger,US_CANADA,dairies,Kroger,ALL_BRANDS,CATEGORY_MEDIAN,80.0,5.2941,0.962,0.88,7.0544,4.71,0.0,1: 14.6% | 2: 4.0% | 3: 13.8% | 4: 67.7%,A: 14.6% | B: 18.8% | C: 14.4% | D: 28.4% | E: 15.5%
+kroger,US_CANADA,snacks,Kroger,ALL_BRANDS,CATEGORY_MEDIAN,433.6478,7.1429,17.8586,3.5714,62.549,7.0,3.5714,1: 0.5% | 3: 19.6% | 4: 79.9%,A: 1.8% | B: 0.4% | C: 7.6% | D: 28.6% | E: 54.0%
+target,US_CANADA,beverages,Target,ALL_BRANDS,CATEGORY_MEDIAN,27.0833,0.0,0.0,0.0,5.4167,3.9583,0.0,1: 25.3% | 3: 5.9% | 4: 68.8%,A: 0.5% | B: 23.1% | C: 12.6% | D: 5.5% | E: 24.2%
+target,US_CANADA,cereals,Target,ALL_BRANDS,CATEGORY_MEDIAN,375.0,8.8307,6.25,0.955,73.3317,23.4029,6.7232,1: 11.8% | 3: 14.7% | 4: 73.5%,A: 15.3% | B: 5.6% | C: 26.4% | D: 44.4% | E: 5.6%
+target,US_CANADA,dairies,Target,ALL_BRANDS,CATEGORY_MEDIAN,263.1579,14.2857,11.54,7.1429,5.4167,3.2258,0.0,1: 7.6% | 2: 1.2% | 3: 26.9% | 4: 64.2%,A: 6.6% | B: 7.3% | C: 8.8% | D: 61.0% | E: 13.6%
+target,US_CANADA,snacks,Target,ALL_BRANDS,CATEGORY_MEDIAN,464.2857,6.6667,20.0,2.5595,60.7143,25.85,3.33,1: 0.7% | 3: 7.8% | 4: 91.5%,A: 1.0% | B: 0.4% | C: 7.8% | D: 21.8% | E: 63.1%
+walgreens,US_CANADA,beverages,Walgreens,ALL_BRANDS,CATEGORY_MEDIAN,140.0,0.0,0.0,0.0,35.0,0.0,,1: 26.0% | 3: 4.0% | 4: 70.0%,B: 23.5% | C: 19.6% | D: 2.0% | E: 51.0%
+walgreens,US_CANADA,cereals,Walgreens,ALL_BRANDS,CATEGORY_MEDIAN,372.093,9.3023,4.6512,0.0,74.4186,27.907,6.9767,4: 100.0%,D: 100.0%
+walgreens,US_CANADA,dairies,Walgreens,ALL_BRANDS,CATEGORY_MEDIAN,,,,,,,,4: 100.0%,D: 25.0% | E: 25.0%
+walgreens,US_CANADA,snacks,Walgreens,ALL_BRANDS,CATEGORY_MEDIAN,448.8095,6.6667,15.5952,4.2857,62.0238,18.5714,2.3478,1: 0.9% | 3: 5.4% | 4: 93.8%,C: 4.3% | D: 23.5% | E: 68.7%

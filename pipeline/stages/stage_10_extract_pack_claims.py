@@ -123,6 +123,13 @@ LANGUAGE_PROFILES: dict[str, dict] = {
     # that must reproduce release-01 exactly needs --no-context-review.
     "en": {"prompt_file": "prompt_v5_en.txt", "version": "v4",
            "context_review_prompt": "prompt_en_context_review.txt"},
+    "uk_test_09_2026_final": {
+        "prompt_file": "prompt_uk_test_09.2026_final.txt",
+        "version": "uk_test_09.2026_final",
+        "context_review_prompt": "prompt_en_context_review.txt",
+        "prefer_full_size_off_image": True,
+        "apply_uk_claim_rescue_rules": True,
+    },
     "fr": {"prompt_file": "prompt_v5_fr.txt", "version": "v5.1-fr",
            # Second-pass panel-context reviewer. Only languages that define
            # one get the review step, so this also gates the feature.
@@ -166,7 +173,22 @@ def load_prompt(language: str) -> tuple[str, str]:
 
 # ── Azure Vision OCR ──────────────────────────────────────────────────────────
 
-def ocr_image(image_url: str, max_retries: int = 3) -> tuple[str, str]:
+def full_size_off_image_url(image_url: str) -> str:
+    """Return OFF full-size image URL when the source is a 400px derivative."""
+    text = str(image_url or "").strip()
+    if (
+        "images.openfoodfacts.org/images/products/" in text
+        and text.endswith(".400.jpg")
+    ):
+        return text[:-8] + ".full.jpg"
+    return text
+
+
+def ocr_image(
+    image_url: str,
+    max_retries: int = 3,
+    prefer_full_size_off_image: bool = False,
+) -> tuple[str, str]:
     """
     Call Azure AI Vision Read API to extract text from image URL.
     Returns (ocr_text, status) where status is 'success'/'failed'/'invalid_url'.
@@ -186,57 +208,77 @@ def ocr_image(image_url: str, max_retries: int = 3) -> tuple[str, str]:
         "Ocp-Apim-Subscription-Key": VISION_KEY,
         "Content-Type": "application/json",
     }
-    body = {"url": image_url}
+    candidate_urls = [image_url]
+    if prefer_full_size_off_image:
+        full_url = full_size_off_image_url(image_url)
+        if full_url != image_url:
+            candidate_urls = [full_url, image_url]
 
-    for attempt in range(max_retries):
-        try:
-            # Submit job
-            resp = requests.post(url, headers=headers, json=body, timeout=30)
+    for candidate_url in candidate_urls:
+        body = {"url": candidate_url}
 
-            if resp.status_code == 202:
-                # Poll for result
-                result_url = resp.headers.get("Operation-Location")
-                if not result_url:
-                    return "", "no_operation_url"
+        for attempt in range(max_retries):
+            try:
+                # Submit job
+                resp = requests.post(url, headers=headers, json=body, timeout=30)
 
-                for _ in range(10):
-                    time.sleep(2)
-                    result = requests.get(
-                        result_url,
-                        headers={"Ocp-Apim-Subscription-Key": VISION_KEY},
-                        timeout=30
-                    )
-                    result_data = result.json()
-                    status = result_data.get("status", "")
-                    if status == "succeeded":
-                        lines = []
-                        for page in result_data.get("analyzeResult", {}).get("readResults", []):
-                            for line in page.get("lines", []):
-                                lines.append(line.get("text", ""))
-                        return "\n".join(lines), "success"
-                    elif status == "failed":
-                        return "", "ocr_failed"
-                return "", "ocr_timeout"
+                if resp.status_code == 202:
+                    # Poll for result
+                    result_url = resp.headers.get("Operation-Location")
+                    if not result_url:
+                        return "", "no_operation_url"
 
-            elif resp.status_code == 429:
-                wait = int(resp.headers.get("Retry-After", 60))
-                print(f"      Rate limited — waiting {wait}s...")
-                time.sleep(wait)
-                continue
+                    for _ in range(10):
+                        time.sleep(2)
+                        result = requests.get(
+                            result_url,
+                            headers={"Ocp-Apim-Subscription-Key": VISION_KEY},
+                            timeout=30
+                        )
+                        result_data = result.json()
+                        status = result_data.get("status", "")
+                        if status == "succeeded":
+                            lines = []
+                            for page in result_data.get("analyzeResult", {}).get("readResults", []):
+                                for line in page.get("lines", []):
+                                    lines.append(line.get("text", ""))
+                            return "\n".join(lines), "success"
+                        elif status == "failed":
+                            if candidate_url != candidate_urls[-1]:
+                                break
+                            return "", "ocr_failed"
 
-            elif resp.status_code in (400, 415):
-                return "", "invalid_image"
+                    if candidate_url != candidate_urls[-1]:
+                        break
+                    return "", "ocr_timeout"
 
-            else:
-                return "", f"http_{resp.status_code}"
+                elif resp.status_code == 429:
+                    wait = int(resp.headers.get("Retry-After", 60))
+                    print(f"      Rate limited — waiting {wait}s...")
+                    time.sleep(wait)
+                    continue
 
-        except requests.exceptions.Timeout:
-            if attempt < max_retries - 1:
-                time.sleep(5)
-                continue
-            return "", "timeout"
-        except Exception as e:
-            return "", f"error_{str(e)[:30]}"
+                elif resp.status_code in (400, 404, 415):
+                    if candidate_url != candidate_urls[-1]:
+                        break
+                    return "", "invalid_image"
+
+                else:
+                    if candidate_url != candidate_urls[-1]:
+                        break
+                    return "", f"http_{resp.status_code}"
+
+            except requests.exceptions.Timeout:
+                if attempt < max_retries - 1:
+                    time.sleep(5)
+                    continue
+                if candidate_url != candidate_urls[-1]:
+                    break
+                return "", "timeout"
+            except Exception as e:
+                if candidate_url != candidate_urls[-1]:
+                    break
+                return "", f"error_{str(e)[:30]}"
 
     return "", "max_retries"
 
@@ -399,6 +441,93 @@ def validate_and_normalise(claims: dict) -> dict:
             if claims.get(implied) is not True:
                 claims[implied] = True
                 claims["no_claims_detected"] = False
+
+    return claims
+
+
+def _claim_phrase_append(claims: dict, phrase: str) -> None:
+    values = claims.setdefault("detected_claim_phrases", [])
+    if phrase and phrase not in values:
+        values.append(phrase)
+
+
+def _has_any_claim(claims: dict) -> bool:
+    return any(
+        claims.get(field) is True
+        for field in BOOL_CLAIM_FIELDS
+        if field != "no_claims_detected"
+    )
+
+
+def _explicit_fat_reduction(text: str) -> re.Match | None:
+    return re.search(
+        r"\b(fat[- ]?free|low fat|lower fat|reduced fat|less fat|"
+        r"0\s*% ?fat|1\s*% ?fat|"
+        r"\d+\s*% ?(?:less|reduced).{0,20}fat)\b",
+        text,
+    )
+
+
+def _skimmed_descriptor_only(text: str) -> bool:
+    return bool(re.search(r"\b(semi[- ]?skimmed|skimmed)\b", text)) and not _explicit_fat_reduction(text)
+
+
+def _origin_phrase(text: str) -> str:
+    nationality = re.search(
+        r"\b(british|irish|english|french|cypriot|cyprus)\b",
+        text,
+    )
+    if nationality:
+        return nationality.group(1)
+    product_of = re.search(r"\bproduct of\s+([a-z][a-z ]{1,40})", text)
+    if product_of:
+        return "Product of " + product_of.group(1).strip()
+    made_in = re.search(r"\bmade in\s+([a-z][a-z ]{1,40})", text)
+    if made_in:
+        return "Made in " + made_in.group(1).strip()
+    if re.search(r"\bmade from\b", text) and re.search(r"\bby\b", text):
+        return "Made from ... by ..."
+    return ""
+
+
+def apply_uk_claim_rescue_rules(
+    claims: dict,
+    ocr_text: str,
+    product_name: str,
+    brand: str,
+) -> dict:
+    """Apply high-confidence UK/Ireland text rescues found in Sep-2026 QA."""
+    if claims.get("claim_extraction_status") != "completed":
+        return claims
+
+    text = " ".join([product_name or "", brand or "", ocr_text or ""]).lower()
+
+    if re.search(r"\bfree from\b", text):
+        claims["clean_label_claim"] = True
+        _claim_phrase_append(claims, "free from")
+
+    fat_match = _explicit_fat_reduction(text)
+    if fat_match:
+        claims["reduced_fat_claim"] = True
+        _claim_phrase_append(claims, fat_match.group(0))
+        if not _origin_phrase(text):
+            claims["origin_quality_claim"] = False
+
+    if _skimmed_descriptor_only(text):
+        claims["reduced_fat_claim"] = False
+
+    origin = _origin_phrase(text)
+    if origin:
+        claims["origin_quality_claim"] = True
+        _claim_phrase_append(claims, origin)
+
+    if _has_any_claim(claims):
+        claims["no_claims_detected"] = False
+    elif claims.get("detected_claim_phrases") or claims.get("other_claims"):
+        claims["no_claims_detected"] = False
+        claims["unmapped_pack_text"] = True
+    else:
+        claims["no_claims_detected"] = True
 
     return claims
 
@@ -897,6 +1026,12 @@ def main():
     print(f"  Cost alert at: {COST_ALERT_CHF} CHF\n")
 
     tracker = CostTracker(COST_ALERT_CHF)
+    prefer_full_size_off_image = bool(
+        LANGUAGE_PROFILES[args.language].get("prefer_full_size_off_image")
+    )
+    apply_uk_rescue_rules = bool(
+        LANGUAGE_PROFILES[args.language].get("apply_uk_claim_rescue_rules")
+    )
 
     for i, row in enumerate(df.itertuples(), 1):
         if not tracker.check_budget():
@@ -919,7 +1054,10 @@ def main():
         print(f"  [{i:>5}/{len(df)}] {brand[:25]:<25} {product[:30]:<30}", end=" ")
 
         # Stage 1: OCR
-        ocr_text, ocr_status = ocr_image(image_url)
+        ocr_text, ocr_status = ocr_image(
+            image_url,
+            prefer_full_size_off_image=prefer_full_size_off_image,
+        )
         tracker.ocr_calls += 1
 
         # Stage 2: LLM claim extraction
@@ -951,6 +1089,9 @@ def main():
                     ocr_text, product, brand, forced_context=new_ctx)
                 tracker.llm_calls += 1
                 print(f"REVIEW:{new_ctx:<18} ", end="")
+
+        if claims and apply_uk_rescue_rules:
+            claims = apply_uk_claim_rescue_rules(claims, ocr_text, product, brand)
 
         print(f"OCR:{ocr_status:<12} LLM:{llm_status:<12} "
               f"cost:{tracker.estimated_chf:.3f} CHF")

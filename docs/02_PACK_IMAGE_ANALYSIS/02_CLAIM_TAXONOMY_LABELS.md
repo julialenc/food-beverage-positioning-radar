@@ -66,11 +66,14 @@ list of zero or more of these codes per product — not a single value.
 
 ## Implementation note
 
-The Streamlit app should implement this as a simple lookup, applied only
-at display time — filtering, joins, and any stored exports should
-continue to use the underlying codes, not the display labels, so queries
-remain stable even if display wording changes.
+`shared/labels.py` reads these Markdown tables directly and caches the mappings
+once per process. This file is therefore a runtime dependency, not only prose
+documentation. Keep the exact section headings and the table row format
+(two columns, with the stored code in backticks) intact. A wording change here
+is picked up in a fresh process; there is no second hardcoded label dictionary
+to update.
 
-If a label in this table is revised, update it here first, then update
-the interface to match — this file is the source of truth, not a record
-of what the interface currently does.
+Labels are applied at display time. Filtering, joins and stored analytical
+exports should continue to use the underlying codes. This documentation pass
+changes only this implementation note; stored codes and display labels remain
+unchanged.

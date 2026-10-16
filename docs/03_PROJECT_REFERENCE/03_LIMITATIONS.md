@@ -1,7 +1,7 @@
 # Data source, license, and limitations
 
-**Status:** Launch documentation — current  
-**Last updated:** September 2026
+**Status:** Current governance and standalone-analysis limitations
+**Last updated:** 16 October 2026
 
 This document catalogs the main limitations affecting interpretation of
 Food & Beverage Positioning Radar outputs. For metric definitions and
@@ -201,8 +201,13 @@ Unknown records should not be interpreted as a distinct market segment.
 
 ## Front-of-pack claim coverage
 
-As of the August 2026 launch build, the current US/UK and France analytical
-releases contain **17,127 valid front-of-pack observations**.
+As checked on 2026-10-16, the local working database contains **23,403**
+`product_analysis` rows with `claim_source = 'vision'`, including confirmed
+no-claim observations. The original country samples were supplemented with
+targeted private-label coverage. The combined coverage is not a representative
+market sample; original backbone weights do not apply to all these records.
+The original 17,127-observation denominator is retained only as historical
+release information. This count does not verify the live deployed app.
 
 These observations come from sampled, image-eligible OFF products. They are not:
 
@@ -244,8 +249,13 @@ Panel-context review reduces this risk but does not eliminate it.
 Some claim-like text can be captured in `other_claims` or
 `detected_claim_phrases` without mapping into a boolean taxonomy field.
 
-The project does not selectively rescue uncertain cases simply to increase
-claim counts, so some claim prevalence can be understated.
+The approved UK/Ireland rescue rules use combined product-name, brand and OCR
+text on completed observations. They count "free from" branding as a
+shopper-facing proposition and recognize origin wording such as "British Milk".
+They do not detect flags visually. These contextual rules can recover missed
+claims but broaden the evidence beyond OCR alone; comparisons across prompt
+versions and regions must retain that distinction. Missed and misclassified
+claims remain possible. See section 6.4 of the extraction guide.
 
 ### Promotional wording can resemble positioning
 
@@ -273,8 +283,45 @@ Ingredient-based marker analysis is currently designed for English, French, and
 bilingual EN/FR ingredient text. Other-language products retain other usable
 fields but should not receive silent ingredient-marker false negatives.
 
-Approximately 16% of the current dataset falls outside the implemented
-ingredient-language scope.
+Earlier documentation recorded approximately 16% outside the implemented
+ingredient-language scope. That historical share was not recalculated during
+the October documentation pass and should not be treated as current coverage.
+
+## Standalone private-label presentations
+
+The analyses in `presentations/private_label_analysis/` are independent of
+Streamlit. Their architecture, composition and claims evidence have different
+limits:
+
+- Architecture was developed in GPT-5.5 through chat, reviewed/aligned by Julia
+  Lenc and reviewed by retail professionals. It is qualitative interpretation,
+  not deterministic classification. The exact prompts and full chat history
+  were not retained; a different prompt cannot be assumed to reproduce the
+  original conclusions. This is separate from Azure OCR/LLM claim extraction.
+- Product-level input exports remain local. Public aggregate evidence supports
+  inspection of calculations and decisions, but a public checkout alone cannot
+  reconstruct all analyses. Historical onboarding files omit later corrections.
+- Retailer websites and packshots supplied additional qualitative examples.
+  These are not automatically part of CSV-based numerical denominators.
+  The Harvest Morn example's original URL/access date has not been recovered.
+- Targeted private-label enrichment improves retailer coverage without creating
+  a representative assortment or market sample. Small scopes, particularly
+  Lidl US/Canada, support less robust generalization.
+- Category medians depend on assortment mix and missingness. They do not
+  establish like-for-like formulation differences, nutritional superiority or
+  sales-weighted market positions. The shared benchmark retains its historical
+  regional baseline; a retailer refresh alone does not update that baseline.
+- Claims incidence and territory share use different denominators. The UK
+  check file additionally records the all-analyzed slide denominator alongside
+  the requested claim-bearing view. Use the explicit column and slide definition.
+  Its check records one remaining mismatch: Asda sugar/fat reduction is 12% on
+  the slide, versus 29/256 = 11.328125% (11% rounded) among analyzed packs.
+- The original Aldi/Lidl PDF remains unchanged: four reviewed plant/vegan cells
+  differ from it, and the broad sugars comparison awaits Julia's revision.
+  The evidence guide records these differences; the PDF is not yet reconciled.
+
+See [private-label methodology](02_METHODOLOGY.md#private-label-analysis) and
+the [evidence guide](../../presentations/private_label_analysis/README.md).
 
 ## Legacy/internal analytical fields
 

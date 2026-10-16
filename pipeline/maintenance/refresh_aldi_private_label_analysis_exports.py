@@ -1,15 +1,8 @@
-"""Refresh Aldi private-label analysis CSVs after company-mapping correction.
+"""Refresh Aldi analysis exports into a new, explicitly chosen output directory.
 
-This script overwrites only the direct private_label_analysis files affected by
-the Aldi / Trader Joe's correction:
-
-* aldi_products_full_macro_positioning_details.csv
-* aldi_products_macro_positioning.csv
-* aldi_products_investigation_details.csv
-* retailer_brand_protein_levels_by_region_category.csv
-
-It reads current derived company/brand routing from SQLite and preserves raw
-Open Food Facts fields in the output columns.
+The original publication snapshots and investigation selection remain read-only.
+The redundant reduced macro export is no longer produced. This maintenance tool
+reads current SQLite data and must not be used to replace publication evidence.
 """
 
 from __future__ import annotations
@@ -22,12 +15,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DB_PATH = ROOT / "database" / "positioning_radar.db"
-OUTPUT_DIR = ROOT / "data" / "06_brand_governance_outputs" / "private_label_analysis"
-
-FULL_PATH = OUTPUT_DIR / "aldi_products_full_macro_positioning_details.csv"
-MACRO_PATH = OUTPUT_DIR / "aldi_products_macro_positioning.csv"
-INVESTIGATION_PATH = OUTPUT_DIR / "aldi_products_investigation_details.csv"
-PROTEIN_PATH = OUTPUT_DIR / "retailer_brand_protein_levels_by_region_category.csv"
+ANALYSIS_DIR = ROOT / "presentations" / "private_label_analysis"
+INVESTIGATION_SOURCE = (
+    ANALYSIS_DIR / "aldi_lidl" / "archive" / "aldi_products_investigation_details.csv"
+)
 
 REGION_ORDER = ["FRANCE", "UK_IE", "US_CANADA"]
 CATEGORY_ORDER = ["beverages", "cereals", "dairies", "snacks"]
@@ -42,23 +33,6 @@ FULL_COLUMNS = [
     "image_url",
     "pack_size_off",
     "ingredients_text_off",
-    "energy_kcal_per_100g",
-    "protein_per_100g",
-    "fat_per_100g",
-    "saturated_fat_per_100g",
-    "carbohydrates_per_100g",
-    "sugars_per_100g",
-    "fiber_per_100g",
-    "NOVA",
-    "Nutriscore",
-    "Positioning",
-]
-MACRO_COLUMNS = [
-    "region",
-    "category",
-    "company",
-    "brand",
-    "product",
     "energy_kcal_per_100g",
     "protein_per_100g",
     "fat_per_100g",
@@ -223,13 +197,13 @@ def row_from_sql(region: str, r: sqlite3.Row) -> dict[str, str]:
 
 def write_csv(path: Path, columns: list[str], rows: list[dict[str, str]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8-sig", newline="") as f:
+    with path.open("x", encoding="utf-8-sig", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=columns)
         writer.writeheader()
         writer.writerows(rows)
 
 
-def export_aldi_products(conn: sqlite3.Connection) -> list[dict[str, str]]:
+def export_aldi_products(conn: sqlite3.Connection, output_dir: Path) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     query = product_detail_query()
     for region in REGION_ORDER:
@@ -237,13 +211,12 @@ def export_aldi_products(conn: sqlite3.Connection) -> list[dict[str, str]]:
         for record in conn.execute(query, ("Aldi", region_pattern)):
             rows.append(row_from_sql(region, record))
     rows.sort(key=sort_key)
-    write_csv(FULL_PATH, FULL_COLUMNS, rows)
-    write_csv(MACRO_PATH, MACRO_COLUMNS, [{k: row[k] for k in MACRO_COLUMNS} for row in rows])
+    write_csv(output_dir / "aldi_products_full_macro_positioning_details.csv", FULL_COLUMNS, rows)
     return rows
 
 
-def existing_investigation_gtins() -> set[str]:
-    with INVESTIGATION_PATH.open("r", encoding="utf-8-sig", newline="") as f:
+def existing_investigation_gtins(path: Path) -> set[str]:
+    with path.open("r", encoding="utf-8-sig", newline="") as f:
         return {
             (row.get("GTIN") or "").strip()
             for row in csv.DictReader(f)
@@ -251,18 +224,19 @@ def existing_investigation_gtins() -> set[str]:
         }
 
 
-def export_investigation(rows: list[dict[str, str]]) -> tuple[int, int]:
-    gtins = existing_investigation_gtins()
+def export_investigation(
+    rows: list[dict[str, str]], gtins: set[str], output_dir: Path
+) -> tuple[int, int]:
     investigation_rows = [
         {**row, "Investigate": "yes"}
         for row in rows
         if row.get("GTIN", "") in gtins
     ]
-    write_csv(INVESTIGATION_PATH, INVESTIGATION_COLUMNS, investigation_rows)
-    return len(investigation_rows), len(gtins) - len(investigation_rows)
+    write_csv(output_dir / "aldi_products_investigation_details.csv", INVESTIGATION_COLUMNS, investigation_rows)
+    return len(investigation_rows), len(gtins - {row["GTIN"] for row in investigation_rows})
 
 
-def export_protein_levels(conn: sqlite3.Connection) -> int:
+def export_protein_levels(conn: sqlite3.Connection, output_dir: Path) -> int:
     display_brand = brand_expr()
     query = f"""
         SELECT
@@ -310,33 +284,38 @@ def export_protein_levels(conn: sqlite3.Connection) -> int:
             row["brand"].lower(),
         )
     )
-    write_csv(PROTEIN_PATH, PROTEIN_COLUMNS, rows)
+    write_csv(output_dir / "retailer_brand_protein_levels_by_region_category.csv", PROTEIN_COLUMNS, rows)
     return len(rows)
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Refresh Aldi private-label CSV exports.")
+    ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", default=str(DB_PATH))
+    ap.add_argument("--output-dir", type=Path, required=True,
+                    help="New run directory outside private_label_analysis; never overwritten")
+    ap.add_argument("--investigation-source", type=Path, default=INVESTIGATION_SOURCE)
     args = ap.parse_args()
+    output_dir = args.output_dir.resolve()
+    if output_dir.is_relative_to(ANALYSIS_DIR.resolve()):
+        ap.error("Refresh outputs must be outside the retained private_label_analysis evidence tree")
+    if output_dir.exists():
+        ap.error("Choose a new output directory; existing runs are never overwritten")
+    gtins = existing_investigation_gtins(args.investigation_source)
 
     conn = sqlite3.connect(f"file:{args.db}?mode=ro", uri=True)
     conn.row_factory = sqlite3.Row
     try:
         conn.create_aggregate("MEDIAN", 1, MedianAggregate)
-        aldi_rows = export_aldi_products(conn)
-        investigation_rows, investigation_removed = export_investigation(aldi_rows)
-        protein_rows = export_protein_levels(conn)
+        aldi_rows = export_aldi_products(conn, output_dir)
+        investigation_rows, investigation_removed = export_investigation(aldi_rows, gtins, output_dir)
+        protein_rows = export_protein_levels(conn, output_dir)
     finally:
         conn.close()
 
-    print("Refreshed Aldi private-label analysis exports:")
-    print(f"  {FULL_PATH}: {len(aldi_rows):,} rows")
-    print(f"  {MACRO_PATH}: {len(aldi_rows):,} rows")
-    print(
-        f"  {INVESTIGATION_PATH}: {investigation_rows:,} rows "
-        f"({investigation_removed:,} previous investigated GTINs no longer Aldi)"
-    )
-    print(f"  {PROTEIN_PATH}: {protein_rows:,} rows")
+    print(f"Refreshed exports in {output_dir} (original evidence unchanged):")
+    print(f"  Full Aldi details: {len(aldi_rows):,} rows")
+    print(f"  Investigation: {investigation_rows:,} rows; {investigation_removed:,} selected GTINs absent")
+    print(f"  Brand protein summary: {protein_rows:,} rows")
 
 
 class MedianAggregate:

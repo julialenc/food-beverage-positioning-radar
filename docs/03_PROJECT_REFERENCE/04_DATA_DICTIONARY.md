@@ -1,10 +1,21 @@
 # Column descriptions
 
-This document describes the core database tables currently documented for the
-project: `products`, `product_analysis`, `weekly_brand_summary`, and
-`ingestion_log`. It is the canonical reference for field meaning, expected
-values, and source for those tables. Some newer reporting, audit, and Streamlit
-precompute outputs are noted at the end for a later schema-documentation pass.
+This document describes the working database's twelve application/audit tables,
+the compact deployment schema, and the separate presentation CSV evidence.
+Schema and owning scripts were inspected on 2026-10-16. Grouped column families
+below share a definition; they do not imply new columns or a schema migration.
+
+The full local `database/positioning_radar.db` is the audit/build source.
+Stage 17 publishes a compact database with seven tables: `products`,
+`product_analysis`, `axis_range_config`, `market_chart_bands`,
+`region_category_benchmarks`, `profile_intersections` and
+`category_region_averages`. Its `products` table keeps selected display,
+nutrition, mapping, warning and inclusion fields. Its `product_analysis` keeps
+only `barcode`, `pack_claims_found` and `claim_source`; the OCR, prompt, release
+and sampling metadata documented below remain in the working database.
+Stage 17 selects the latest ingested product snapshot within launch scopes and
+the latest precompute snapshots. Do not expect the public artifact to contain
+the full audit schema or treat local counts as a live-deployment check.
 
 **Interpretation principle:** every field below is an analytical signal, not a
 verdict. Fields describe observed or derived attributes — claims, ingredients,
@@ -48,7 +59,7 @@ the app and aggregate analysis, but source values should remain traceable.
 | `company_mapping_source` | TEXT | Source/rule for the company mapping, such as reference mapping, top-company portfolio routing, manual-review replacement proposal, or no mapping match. |
 | `quantity` | TEXT | Pack size / quantity as recorded in Open Food Facts (e.g. "500g", "1.15L"). European decimal commas are normalized to periods. |
 | `packaging` | TEXT | Packaging material/type as recorded in Open Food Facts. |
-| `query_category` | TEXT | The category used when this product was retrieved from Open Food Facts during data collection (e.g. snacks, beverages, cereals). |
+| `query_category` | TEXT | Project category, initially assigned through OFF retrieval and subsequently subject to governed format rules and exact reviewed category overrides, including OUT_OF_SCOPE. It is not an immutable raw source category; see off_categories for source evidence. |
 | `off_categories` | TEXT | The full, raw category string as recorded in Open Food Facts, often containing multiple nested category tags. Used to refine `query_category`. |
 | `countries` | TEXT | Pipe-separated list of country tags as recorded in Open Food Facts. |
 | `primary_country` | TEXT | The first country extracted from `countries`. Reflects where the product was recorded in Open Food Facts, not necessarily where it is sold (see `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md`). |
@@ -87,6 +98,9 @@ the app and aggregate analysis, but source values should remain traceable.
 | `include_in_aggregates` | INTEGER (1/0) | Compatibility/audit-history field. Current Market Overview calculations use the Product Explorer hard gate as the exclusion boundary; records that pass `include_in_product_table = 1` remain aggregate-eligible even when warning flags are present. |
 | `include_in_charts` | INTEGER (1/0) | Compatibility/audit-history field. Current Product Map display starts from Product Explorer-valid records with non-null selected axes and applies selected chart-range bands; chart ranges affect visualization only. |
 | `nutrition_quality_reason` | TEXT | Semicolon-separated or rule-style reasons for the nutrition-quality status and inclusion flags. |
+| `warning_flag` | INTEGER (1/0) | Whether an audit warning is present after nutrition governance; a warning alone does not fail the hard gate. |
+| `warning_types` | TEXT | Stored warning codes for energy-macro mismatch and/or within-brand plausibility concerns. |
+| `warning_summary` | TEXT | Human-readable warning explanation for review/display; does not correct source nutrition. |
 | `energy_kcal_missing` | INTEGER (1/0) | Whether the source/working energy value is missing. Missing is not zero. |
 | `fat_100g_missing` | INTEGER (1/0) | Whether total fat is missing. Missing is not zero. |
 | `saturated_fat_100g_missing` | INTEGER (1/0) | Whether saturated fat is missing. Missing is not zero. |
@@ -161,9 +175,11 @@ from claims printed on the front of pack.
 ### Pack-image-based claims (vision + LLM extraction)
 
 These fields are populated only for products that have undergone image-based
-claim extraction — a subset of the full product table. The current US/UK and
-France analytical releases contain 17,127 valid front-of-pack observations,
-drawn from sampled, image-eligible Open Food Facts products. See
+claim extraction — a subset of the full product table. As checked on 2026-10-16,
+the working database has **23,403** rows with `claim_source = 'vision'`.
+This combines the original country samples with targeted private-label
+enrichment; 17,127 is the historical original-release count. It is not a
+representative market sample or a check of the live app. See
 `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md` for the sampling design, prompt history, release
 IDs, and extraction limitations. All fields in this section are declared in
 the schema upfront but populated by `stage_11_merge_vision_results.py`, not by `stage_04_build_product_analysis.py`.
@@ -177,7 +193,32 @@ the schema upfront but populated by `stage_11_merge_vision_results.py`, not by `
 | `vision_model` | TEXT | Model or deployment used for pack-image claim extraction (e.g. `gpt-4.1-nano`). Recorded for reproducibility, cost review, and prompt/model calibration — see `docs/02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md`, `docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md`, and `docs/03_PROJECT_REFERENCE/01_ADR.md`. |
 | `prompt_version` | TEXT | Version identifier for the prompt/extraction schema used during LLM claim extraction. Avoids mixing outputs from incompatible extraction logic when prompts are revised. |
 | `pack_analysis_timestamp` | TEXT | When pack-image analysis was performed or merged into the database. Distinct from `analyzed_at`, which reflects the most recent write to the row from any pipeline stage. |
-| `pack_claims_found` | TEXT | Front-pack claim observation state. `NULL` means no valid pack observation exists (not analyzed, non-front image, or extraction failure). `""` means a valid front pack was assessed and no taxonomy claim was found. A pipe-separated string (e.g. `protein_claim|vegan_claim`) contains claims identified directly from front-pack OCR/LLM extraction. Only `NULL` should trigger ingredient/name fallback in claim taxonomy; `""` is a true no-claim observation. |
+| `pack_claims_found` | TEXT | Front-pack claim observation state. `NULL` means no valid pack observation exists (not analyzed, non-front image, or extraction failure). `""` means a valid front pack was assessed and no taxonomy claim was found. A pipe-separated string (e.g. `protein_claim|vegan_claim`) contains extracted claim codes, including approved contextual text rescues for the latest UK profile. Thus not every UK code is supported by OCR text alone. Only `NULL` should trigger ingredient/name fallback in claim taxonomy; `""` is a true no-claim observation. |
+
+### Pack context, run provenance and sampling
+
+These working-database fields are populated through stage 11 and retained for
+audit. `claim_source = vision` denotes valid stored observations, not one
+specific release or a uniform prompt method.
+
+| Column | Type | Description |
+|---|---|---|
+| `image_context` | TEXT | Panel classification: front_of_pack, mixed_pack_text, ingredient_or_legal_panel, nutrition_label, price_sticker or uncertain. |
+| `claim_extraction_status` | TEXT | Completed, non-front, unreadable or other extraction outcome; use with OCR/LLM status to distinguish absence from failure. Stored status codes follow stage 10. |
+| `detected_claim_phrases` | TEXT | Serialized phrases captured by extraction and approved rescue rules; recorded text does not itself guarantee a mapped taxonomy claim. |
+| `claims_json` | TEXT | Serialized structured extraction payload retained for audit, alongside the aggregate pipe-separated claim codes. |
+| `release_run_id` | TEXT | Run/release identifier used to separate historical releases and targeted retailer updates. |
+| `sampling_region` | TEXT | Region assigned to the extraction sample; distinct from a product's potentially multiple observed market tags. |
+| `sampling_category` | TEXT | Category assigned at sampling time; may differ from a subsequently corrected product category. |
+| `sample_component` | TEXT | Original backbone/matrix/calibration component or targeted-run label. |
+| `primary_stratum_id` | TEXT | Stored sampling stratum identifier; interpretation depends on the run design. |
+| `sampling_weight` | REAL | Approximate design weight where defined; missing for purposive/targeted samples, not zero. |
+| `weight_status` | TEXT | Explains weight availability/type, including targeted_unweighted for targeted recall inputs. |
+
+The final UK profile combines product-name, brand and OCR text for the approved
+rescue function. Inspect `prompt_version` and `release_run_id` before comparing
+observations from different evidence rules. Full behavior is documented in
+[the extraction guide](../02_PACK_IMAGE_ANALYSIS/01_FRONT_PACK_CLAIM_EXTRACTION.md#64-approved-ukireland-rescue-rules--september-2026).
 
 ### Legacy/internal positioning-to-composition fields
 
@@ -241,9 +282,8 @@ before `stage_11_merge_vision_results.py` and `stage_12_build_claim_taxonomy.py`
 necessarily reflects ingredient-analysis-stage signals only (composition
 markers, NOVA, ingredient-based claim signals). It does not include pack
 claim distribution, claim taxonomy shares, benchmark intersection rates,
-or `positioning_composition_gap`. A separate aggregation step, run after
-the full pipeline completes and querying `product_analysis` directly, is
-needed for the richer market-intelligence summary described in the brief.
+or `positioning_composition_gap`. Stage 13 already supplies the separate
+`weekly_brand_positioning_summary` after enrichment, as documented below.
 This table is useful for early pipeline QA, not as the final Streamlit or
 reporting export source. `stage_05_load_database.py` deletes existing rows for the current day's
 `week_ending` before inserting, so rerunning on the same day does not
@@ -296,21 +336,163 @@ and with what outcome.
 | `status` | TEXT | `success`, `partial`, or `failed`. |
 | `notes` | TEXT | Free-text notes, typically an error message on failed runs. |
 
-## Open items for review
+## Reporting and precompute tables
 
-A few things surfaced while compiling this that go beyond pure renaming and
-are worth a deliberate decision rather than a silent default:
+These tables have different populations and denominators. Their names do not
+make them substitutes for the frozen private-label CSVs or the current
+Market Overview query population. The following describes the stored output
+and implementation, without changing the locked governance rules.
 
-1. **Legacy/internal composite fields remain documented because they still
-exist in parts of the historical pipeline.** They are not user-facing Streamlit
-MVP metrics. See `docs/03_PROJECT_REFERENCE/02_METHODOLOGY.md` and `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md`.
-2. **`pack_analysis_attempted`, `claim_source`, and `pack_claims_found` must be
-interpreted together.** The `NULL` versus `""` distinction in
-`pack_claims_found` is semantically important and must be preserved when
-reading or exporting CSVs.
-3. **Some newer reporting/precompute tables still need a schema documentation
-pass.** Known candidates include `weekly_brand_positioning_summary`,
-`positioning_example_products`, `axis_range_config`,
-`region_category_benchmarks`, and `profile_intersections`. Their full column
-definitions should be added after inspecting the live schema and owning scripts,
-not inferred here.
+### `weekly_brand_positioning_summary`
+
+Owner: `pipeline/stages/stage_13_build_app_summaries.py`. Grain:
+`week_ending` + `source_scope` + `primary_brand` + `query_category`, with
+`id` (INTEGER) and `run_timestamp` (TEXT). Replaces that period/scope on rerun.
+Brand keys here are legacy `primary_brand`, not necessarily the preferred
+`normalized_brand`.
+
+| Columns | Type | Meaning / denominator |
+|---|---|---|
+| `product_count` | INTEGER | Products in the brand/category group. |
+| `pack_analyzed_count`, `pct_pack_analyzed` | INTEGER, REAL | Count where pack_analysis_attempted=1 and percentage of product_count. This is an attempted-analysis denominator, not automatically valid completed packs. |
+| `pct_with_pack_claims`, `pct_with_pack_claims_among_analyzed` | REAL | Nonempty pack-claim records divided by product_count or pack_analyzed_count, respectively. Not interchangeable with presentation claim incidence. |
+| `positioning_gap_scored_count`, `pct_positioning_gap_scored` | INTEGER, REAL | Non-null legacy gap values; coverage share of product_count. |
+| `claim_tagged_count`, `pct_claim_tagged` | INTEGER, REAL | Non-null claim_category_1 values; coverage share of product_count. |
+| `pct_functional`, `pct_free_of`, `pct_natural_organic`, `pct_other_claim`, `pct_no_claim` | REAL | Highest-priority category shares among all group products, potentially including ingredient/name fallback. Not multi-territory shares among claim-bearing packs. |
+| `top_claim_category_1`, `top_claim_category_2` | TEXT | Most frequent category, including the no-claim/none category. |
+| `top_detected_claim_category_1`, `top_detected_claim_category_2` | TEXT | Most frequent non-null category excluding NO_CLAIM/none. |
+| `avg_composition_marker_score`, `avg_positioning_composition_gap` | REAL | Means over available legacy/internal scores; missing scores are excluded. |
+| `pct_nova4`, `pct_with_artificial_sweetener` | REAL | Records meeting the stored signal divided by product_count. |
+| `pct_with_nutrition_benchmark_flags`, `pct_with_claim_benchmark_intersections` | REAL | Records with nonempty fields divided by product_count. |
+| `pct_sugar_above_reference`, `pct_saturated_fat_above_reference`, `pct_fat_above_reference`, `pct_salt_above_reference` | REAL | Records carrying the indicated benchmark flag divided by product_count. |
+
+### `positioning_example_products`
+
+Owner: stage 13. Replaced on each run; a product may have several
+`selection_reason` rows. `id` is INTEGER, `barcode` and `selection_reason` are
+TEXT, and `run_timestamp` is TEXT. Selection is illustrative, not ranking.
+
+Copied TEXT fields: `product_name`, `primary_brand`, `query_category`,
+`claim_category_1`, `claim_category_2`, `pack_claims_found`,
+`nutrition_benchmark_flags`, `claim_benchmark_intersections`,
+`nutriscore_grade`, `image_url`. Copied REAL fields:
+`positioning_composition_gap`, `composition_marker_score`, `nova_group`.
+They retain the product/analysis meanings above. This working-table history
+is not part of the compact deployment schema.
+
+### `market_trend_weekly`
+
+Owner: stage 13; DDL also declared by stage 05. Grain: `week_ending` and
+`query_category`, replaced for that period on rerun; `id` INTEGER and
+`run_timestamp` TEXT. It describes a changing database snapshot, not sales
+trends, launches or an effect of any treatment.
+
+| Columns | Type | Meaning / denominator |
+|---|---|---|
+| `product_count` | INTEGER | Category records in the reporting input. |
+| `new_product_count` | INTEGER | Records whose created_t can be parsed as a numeric Unix timestamp within 90 days; not a verified product-launch count. Unparseable dates do not count. |
+| `pack_analyzed_count`, `pct_pack_analyzed` | INTEGER, REAL | Attempted pack analyses and their share of product_count. |
+| `avg_protein_per_kcal` | REAL | Mean protein grams per 100 kcal over non-null protein and positive energy. |
+| `pct_high_protein` | REAL | Records with protein_100g >=20 divided by product_count; an internal threshold, not legal claim eligibility. |
+| `avg_fiber_per_carb`, `avg_sugar_per_carb` | REAL | Mean fibre/carbohydrate and sugar/carbohydrate ratios over available values with positive carbohydrates. |
+| `pct_nova1`, `pct_nova2`, `pct_nova3`, `pct_nova4` | REAL | NOVA group counts divided by all product_count, including records missing NOVA in that denominator. |
+| `nova4_to_nova1_ratio` | REAL | NOVA 4 count / NOVA 1 count; null when NOVA 1 count is zero. |
+| `median_pack_size_g` | REAL | Median recognized g/kg pack weight, kg converted to g; volume units omitted. |
+| `pct_functional_claims`, `pct_free_of_claims`, `pct_natural_organic_claims`, `pct_no_claim` | REAL | Highest-priority taxonomy shares among product_count, potentially including fallback evidence. |
+| `avg_additives_count`, `pct_with_additives` | REAL | Mean count of pipe-separated OFF additive tags and share with tags. The implementation fills missing tags with empty strings, so these measure recorded tag coverage, not confirmed additive absence. |
+
+### `category_region_averages`
+
+Owner: `stage_05_load_database.py::compute_category_region_averages`.
+Key fields `snapshot`, `query_category` and `region` are TEXT.
+`energy_kcal`, `protein_per_kcal`, `fiber_per_kcal`, `satfat_per_kcal`,
+`sugars_per_kcal`, `sugars_100g` and `salt_100g` are REAL means over available
+values, requiring at least ten values per metric. Ratio fields are grams per
+100 kcal despite their names.
+
+This Product Explorer cache is built from the stage input with usable brand and
+positive energy. Region is derived from `primary_country`, with OTHER and ALL
+groups. It is not the same population/statistic as the region-tag-based medians
+below or the private-label CSV. Missing metric values are omitted.
+
+### `region_category_benchmarks`
+
+Owner: stage 14. `id` INTEGER; `snapshot`, `region_code`, `category`,
+`computed_at` TEXT; `product_count` INTEGER. Uses latest ingested records,
+usable legacy brand, product-table and aggregate inclusion flags, and observed
+region tags. Each metric also has hard-validity and non-null checks.
+
+| Column families | Type | Meaning |
+|---|---|---|
+| `energy_median`, `energy_p25`, `energy_p75`, `energy_valid_n` | REAL statistics, INTEGER count | Energy kcal per 100g/100ml median and quartiles, plus valid observations. |
+| `protein_eff_*`, `fibre_eff_*`, `satfat_eff_*`, `sugars_eff_*` | REAL statistics, INTEGER valid_n | Nutrient grams per 100 kcal; suffixes median, p25, p75, valid_n. Positive energy required. |
+| `protein_ml_*`, `fibre_ml_*`, `satfat_ml_*`, `sugars_ml_*` | REAL statistics, INTEGER valid_n | Raw nutrient values per 100g/100ml; stable beverage comparison without dividing by energy. Same four suffixes. |
+| `nova_classified_n`, `nova4_n`, `nova4_pct` | INTEGER, INTEGER, REAL | Valid NOVA 1–4 base, NOVA 4 count and share of that classified base. |
+
+Statistics are null below ten valid metric values; valid_n remains recorded.
+These precomputed medians are not the separately retained presentation
+baseline. Current Market Overview treatment is defined in nutrition governance.
+
+### `profile_intersections`
+
+Owner: stage 15, after stage 14. `id` INTEGER; `snapshot`, `region_code`,
+`category`, `full_subset_key`, `sub_collection_key`, `computed_at` TEXT.
+`eligible_count` and `matching_count` are INTEGER.
+
+The full key identifies the complete selected profile dimensions; the
+sub-collection identifies a subset of those conditions. All steps use the
+same population valid on every dimension in the full profile. Matching counts
+satisfy the subset within that eligible base; benchmark conditions read stage
+14 medians. These are composition-profile intersections, distinct from
+product_analysis.claim_benchmark_intersections and future product segmentation.
+
+### `axis_range_config` and `market_chart_bands`
+
+Owner: stage 16. Both have `id` INTEGER and TEXT `snapshot`, `region_code`,
+`category`, `beverage_view_segment` and `computed_at`. Include the segment
+in joins; one barcode can occur in multiple market scopes.
+
+| Table / columns | Type | Meaning |
+|---|---|---|
+| axis_range_config: `metric_key` | TEXT | Axis metric identifier. |
+| `hard_min`, `hard_max` | REAL | Metric plausibility bounds used in range computation. |
+| `p03`, `p97` | REAL | Current central-range display cutoffs. |
+| `p99_5`, `display_max` | REAL | Retained upper-tail/legacy display diagnostics; not the current central-range policy. |
+| `n_valid`, `n_flagged_invalid` | INTEGER | Valid metric values and non-null values outside metric bounds. |
+| `n_ratio_unstable` | INTEGER | Valid ratio values flagged by the low-energy diagnostic. |
+| `n_below_p03`, `n_above_p97`, `n_trimmed` | INTEGER | Below/above central cutoffs and their sum; display counts, not aggregate exclusions. |
+| `n_outside_display_range` | INTEGER | Values above the stored display_max diagnostic. |
+| market_chart_bands: `barcode` | TEXT | Product identity within the full scope key. |
+| `energy_chart_band`, `protein_chart_band`, `fat_chart_band`, `saturated_fat_chart_band`, `carbs_chart_band`, `sugars_chart_band`, `fiber_chart_band`, `salt_chart_band` | TEXT | Precomputed chart-band assignments for raw axes. |
+| `protein_per_kcal_chart_band`, `satfat_per_kcal_chart_band`, `fiber_per_kcal_chart_band`, `sugars_per_kcal_chart_band` | TEXT | Equivalent assignments for energy-normalized axes. |
+
+Chart bands control drawing only. They do not change the hard-gate population
+used for Market Overview calculations. See
+[the locked nutrition governance](../01_PRODUCT_DATA_GOVERNANCE/03_NUTRITION_QUALITY_GOVERNANCE.md).
+
+## Standalone presentation CSV evidence
+
+These files live under `presentations/private_label_analysis/` and are not
+Streamlit table inputs. See [the evidence guide](../../presentations/private_label_analysis/README.md)
+for file locations and [the methodology](02_METHODOLOGY.md#private-label-analysis)
+for interpretation.
+
+| File / columns | Meaning |
+|---|---|
+| nutrition_values_vs_market_median_all_retailers.csv: `scope`, `region`, `category`, `company`, `brand`, `product` | Region/category and retailer scope identifiers; ALL_BRANDS / CATEGORY_MEDIAN indicate aggregated company rows. |
+| `energy_kcal_per_100g`, `protein_per_100g`, `fat_per_100g`, `saturated_fat_per_100g`, `carbohydrates_per_100g`, `sugars_per_100g`, `fiber_per_100g` | Category nutrient medians in source per-100g/100ml units, not means of brand medians. |
+| `NOVA`, `Nutriscore` | Text distributions of recorded classifications, not medians. |
+| Claims check: `claim_codes_counted`, `numerator_products_with_territory` | Explicit code union and territory-bearing product count. Territories can overlap. |
+| `denominator_claimed_products` / UK `denominator_claimed_products_requested` | Claim-bearing analyzed base, used by corresponding pct_among_claimed_products columns (with requested in UK names). |
+| `denominator_analyzed_products_including_no_claim` | All analyzed packs, including confirmed no-claim observations; corresponding percentage columns use this base. |
+| Claims summary: `total_products`, `analyzed_products_including_no_claim`, `claimed_products_denominator` (UK: suffix _requested), `no_claim_identified_products` | Coverage and claim-incidence bases; analyzed = claimed + confirmed no-claim. |
+| `claim_detection_rate_among_analyzed_pct` | Claim-bearing / analyzed, multiplied by 100. |
+| Slide comparison fields | Retained PDF percentage, percentage-point difference and/or rounded denominator match; presence and naming vary by analysis. UK comparison preserves the all-analyzed slide base alongside the requested claim-bearing view. |
+
+The Aldi/Lidl check additionally separates `code_only_numerator_products_with_territory`,
+`reviewed_context_additions` and the reviewed numerator, with reviewed GTINs,
+rules version, input/review/PDF hashes and PDF differences. Its summary includes
+not-analyzed counts and original-tag stacking, with regional and pooled
+`ALL_REGIONS_RECORDS` scopes. The [Aldi/Lidl guide](../../presentations/private_label_analysis/aldi_lidl/README.md)
+defines rounding, zero denominators, territory rules and snapshot provenance.
+Do not silently standardize historical column names or denominators.
