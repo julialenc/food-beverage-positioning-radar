@@ -10,7 +10,6 @@ import shutil
 import sqlite3
 import tempfile
 from collections import OrderedDict
-from datetime import date, datetime
 from pathlib import Path
 from typing import Optional
 
@@ -153,28 +152,6 @@ def get_connection() -> sqlite3.Connection:
     install_population(conn, require_complete=True)
     conn.row_factory = sqlite3.Row
     return conn
-
-
-@st.cache_data(show_spinner=False)
-def get_snapshot_label() -> str:
-    """Show the governed release dates, with the original app's legacy label."""
-    conn = get_connection()
-    has_manifest = conn.execute(
-        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='release_manifest'"
-    ).fetchone()
-    if not has_manifest:
-        return "August 2026"
-    row = conn.execute(
-        "SELECT reporting_date, retrieved_at FROM release_manifest WHERE status='complete'"
-    ).fetchone()
-    if not row:
-        raise ValueError("Completed release manifest is missing")
-    cutoff = date.fromisoformat(row[0])
-    retrieval = datetime.fromisoformat(row[1]).date()
-    return (
-        f"{cutoff:%b} {cutoff.day}, {cutoff.year} proxy "
-        f"(OFF retrieved {retrieval:%b} {retrieval.day}, {retrieval.year})"
-    )
 
 
 @st.cache_data(show_spinner=False)
