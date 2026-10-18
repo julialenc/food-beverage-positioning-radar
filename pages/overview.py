@@ -37,7 +37,6 @@ from shared.beverage_segments import (
     UNKNOWN_BEVERAGE_SEGMENT,
 )
 
-_SNAPSHOT_LABEL = "August 2026"
 _CATEGORY_LABELS = {
     "beverages": "Beverages",
     "cereals": "Cereals",
@@ -853,7 +852,7 @@ if category == "beverages" and selected_segment:
     ].copy()
 
 st.caption(
-    f"Current data snapshot: {_SNAPSHOT_LABEL} · "
+    f"Current data snapshot: {db.get_snapshot_label()} · "
     f"{len(df_market):,} products in selected scope"
 )
 if category == "beverages" and selected_segment:
@@ -1285,7 +1284,7 @@ if active_section == "By Region":
         "classified products, not of the full category — hover a NOVA cell "
         "for the underlying counts."
     )
-    st.caption(f"Benchmark snapshot: {_SNAPSHOT_LABEL}")
+    st.caption(f"Benchmark snapshot: {db.get_snapshot_label()}")
 
     csv_bytes = bench_df.drop(columns=["_cat_order", "_region_order"]).to_csv(index=False).encode("utf-8")
     st.download_button(
@@ -1300,7 +1299,7 @@ if active_section == "Product Profile Landscape":
     st.caption("Build a cumulative profile to see how often nutritional characteristics combine.")
     st.markdown(
         f"**{region_label} · {_category_label(category)}** &nbsp;·&nbsp; "
-        f"Current data snapshot: {_SNAPSHOT_LABEL}"
+        f"Current data snapshot: {db.get_snapshot_label()}"
     )
     st.caption(
         "Each step adds another condition. Percentages show the share of "
@@ -1419,7 +1418,7 @@ if active_section == "Product Profile Landscape":
             f"{eligible_count:,} of {n_total_market:,} products in the selected "
             f"region-category have valid data for all selected profile dimensions."
         )
-        st.caption(f"Benchmarks: index ≥110 / ≤90 · Snapshot: {_SNAPSHOT_LABEL}")
+        st.caption(f"Benchmarks: index ≥110 / ≤90 · Snapshot: {db.get_snapshot_label()}")
 
     st.stop()
 
