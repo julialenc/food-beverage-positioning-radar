@@ -5,7 +5,12 @@ pipeline/ # Production pipeline code, governance utilities, validation checks, p
 |-- PIPELINE_RETENTION_AUDIT.md # File classifications and dependency checks from the 2026-10-16 cleanup
 |-- rules/ # Shared rules imported by pipeline stages and checks
 |   |-- __init__.py # Package marker for rules imports
-|   `-- category_rules.py # Category query, inclusion, exclusion, and cleanup rules
+|   |-- category_rules.py # Category query, inclusion, exclusion, and cleanup rules
+|   |-- population_policy.py # Approved retained population; tested on a copy, not yet integrated into production
+|   |-- incremental_ingestion.py # Copy-only atomic processed batches, source ordering, replay checks and row history
+|   |-- proxy_wave.py # Pinned bulk scan, preserved raw observations and September proxy cutoff decisions on a copy
+|   |-- governed_ingestion.py # Govern eligible staged observations and connect the transactional copy-only writer
+|   `-- claim_freshness.py # Match stored observations to original extraction image and prompt-context evidence
 |-- stages/ # Ordered backbone scripts for building the product dataset, app tables, and deployment database
 |   |-- __init__.py # Package marker for stage imports
 |   |-- stage_01a_bootstrap_from_off_bulk.py # Bulk one-off download from Open Food Facts zip files
@@ -33,6 +38,12 @@ pipeline/ # Production pipeline code, governance utilities, validation checks, p
 |   |-- check_03_beverage_segments.py # Validate beverage segmentation rules
 |   |-- check_04_schema.py # Compare live SQLite schema against current pipeline DDL
 |   |-- check_05_vision_release.py # Run QA checks on final vision release files
+|   |-- check_06_baseline_capture.py # Verify read-only SQLite backup, WAL handling and population inventory
+|   |-- check_07_population_policy.py # Test retained membership with real stage-05 upserts on disposable databases
+|   |-- check_08_incremental_ingestion.py # Test transactional copy-only ingestion, rollback, replay and preserved history
+|   |-- check_09_proxy_wave.py # Offline collection/cutoff/resume checks and optional full-size staging validation
+|   |-- check_10_governed_ingestion.py # Governed writer integration, rollback, replay and full-size copy validation
+|   |-- check_11_incremental_release.py # Retained release selection, cutoff reporting and claim freshness checks
 |   `-- review_06_claim_taxonomy.py # Sample claim taxonomy outputs for manual inspection
 |-- vision_ops/ # Operational tools for paid/manual pack-image release runs
 |   |-- __init__.py # Package marker for vision-ops imports
@@ -61,6 +72,13 @@ pipeline/ # Production pipeline code, governance utilities, validation checks, p
 |       |-- map_07_export_orphan_candidates.py # Export high-volume unmapped regional/category brand candidates
 |       `-- map_08_diagnose_brand_mapping.py # Run brand mapping counts, coverage, brand checks, and unmapped diagnostics
 |-- maintenance/ # Reviewed mapping corrections and private-label analysis refresh tools
+|   |-- capture_database_baseline.py # Preserve a consistent local baseline and provenance report without modifying source data
+|   |-- prepare_population_policy_trial.py # Encode approved membership on a new local copy of the preserved baseline
+|   |-- run_incremental_ingestion_trial.py # Create a new copy and apply explicit processed input or synthetic validation fixtures
+|   |-- collect_off_snapshot.py # Resumable bulk evidence download with pinned source identity; no product writes
+|   |-- stage_proxy_wave.py # Stage a completed snapshot and cutoff decisions on a fresh copy; supports scan resume
+|   |-- connect_governed_wave.py # Process a completed staged wave and commit it transactionally on the same copy
+|   |-- build_incremental_release.py # Rebuild downstream outputs and a separate completed release candidate with freshness audit
 |   |-- apply_aldi_trader_joes_mapping_correction.py # Apply exact reviewed Aldi/Trader Joe's GTIN corrections
 |   |-- validate_aldi_trader_joes_mapping_correction.py # Check those corrections in local database outputs
 |   |-- apply_auchan_brand_renaming.py # Apply reviewed Auchan brand overrides
@@ -135,3 +153,25 @@ The [retention audit](PIPELINE_RETENTION_AUDIT.md) explains the public/local
 split. Historical nutrition scripts and old prompts remain under the ignored
 `local_only/` archive. A public checkout does not contain all local inputs
 needed by retained manual tools.
+
+## Incremental-readiness work
+
+The original baseline capture was checksum-verified and moved to
+`G:\My Drive\Food Beverage Positioning Radar\wave_archives\baseline_20261016T180817_168296Z\`.
+Population-policy trial outputs remain local under
+`data/06_brand_governance_outputs/population_policy_trials/`. The trial adds
+membership metadata to a separate database copy; production stages and
+Streamlit have not yet been connected to it. See the
+[approved population policy](../docs/03_PROJECT_REFERENCE/06_INCREMENTAL_POPULATION_POLICY.md)
+for counts, date provenance, test coverage and remaining integration work.
+
+The separate copy-only transactional writer and its validation outputs use
+`data/06_brand_governance_outputs/incremental_ingestion_trials/`. The October 17
+OFF export was collected, staged against the September 29 eligibility cutoff,
+governed and written on a marked copy. The completed release candidate is in
+`release_real_proxy_20261018_v1/` under that trials directory. It checks claim
+provenance and rebuilds downstream outputs with explicit retained population
+and completed-release selection. The source export stays local under
+`data/02_raw_off_downloads/incremental_snapshots/`. Paid vision refresh remains
+a separate operation. The legacy file-discovery pipeline is not the monthly
+incremental entry point.

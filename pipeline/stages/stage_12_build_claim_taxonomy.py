@@ -94,6 +94,11 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT       = Path(__file__).resolve().parents[2]
+import sys
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from shared.release_population import install_population
+
 DB_PATH    = ROOT / "database" / "positioning_radar.db"
 PIPELINE_INTERMEDIATE_DIR = ROOT / "data" / "03_pipeline_intermediates"
 
@@ -369,6 +374,7 @@ def main():
 
     # Load from DB
     conn = sqlite3.connect(DB_PATH)
+    install_population(conn, legacy_all=True)
     print("  Loading products + ingredient-stage and pack-image analysis from DB...")
 
     df = pd.read_sql("""
@@ -392,6 +398,7 @@ def main():
             a.detected_claim_phrases, a.prompt_version
         FROM products p
         LEFT JOIN product_analysis a ON p.barcode = a.barcode
+        WHERE p.barcode IN (SELECT barcode FROM current_product_barcodes)
     """, conn, dtype={"barcode": str})
 
     print(f"  Loaded {len(df):,} rows")

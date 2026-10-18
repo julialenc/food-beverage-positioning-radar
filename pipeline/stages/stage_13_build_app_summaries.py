@@ -105,6 +105,11 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT       = Path(__file__).resolve().parents[2]
+import sys
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from shared.release_population import install_population
+
 DB_PATH    = ROOT / "database" / "positioning_radar.db"
 SOURCE_SCOPE = "full_database_snapshot"
 
@@ -220,12 +225,14 @@ def is_nonempty(val):
 
 
 def load_full_snapshot(conn):
-    """Load the full current products + product_analysis snapshot."""
+    """Load the selected population with current derived analysis."""
+    install_population(conn, legacy_all=True)
     df = pd.read_sql("""
         SELECT
             p.barcode, p.product_name, p.primary_brand, p.query_category,
             p.primary_country, p.quantity, p.additives_tags, p.created_t,
             p.nova_group, p.nutriscore_grade, p.image_url,
+            p.energy_kcal, p.protein_100g, p.fiber_100g, p.carbs_100g, p.sugars_100g,
             a.composition_marker_score, a.positioning_composition_gap,
             a.positioning_composition_gap_band,
             a.pack_claims_found, a.pack_analysis_attempted, a.claim_source,
@@ -234,6 +241,7 @@ def load_full_snapshot(conn):
             a.has_artificial_sweetener
         FROM products p
         LEFT JOIN product_analysis a ON p.barcode = a.barcode
+        WHERE p.barcode IN (SELECT barcode FROM current_product_barcodes)
     """, conn, dtype={"barcode": str})
     return df
 
@@ -542,7 +550,8 @@ def compute_market_trend_weekly(df: "pd.DataFrame", week_ending: str,
     import numpy as np
     from datetime import datetime, timedelta
 
-    cutoff_90d = (datetime.now() - timedelta(days=90)).timestamp()
+    period_end = pd.Timestamp(week_ending, tz="Europe/Berlin") + pd.Timedelta(days=1)
+    cutoff_90d = period_end - pd.Timedelta(days=90)
     rows = []
 
     for category in df["query_category"].dropna().unique():
@@ -552,10 +561,12 @@ def compute_market_trend_weekly(df: "pd.DataFrame", week_ending: str,
             continue
 
         # ── Coverage ──────────────────────────────────────────────────────────
-        # New products: created_t is a UNIX timestamp in the DB
+        # OFF record creation can be a cleaned ISO date or a legacy epoch.
         try:
-            created_numeric = pd.to_numeric(cat["created_t"], errors="coerce")
-            new_count = int((created_numeric > cutoff_90d).sum())
+            created = pd.to_datetime(cat["created_t"], errors="coerce", utc=True, format="mixed")
+            numeric = pd.to_numeric(cat["created_t"], errors="coerce")
+            created = created.where(numeric.isna(), pd.to_datetime(numeric, unit="s", errors="coerce", utc=True))
+            new_count = int(((created >= cutoff_90d) & (created < period_end)).sum())
         except Exception:
             new_count = 0
 
@@ -678,19 +689,20 @@ def write_market_trend_weekly(conn, rows: list[dict], week_ending: str) -> int:
     return len(rows)
 
 
-def main():
+def main(reporting_date=None):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     # week_ending is the snapshot date this run was executed, used as
     # the reporting period boundary. In development this is simply
     # today's date; in a weekly production schedule it represents the
     # week-ending / reporting snapshot date for that run.
-    week_ending = datetime.now().strftime("%Y-%m-%d")
+    week_ending = reporting_date or datetime.now().strftime("%Y-%m-%d")
     print(f"\nFood & Beverage Positioning Radar - stage_13_build_app_summaries.py")
     print(f"Run timestamp: {timestamp}")
     print(f"Week ending:   {week_ending}")
     print(f"Source scope:  {SOURCE_SCOPE} (always — see module docstring)\n")
 
     conn = sqlite3.connect(DB_PATH)
+    install_population(conn, legacy_all=True)
     init_db(conn)
 
     print("  Loading full products + product_analysis snapshot from DB...")

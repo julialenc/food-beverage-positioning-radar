@@ -649,9 +649,9 @@ def detect_plant_based_nutrition_intersection(row):
 
 # ── Main analysis pipeline ────────────────────────────────────────────────────
 
-def analyze(input_path):
-    print(f"\n  Input file: {os.path.basename(input_path)}")
-    df = pd.read_csv(input_path, encoding="utf-8-sig", low_memory=False,
+def analyze(input_path=None, *, input_frame=None):
+    print(f"\n  Input file: {os.path.basename(input_path) if input_path else 'explicit in-memory batch'}")
+    df = input_frame.copy(deep=True) if input_frame is not None else pd.read_csv(input_path, encoding="utf-8-sig", low_memory=False,
                      dtype={"barcode": str})
     print(f"  Rows on load: {len(df):,}")
 

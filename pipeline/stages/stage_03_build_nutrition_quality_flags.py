@@ -443,7 +443,7 @@ def within_brand_warning_mask(df: pd.DataFrame) -> pd.Series:
     return df.index.to_series().isin(warning_indices)
 
 
-def build_nutrition_quality_flags(df: pd.DataFrame) -> pd.DataFrame:
+def build_nutrition_quality_flags(df: pd.DataFrame, *, peer_context=None) -> pd.DataFrame:
     """Return a copy of df with derived nutrition quality fields added."""
     out = add_display_fields(df)
 
@@ -709,7 +709,21 @@ def build_nutrition_quality_flags(df: pd.DataFrame) -> pd.DataFrame:
         ENERGY_MACRO_WARNING_TEXT,
     )
 
-    product_explorer_within_brand_warning = within_brand_warning_mask(out)
+    if peer_context is None:
+        product_explorer_within_brand_warning = within_brand_warning_mask(out)
+    else:
+        # Context contains unchanged retained products; callers exclude the
+        # barcodes being replaced. Only the new rows are returned or written.
+        peers = peer_context.copy(deep=True)
+        peers['brand'] = peers['primary_brand'].fillna('')
+        peers['region'] = peers['observed_market_region_codes'].fillna('')
+        peers['category'] = peers['query_category'].fillna('')
+        peers['include_in_product_explorer'] = as_bool_series(peers['include_in_product_table'], peers.index)
+        for derived_col, clean_col in SOURCE_NUTRITION_COLS.items():
+            peers[derived_col] = raw_nutrition_series(peers, clean_col)
+        combined = pd.concat([peers, out], ignore_index=True)
+        mask = within_brand_warning_mask(combined)
+        product_explorer_within_brand_warning = pd.Series(mask.iloc[len(peers):].to_numpy(), index=out.index)
     append_warning(
         out,
         product_explorer_within_brand_warning,

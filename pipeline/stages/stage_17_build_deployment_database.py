@@ -233,6 +233,11 @@ def main() -> None:
     if not SOURCE_DB.exists():
         raise FileNotFoundError(f"Source database not found: {SOURCE_DB}")
 
+    # Governed incremental copies require the validated, isolated release path.
+    with sqlite3.connect(f"file:{SOURCE_DB}?mode=ro", uri=True) as check:
+        if check.execute("SELECT 1 FROM sqlite_master WHERE name='population_membership'").fetchone():
+            raise ValueError("Use build_incremental_release.py for a governed ingestion copy")
+
     if PUBLIC_DB.exists():
         PUBLIC_DB.unlink()
     if PUBLIC_DB_GZ.exists():

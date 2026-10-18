@@ -17,6 +17,7 @@ import pandas as pd
 import streamlit as st
 
 from shared.beverage_segments import beverage_view_segment
+from shared.release_population import install_population
 
 REPO_ROOT        = Path(__file__).resolve().parent.parent
 LOCAL_DB_PATH    = REPO_ROOT / "database" / "positioning_radar.db"
@@ -34,14 +35,8 @@ COMPANY_OTHER_LABEL    = "Other / not mapped to a company"
 COMPANY_MANUAL_REVIEW_LABEL = "Manual review"
 PRODUCT_BRAND_SQL = "COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_brand)"
 PRODUCT_BRAND_SQL_UNALIASED = "COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand)"
-CURRENT_PRODUCT_SQL = (
-    "(p.ingested_at = (SELECT MAX(ingested_at) FROM products WHERE ingested_at IS NOT NULL) "
-    "OR (SELECT MAX(ingested_at) FROM products WHERE ingested_at IS NOT NULL) IS NULL)"
-)
-CURRENT_PRODUCT_SQL_UNALIASED = (
-    "(ingested_at = (SELECT MAX(ingested_at) FROM products WHERE ingested_at IS NOT NULL) "
-    "OR (SELECT MAX(ingested_at) FROM products WHERE ingested_at IS NOT NULL) IS NULL)"
-)
+CURRENT_PRODUCT_SQL = "p.barcode IN (SELECT barcode FROM current_product_barcodes)"
+CURRENT_PRODUCT_SQL_UNALIASED = "barcode IN (SELECT barcode FROM current_product_barcodes)"
 CHART_BAND_COLUMNS = {
     "energy_kcal": "energy_chart_band",
     "protein_100g": "protein_chart_band",
@@ -154,6 +149,7 @@ def database_display_path() -> str:
 def get_connection() -> sqlite3.Connection:
     db_path = get_database_path()
     conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, check_same_thread=False)
+    install_population(conn, require_complete=True)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -530,35 +526,13 @@ def get_filter_options() -> dict[str, list]:
     queries = {
         "query_category": """
             SELECT DISTINCT query_category FROM products
-            WHERE (
-                ingested_at = (
-                    SELECT MAX(ingested_at)
-                    FROM products
-                    WHERE ingested_at IS NOT NULL
-                )
-                OR (
-                    SELECT MAX(ingested_at)
-                    FROM products
-                    WHERE ingested_at IS NOT NULL
-                ) IS NULL
-            )
+            WHERE barcode IN (SELECT barcode FROM current_product_barcodes)
               AND query_category IS NOT NULL AND TRIM(query_category) != ''
             ORDER BY 1
         """,
         "nutriscore_grade": """
             SELECT DISTINCT LOWER(nutriscore_grade) FROM products
-            WHERE (
-                ingested_at = (
-                    SELECT MAX(ingested_at)
-                    FROM products
-                    WHERE ingested_at IS NOT NULL
-                )
-                OR (
-                    SELECT MAX(ingested_at)
-                    FROM products
-                    WHERE ingested_at IS NOT NULL
-                ) IS NULL
-            )
+            WHERE barcode IN (SELECT barcode FROM current_product_barcodes)
               AND nutriscore_grade IS NOT NULL AND TRIM(nutriscore_grade) != ''
             ORDER BY 1
         """,
@@ -594,7 +568,7 @@ def get_brand_options(categories: tuple[str, ...] = ()) -> list[str]:
             rows = conn.execute("""
                 SELECT DISTINCT COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand) AS primary_brand
                 FROM products
-                WHERE ingested_at = (SELECT MAX(ingested_at) FROM products)
+                WHERE barcode IN (SELECT barcode FROM current_product_barcodes)
                 AND COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand) IS NOT NULL
                 AND TRIM(COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand)) != ''
                 ORDER BY 1
@@ -617,6 +591,7 @@ def get_positioning_options() -> list[str]:
             WHERE pack_claims_found IS NOT NULL
               AND TRIM(pack_claims_found) != ''
               AND claim_source = 'vision'
+              AND barcode IN (SELECT barcode FROM current_product_barcodes)
         """).fetchall()
     except Exception:
         return []
@@ -955,18 +930,7 @@ def get_market_products(
          AND b.snapshot = (SELECT MAX(snapshot) FROM market_chart_bands)
         WHERE p.query_category = ?
           AND p.observed_market_region_codes LIKE ?
-          AND (
-              p.ingested_at = (
-                  SELECT MAX(ingested_at)
-                  FROM products
-                  WHERE ingested_at IS NOT NULL
-              )
-              OR (
-                  SELECT MAX(ingested_at)
-                  FROM products
-                  WHERE ingested_at IS NOT NULL
-              ) IS NULL
-          )
+          AND p.barcode IN (SELECT barcode FROM current_product_barcodes)
           AND COALESCE(p.include_in_product_table, 1) = 1
           AND COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_brand) IS NOT NULL
           AND TRIM(LOWER(COALESCE(NULLIF(TRIM(p.normalized_brand), ''), p.primary_brand))) NOT IN ('unknown', '', 'nan')

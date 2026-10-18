@@ -96,7 +96,7 @@ _KEY_COMPANIES = {
     "The Hershey Company",
     "Kraft Heinz",
     "Kraft Heinz (Kraft Dinner)",
-    "Starbucks Coffee Company",
+    "Mars",
     "Unilever",
 }
 _KEY_PRIVATE_LABELS_BY_REGION = {

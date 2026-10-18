@@ -17,6 +17,26 @@ Stage 17 selects the latest ingested product snapshot within launch scopes and
 the latest precompute snapshots. Do not expect the public artifact to contain
 the full audit schema or treat local counts as a live-deployment check.
 
+The October incremental release uses explicit retained membership instead of
+the legacy latest-load selection. It is built with
+`build_incremental_release.py`; its completed public database is the source of
+the tracked compressed app artifact.
+Additional tables on that path are:
+
+| Table | Fields / meaning |
+|---|---|
+| `release_manifest` | `wave_id`, `reporting_date`, `retrieved_at`, `source_sha256`, `status`: ties outputs to one source and cutoff; the app requires `complete`. |
+| `release_population` | `barcode`: explicit retained, in-scope, display-eligible population shared by downstream calculations and app queries. |
+| `claim_freshness` | `barcode`, `status`: current image-reference assessment; missing provenance is not a claim that the image changed. |
+| Working-copy-only freshness evidence | `evidence_json` holds matching extraction file identities; `prior_analysis_json` preserves the complete analysis before release masking/recomputation. These payloads are omitted from the public candidate. |
+
+Only `matched_image_reference` permits stored pack results in current release
+outputs. Other statuses preserve the old observation but exclude it from current
+pack-evidence denominators. A successful empty claim result remains an analyzed
+observation; no observation is not a negative result. See the
+[incremental population policy](06_INCREMENTAL_POPULATION_POLICY.md) for matching
+rules, limitations and copy-only operating boundaries.
+
 **Interpretation principle:** every field below is an analytical signal, not a
 verdict. Fields describe observed or derived attributes — claims, ingredients,
 nutrition values, benchmark positions, and co-occurrence patterns. No field

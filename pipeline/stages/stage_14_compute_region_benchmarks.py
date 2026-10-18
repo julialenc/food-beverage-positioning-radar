@@ -41,6 +41,11 @@ from pathlib import Path
 import pandas as pd
 
 ROOT     = Path(__file__).resolve().parents[2]
+import sys
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from shared.release_population import install_population
+
 DB_PATH  = ROOT / "database" / "positioning_radar.db"
 SNAPSHOT = date.today().isoformat()
 
@@ -109,16 +114,16 @@ _METRICS = {
 
 
 def load_data(conn) -> pd.DataFrame:
+    install_population(conn)
     df = pd.read_sql_query("""
         SELECT energy_kcal, protein_100g, saturated_fat_100g, sugars_100g,
                fiber_100g, nova_group, query_category AS category,
                observed_market_region_codes
         FROM products
-        WHERE primary_brand IS NOT NULL
-          AND ingested_at = (SELECT MAX(ingested_at) FROM products)
+        WHERE COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand) IS NOT NULL
+          AND barcode IN (SELECT barcode FROM current_product_barcodes)
           AND COALESCE(include_in_product_table, 1) = 1
-          AND COALESCE(include_in_aggregates, 1) = 1
-          AND TRIM(LOWER(primary_brand)) NOT IN ('unknown', '', 'nan')
+          AND TRIM(LOWER(COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand))) NOT IN ('unknown', '', 'nan')
     """, conn)
     for col in ["energy_kcal", "protein_100g", "saturated_fat_100g",
                 "sugars_100g", "fiber_100g"]:
@@ -166,6 +171,7 @@ def compute_row(scope: pd.DataFrame) -> dict:
 
 def main():
     conn = sqlite3.connect(DB_PATH)
+    install_population(conn, legacy_all=False)
     conn.executescript(DDL)
 
     df = load_data(conn)

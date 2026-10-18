@@ -615,3 +615,47 @@ The most important interpretation boundaries are:
 - missing values, failed observations, and confirmed zeros are different states.
 
 See `docs/03_PROJECT_REFERENCE/03_LIMITATIONS.md` for the complete limitation catalogue.
+
+## Tracking
+
+Timestamped local files and their manifests are the tracking evidence for OFF
+product waves. The wave label, OFF capture or proxy cutoff date, actual retrieval
+date, and date of a preserved database copy are distinct dates:
+
+- **Aug 29 capture — October 16 preserved database:**
+  `G:\My Drive\Food Beverage Positioning Radar\wave_archives\baseline_20261016T180817_168296Z\`
+  contains the checksum-verified `baseline.db`, `manifest.json`, `REPORT.md`
+  and `capture_script.py`. It was moved from the local
+  `data/06_brand_governance_outputs/baseline_captures/` folder. August 29, 2026 is the
+  owner-confirmed date of the original OFF product capture. The original raw
+  August export is no longer available in this project. The October 16 copy
+  preserves the later working database, including subsequent OCR/LLM enrichment
+  and reviewed corrections; it does not recover every original August field
+  value or claim result.
+- **Sep 29 proxy — October 17 raw retrieval:**
+  `data/02_raw_off_downloads/incremental_snapshots/wave2_proxy_20260929_retrieved_20261017T153127Z/`
+  contains the untouched `source.csv.gz` OFF bulk export and `manifest.json`
+  recording its actual October 17, 2026 retrieval time and checksum. The
+  ingestion-only scan and cutoff decisions are preserved separately in
+  `data/06_brand_governance_outputs/incremental_ingestion_trials/live_proxy_stage_20261017T153127Z_v3/`.
+
+The September proxy was created by scanning the complete October 17 OFF export
+on a separate database copy and staging records against an **inclusive September
+29 cutoff in Europe/Berlin**. New records are eligible only if their OFF creation
+time precedes 2026-09-29T22:00:00Z, the exclusive UTC boundary. Previously
+retained products can carry October source revisions. The proxy therefore
+represents a September-eligible population using October-retrieved values; it is
+not a reconstruction of the values as they stood on September 29. Governed
+processing subsequently admitted 148,366 staged observations on that copy. The
+separate completed release is retained at
+`data/06_brand_governance_outputs/incremental_ingestion_trials/release_real_proxy_20261018_v1/`;
+its public app artifact has a September 29 reporting date and contains 360,118
+display-eligible products. The October 17 retrieval date remains explicit.
+
+The August archive is outside the Git repository on Google Drive. The September
+raw export, manifests, database copies, staging reports and release audit are
+Git-ignored under `data/` and are not included in Git commits. The compressed
+public app database is tracked separately under
+`database/positioning_radar_public_mvp.db.gz`.
+Future waves should retain separate timestamped source and processing evidence
+so the reporting cutoff is never mistaken for the retrieval or copy date.

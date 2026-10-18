@@ -1028,9 +1028,9 @@ def apply_reviewed_product_mapping_overrides(df):
         return df
 
     matched = 0
-    region_values = df.get("observed_market_region_codes", pd.Series("", index=df.index))
+    region_values = df.get("observed_market_region_codes", pd.Series("", index=df.index)).fillna("").astype(str)
     for idx, barcode in df["barcode"].fillna("").astype(str).items():
-        regions = region_values.fillna("").astype(str).loc[idx]
+        regions = region_values.loc[idx]
         override = _product_override_for_row(overrides, barcode, regions)
         if not override:
             continue
@@ -1852,10 +1852,10 @@ def derive_region_codes(countries_value, tag_to_region):
     return "|".join(seen) if seen else "OTHER_MIXED"
 
 
-def clean(input_path):
+def clean(input_path=None, *, input_frame=None, peer_warnings=True):
 
-    print(f"\n  Input file: {os.path.basename(input_path)}")
-    df = pd.read_csv(input_path, encoding="utf-8-sig")
+    print(f"\n  Input file: {os.path.basename(input_path) if input_path else 'explicit in-memory batch'}")
+    df = input_frame.copy(deep=True) if input_frame is not None else pd.read_csv(input_path, encoding="utf-8-sig")
     print(f"  Rows on load: {len(df)}")
 
     # Step 1: Drop exact duplicate barcodes
@@ -2143,7 +2143,8 @@ def clean(input_path):
     print(f"  Step 11c- Market region codes derived")
     print(f"            Top region combinations: {region_preview}")
 
-    df = flag_within_brand_nutrition_outliers(df)
+    if peer_warnings:
+        df = flag_within_brand_nutrition_outliers(df)
     print(f"  Step 11d- Within-brand nutrition warnings applied")
 
     # Step 12: Flag rows eligible for ingredient-marker analysis (EN and FR only)

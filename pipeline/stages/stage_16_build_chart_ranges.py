@@ -26,6 +26,11 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
+import sys
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from shared.release_population import install_population
+
 DB_PATH = ROOT / "database" / "positioning_radar.db"
 AUDIT_DIR = (
     ROOT
@@ -234,6 +239,7 @@ def _ensure_columns(
 
 
 def load_region_category_data(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    install_population(conn)
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
         """
@@ -242,11 +248,11 @@ def load_region_category_data(conn: sqlite3.Connection) -> list[dict[str, Any]]:
                query_category AS category, observed_market_region_codes,
                barcode, product_name, off_categories
         FROM products
-        WHERE primary_brand IS NOT NULL
-          AND ingested_at = (SELECT MAX(ingested_at) FROM products)
+        WHERE COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand) IS NOT NULL
+          AND barcode IN (SELECT barcode FROM current_product_barcodes)
           AND COALESCE(include_in_product_table, 1) = 1
           AND query_category IN ('beverages', 'cereals', 'dairies', 'snacks')
-          AND TRIM(LOWER(primary_brand)) NOT IN ('unknown', '', 'nan')
+          AND TRIM(LOWER(COALESCE(NULLIF(TRIM(normalized_brand), ''), primary_brand))) NOT IN ('unknown', '', 'nan')
         """
     ).fetchall()
 
@@ -580,6 +586,7 @@ def write_audits(bounds_rows: list[dict[str, Any]], band_rows: list[dict[str, An
 
 def main() -> None:
     conn = sqlite3.connect(DB_PATH)
+    install_population(conn, legacy_all=False)
     conn.executescript(DDL)
     _ensure_columns(conn, "axis_range_config", AXIS_RANGE_EXTRA_COLUMNS)
     _ensure_columns(conn, "market_chart_bands", MARKET_CHART_BAND_EXTRA_COLUMNS)
