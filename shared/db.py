@@ -3,6 +3,7 @@ Read-only SQLite access for the Streamlit app.
 """
 
 from __future__ import annotations
+from pipeline.rules.barcode_identity import bind_aliases, identity_key
 
 import gzip
 import os
@@ -149,6 +150,7 @@ def database_display_path() -> str:
 def get_connection() -> sqlite3.Connection:
     db_path = get_database_path()
     conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, check_same_thread=False)
+    bind_aliases(conn)
     install_population(conn, require_complete=True)
     conn.row_factory = sqlite3.Row
     return conn
@@ -256,7 +258,7 @@ def get_reviewed_product_mapping_overrides() -> dict[str, list[dict[str, str]]]:
             barcode = row.get("gtin", "").strip()
             if status != "active" or not barcode:
                 continue
-            overrides.setdefault(barcode, []).append({
+            overrides.setdefault(identity_key(barcode), []).append({
                 "region": row.get("region", "").strip(),
                 "brand": row.get("reviewed_brand", "").strip(),
                 "company": row.get("reviewed_company", "").strip(),
@@ -273,7 +275,7 @@ def _reviewed_product_override_for_row(
 ) -> Optional[dict[str, str]]:
     if overrides is None:
         overrides = get_reviewed_product_mapping_overrides()
-    candidates = overrides.get(str(barcode or "").strip()) or []
+    candidates = overrides.get(identity_key(str(barcode).strip()) if barcode else "") or []
     if not candidates:
         return None
     selected = [code for code in (selected_region_codes or []) if code]

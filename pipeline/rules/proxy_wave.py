@@ -3,6 +3,7 @@
 Does not write products, analysis or membership. Complete means the pinned
 export was fully scanned, not that OFF represents the whole retail market.
 """
+from pipeline.rules.barcode_identity import identity_key, population_lookup, resolve as resolve_barcode
 from contextlib import closing
 import csv
 from datetime import date, datetime, time, timedelta, timezone
@@ -170,13 +171,14 @@ def stage(database, snapshot_dir, *, wave_id, cutoff='2026-09-29', cutoff_timezo
                                         quoting=csv.QUOTE_NONE, strict=True)
                 if not reader.fieldnames or len(set(reader.fieldnames)) != len(reader.fieldnames) or not REQUIRED.issubset(reader.fieldnames):
                     raise ValueError('Missing/duplicate OFF source columns')
+                identity_lookup = population_lookup(conn)
                 scanned = 0
                 for scanned, raw in enumerate(reader, 1):
                     if scanned <= resume_row:
                         continue
                     if None in raw or any(v is None for v in raw.values()):
                         raise ValueError('Malformed TSV row')
-                    barcode = raw['code']
+                    barcode = identity_lookup.get(identity_key(raw['code']), resolve_barcode(raw['code']))
                     if not barcode or barcode != barcode.strip():
                         raise ValueError('Missing/padded source barcode')
                     raw_json = writer.canonical(raw)

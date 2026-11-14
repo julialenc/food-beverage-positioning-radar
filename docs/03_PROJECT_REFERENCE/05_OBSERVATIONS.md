@@ -583,3 +583,33 @@ its all-analyzed base. The Asda Sugar / fat reduction cell records 12% on the
 slide versus 29/256 = 11.328125% (11% rounded). This existing discrepancy is
 now explicit in the evidence guide and methodology; neither the PDF nor the
 CSV was changed. It remains a presentation-review item.
+
+
+### OBS-028 — Barcode identity processing defect, 14 November 2026
+
+Historical numeric inference in CSV readers could remove leading zeros. Shortened
+identifiers were already present in the August 28 deployment artifact. The exact
+first historical conversion cannot be reconstructed from retained source files.
+Wave 2 preserved OFF strings but used exact-key membership checks, admitting full
+identifiers alongside shortened historical keys. All three reporting regions and
+the segmentation master were affected. Database string-key uniqueness did not
+protect product identity.
+
+The correction is implemented in pipeline/rules/barcode_identity.py and
+pipeline/maintenance/correct_wave2_identity.py. It resolves deterministic historical
+aliases against actual October source keys, preserves original identifiers and
+evidence in the original release and alias tables, reapplies reviewed governance,
+and rebuilds reporting and the active master. Invalid/nonstandard identifiers
+require corroborating saved source metadata. String-preserving readers and
+alias-aware admission prevent recurrence.
+
+Wave 2 retains its October 17 retrieval and September 29 cutoff. Wave 3 is excluded.
+Large US nutrition missingness also exists in the OFF source and is a separate
+coverage limitation. No nutrition values are invented and no OCR/LLM is rerun.
+
+The consolidated correction status, counts, tests and deployment verification
+are recorded in data/06_brand_governance_outputs/wave2_identity_fix_v1/CHECK.md.
+Until that CHECK reports publication verified, this observation does not claim
+the hosted application has been corrected.
+
+The corrected governed product population is 374,840, replacing 522,432. The corrected master has 382,527 unique regional/category rows and retains all 12,161 locked evidence matches. Four assessments follow existing reviewed category corrections with original source categories preserved. Reporting excludes products blocked in every supported region, including records that retain other out-of-scope country-region tags. Product Explorer reference averages now use the same observed regional assignments, with each product counted once in ALL-region averages. Regression coverage includes this denominator rule.

@@ -57,6 +57,10 @@ Known limitation:
 import argparse
 import csv
 import pandas as pd
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from pipeline.rules.barcode_identity import identity_key, population_lookup, resolve as resolve_barcode
 import sqlite3
 import os
 from datetime import datetime
@@ -724,7 +728,7 @@ def load_reviewed_product_mapping_overrides():
             barcode = (row.get("gtin") or row.get("barcode") or "").strip()
             if status != "active" or not barcode:
                 continue
-            overrides.setdefault(barcode, []).append({
+            overrides.setdefault(identity_key(barcode), []).append({
                 "region": (row.get("region") or "").strip(),
                 "brand": (row.get("reviewed_brand") or "").strip(),
                 "company": (row.get("reviewed_company") or "").strip(),
@@ -736,7 +740,7 @@ def load_reviewed_product_mapping_overrides():
 
 
 def _product_override_for_row(overrides, barcode, region_codes):
-    candidates = overrides.get(str(barcode or "").strip()) or []
+    candidates = overrides.get(identity_key(str(barcode).strip()) if barcode else "") or []
     if not candidates:
         return None
     row_regions = {
@@ -907,6 +911,11 @@ def load_products(df, conn, timestamp):
     UPSERT products into the products table.
     Returns (inserted, updated) counts.
     """
+    lookup = population_lookup(conn)
+    df = df.copy()
+    df["barcode"] = df["barcode"].map(lambda code: lookup.get(identity_key(code),resolve_barcode(code)))
+    if df["barcode"].duplicated().any():
+        raise ValueError("Duplicate resolved identities in loader input")
     cursor   = conn.cursor()
     inserted = 0
     updated  = 0
@@ -1167,7 +1176,12 @@ def compute_category_region_averages(df, conn, timestamp):
         "United States": "US_CANADA",
         "Canada": "US_CANADA",
     }
-    work["region"] = work["primary_country"].map(country_region).fillna("OTHER")
+    if "observed_market_region_codes" in work.columns:
+        work["region"] = work["observed_market_region_codes"].fillna("").str.split("|")
+        work = work.explode("region")
+        work = work[work["region"].isin({"FRANCE", "UK_IE", "US_CANADA"})].copy()
+    else:
+        work["region"] = work["primary_country"].map(country_region).fillna("OTHER")
 
     numeric_cols = [
         "energy_kcal",
@@ -1201,9 +1215,10 @@ def compute_category_region_averages(df, conn, timestamp):
     ]
 
     rows = []
+    all_products = work.drop_duplicates("barcode") if "barcode" in work else work.loc[~work.index.duplicated()]
     grouped_frames = [
         work.groupby(["query_category", "region"], dropna=False),
-        work.assign(region="ALL").groupby(["query_category", "region"], dropna=False),
+        all_products.assign(region="ALL").groupby(["query_category", "region"], dropna=False),
     ]
     for grouped in grouped_frames:
         for (category, region), group in grouped:
@@ -1278,7 +1293,12 @@ def main():
     # ── Load analyzed CSV ─────────────────────────────────────────────────────
     input_path = args.input or find_latest_analyzed(PIPELINE_INTERMEDIATE_DIR)
     print(f"\n  Input file: {os.path.basename(input_path)}")
-    df = pd.read_csv(input_path, encoding="utf-8-sig")
+    df = pd.read_csv(input_path, encoding="utf-8-sig", dtype={"barcode": str})
+    if "source_barcode" not in df:
+        df["source_barcode"] = df["barcode"]
+    df["barcode"] = df["barcode"].map(resolve_barcode)
+    if df["barcode"].duplicated().any():
+        raise ValueError("Duplicate resolved products must be cleaned before loading")
     print(f"  Rows: {len(df)}")
     print("  Resolving company / owner labels...")
     df = add_resolved_company_column(df)

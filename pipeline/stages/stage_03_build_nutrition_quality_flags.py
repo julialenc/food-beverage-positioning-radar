@@ -946,7 +946,7 @@ def main() -> None:
     print(f"Run timestamp: {timestamp}")
     print(f"Input: {input_path}")
 
-    df = pd.read_csv(input_path, encoding="utf-8-sig", low_memory=False)
+    df = pd.read_csv(input_path, encoding="utf-8-sig", low_memory=False, dtype={"barcode": str})
     flagged = build_nutrition_quality_flags(df)
     pipeline_output = write_pipeline_output(flagged, timestamp)
     written = write_audits(flagged)

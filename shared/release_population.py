@@ -17,3 +17,14 @@ def install_population(conn, *, legacy_all=False, require_complete=False):
                      '(SELECT MAX(ingested_at) FROM main.products) OR '
                      '(SELECT MAX(ingested_at) FROM main.products) IS NULL')
     conn.execute('CREATE TEMP VIEW IF NOT EXISTS current_product_barcodes AS ' + selection)
+
+def region_exclusions(conn):
+    """Existing reviewed regional decisions embedded in a corrected release."""
+    if not conn.execute("SELECT 1 FROM sqlite_master WHERE name='reporting_region_exclusions'").fetchone():
+        return set()
+    return {tuple(row) for row in conn.execute("SELECT barcode,region_code FROM reporting_region_exclusions")}
+
+def reporting_regions(barcode, category, regions, exclusions):
+    if category != "beverages":
+        return regions or ""
+    return "|".join(code for code in (regions or "").split("|") if (barcode,code) not in exclusions)

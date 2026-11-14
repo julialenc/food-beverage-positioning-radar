@@ -54,6 +54,7 @@ from datetime import datetime
 ROOT       = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
+from pipeline.rules.barcode_identity import identity_key, resolve as resolve_barcode
 
 from shared.beverage_segments import beverage_view_segment
 
@@ -991,7 +992,7 @@ def load_reviewed_product_mapping_overrides():
         if not barcode:
             continue
         region = str(row.get("region", "")).strip()
-        overrides.setdefault(barcode, []).append({
+        overrides.setdefault(identity_key(barcode), []).append({
             "region": region,
             "brand": str(row["reviewed_brand"]).strip(),
             "category": str(row["reviewed_category"]).strip(),
@@ -1002,7 +1003,7 @@ def load_reviewed_product_mapping_overrides():
 
 
 def _product_override_for_row(overrides, barcode, region_codes):
-    candidates = overrides.get(str(barcode or "").strip()) or []
+    candidates = overrides.get(identity_key(str(barcode).strip()) if barcode else "") or []
     if not candidates:
         return None
     row_regions = {
@@ -1855,9 +1856,13 @@ def derive_region_codes(countries_value, tag_to_region):
 def clean(input_path=None, *, input_frame=None, peer_warnings=True):
 
     print(f"\n  Input file: {os.path.basename(input_path) if input_path else 'explicit in-memory batch'}")
-    df = input_frame.copy(deep=True) if input_frame is not None else pd.read_csv(input_path, encoding="utf-8-sig")
+    df = input_frame.copy(deep=True) if input_frame is not None else pd.read_csv(input_path, encoding="utf-8-sig", dtype={"barcode": str})
     print(f"  Rows on load: {len(df)}")
 
+    if "source_barcode" not in df:
+        df["source_barcode"] = df["barcode"]
+    df["barcode"] = df["barcode"].map(resolve_barcode)
+    df = df.sort_values("source_barcode", key=lambda values: values.str.len(), ascending=False, kind="stable")
     # Step 1: Drop exact duplicate barcodes
     before = len(df)
     df = df.drop_duplicates(subset=["barcode"])

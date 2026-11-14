@@ -172,6 +172,8 @@ def prepare(database, wave_id):
                 holds[barcode] = 'no_product_name_or_ingredients'
                 continue
             row = {target: raw[source] for source, target in bulk.COL_MAP.items()}
+            row['barcode'] = barcode
+            row['source_barcode'] = raw['code']
             row.update({target: bulk.comma_to_pipe(raw[source]) for source, target in bulk.TAG_COL_MAP.items()})
             row['query_category'] = category  # None represents a source category exit.
             row['observed_market_region_codes'] = cleaning.derive_region_codes(row['countries'], regions)

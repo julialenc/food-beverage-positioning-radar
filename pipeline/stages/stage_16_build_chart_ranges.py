@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[2]
 import sys
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from shared.release_population import install_population
+from shared.release_population import install_population, region_exclusions, reporting_regions
 
 DB_PATH = ROOT / "database" / "positioning_radar.db"
 AUDIT_DIR = (
@@ -256,6 +256,7 @@ def load_region_category_data(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         """
     ).fetchall()
 
+    exclusions = region_exclusions(conn)
     data: list[dict[str, Any]] = []
     for row in rows:
         record = dict(row)
@@ -296,7 +297,7 @@ def load_region_category_data(conn: sqlite3.Connection) -> list[dict[str, Any]]:
 
         category = str(record.get("category") or "").lower()
         record["category"] = category
-        record["_region_codes"] = _region_codes(record.get("observed_market_region_codes"))
+        record["_region_codes"] = _region_codes(reporting_regions(record["barcode"],record["category"],record.get("observed_market_region_codes"),exclusions))
         record["_energy_unstable"] = bool(valid_energy and energy < ENERGY_UNSTABLE_THRESHOLD)
         record["beverage_view_segment"] = (
             beverage_view_segment(

@@ -7,6 +7,7 @@ the accepted batch in the same transaction. Source-version ordering, ingestion
 completeness and claim freshness remain responsibilities of the future loader.
 """
 
+from pipeline.rules.barcode_identity import resolve as resolve_barcode, identity_key, population_lookup
 from contextlib import contextmanager
 from datetime import date, datetime, timezone
 import hashlib
@@ -123,9 +124,9 @@ def _barcodes(values):
     values = list(values)
     if any(not isinstance(b, str) or not b or b != b.strip() for b in values):
         raise ValueError("Barcodes must be nonempty strings with no padding")
-    if len(values) != len(set(values)):
+    if len(values) != len({resolve_barcode(value) for value in values}):
         raise ValueError("Duplicate barcode in processed batch")
-    return values
+    return [resolve_barcode(value) for value in values]
 
 
 def preflight_batch(conn, barcodes, reviewed_reentries=None):
@@ -135,8 +136,9 @@ Unknown barcodes are allowed here: a future loader must independently validate
 source evidence and scope. reviewed_reentries maps archived barcodes to review
 references; merely appearing in an incremental download is not authorization.
 """
-    barcodes = _barcodes(barcodes)
-    reviewed = reviewed_reentries or {}
+    lookup = population_lookup(conn)
+    barcodes = _barcodes([lookup.get(identity_key(code),resolve_barcode(code)) for code in _barcodes(barcodes)])
+    reviewed = {lookup.get(identity_key(code),resolve_barcode(code)): value for code,value in (reviewed_reentries or {}).items()}
     if not set(reviewed).issubset(barcodes):
         raise ValueError("Re-entry approvals must refer to this batch")
     for barcode in barcodes:
@@ -165,7 +167,8 @@ a member; display flags never affect admission. Repeated registration is safe.
 """
     if not isinstance(batch_id, str) or not batch_id.strip():
         raise ValueError("A nonempty batch identifier is required")
-    reviewed = reviewed_reentries or {}
+    lookup = population_lookup(conn)
+    reviewed = {lookup.get(identity_key(code),resolve_barcode(code)): value for code,value in (reviewed_reentries or {}).items()}
     with atomic(conn):
         barcodes = preflight_batch(conn, barcodes, reviewed)
         for barcode in barcodes:

@@ -155,6 +155,10 @@ def apply_batch(database, batch, *, validate_context=None):
             records = batch['records']
             if any(not isinstance(r, dict) or set(r) != {'barcode', 'product', 'analysis'} for r in records):
                 raise ValueError('Each record requires barcode, product and analysis objects')
+            from pipeline.rules.barcode_identity import resolve, identity_key, population_lookup
+            lookup = population_lookup(conn)
+            if any(lookup.get(identity_key(r['barcode']),resolve(r['barcode'])) != r['barcode'] for r in records):
+                raise ValueError('Writer requires resolved barcode identities from governed staging')
             ids = policy.preflight_batch(conn, [r['barcode'] for r in records], batch['reviewed_reentries'])
             planned = []
             for record in records:
