@@ -6,7 +6,35 @@ The objective is interpretable product positioning, not healthfulness, sales-wei
 
 **Public audit versus local reproduction.** Public source, accepted decisions, aggregate results and exact identities make the research auditable. Master/raw data, selected product-level evidence and required keyed matrices remain local. A GitHub clone alone is not a self-contained analytical dataset. Source identity, selection and denominators must accompany reproduced findings. The permanent local methodology is `presentations/segmentation/SEGMENTATION.md`; this report does not expand its scope.
 
-After consolidation: **21 public artifacts and 31 retained local files**. Of 54 original files, 20 are public artifacts, 19 are local data/evidence files, 13 reports are consolidated here (12 local frozen originals retained), and two completed runners are retired as live files. The superseded coverage note is also removed as a live document. Exact retired source/text is recoverable from the existing [run manifest](run_manifest_v1.json), without another archive folder.
+After consolidation: **21 public artifacts and 31 retained local files**. Of 54 original files, 20 are public artifacts, 19 are local data/evidence files, 13 reports are consolidated here (12 local frozen originals retained), and two completed runners are retired as live files. The superseded coverage note is also removed as a live document. Exact retired source/text is recoverable from the existing [run manifest](00_shared_research/run_manifest_v1.json), without another archive folder.
+
+
+<a id="current-layout"></a>
+## Current layout - approved reorganization, 20 November 2026
+
+```text
+03_lenses/
+  AUDIT_v1.md
+  FORMULATION_DECISIONS_v1.csv
+  00_shared_research/
+    hypothesis_run_v1.py
+    formulation_synthesis_v1.py
+    validate_run_v1.py
+    run_manifest_v1.json
+  01_nutritional_composition/
+  02_nutrient_density/
+  03_claims_composition_and_ingredients/
+  04_positioning_tradeoffs/
+  05_unsupervised_control/
+    control_comparison_v1.py
+    control_comparison_v1.csv
+```
+
+This is the public layout; immutable local reports keep their original paths. The four shared files and control runner were moved, without compatibility shortcuts or duplicate entry points. Shared scripts explicitly locate the 03_lenses root; the hypothesis runner lists the five analytical lenses explicitly, so 00_shared_research cannot shift an output index. The register and all data outputs remain at their accepted locations.
+
+The original 54-file table below is a historical disposition list; its links now point to current code locations. `relocation_v1` in the shared manifest records all five old/new paths, prior/current source hashes and recoverable previous source text. Archived reports and prior metadata retain their recorded root paths and resolve through that map. No hypotheses, methods, assertions, source observations, classifications, claims or numerical outputs changed.
+
+The remaining nine files under 02_shared_preprocessing_and_eda were reviewed separately; no 02_ files are moved, deleted, published or rewritten in this reorganization. Stop before the 04_ review and defer the final clean-checkout smoke test/working-output removal until all folders are reviewed.
 
 <a id="format-first-findings"></a>
 ## Commercial identity and nutritional formulation - closed
@@ -114,7 +142,7 @@ The same reference transformation and centroids assigned 13,911 complete US/CA s
 * **Ingredient validation.** Codex reviewed 72 saved ingredient texts across FR, EN and BOTH tags, stratifying by detector hit, plausible near miss and other non-hit. All 24 detected texts contained explicit pea/soy protein; none of the 42 assessable non-hits did. Six non-hits carried an EN/BOTH tag but had other-language text, including a Dutch pea-protein term. On the 66 assessable texts, sampled precision and recall were both 24/24, meeting the point-estimate gates. This small agent-labelled sample has no independent human adjudication; it cannot establish general multilingual recall. The sensitivity results identify the language and known mismatches. A no-hit means the specified phrase was undetected. Keyed validation labels and ingredient texts (`03_claims_composition_and_ingredients/ingredient_validation_v1.csv`, local/historical evidence)
 * **Uncertainty.** Intervals are 95% percentile bootstrap intervals using 399 replicates. Within a region–category–subtype cell each product appears once. H2 and H6 resample matched-pair outcomes. H3/H4 and H9–H11 recompute reference quantiles where relevant. H12 shares Poisson bootstrap weights across repeated GTINs and recalculates French cut points. Sensitivities cover matching direction/tolerance, energy floors, low-confidence assignments, shared barcodes, claim provenance and affected dairy evidence. Blank effects or intervals denote an insufficient arm, a tied/uninformative boundary, or a point-estimate sensitivity. They do not represent zero.
 * **Multiple comparisons and units.** The result files report Benjamini–Hochberg q-values within each tested primary hypothesis. H1 uses the exact fixed-margin permutation distribution. H5 uses the pooled-median test; H7/H9/H10 use Fisher's exact test. H2/H6/H11 also report conditional binomial tests against their prespecified proportion floors. H3/H4 are descriptive replication checks, and H8 is a descriptive cross-tab. All rate effects in the CSVs are fractions. Multiply by 100 for percentage points. H5 effects and H2 median gaps are grams per applicable 100 g or 100 ml.
-* **Reproduction.** Use the repository Python environment. From this folder run `03\_claims\_composition\_and\_ingredients/ingredient\_validation\_v1.py`, `hypothesis\_run\_v1.py`, `control\_comparison\_v1.py` and `validate\_run\_v1.py`. The run imports the existing feature definitions and verifies the corrected Parquet digest and baseline counts. The [manifest](run_manifest_v1.json) records source/output hashes, script hashes, environment versions, denominators and selected k. The run outputs are local analytical artifacts.
+* **Historical reproduction.** The original root commands are retained in the frozen local result report. Current shared runners live under `00_shared_research/`; the control runner lives under `05_unsupervised_control/`. The [manifest](00_shared_research/run_manifest_v1.json) records current source identities and exact previous locations/sources. Research RUNs still require the preserved local inputs and separate authorization.
 
 **Detailed results:** H1, H2 and cross-lens H12 (`01_nutritional_composition/hypothesis_results_v1.csv`, local/historical evidence) · H3–H4 (`02_nutrient_density/hypothesis_results_v1.csv`, local/historical evidence) · H5–H8 (`03_claims_composition_and_ingredients/hypothesis_results_v1.csv`, local/historical evidence) · H9–H11 (`04_positioning_tradeoffs/hypothesis_results_v1.csv`, local/historical evidence).
 
@@ -130,7 +158,7 @@ The hypothesis runner uses shared definitions and fixed ingredient-validation ev
 Read-only commands from repository root:
 
 ```powershell
-.\.venv\Scripts\python.exe -B presentations/segmentation/first_run/03_lenses/validate_run_v1.py --check-only
+.\.venv\Scripts\python.exe -B presentations/segmentation/first_run/03_lenses/00_shared_research/validate_run_v1.py --check-only
 .\.venv\Scripts\python.exe -B presentations/segmentation/first_run/04_analytical_package/verify_analytical_package_v1.py
 ```
 
@@ -147,13 +175,13 @@ GitHub means public source or concise governed/aggregate evidence. Local means r
 | Original file | Purpose | Decision | Dependency / treatment |
 |---|---|---|---|
 | `CHECK.md` | Completed H1-H12 findings, uncertainty and bounded k selection. | MERGE | Frozen evidence: consolidate public narrative, preserve exact local original. Direct frozen dependency: evidence_references:HYPOTHESIS_CHECK. |
-| [control_comparison_v1.py](control_comparison_v1.py) | Fits and evaluates the single bounded k=3-5 control. | GITHUB | Source for stability, transformation and format-dominance evidence; no new fit authorized. |
+| [control_comparison_v1.py](05_unsupervised_control/control_comparison_v1.py) | Fits and evaluates the single bounded k=3-5 control. | GITHUB | Source for stability, transformation and format-dominance evidence; no new fit authorized. |
 | [FORMULATION_DECISIONS_v1.csv](FORMULATION_DECISIONS_v1.csv) | 33 accepted commercial/formulation decisions with rules and lineage. | GITHUB | Small governed decision register, not a disposable exploratory export. Direct frozen dependency: inputs:FORMULATION_DECISIONS. |
 | `FORMULATION_SYNTHESIS_v1.md` | Closed formulation chapter, hierarchy and accepted limitations. | MERGE | Frozen decision evidence: consolidate public narrative, preserve exact local original. Direct frozen dependency: evidence_references:FORMULATION_SYNTHESIS. |
-| [formulation_synthesis_v1.py](formulation_synthesis_v1.py) | Reconciles accepted profiles, populations and register lineage. | GITHUB | Necessary reproducible decision-register construction. |
-| [hypothesis_run_v1.py](hypothesis_run_v1.py) | Runs H1-H12 and approved sensitivities on the shared foundation. | GITHUB | Primary effect/uncertainty source; H8 descriptive, H10 US/Canada granola only. |
-| [run_manifest_v1.json](run_manifest_v1.json) | Research identities, environment and housekeeping source archive. | GITHUB | Public provenance and reconstructible retired sources; product datasets stay local. |
-| [validate_run_v1.py](validate_run_v1.py) | Checks saved results, population contracts and hashes. | GITHUB | Independent checks; preserves history and supports read-only --check-only. |
+| [formulation_synthesis_v1.py](00_shared_research/formulation_synthesis_v1.py) | Reconciles accepted profiles, populations and register lineage. | GITHUB | Necessary reproducible decision-register construction. |
+| [hypothesis_run_v1.py](00_shared_research/hypothesis_run_v1.py) | Runs H1-H12 and approved sensitivities on the shared foundation. | GITHUB | Primary effect/uncertainty source; H8 descriptive, H10 US/Canada granola only. |
+| [run_manifest_v1.json](00_shared_research/run_manifest_v1.json) | Research identities, environment and housekeeping source archive. | GITHUB | Public provenance and reconstructible retired sources; product datasets stay local. |
+| [validate_run_v1.py](00_shared_research/validate_run_v1.py) | Checks saved results, population contracts and hashes. | GITHUB | Independent checks; preserves history and supports read-only --check-only. |
 
 ### 01_nutritional_composition
 
@@ -241,7 +269,7 @@ Historical frozen reports may name retired files or earlier EDA paths. They are 
 
 ### Exact recovery without another archive folder
 
-`run_manifest_v1.json.housekeeping_v1.source_archive` maps retired paths to exact original UTF-8 text, SHA-256, reason and replacement. Verify SHA-256 of text.encode('utf-8') before restoring into a separately approved scratch location; original line endings are preserved. `source_changes` retains the previous validator; `documentation_revisions` retains the original approved plan. Do not restore/execute legacy batches as integrity checks.
+`00_shared_research/run_manifest_v1.json.housekeeping_v1.source_archive` maps retired paths to exact original UTF-8 text, SHA-256, reason and replacement. Verify SHA-256 of text.encode('utf-8') before restoring into a separately approved scratch location; original line endings are preserved. `source_changes` retains the previous validator; `documentation_revisions` retains the original approved plan. Do not restore/execute legacy batches as integrity checks.
 
 ## Consolidation CHECK - 20 November 2026
 
@@ -251,3 +279,11 @@ Historical frozen reports may name retired files or earlier EDA paths. They are 
 - Validation covers 17 frozen canonical files, 34 pinned dependencies, original run identities, 21 embedded processing input hashes plus its script, archive recovery, saved H1-H12/control checks and retained imports. No models, EDA, provider/image requests or OCR/LLM are executed.
 - Frozen digest remains `48212697d2d245e3cc543032d63699b7e83fb43ad5db8dce7cbb8714991f0557`. Master/source observations, locked claims, current classifications, accepted numerical results and human evidence remain unchanged.
 - Publication is this reviewed folder plus scoped Git ignore/byte-preservation controls. Ingestion, production, Streamlit, Lovable and unrelated working changes remain outside it.
+
+## Reorganization CHECK - 20 November 2026
+
+- Five real file moves: four shared files into 00_shared_research and the control runner into 05_unsupervised_control; no shortcuts, old live copies or new experimental folders.
+- Explicit five-lens output routing; stable feature inputs, result locations, register location and control output path.
+- Current links, manifest-reader paths and active source hash identities updated. Prior manifest/scripts exactly recoverable through relocation_v1; historical source archives unchanged.
+- Validate saved H1-H12/control results read-only; import all retained scripts; verify path contracts, all historical/current assertions, archived sources, embedded processing hashes and frozen release integrity. No model fitting, EDA or provider calls.
+- Frozen 17-file release and 34 pinned inputs/references retain their accepted hashes. The nine reviewed 02_ files remain unchanged and outside this publication scope.

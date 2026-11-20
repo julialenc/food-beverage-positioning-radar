@@ -8,7 +8,8 @@ from importlib.metadata import version
 import numpy as np
 import pandas as pd
 
-ROOT=Path(__file__).resolve().parent
+ROOT=Path(__file__).resolve().parent.parent
+MANIFEST=Path(__file__).resolve().parent/"run_manifest_v1.json"
 EDA=ROOT.parent/"02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics"
 MASTER=ROOT.parent/"01_ingestion/05_master_parquet/output"
 SELECTED_K=5
@@ -75,7 +76,7 @@ def main(write_manifest=True):
                   primary_rows_by_hypothesis=primary.groupby("h").size().to_dict(),python=platform.python_version(),
                   packages={pkg:version(pkg) for pkg in ["numpy","pandas","scipy","scikit-learn","pyarrow"]},
                   sha256={str(p.relative_to(first).as_posix()):digest(p) for p in paths})
-    path=ROOT/"run_manifest_v1.json"
+    path=MANIFEST
     previous=json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
     if write_manifest:
         # Preserve source archives and documentation revisions during a later approved rebuild.

@@ -5,10 +5,13 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-ROOT=Path(__file__).resolve().parent
+ROOT=Path(__file__).resolve().parent.parent
 sys.path.insert(0,str(ROOT.parent/"02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics"))
 from shared_feature_diagnostics_v1 import read_master, CORE, G, KEY, FUNCTIONAL
-LENS=sorted(p for p in ROOT.iterdir() if p.is_dir() and p.name[:2].isdigit())
+LENS_NAMES=("01_nutritional_composition","02_nutrient_density",
+            "03_claims_composition_and_ingredients","04_positioning_tradeoffs",
+            "05_unsupervised_control")
+LENS=[ROOT/name for name in LENS_NAMES]
 B=399
 rng=np.random.default_rng(4211)
 rows=[]

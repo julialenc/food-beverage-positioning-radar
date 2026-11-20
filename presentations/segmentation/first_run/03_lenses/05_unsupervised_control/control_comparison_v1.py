@@ -7,7 +7,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_mutual_info_score, adjusted_rand_score, silhouette_score
 from threadpoolctl import threadpool_limits
 
-ROOT=Path(__file__).resolve().parent
+ROOT=Path(__file__).resolve().parent.parent
 sys.path.insert(0,str(ROOT.parent/"02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics"))
 from shared_feature_diagnostics_v1 import read_master, CORE, KEY
 

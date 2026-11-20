@@ -8,7 +8,8 @@ import sys
 
 import pandas as pd
 
-HERE=Path(__file__).resolve().parent
+HERE=Path(__file__).resolve().parent.parent
+MANIFEST=Path(__file__).resolve().parent/"run_manifest_v1.json"
 EDA=HERE.parent/"02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics"
 sys.path.insert(0,str(EDA))
 from shared_feature_diagnostics_v1 import KEY,read_master
@@ -94,7 +95,7 @@ def main():
         assert (EDA.parent/"01_nutritional_composition"/name).is_file()
     for p in list(HERE.rglob("*.py"))+list(EDA.glob("*.py")):
         ast.parse(p.read_text(encoding="utf-8"),filename=str(p))
-    manifest=__import__("json").loads((HERE/"run_manifest_v1.json").read_text())
+    manifest=__import__("json").loads(MANIFEST.read_text(encoding="utf-8"))
     for relative,expected in manifest["sha256"].items():
         p=HERE.parent/relative
         assert p.is_file(),relative
