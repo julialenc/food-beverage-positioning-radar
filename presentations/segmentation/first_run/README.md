@@ -1,6 +1,6 @@
 # Wave 2 segmentation — first-run navigation
 
-**Accepted analytical package frozen on 19 November 2026. Folder publications completed on 20 November; the isolated rerun smoke test passed under the configuration below. Physical working-file cleanup remains pending approval.** Retrieval: 17 October 2026. Reporting cutoff: 29 September 2026. No Wave 3 data belongs to this release.
+**Accepted analytical package frozen on 19 November 2026. Folder publications, the resource-qualified isolated smoke test and approved first-run housekeeping are complete as of 20 November.** Retrieval: 17 October 2026. Reporting cutoff: 29 September 2026. No Wave 3 data belongs to this release.
 
 [Permanent methodology](../SEGMENTATION.md) · [Accepted research findings](03_lenses/AUDIT_v1.md) · [Decision register](03_lenses/FORMULATION_DECISIONS_v1.csv) · [Release contract](04_analytical_package/ARTIFACT_INDEX.md)
 
@@ -33,7 +33,7 @@ H12 compares geographies across supported commercial populations. The shared res
 
 GitHub carries the reproducible source/decision chain and compact audit evidence. Product-level working exports, source databases, images and locked model observations are intentionally local. Reviewed classification/eligibility tables are explicit publication exceptions because they are necessary decision inputs. No review confidence label is independent package verification.
 
-The local working documents `../learning_plan.md` and `../SEGMENTATION_HYPOTHESES_NEXT_PHASE.md` preserve scheduling and the original research hypotheses. They are not permanent public entry points. The local `logs.md`, `HOUSEKEEPING_PROPOSAL_v1.md`, `housekeeping_inventory_v1.csv` and inventory helper record maintenance history; they do not replace the published scientific decisions or frozen manifests.
+The local working documents `../learning_plan.md` and `../SEGMENTATION_HYPOTHESES_NEXT_PHASE.md` preserve scheduling and the original research hypotheses. They are not permanent public entry points. The local `logs.md` retains maintenance approvals, executed actions and the merged original housekeeping proposal. The obsolete inventory and generator are retired; dated references to them are historical. This ledger does not replace the published scientific decisions or frozen manifests.
 
 Only the required shared master modules from `../production/workflow/` are public. The local `../production/README.md` and numbered future-wave operators are a separate operational route; this publication does not advertise them as a complete GitHub runnable pipeline.
 
@@ -88,13 +88,15 @@ The same published code, preprocessing rules and numerical comparisons were used
 
 The compact test CHECK, harness, results, code provenance, restoration/hash manifests and stage/failure logs remain local under `outputs/first_run_smoke_v1/` at the repository root. Detailed `results.json` SHA-256: `bfecf0d5f3e52e24d303607c86fc88a3aa535f59a9afb237a407e1fbd9ecb50f`.
 
-The larger exported checkout and regenerated datasets are reproducible test copies proposed for removal after approval. Their original source/evidence files remain at canonical paths. Removing those copies ends resume capability for that completed workspace; another test starts in a fresh isolated directory. The public results above remain independent of those disposable copies.
+The larger exported checkout, regenerated datasets and two temporary work directories were removed in the approved ten-path cleanup on 20 November. Their original source/evidence files remain at canonical paths. The completed smoke workspace is retained as compact evidence and cannot be resumed; another test starts in a fresh isolated directory with exported code and restored inputs. The public results above remain independent of the removed copies.
 
 This smoke test covers the accepted rerun from governed data and saved decisions. Historical provider work, control fitting, future-wave operators, fresh dependency installation, remote-backup recovery and live Streamlit/Lovable deployment were not tested.
 
-## Remaining housekeeping
+## Housekeeping closure · 20 November 2026
 
-Public code, reviewed decisions, navigation and the local restoration contract are established and the accepted rerun is tested. One approved physical-cleanup pass remains. Exact candidates and reference-update prerequisites are recorded in the local `logs.md`; no removal is authorized by this documentation update. Keep original locked evidence, canonical outputs, required reference tables and the compact smoke-test evidence. Follow cleanup with frozen/input integrity and reference checks; another full numerical rerun is unnecessary when only non-runtime copies and retired maintenance files are removed.
+Public code, reviewed decisions, navigation and the local restoration contract are established and the accepted rerun is tested. Julia approved the exact ten-path cleanup. The old proposal was merged byte-for-byte into the local `logs.md` before removing its standalone file, obsolete census/generator and seven smoke-copy paths. Exactly 356 files were removed across the ten targets, recovering 4,406,018,941 logical bytes (about 4.10 GiB). No additional targets were removed.
+
+All 24 compact smoke records were retained; the local CHECK received only an appended cleanup note. Post-removal checks passed for all 74 original input/package hashes, frozen 17 canonical files and 34 pinned dependencies, eight locked-output hashes, 35 archived sources, and the presence/Git identity/syntax of 24 runtime source files. Master dependency imports, path resolution and frozen overwrite refusal pass. Historical inventory/proposal references now resolve to the merged local action record. No new numerical analysis, provider call, model fit or canonical data/evidence modification occurred. **Housekeeping is closed for the accepted first-run scope.** Further removal requires a new exact approval.
 
 Lovable layout/integration remains separate from analytical housekeeping. Repository-wide reporting edits and future-wave operations remain outside this scoped closure.
 
