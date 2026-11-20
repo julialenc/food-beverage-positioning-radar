@@ -3,3 +3,7 @@
 
 # Preserve original audited lens source and aggregate bytes.
 /presentations/segmentation/first_run/03_lenses/** -text
+
+# Preserve the reviewed cereal input and remaining preparation-source identities.
+/presentations/segmentation/first_run/02_shared_preprocessing_and_eda/01_preprocessing/* -text
+/presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/01_nutritional_composition/* -text
