@@ -1,3 +1,7 @@
+# Pipeline navigation
+
+**Wave 2 analytical preparation is complete.** The corrected master, locked nullable claims and accepted first-run release are documented in the [segmentation guide](../presentations/segmentation/first_run/README.md). The isolated rerun passed with restored local inputs and documented low-memory settings. Historical source and evidence remain locked. Future-wave operators and their complete local inputs are a separate scope; do not infer authorization for provider calls or a new ingestion.
+
 ```text
 pipeline/ # Production pipeline code, governance utilities, validation checks, prompts, and exports
 |-- __init__.py # Package marker for pipeline imports

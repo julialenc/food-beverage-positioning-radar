@@ -1,7 +1,8 @@
 # Category Cleanup Governance
 
 **Status:** MVP launch governance — current  
-**Last updated:** September 2026
+**Last updated:** 20 November 2026 (Wave 2 beverage evidence clarified;
+MVP category governance unchanged)
 
 This document defines how Open Food Facts category tags are converted into the
 Food & Beverage Positioning Radar analytical categories used by Streamlit.
@@ -381,6 +382,10 @@ The beverage segment split is used for chart readability and nutrition
 comparability. It separates ready-to-drink products from syrups, concentrates,
 powders, tea/coffee preparations, alcohol-related products, meal-replacement
 shakes, and unknown beverage records.
+
+### Wave 2 beverage analytical eligibility
+
+The [locked beverage policy](../../presentations/segmentation/first_run/01_ingestion/03_pack_evidence/01_beverage_method/approved_method/BEVERAGE%20FINAL%20-%20Implementation%20and%20lock.md) and [reviewed decisions](../../presentations/segmentation/first_run/01_ingestion/03_pack_evidence/01_beverage_method/approved_method/beverage_final_v1/eligibility_decisions.csv) distinguish exclusions from unresolved holds. Legitimate drinks and preparations remain eligible; a broad category tag, container or nutrient value alone does not establish intended use. Original OFF categories remain preserved. These are Wave 2 analytical decisions; future-wave application needs its own governed inputs.
 
 ## Reviewed Override Precedence
 

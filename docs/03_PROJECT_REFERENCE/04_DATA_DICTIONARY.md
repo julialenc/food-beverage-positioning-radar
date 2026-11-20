@@ -5,6 +5,10 @@ the compact deployment schema, and the separate presentation CSV evidence.
 Schema and owning scripts were inspected on 2026-10-16. Grouped column families
 below share a definition; they do not imply new columns or a schema migration.
 
+## Locked Wave 2 claims layer
+
+The local claims join contains 12,161 barcode-region-category observations: 12,126 newly processed and 35 historical reuses. Two salami assignments remain analytically excluded. See the [locked rules](../../presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/03_final_lock/wave2_ocr_llm_lock_v1/RULES.md) and [manifest](../../presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/03_final_lock/wave2_ocr_llm_lock_v1/manifest.json). Unknown or unmatched claims remain null. Integration into the [corrected analytical master](../../presentations/segmentation/first_run/01_ingestion/05_master_parquet/README.md) is complete; it uses a separate claims namespace and does not itself change the reporting database schema.
+
 The full local `database/positioning_radar.db` is the audit/build source.
 Stage 17 publishes a compact database with seven tables: `products`,
 `product_analysis`, `axis_range_config`, `market_chart_bands`,
@@ -36,6 +40,10 @@ pack-evidence denominators. A successful empty claim result remains an analyzed
 observation; no observation is not a negative result. See the
 [incremental population policy](06_INCREMENTAL_POPULATION_POLICY.md) for matching
 rules, limitations and copy-only operating boundaries.
+
+### Wave 2 beverage companion data
+
+The [locked beverage manifest](../../presentations/segmentation/first_run/01_ingestion/03_pack_evidence/01_beverage_method/approved_method/beverage_final_v1/final_lock_manifest.json) identifies the reviewed eligibility and benefit sidecars. Detailed observations and the earlier app display overlay remain local. Eligibility states distinguish eligible, excluded and hold; missing assessments are unknown. These files do not themselves migrate the reporting database schema. The separate corrected Wave 2 reporting release was rebuilt for barcode identity; app display changes remain under review.
 
 **Interpretation principle:** every field below is an analytical signal, not a
 verdict. Fields describe observed or derived attributes — claims, ingredients,

@@ -1,7 +1,7 @@
 # Data source, license, and limitations
 
 **Status:** Current governance and standalone-analysis limitations
-**Last updated:** 16 October 2026
+**Last updated:** 20 November 2026
 
 This document catalogs the main limitations affecting interpretation of
 Food & Beverage Positioning Radar outputs. For metric definitions and
@@ -59,6 +59,8 @@ usable image cannot contribute confirmed image-based claim observations.
 
 Image coverage can therefore differ systematically by brand, category, market,
 or contributor activity.
+
+The Wave 2 beverage evidence combines selected saved OCR, model assessments and approved human decisions. An image URL or front-panel classifier alone does not establish target identity or panel scope. Unassessed, ambiguous and failed evidence remains unknown, rather than a negative claim. The selected OCR/LLM allocation is not representative of market shares or claim prevalence. Wave 2 processing is complete and locked; the [claims rules](../../presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/03_final_lock/wave2_ocr_llm_lock_v1/RULES.md) document the evidence states and limitations.
 
 ## Category limitations
 

@@ -329,6 +329,10 @@ consumer benefit.
 Stored claim codes are mapped to user-facing labels through
 `docs/02_PACK_IMAGE_ANALYSIS/02_CLAIM_TAXONOMY_LABELS.md`.
 
+#### Wave 2 beverage evidence
+
+The [locked beverage method](../../presentations/segmentation/first_run/01_ingestion/03_pack_evidence/01_beverage_method/approved_method/BEVERAGE%20FINAL%20-%20Implementation%20and%20lock.md) governs reviewed eligibility and independent hydration/electrolyte evidence. Wave 2 OCR/LLM processing and reconciliation are complete. The [locked claims rules](../../presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/03_final_lock/wave2_ocr_llm_lock_v1/RULES.md) preserve source wording, proposition-specific usability and unknown states. The separate earlier app display overlay remains local pending review; it is not evidence of a hosted deployment.
+
 ### Ingredient markers
 
 **Status:** Implemented internally; not displayed as a proprietary user-facing

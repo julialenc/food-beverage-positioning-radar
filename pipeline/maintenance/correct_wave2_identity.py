@@ -270,58 +270,10 @@ def scope():
     print("SCOPE COMPLETE",metadata["display_count"],flush=True)
 
 def refresh():
-    """Replace current inventory outputs using corrected scope and preserved source observations."""
-    import os
-    import runpy
-    import pandas as pd
-    import pyarrow.parquet as pq
-    here=ROOT/"presentations/segmentation/first_run/02_shared_preprocessing_and_eda/01_preprocessing"
-    inventory=runpy.run_path(str(here/"field_use_inventory_v1.py"))
-    report=inventory["build"]()
-    (here/"field_use_inventory_v1.json").write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding="utf-8")
-    audit=runpy.run_path(str(here/"us_ca_nutrient_coverage_v1.py"))
-    path=here/"us_ca_nutrient_coverage_v1.csv"
-    old=pd.read_csv(path,dtype={"barcode":str,"possible_zero_prefixed_peer_barcode":str},low_memory=False)
-    original_columns=list(old.columns)
-    metrics=audit["METRICS"];other=audit["OTHER"]
-    columns=["barcode","product_name","normalized_brand","region","category","assignment_countries","image_url","ingredients_text","last_modified_t","ingested_at",*metrics,*other,*[name+"_off_raw" for name in metrics]]
-    frame=pq.read_table(audit["MASTER"],columns=columns,filters=[("region","=","US-CA"),("product_scope_eligible","=",True)]).to_pandas()
-    frame["assignment_countries"]=frame.assignment_countries.map(lambda values:"+".join(sorted(values)))
-    frame["master_primary_image_url_present"]=audit["available_url"](frame.pop("image_url"))
-    frame["master_ingredient_text_present"]=frame.pop("ingredients_text").fillna("").str.strip().ne("")
-    frame["master_pattern"]=audit["pattern"](frame[metrics])
-    frame["master_nutrients_populated_of_8"]=frame[metrics+other].count(axis=1)
-    frame["preserved_off_pattern"]=audit["pattern"](frame[[name+"_off_raw" for name in metrics]])
-    frame=frame.drop(columns=[*other,*[name+"_off_raw" for name in metrics]])
-    source_columns=[name for name in old if name.startswith("october_")]
-    cached=old[["barcode",*source_columns]].drop_duplicates("barcode")
-    frame=frame.merge(cached,on="barcode",how="left",validate="one_to_one")
-    missing=int(frame.october_match.isna().sum())
-    if missing:
-        raise ValueError(f"{missing} corrected products need an uncached source observation")
-    actual=pd.to_datetime(frame.last_modified_t,utc=True,format="mixed",errors="coerce")
-    observed=pd.to_datetime(pd.to_numeric(frame.october_modified_epoch,errors="coerce"),unit="s",utc=True)
-    frame["modified_time_agrees"]=actual.eq(observed).where(actual.notna()&observed.notna())
-    frame=frame.rename(columns={"last_modified_t":"master_last_modified_t","ingested_at":"master_ingested_at"})
-    frame=audit["flag_spelling_candidates"](frame).sort_values(["barcode","region","category"])
-    assert not frame.duplicated(["barcode","region","category"]).any()
-    assert len(frame)==report["by_region"]["US-CA"]["product_scope_eligible"]
-    candidate=path.with_suffix(".csv.tmp")
-    frame[original_columns].to_csv(candidate,index=False,encoding="utf-8-sig",lineterminator="\n")
-    os.replace(candidate,path)
-    learning=(here/"learnings.md").read_text(encoding="utf-8")
-    learning=learning.split("### Nutrient availability depends on the population")[0]
-    learning=learning.replace("211 fields",str(report["field_count"])+" fields").replace("| 17 | Lenses 3 and 4","| 19 | Lenses 3 and 4")
-    learning+="### Corrected nutrient availability, 14 November 2026\n\nThe barcode identity correction replaces the previous duplicated denominators. Source measurements and claim uncertainty are preserved.\n\n| Region | Eligible assignments | Protein | Fibre | Sugars |\n|---|---:|---:|---:|---:|\n"
-    for region,stats in report["by_region"].items():
-        n=stats["product_scope_eligible"];nutrients=stats["nutrient_non_null"]
-        learning+=f"| {region} | {n:,} | {nutrients['protein_100g']/n:.1%} | {nutrients['fiber_100g']/n:.1%} | {nutrients['sugars_100g']/n:.1%} |\n"
-    absent=int(frame[metrics].isna().all(axis=1).sum())
-    learning+=f"\nUS/Canada has {absent:,} assignments missing protein, fibre and sugars together out of {len(frame):,} eligible assignments ({absent/len(frame):.1%}). This remains an upstream OFF coverage issue. Numeric zero remains observed, and missing values remain unknown.\n\nThe CSV reuses preserved exact-source audit observations and replaces product metadata and scope from the corrected master. No OFF values were imputed. The field inventory is regenerated against the corrected master hash.\n\nOCR/LLM evidence covers a deliberately selected population. Keep observed nutrition and communicated claims separate and retain unknown claims. Define the H2 cereal peer group before choosing its feature-specific cleaning, scaling or methodology. No new preprocessing or models were run.\n"
-    (here/"learnings.md").write_text(learning,encoding="utf-8")
-    with (here/"logs.md").open("a",encoding="utf-8") as stream:
-        stream.write(f"\n## 14 November 2026 — barcode identity correction\n\nEarlier coverage counts and the old CSV hash above are historical pre-correction checkpoints. Current CSV and inventory JSON have been replaced from the corrected master. The CSV now has {len(frame):,} eligible US/Canada assignments. Existing exact-source observations were reused without another source investigation or any imputation. Current incident status is in wave2_identity_fix_v1/CHECK.md and OBS-028.\n")
-    print("CURRENT AUDIT OUTPUTS REPLACED",len(frame),flush=True)
+    """Refresh the current field inventory after the preprocessing baseline reset."""
+    import subprocess
+    script = ROOT / "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/01_preprocessing/field_use_inventory_v1.py"
+    subprocess.run([sys.executable, "-B", str(script), "--replace"], check=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
