@@ -1,0 +1,29 @@
+{
+  "version": "wave2_analytical_v1",
+  "status": "ACCEPTED_FROZEN",
+  "accepted_date": "2026-11-19",
+  "scope": "Canonical v1 code/data/documentation only; no deletion or relocation authorization",
+  "files": {
+    ".gitignore": "12fdb89b10d048c14b47f6d1f14ab33f4711da8ecad8e10c19f19c828bddbaee",
+    "ARTIFACT_INDEX.md": "ca020b44746ca696de21c3144862adacb68ebdccee6e7890e079c6da3784f0da",
+    "CHECK.md": "22d7bb96b9177d8712fb60282700935d4da03adf236c745b828b3f0343ee2af4",
+    "DATA_DICTIONARY.md": "38ef43b5c016c9ec868d6d9e43751b8689e383f69a5e1de453bcab7f435d1300",
+    "analytical_rules_v1.py": "5aac9fa8b16e38c8e12f024100d7cd94207b259f9b1488d985e261ab9b6a43a6",
+    "build_analytical_package_v1.py": "501540183b2b83d5dd603adfcc355d4eb511e4743d976abe01977a2a640d8ae1",
+    "learnings.md": "2f89a3975fc7e041bf9cfe8b6dabf6a9f368e7a35cba1fb380f15116607fca24",
+    "logs.md": "056076350f3aab650de82617188c429ecb2369d6e978ab7305886598ab6944d3",
+    "output/analytical_assignments_v1.parquet": "1a40db1b41fb368d2e2a15b2179b661bdb63bf926fc5ff20eb2ab726a751a811",
+    "output/approved_findings_v1.json": "f1884b128dca098cbca4f47f33c7ac9c16b7635b5e90ce4ff17bfe3cc4aefba8",
+    "output/assessed_communication_v1.parquet": "bfb600702b47a305fa22144c3aa4c51933c22be06fa955d68f2e7cf6c9c1505a",
+    "output/boundary_annotations_v1.parquet": "8f02e44b947f993a575638e68fe39cf0cbe1f5c92a39ab9633db1c8cc1483cd1",
+    "output/communication_coverage_v1.csv": "ca88e92400a0dbdd951e9c801eb07902a8b5c10f3ebd875244a154338bcf14b3",
+    "output/human_observations_v1.parquet": "ead684ae5b4c6dfa9dffbe59794b9921b75583fa0d7fbe4c27a2fada004a0fda",
+    "output/manifest_v1.json": "00dff5439a37475109410d9d1ba0f3f8dc348241e8fe83bac6843c956f53175a",
+    "output/population_summary_v1.csv": "ee84e2eb6624838762040a27f24d96f181c1a7684d66817284dbffa95cea791f",
+    "verify_analytical_package_v1.py": "049510175aca2f84c36e666638491bd14dfc9420b73a7481d8a7faccdaafd859"
+  },
+  "release_digest": "48212697d2d245e3cc543032d63699b7e83fb43ad5db8dce7cbb8714991f0557",
+  "excluded_from_self_hash": "This receipt; its aggregate release digest is recorded in the housekeeping proposal and dated handover.",
+  "analytical_change": "None; approved_findings_v1.json top-level status metadata promoted only",
+  "overwrite_policy": "Refuse frozen-v1 build; verify read-only; future changes require an approved new release version/destination"
+}

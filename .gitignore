@@ -83,3 +83,7 @@ docs/ONBOARDING.md
 # Reviewed remaining 02_ preparation: reproducible inventory export stays transient.
 /presentations/segmentation/first_run/02_shared_preprocessing_and_eda/01_preprocessing/field_use_inventory_v1.json
 /presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/01_nutritional_composition/lens1_cereal_master_v1.parquet
+
+# Accepted analytical package: frozen execution history remains local.
+/presentations/segmentation/first_run/04_analytical_package/logs.md
+/presentations/segmentation/first_run/04_analytical_package/learnings.md
