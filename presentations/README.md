@@ -4,6 +4,20 @@ Standalone business analyses, presentation PDFs and supporting aggregate evidenc
 These analyses are independent of the Streamlit application. This folder can
 hold additional private-label presentations and future analyses on other topics.
 
+## Segmentation
+
+The [authoritative methodology](segmentation/SEGMENTATION.md) defines commercial identity → nutritional formulation → communicated positioning, evidence governance and release rules. [First-run navigation](segmentation/first_run/README.md) provides the route through ingestion, shared EDA, research and the accepted package.
+
+| What you need | Public entry point |
+|---|---|
+| Accepted findings and limitations | [Consolidated research audit](segmentation/first_run/03_lenses/AUDIT_v1.md) and [33-decision register](segmentation/first_run/03_lenses/FORMULATION_DECISIONS_v1.csv) |
+| Source population and locked claims | [Ingestion guide](segmentation/first_run/01_ingestion/README.md) |
+| Lovable analytical handover | [Artifact index](segmentation/first_run/04_analytical_package/ARTIFACT_INDEX.md), [data dictionary](segmentation/first_run/04_analytical_package/DATA_DICTIONARY.md) and [accepted CHECK](segmentation/first_run/04_analytical_package/CHECK.md) |
+
+The corrected Wave 2 source uses the 17 October 2026 retrieval and 29 September cutoff. The analytical package is frozen; the final isolated pipeline smoke test is pending. Publication does not claim a new Streamlit deployment or Lovable website delivery.
+
+GitHub contains code, approved rules, selected aggregate evidence and exact release metadata. Master/raw data, saved images, OCR/LLM observations, human sidecars and product-level analytical outputs stay local. The dated learning plan and original hypothesis working document also stay local; this does not replace the permanent methodology. Follow the ingestion and artifact contracts to restore local inputs. The local `segmentation/production/README.md` describes future-wave operations; only the required shared master modules from that route are currently public.
+
 ## Private labels
 
 The analyses explore portfolio architecture, product composition relative to

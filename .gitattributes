@@ -17,3 +17,7 @@
 /presentations/segmentation/production/workflow/artifact_paths.py -text
 /presentations/segmentation/production/workflow/evidence_index.py -text
 /pipeline/segmentation/run_01_select_eligible_products.py -text
+
+# Preserve authoritative segmentation navigation bytes.
+/presentations/segmentation/SEGMENTATION.md -text
+/presentations/segmentation/first_run/README.md -text

@@ -4,7 +4,7 @@
 
 The objective is interpretable product positioning, not healthfulness, sales-weighted prevalence or market share. The accepted architecture is **commercial identity → nutritional formulation → communicated positioning**. Geography, nutrient density, processing and trade-offs are additional views. Not every format needs nutritional subsegments. Missing nutrients, measured zeros, positive claims, documented non-detection, uncertainty and unassessed evidence remain distinct.
 
-**Public audit versus local reproduction.** Public source, accepted decisions, aggregate results and exact identities make the research auditable. Master/raw data, selected product-level evidence and required keyed matrices remain local. A GitHub clone alone is not a self-contained analytical dataset. Source identity, selection and denominators must accompany reproduced findings. The permanent local methodology is `presentations/segmentation/SEGMENTATION.md`; this report does not expand its scope.
+**Public audit versus local reproduction.** Public source, accepted decisions, aggregate results and exact identities make the research auditable. Master/raw data, selected product-level evidence and required keyed matrices remain local. A GitHub clone alone is not a self-contained analytical dataset. Source identity, selection and denominators must accompany reproduced findings. The [permanent methodology](../../SEGMENTATION.md) and [first-run navigation](../README.md) define the public entry points and local-input restoration boundary; this report does not expand their scope.
 
 After consolidation: **21 public artifacts and 31 retained local files**. Of 54 original files, 20 are public artifacts, 19 are local data/evidence files, 13 reports are consolidated here (12 local frozen originals retained), and two completed runners are retired as live files. The superseded coverage note is also removed as a live document. Exact retired source/text is recoverable from the existing [run manifest](00_shared_research/run_manifest_v1.json), without another archive folder.
 
@@ -34,7 +34,7 @@ This is the public layout; immutable local reports keep their original paths. Th
 
 The original 54-file table below is a historical disposition list; its links now point to current code locations. `relocation_v1` in the shared manifest records all five old/new paths, prior/current source hashes and recoverable previous source text. Archived reports and prior metadata retain their recorded root paths and resolve through that map. No hypotheses, methods, assertions, source observations, classifications, claims or numerical outputs changed.
 
-The remaining nine files under 02_shared_preprocessing_and_eda were reviewed separately; no 02_ files are moved, deleted, published or rewritten in this reorganization. Stop before the 04_ review and defer the final clean-checkout smoke test/working-output removal until all folders are reviewed.
+Historical reorganization checkpoint (superseded by the current first-run navigation): the remaining nine files under 02_shared_preprocessing_and_eda were reviewed separately; no 02_ files are moved, deleted, published or rewritten in this reorganization. Stop before the 04_ review and defer the final clean-checkout smoke test/working-output removal until all folders are reviewed.
 
 <a id="format-first-findings"></a>
 ## Commercial identity and nutritional formulation - closed

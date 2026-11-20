@@ -1,5 +1,9 @@
 # Food & Beverage Positioning Radar
 
+**Wave 2 segmentation: accepted analytical package frozen; final pipeline smoke test pending.** The source was retrieved on 17 October 2026 with a 29 September reporting cutoff. [Segmentation methodology](presentations/segmentation/SEGMENTATION.md) · [First-run navigation](presentations/segmentation/first_run/README.md) · [Accepted findings](presentations/segmentation/first_run/03_lenses/AUDIT_v1.md) · [Release contract](presentations/segmentation/first_run/04_analytical_package/ARTIFACT_INDEX.md)
+
+Public code, reviewed rules, aggregate evidence and release hashes are on GitHub. The master Parquet, detailed pack evidence and keyed presentation outputs remain local; a checkout needs those declared inputs restored to reproduce the analysis. The standalone segmentation package is separate from the Streamlit reporting application.
+
 **An open-data market-intelligence project combining an interactive Streamlit
 board with standalone business analyses of how packaged foods and beverages
 position themselves through portfolio architecture, nutrition, ingredients,
@@ -220,7 +224,10 @@ pipeline/               Production stages, validation checks, governance tools, 
 data/                   Committed reference inputs plus ignored generated output homes
 database/               Schema reference, local build DB, and compressed public MVP DB artifact
 docs/                   Product governance, pack-image analysis, and project reference documents
-presentations/          Standalone business analyses, presentation PDFs, and supporting evidence
+presentations/          Standalone analyses and supporting evidence
+  segmentation/SEGMENTATION.md   Permanent analytical methodology and release rules
+  segmentation/first_run/         Public research code/audit and local evidence homes
+  segmentation/production/        Shared master code; other future-wave operators local
 ```
 
 Generated local workspaces are kept as empty committed folders with `.gitkeep`
@@ -276,7 +283,7 @@ and consumed by the Streamlit app.
 
 *End-to-end architecture: modular data processing, selected-product OCR/LLM enrichment, and independent quality guardrails.*
 
-The standard local build path is:
+The stages below build the Streamlit/SQLite reporting layer. For the corrected Wave 2 segmentation master, follow the [master reproduction contract](presentations/segmentation/first_run/01_ingestion/05_master_parquet/README.md). Future-wave operator scripts and their guide are retained locally; only the shared master dependencies have been published from that route.
 
 ```
 01A. pipeline/stages/stage_01a_bootstrap_from_off_bulk.py
@@ -328,6 +335,7 @@ Navigation files:
 
 ## Documentation
 
+- [Segmentation first-run guide](presentations/segmentation/first_run/README.md) — published research, local input restoration and the frozen release.
 - [Presentations and business analyses](presentations/README.md) — PDFs and
   analysis navigation.
 - [Private-label evidence](presentations/private_label_analysis/README.md) —

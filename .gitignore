@@ -161,3 +161,12 @@ docs/ONBOARDING.md
 !/presentations/segmentation/first_run/01_ingestion/05_master_parquet/output/manifest.json
 !/presentations/segmentation/first_run/01_ingestion/README.md
 !/presentations/segmentation/first_run/01_ingestion/historical_paths.json
+
+# Segmentation working plans and maintenance records are local provenance, not public entry points.
+/presentations/segmentation/learning_plan.md
+/presentations/segmentation/SEGMENTATION_HYPOTHESES_NEXT_PHASE.md
+/presentations/segmentation/first_run/logs.md
+/presentations/segmentation/first_run/HOUSEKEEPING_PROPOSAL_v1.md
+/presentations/segmentation/first_run/housekeeping_inventory_v1.csv
+/presentations/segmentation/first_run/housekeeping_inventory_v1.py
+/presentations/segmentation/production/README.md
