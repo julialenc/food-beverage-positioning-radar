@@ -10,3 +10,10 @@
 
 # Preserve accepted analytical release bytes.
 /presentations/segmentation/first_run/04_analytical_package/** -text
+
+# Preserve locked ingestion contracts and unchanged master dependencies byte for byte.
+/presentations/segmentation/first_run/01_ingestion/** -text
+/presentations/segmentation/production/workflow/build_master.py -text
+/presentations/segmentation/production/workflow/artifact_paths.py -text
+/presentations/segmentation/production/workflow/evidence_index.py -text
+/pipeline/segmentation/run_01_select_eligible_products.py -text

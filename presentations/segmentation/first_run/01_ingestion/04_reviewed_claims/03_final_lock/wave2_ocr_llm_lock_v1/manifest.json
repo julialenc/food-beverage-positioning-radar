@@ -1,0 +1,850 @@
+{
+  "version": "wave2_ocr_llm_lock_v1",
+  "status": "LOCKED",
+  "locked_on": "2026-11-12",
+  "timezone": "Europe/Berlin",
+  "scope": "OCR_LLM_PREPARATION",
+  "authority": "final_approval.md",
+  "master_parquet_modified": false,
+  "next_workstream": "Master Parquet integration and segmentation",
+  "material_blockers": [],
+  "counts": {
+    "new_processed": 12126,
+    "historical_linked": 35,
+    "historical_handoff": 0,
+    "join_records": 12161,
+    "eligible": 12159,
+    "excluded": 2,
+    "energy_segment": 106,
+    "additional_segment_energy": 63,
+    "energy_preparations": 5,
+    "energy_positioning_true": 116,
+    "energy_positioning_false": 4604,
+    "energy_unknown": 7406
+  },
+  "join_keys": [
+    "barcode",
+    "region",
+    "category"
+  ],
+  "nullable_boolean_contract": "Unknown and unmatched remain null; no null-to-zero filling",
+  "sources": [
+    {
+      "path": "C:\\Users\\julia\\.codex\\attachments\\5072de8f-e50c-4009-82e9-afd70ad3f648\\Pasted text.txt",
+      "sha256": "143388dcfe21f9da41c21b47df67b08317d7dba51ebe1510f4611313f34441f2"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\05_vision_release\\vision_results_aldi_lidl_targeted_en.csv",
+      "sha256": "5f987610245bee569fb4060f00993a0ed33427f5e736099d4252a6be1ad457f3"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\05_vision_release\\vision_results_aldi_lidl_targeted_en_normalised.csv",
+      "sha256": "74e729ce48095dc062b839c6794aadb8544a72af5dbfa1c6ac758f00651a88e4"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\05_vision_release\\vision_results_carrefour_targeted_fr.csv",
+      "sha256": "495687ed7a1c245ad9e27b41308408c3e3420495185168a0381c1d8b4db112c4"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\05_vision_release\\vision_results_mainstream_uk_ie_targeted_en.csv",
+      "sha256": "b296a3694192f82aa080848c6adb145ee612d4c07dd1740d8628da19060cc503"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\05_vision_release\\vision_results_mainstream_us_canada_additional_targeted_en.csv",
+      "sha256": "c20ecc92e3dac8effa95d95dd0f048aa47f97ae195c81baa45f53cc7402d0c5d"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\05_vision_release\\vision_results_mainstream_us_canada_targeted_en.csv",
+      "sha256": "187b20678bee89fdb7f72ddee229de7686e62dc7aa61de48b28c8a513803da5b"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\segmentation\\lock_wave2_ocr_llm.py",
+      "sha256": "cb90312d82ce92e0033481dd917c1cc95076288c4e0de7d6450c8d7eaa02ceea"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\stages\\stage_10_extract_pack_claims.py",
+      "sha256": "57dd143d5ebeb79f6fc7b970427069cf4579713674006db723a8838202369c6a"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\vision_prompts\\current\\prompt_en_context_review.txt",
+      "sha256": "df8bf7de049c1e9549c47d3458d0522440dfb08d06ecafedcab315135411d77d"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\vision_prompts\\current\\prompt_fr_context_review.txt",
+      "sha256": "069913efd4c4ae536a5cd9d9e420ed38f76df6ef7e784aed0b26694182f26199"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\vision_prompts\\current\\prompt_uk_test_09.2026_final.txt",
+      "sha256": "0b5a2edc8e01a8d1d9b676dcb395c28fed181334d9f5991876091a8749c5f0b0"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\vision_prompts\\current\\prompt_v5_en.txt",
+      "sha256": "5ab0d91899588b3fc25faf4fffaabf94545946a3a9120c32a1819831569e364f"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\vision_prompts\\current\\prompt_v5_fr.txt",
+      "sha256": "fb1ecf4a69860ec00aa3408f2c321cb19124f1e4e8b122982a0f8bf04aed100c"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\ENERGY_DRINK_COVERAGE_CHECK.md",
+      "sha256": "0aafe54d97d56a115a10a6fe06c1d0d9795ee634025405d29ce7161be187f6f5"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\run_06b_main_readiness_v1\\runtime_configuration.json",
+      "sha256": "dc6f95a568415b1a0200cde8b4e2a99ff2dd33793c0330d1c9587913386e7554"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\wave2_claim_six_case_review_v1\\REVIEW.md",
+      "sha256": "48b1e8b129a04f28cc6c538feedb1014d9002a43a4d3cdfc10c61334a03dc737"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\wave2_claims_reconciliation_v1\\reconciled_review.csv",
+      "sha256": "ecb64c80815a3f2d708c5969dc89b853f1bbeb9cc05f51d1d067ebafbd925387"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\wave2_claims_reconciliation_v1\\validation.json",
+      "sha256": "097c6e70af7fac605aa57d4bcfdaa369bc82a27d938803cbf4b57998042812c5"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\wave2_dairy_shortlist_v1\\approved_selection.csv",
+      "sha256": "80fa0e89d00ad85212a14a9c3674f73e998cb7feced626d5c3822eb4d0d2d6fe"
+    }
+  ],
+  "schema": [
+    {
+      "name": "record_id",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "barcode",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "region",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "category",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "product_name",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "image_url",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "evidence_cohort",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "original_overall_outcome",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "source_country_assignments",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "source_market_limitation",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "analytical_eligible",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "eligibility_reason",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "energy_drink_membership",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "energy_drink_format",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "energy_positioning",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "energy_positioning_basis",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "original_energy_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "core_claim_evidence_json",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "source_references",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "core_assessment_context",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "core_assessment_quality",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "core_assessment_status",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "v6_disposition",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "v6_usable",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "nutrition_qa_hold",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "population_qa_note",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_protein_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_protein_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_protein_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_sugar_free_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_sugar_free_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_sugar_free_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_reduced_sugar",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_reduced_sugar",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_reduced_sugar",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_no_palm_oil",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_no_palm_oil",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_no_palm_oil",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_no_artificial",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_no_artificial",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_no_artificial",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_natural_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_natural_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_natural_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_fortification_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_fortification_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_fortification_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_fibre_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_fibre_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_fibre_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_gut_health_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_gut_health_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_gut_health_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_probiotic_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_probiotic_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_probiotic_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_prebiotic_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_prebiotic_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_prebiotic_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_immune_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_immune_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_immune_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_energy_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_energy_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_energy_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_sleep_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_sleep_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_sleep_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_brain_health_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_brain_health_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_brain_health_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_vitalite_concept",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_vitalite_concept",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_vitalite_concept",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_sustainability_halo",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_sustainability_halo",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_sustainability_halo",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_reformulation_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_reformulation_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_reformulation_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_comparative_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_comparative_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_comparative_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_glp1_positioning",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_glp1_positioning",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_glp1_positioning",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_origin_quality_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_origin_quality_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_origin_quality_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_clean_label_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_clean_label_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_clean_label_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_minimal_ingredients_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_minimal_ingredients_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_minimal_ingredients_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_artisan_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_artisan_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_artisan_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_vegan_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_vegan_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_vegan_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_organic_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_organic_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_organic_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_dairy_free_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_dairy_free_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_dairy_free_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_lactose_free_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_lactose_free_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_lactose_free_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_plant_based_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_plant_based_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_plant_based_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_heritage_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_heritage_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_heritage_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_gluten_free_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_gluten_free_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_gluten_free_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_gender_targeting_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_gender_targeting_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_gender_targeting_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_reduced_fat_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_reduced_fat_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_reduced_fat_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "claim_whole_grain_claim",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "state_whole_grain_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "basis_whole_grain_claim",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "protein_amount_g",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "protein_amount_basis",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "protein_amount_provenance",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "fortification_nutrients_json",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "fortification_meaning",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "hydration_content_status",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "hydration_front_status",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "hydration_positioning",
+      "type": "bool",
+      "nullable": true
+    },
+    {
+      "name": "electrolyte_content_status",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "electrolyte_front_status",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "electrolyte_positioning",
+      "type": "bool",
+      "nullable": true
+    }
+  ],
+  "outputs": {
+    "CHECK.md": {
+      "sha256": "9fddd0c66b9ba258d03a05d5ca04c14a6d6c04575bd9ec983f3be1d085188e23",
+      "bytes": 6340
+    },
+    "claims_join.parquet": {
+      "sha256": "cd79f402e21b574710194e0cd741aee5d12e00677cd3ef37651d537747d23cda",
+      "bytes": 7935659
+    },
+    "final_approval.md": {
+      "sha256": "143388dcfe21f9da41c21b47df67b08317d7dba51ebe1510f4611313f34441f2",
+      "bytes": 5129
+    },
+    "historical_handoff.json": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "historical_reuses.parquet": {
+      "sha256": "bab5b27304793a2334aed51d98217b1884869ecd98b2363c2feafb1d78604194",
+      "bytes": 30371
+    },
+    "new_processed_audit.parquet": {
+      "sha256": "9df950ffc621f9034b8dc52a5ef5fa376ae021dc39c3149a5f5fe6e9f767f1cb",
+      "bytes": 7145865
+    },
+    "RULES.md": {
+      "sha256": "0c771f63d1bfe313d4132181aaccba5655f523f56547b41d1705336ff3ffa1ad",
+      "bytes": 10600
+    },
+    "validation.json": {
+      "sha256": "16d73bc2ddc79898b57cc0b48662e35409f877840aa8a3d50a7f94d6b58767b5",
+      "bytes": 9618
+    }
+  },
+  "residual_limitations": [
+    "Ordinary automated model error; unavailable claim evidence remains unknown",
+    "Unresolved v6 and source-market limitations preserved",
+    "Historical raw LLM responses unavailable in linked release CSVs",
+    "Nutritional salt reconciliation and US yogurt image-selection QA remain subsequent work"
+  ]
+}

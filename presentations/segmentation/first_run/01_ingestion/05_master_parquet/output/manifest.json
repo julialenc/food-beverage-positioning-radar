@@ -1,0 +1,64 @@
+{
+  "release": {
+    "wave_id": "real_off_20261017_proxy_20260929",
+    "reporting_date": "2026-09-29",
+    "retrieved_at": "2026-10-17T15:35:30.380864+00:00",
+    "source_sha256": "cc940d54c7a1c65acf40a9ed468bba26bb4e12a51fc1b4c2cba9d37c4203e63d",
+    "status": "complete"
+  },
+  "release_manifest_sha256": "2094d9c1325c366db355bb758d715286a175f79ba4c65059a6ece2b9b9d2b240",
+  "source_database": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\06_brand_governance_outputs\\wave2_identity_fix_v1\\release_work.db",
+  "claims_sha256": "cd79f402e21b574710194e0cd741aee5d12e00677cd3ef37651d537747d23cda",
+  "master_sha256": "ff6de2e3ef6752abbd5335a352a413940a8e6c12962bb6c85101f52ea86af912",
+  "counts": {
+    "products": 374840,
+    "assignments": 383613,
+    "master_rows": 382527,
+    "matched": 12161,
+    "matched_excluded": 2,
+    "unmatched": 370366
+  },
+  "category_relinks": [
+    {
+      "record_id": "e52862ccfc48d9c99e6e75a184eddb0d2975dd408432a014d56afc988a424795",
+      "barcode": "0069000147702",
+      "region": "FR",
+      "source_category": "dairy",
+      "category": "beverages",
+      "basis": "existing_reviewed_product_mapping"
+    },
+    {
+      "record_id": "6f69ec1b937f399ae8e97763cf9cea13f72f5585471b5cadfffd88874fc0ae1b",
+      "barcode": "0884912418418",
+      "region": "US-CA",
+      "source_category": "cereal",
+      "category": "snacks",
+      "basis": "existing_reviewed_product_mapping"
+    },
+    {
+      "record_id": "f3cfab3b040e210c05b6b843a3219495fa798f8066bb504a4cbd662157ca6e60",
+      "barcode": "0036632029546",
+      "region": "US-CA",
+      "source_category": "dairy",
+      "category": "beverages",
+      "basis": "existing_reviewed_product_mapping"
+    },
+    {
+      "record_id": "eae8aefb151f9e0277a33391a6c56c87a2ba09366f3d59ac9f475df831264956",
+      "barcode": "0036632035745",
+      "region": "US-CA",
+      "source_category": "dairy",
+      "category": "beverages",
+      "basis": "existing_reviewed_product_mapping"
+    }
+  ],
+  "join_keys": [
+    "barcode",
+    "region",
+    "category"
+  ],
+  "rules": {
+    "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\first_run\\01_ingestion\\02_nutrition_and_sampling\\01_nutrition_and_exclusions\\run_03_exclusions_v1.csv": "22f40dd63e82356a6659ec60455f41988c74f17608977a872e5bc953900e250d",
+    "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\first_run\\01_ingestion\\03_pack_evidence\\01_beverage_method\\approved_method\\beverage_final_v1\\eligibility_decisions.csv": "b31234243ef3137b375d30a88fd377c193a1d719931443f92ab4710adca3a5f7"
+  }
+}

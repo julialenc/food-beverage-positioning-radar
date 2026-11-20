@@ -1,0 +1,306 @@
+{
+  "new_processed": 12126,
+  "historical_linked": 35,
+  "historical_handoff": 0,
+  "join_records": 12161,
+  "eligible": 12159,
+  "excluded": 2,
+  "new_original_outcomes": {
+    "PASS": 8594,
+    "HOLD": 3411,
+    "OTHER": 121
+  },
+  "energy_segment": 106,
+  "additional_segment_energy": 63,
+  "energy_preparations": 5,
+  "energy_positioning_true": 116,
+  "energy_positioning_false": 4604,
+  "energy_unknown": 7406,
+  "energy_outside_segment_positive": 10,
+  "states": {
+    "DOCUMENTED_NOT_DETECTED": 214082,
+    "USABLE_AUTOMATED_POSITIVE": 8226,
+    "UNKNOWN": 190975,
+    "HUMAN_CONFIRMED_POSITIVE": 9,
+    "HUMAN_CONFIRMED_NEGATIVE": 2,
+    "UNCERTAIN": 112,
+    "EXCLUDED": 68
+  },
+  "support": {
+    "SAVED_MODEL_ASSESSMENT": 217902,
+    "DIRECT_OCR_WORDING": 4237,
+    "INSUFFICIENT_ASSESSMENT": 190975,
+    "JULIA_PHOTO_DECISION": 10,
+    "FLAVOURING_VS_NATURALNESS": 112,
+    "JULIA_SOURCE_IDENTITY_DECISION": 68,
+    "APPROVED_EXISTING_RULE": 162,
+    "JULIA_VARIANT_NAMING_DECISION": 1,
+    "HISTORICAL_SAVED_ASSESSMENT": 7
+  },
+  "new_claim_counts": {
+    "protein_claim": {
+      "false": 5930,
+      "unknown": 5557,
+      "true": 639
+    },
+    "sugar_free_claim": {
+      "false": 6100,
+      "unknown": 5604,
+      "true": 422
+    },
+    "reduced_sugar": {
+      "false": 6395,
+      "unknown": 5607,
+      "true": 124
+    },
+    "no_palm_oil": {
+      "false": 6438,
+      "unknown": 5605,
+      "true": 83
+    },
+    "no_artificial": {
+      "false": 6047,
+      "unknown": 5576,
+      "true": 503
+    },
+    "natural_claim": {
+      "false": 5890,
+      "unknown": 5715,
+      "true": 521
+    },
+    "fortification_claim": {
+      "false": 6136,
+      "unknown": 5567,
+      "true": 423
+    },
+    "fibre_claim": {
+      "false": 5802,
+      "unknown": 5590,
+      "true": 734
+    },
+    "gut_health_claim": {
+      "false": 6429,
+      "unknown": 5605,
+      "true": 92
+    },
+    "probiotic_claim": {
+      "false": 6471,
+      "unknown": 5607,
+      "true": 48
+    },
+    "prebiotic_claim": {
+      "false": 6504,
+      "unknown": 5604,
+      "true": 18
+    },
+    "immune_claim": {
+      "false": 6480,
+      "unknown": 5606,
+      "true": 40
+    },
+    "energy_claim": {
+      "false": 6237,
+      "unknown": 5607,
+      "true": 282
+    },
+    "sleep_claim": {
+      "false": 6514,
+      "unknown": 5607,
+      "true": 5
+    },
+    "brain_health_claim": {
+      "false": 6510,
+      "unknown": 5607,
+      "true": 9
+    },
+    "vitalite_concept": {
+      "false": 6510,
+      "unknown": 5607,
+      "true": 9
+    },
+    "sustainability_halo": {
+      "false": 6443,
+      "unknown": 5607,
+      "true": 76
+    },
+    "reformulation_claim": {
+      "false": 6499,
+      "unknown": 5605,
+      "true": 22
+    },
+    "comparative_claim": {
+      "false": 6401,
+      "unknown": 5607,
+      "true": 118
+    },
+    "glp1_positioning": {
+      "false": 6519,
+      "unknown": 5607
+    },
+    "origin_quality_claim": {
+      "false": 6028,
+      "unknown": 5544,
+      "true": 554
+    },
+    "clean_label_claim": {
+      "false": 6378,
+      "unknown": 5605,
+      "true": 143
+    },
+    "minimal_ingredients_claim": {
+      "false": 6505,
+      "unknown": 5607,
+      "true": 14
+    },
+    "artisan_claim": {
+      "false": 6460,
+      "unknown": 5607,
+      "true": 59
+    },
+    "vegan_claim": {
+      "false": 6204,
+      "unknown": 5594,
+      "true": 328
+    },
+    "organic_claim": {
+      "false": 5566,
+      "true": 1005,
+      "unknown": 5555
+    },
+    "dairy_free_claim": {
+      "false": 6419,
+      "unknown": 5606,
+      "true": 101
+    },
+    "lactose_free_claim": {
+      "false": 6474,
+      "unknown": 5606,
+      "true": 46
+    },
+    "plant_based_claim": {
+      "false": 6228,
+      "unknown": 5598,
+      "true": 300
+    },
+    "heritage_claim": {
+      "false": 6336,
+      "unknown": 5506,
+      "true": 284
+    },
+    "gluten_free_claim": {
+      "false": 6042,
+      "unknown": 5603,
+      "true": 481
+    },
+    "gender_targeting_claim": {
+      "false": 6519,
+      "unknown": 5607
+    },
+    "reduced_fat_claim": {
+      "false": 6312,
+      "unknown": 5613,
+      "true": 201
+    },
+    "whole_grain_claim": {
+      "false": 6053,
+      "unknown": 5573,
+      "true": 500
+    }
+  },
+  "v6_states": {
+    "SAVED_ACCEPTED_PRESERVE_UNCERTAINTY": 3327,
+    "UNRESOLVED": 173,
+    "REQUEST_ECHO_RECONCILED": 33,
+    "NOT_USABLE_IDENTITY_EXCLUDED": 2,
+    "NOT_APPLICABLE": 8591
+  },
+  "unique_identities": true,
+  "original_fields_preserved": true,
+  "source_integrity": true,
+  "parquet_roundtrip_exact": true,
+  "null_join_probe_passed": true,
+  "sources": [
+    {
+      "path": "C:\\Users\\julia\\.codex\\attachments\\5072de8f-e50c-4009-82e9-afd70ad3f648\\Pasted text.txt",
+      "sha256": "143388dcfe21f9da41c21b47df67b08317d7dba51ebe1510f4611313f34441f2"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\05_vision_release\\vision_results_aldi_lidl_targeted_en.csv",
+      "sha256": "5f987610245bee569fb4060f00993a0ed33427f5e736099d4252a6be1ad457f3"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\05_vision_release\\vision_results_aldi_lidl_targeted_en_normalised.csv",
+      "sha256": "74e729ce48095dc062b839c6794aadb8544a72af5dbfa1c6ac758f00651a88e4"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\05_vision_release\\vision_results_carrefour_targeted_fr.csv",
+      "sha256": "495687ed7a1c245ad9e27b41308408c3e3420495185168a0381c1d8b4db112c4"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\05_vision_release\\vision_results_mainstream_uk_ie_targeted_en.csv",
+      "sha256": "b296a3694192f82aa080848c6adb145ee612d4c07dd1740d8628da19060cc503"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\05_vision_release\\vision_results_mainstream_us_canada_additional_targeted_en.csv",
+      "sha256": "c20ecc92e3dac8effa95d95dd0f048aa47f97ae195c81baa45f53cc7402d0c5d"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\05_vision_release\\vision_results_mainstream_us_canada_targeted_en.csv",
+      "sha256": "187b20678bee89fdb7f72ddee229de7686e62dc7aa61de48b28c8a513803da5b"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\segmentation\\lock_wave2_ocr_llm.py",
+      "sha256": "cb90312d82ce92e0033481dd917c1cc95076288c4e0de7d6450c8d7eaa02ceea"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\stages\\stage_10_extract_pack_claims.py",
+      "sha256": "57dd143d5ebeb79f6fc7b970427069cf4579713674006db723a8838202369c6a"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\vision_prompts\\current\\prompt_en_context_review.txt",
+      "sha256": "df8bf7de049c1e9549c47d3458d0522440dfb08d06ecafedcab315135411d77d"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\vision_prompts\\current\\prompt_fr_context_review.txt",
+      "sha256": "069913efd4c4ae536a5cd9d9e420ed38f76df6ef7e784aed0b26694182f26199"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\vision_prompts\\current\\prompt_uk_test_09.2026_final.txt",
+      "sha256": "0b5a2edc8e01a8d1d9b676dcb395c28fed181334d9f5991876091a8749c5f0b0"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\vision_prompts\\current\\prompt_v5_en.txt",
+      "sha256": "5ab0d91899588b3fc25faf4fffaabf94545946a3a9120c32a1819831569e364f"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\pipeline\\vision_prompts\\current\\prompt_v5_fr.txt",
+      "sha256": "fb1ecf4a69860ec00aa3408f2c321cb19124f1e4e8b122982a0f8bf04aed100c"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\ENERGY_DRINK_COVERAGE_CHECK.md",
+      "sha256": "0aafe54d97d56a115a10a6fe06c1d0d9795ee634025405d29ce7161be187f6f5"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\run_06b_main_readiness_v1\\runtime_configuration.json",
+      "sha256": "dc6f95a568415b1a0200cde8b4e2a99ff2dd33793c0330d1c9587913386e7554"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\wave2_claim_six_case_review_v1\\REVIEW.md",
+      "sha256": "48b1e8b129a04f28cc6c538feedb1014d9002a43a4d3cdfc10c61334a03dc737"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\wave2_claims_reconciliation_v1\\reconciled_review.csv",
+      "sha256": "ecb64c80815a3f2d708c5969dc89b853f1bbeb9cc05f51d1d067ebafbd925387"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\wave2_claims_reconciliation_v1\\validation.json",
+      "sha256": "097c6e70af7fac605aa57d4bcfdaa369bc82a27d938803cbf4b57998042812c5"
+    },
+    {
+      "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\presentations\\segmentation\\wave2_dairy_shortlist_v1\\approved_selection.csv",
+      "sha256": "80fa0e89d00ad85212a14a9c3674f73e998cb7feced626d5c3822eb4d0d2d6fe"
+    }
+  ],
+  "final_human_assertions_passed": true,
+  "all_11_energy_candidates_unknown": true
+}

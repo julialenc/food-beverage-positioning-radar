@@ -1,0 +1,100 @@
+{
+  "counts": {
+    "electrolyte_detected": 21,
+    "full": {
+      "eligible": 158128,
+      "excluded": 57,
+      "hold": 73
+    },
+    "hydration_detected": 29,
+    "impact": {
+      "reserve": {
+        "eligible": 580,
+        "excluded": 6,
+        "hold": 7
+      },
+      "selected": {
+        "eligible": 3458,
+        "excluded": 39,
+        "hold": 66
+      }
+    },
+    "observed_product_regions": 4573,
+    "overlap": 7,
+    "population": 158258,
+    "reviewed": {
+      "eligible": 3,
+      "excluded": 45,
+      "hold": 73
+    },
+    "source_ocr_barcodes": 4223,
+    "source_ocr_files": [
+      "database/positioning_radar.db::product_analysis",
+      "data/05_vision_release/merged_results_20260912_070650.csv",
+      "data/05_vision_release/merged_results_20260912_070654.csv",
+      "data/05_vision_release/merged_results_20260912_100813.csv",
+      "data/05_vision_release/merged_results_20260912_100823.csv",
+      "data/05_vision_release/merged_results_20260912_151200.csv",
+      "data/05_vision_release/merged_results_20260912_151214.csv",
+      "data/05_vision_release/merged_results_20260912_173848.csv",
+      "data/05_vision_release/merged_results_20260912_173859.csv",
+      "data/05_vision_release/merged_results_20260912_203530.csv",
+      "data/05_vision_release/merged_results_20260912_203542.csv",
+      "data/05_vision_release/merged_results_20260917_065116.csv",
+      "data/05_vision_release/merged_results_20260917_065133.csv",
+      "data/05_vision_release/merged_results_20260918_150100.csv",
+      "data/05_vision_release/merged_results_20260918_150109.csv",
+      "data/05_vision_release/merged_results_20260918_213230.csv",
+      "data/05_vision_release/merged_results_20260918_213240.csv",
+      "data/05_vision_release/merged_results_20260919_192732.csv",
+      "data/05_vision_release/vision_results_aldi_lidl_targeted_en.csv",
+      "data/05_vision_release/vision_results_aldi_lidl_targeted_en_normalised.csv",
+      "data/05_vision_release/vision_results_aldi_lidl_targeted_fr.csv",
+      "data/05_vision_release/vision_results_aldi_lidl_targeted_fr_normalised.csv",
+      "data/05_vision_release/vision_results_carrefour_targeted_en.csv",
+      "data/05_vision_release/vision_results_carrefour_targeted_fr.csv",
+      "data/05_vision_release/vision_results_checkpoint.csv",
+      "data/05_vision_release/vision_results_mainstream_france_additional_targeted_en.csv",
+      "data/05_vision_release/vision_results_mainstream_france_additional_targeted_fr.csv",
+      "data/05_vision_release/vision_results_mainstream_france_targeted_en.csv",
+      "data/05_vision_release/vision_results_mainstream_france_targeted_fr.csv",
+      "data/05_vision_release/vision_results_mainstream_uk_ie_additional_targeted_en.csv",
+      "data/05_vision_release/vision_results_mainstream_uk_ie_additional_targeted_fr.csv",
+      "data/05_vision_release/vision_results_mainstream_uk_ie_claim_recall_final_09_2026_uk_test_09_2026_final.csv",
+      "data/05_vision_release/vision_results_mainstream_uk_ie_targeted_en.csv",
+      "data/05_vision_release/vision_results_mainstream_uk_ie_targeted_fr.csv",
+      "data/05_vision_release/vision_results_mainstream_us_canada_additional_targeted_en.csv",
+      "data/05_vision_release/vision_results_mainstream_us_canada_additional_targeted_fr.csv",
+      "data/05_vision_release/vision_results_mainstream_us_canada_targeted_en.csv",
+      "data/05_vision_release/vision_results_mainstream_us_canada_targeted_fr.csv"
+    ]
+  },
+  "definition_version": "1.0.0",
+  "frozen_input_sha256": {
+    "pipeline/vision_prompts/emerging_benefits/emerging_benefits_input_v1.schema.json": "8155aaa43f64885e764c58c9e9abf85199c0f86cdd5e078103d6785526893e25",
+    "pipeline/vision_prompts/emerging_benefits/emerging_benefits_output_v1.schema.json": "42cdfeb86ea32d93aa63dd45bac95e7a96f00f2a57abe71408604f882f4ff4c9",
+    "pipeline/vision_prompts/emerging_benefits/prompt_emerging_benefits_v1.txt": "f80bab0bb07aa9f80ab46d08141621c21ba317c5832a9e11fd09339c0c6d9662",
+    "presentations/segmentation/beverage_03_approved_v1/benefit_definition_registry_v1.0.0.json": "09325d40f432e7607b3f0cd123af1353c3297cbfb03591f358392fc4b2d3b90d",
+    "presentations/segmentation/beverage_03_approved_v1/frozen_human_reviewed_labels.csv": "386b1378c10c0799bde5780526d35d348d17df79278c1550d3807a3e4645a242",
+    "presentations/segmentation/beverage_03_approved_v1/wording_evidence.csv": "b9aec88a97fb0b6f6ebe4d95e935d6f85ec822b0b8e251e8e3c799c322247fbd",
+    "presentations/segmentation/beverage_05b_decision_register.csv": "c47bb949f24b5748e3c90c078dc3d68bbebad7dfd6a288d108962c33283083c5",
+    "presentations/segmentation/beverage_05c_coconut_decisions_human_reviewed.csv": "9dd5a092c13fa47e1c5dcd474f55c104797ce65523be0f2968f9c5f5ae8a662e",
+    "presentations/segmentation/beverage_05d_identity_decisions.csv": "62e3278f69b54ecbec49b90a43222b48c39c2ecb617d34abea30e0ec6542b8ef",
+    "presentations/segmentation/run_06b_v2/reserve_manifest.csv": "753ce5b29e599e50e37c4f4a0a522d37a9c81cc3015312839f5c3ff67b6a6d89",
+    "presentations/segmentation/run_06b_v2/selected_manifest.csv": "ce98cbb88120543819756459c253d56d69bc71abd3deb5271ce24e1eddcacdbb"
+  },
+  "method_version": "saved_ocr_explicit_v1",
+  "no_paid_calls": true,
+  "output_sha256": {
+    "presentations/segmentation/beverage_final_v1/benefit_app_overlay.csv": "439ee2018052ef32fc0ad8c9ed96afd8d36295271834ae500d8de8b6d744bcda",
+    "presentations/segmentation/beverage_final_v1/benefit_observations.csv": "a50846b360b9d8e2873419ae7ce0835fc8012c123af087a3bfd158b529c07db3",
+    "presentations/segmentation/beverage_final_v1/eligibility_decisions.csv": "b31234243ef3137b375d30a88fd377c193a1d719931443f92ab4710adca3a5f7",
+    "presentations/segmentation/beverage_final_v1/run_06b_eligibility_impact.csv": "7148dfe7e4dfe1881488975a7010a782d53064bc7b2d9322ecbb1c52deb04226",
+    "presentations/segmentation/beverage_final_v1/segmentation_beverage_eligible_keys.csv": "d9f7672b335527f58fbe303dfb80718994b24d3444a1e67f358659185ae327d7"
+  },
+  "run_06b_v2_preserved": true,
+  "source_db": "database/positioning_radar.db",
+  "source_db_preserved": true,
+  "source_frame_sha256": "9b101d94a0f611e8f7e6a5f10cd59a3bc859ce556d52a8b349f167e9b6f67ac7",
+  "version": "beverage_current_wave_v1"
+}

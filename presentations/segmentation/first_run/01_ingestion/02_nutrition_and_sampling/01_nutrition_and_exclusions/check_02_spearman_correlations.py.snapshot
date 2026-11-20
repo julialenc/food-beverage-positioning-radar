@@ -1,0 +1,126 @@
+"""CHECK 02: pairwise Spearman supplement for the 11 main-scope strata.
+
+Reads the verified RUN 01 ledger and saved Pearson table. Does not change either.
+Spearman is Pearson correlation of pairwise average-tied ranks; no p-values or
+automatic feature decisions are produced.
+"""
+
+import argparse
+import csv
+import hashlib
+import json
+import math
+from pathlib import Path
+
+import pandas as pd
+
+
+ROOT = Path(__file__).resolve().parents[2]
+RUN01 = ROOT / "presentations/segmentation/run_01"
+MAIN = ROOT / "presentations/segmentation/main_scope_followup"
+DEFAULT_OUTPUT = ROOT / "presentations/segmentation/check_02"
+COUNTRY_REGION = {"FR": "FR", "UK": "UK+IE", "IE": "UK+IE", "US": "US+CA", "CA": "US+CA"}
+FIELDS = {"energy": "energy_kcal", "protein": "protein_100g", "total_fat": "fat_100g",
+          "saturated_fat": "saturated_fat_100g", "carbohydrates": "carbs_100g",
+          "sugars": "sugars_100g", "fibre": "fiber_100g", "salt": "salt_100g"}
+
+
+def sha256(path):
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--ledger", type=Path, default=RUN01 / "eligibility_ledger.csv")
+    parser.add_argument("--run01-manifest", type=Path, default=RUN01 / "run_01_manifest.json")
+    parser.add_argument("--pearson", type=Path, default=MAIN / "run_02_correlations.csv")
+    parser.add_argument("--main-manifest", type=Path, default=MAIN / "main_scope_manifest.json")
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    args = parser.parse_args()
+    output_csv = args.output / "check_02_spearman_correlations.csv"
+    output_manifest = args.output / "check_02_manifest.json"
+    if output_csv.exists() or output_manifest.exists():
+        raise FileExistsError("Refusing to overwrite CHECK 02 output")
+    run01_manifest = json.loads(args.run01_manifest.read_text(encoding="utf-8"))
+    main_manifest = json.loads(args.main_manifest.read_text(encoding="utf-8"))
+    ledger_hash = sha256(args.ledger)
+    pearson_hash = sha256(args.pearson)
+    if ledger_hash != run01_manifest["output_files"]["eligibility_ledger.csv"]["sha256"]:
+        raise ValueError("RUN 01 ledger checksum mismatch")
+    if pearson_hash != main_manifest["outputs"]["run_02_correlations.csv"]["sha256"]:
+        raise ValueError("Saved Pearson checksum mismatch")
+
+    usecols = ["country", "category", "physically_valid", *FIELDS.values()]
+    data = pd.read_csv(args.ledger, usecols=usecols, dtype={"country": str, "category": str,
+                                                            "physically_valid": str}, low_memory=False)
+    if len(data) != run01_manifest["total_country_category_assignments"]:
+        raise ValueError("RUN 01 ledger assignment count mismatch")
+    if not data["country"].isin(COUNTRY_REGION).all() or not data["physically_valid"].isin(["0", "1"]).all():
+        raise ValueError("Unexpected country or physical-validity value")
+    for field in FIELDS.values():
+        data[field] = pd.to_numeric(data[field], errors="raise")
+        if not data[field].dropna().map(math.isfinite).all():
+            raise ValueError(f"Nonfinite value in {field}")
+    data = data.loc[data["physically_valid"].eq("1")].copy()
+    data = data.loc[~(data["country"].isin(["US", "CA"]) & data["category"].eq("dairies"))].copy()
+    data["region"] = data["country"].map(COUNTRY_REGION)
+    if len(data) != main_manifest["main_scope_physically_valid"]:
+        raise ValueError("Main-scope physical count mismatch")
+    groups = {(region, category): group for (region, category), group in data.groupby(["region", "category"], sort=False)}
+    if len(groups) != 11 or ("US+CA", "dairies") in groups:
+        raise ValueError("Expected exactly 11 main-scope strata")
+
+    with args.pearson.open(encoding="utf-8", newline="") as stream:
+        pearson_rows = list(csv.DictReader(stream))
+    if len(pearson_rows) != 11 * 28:
+        raise ValueError("Expected 28 Pearson pairs in each of 11 strata")
+    output_rows = []
+    seen_pairs = set()
+    for row in pearson_rows:
+        key = (row["region"], row["category"])
+        pair_key = (*key, row["feature_1"], row["feature_2"])
+        if pair_key in seen_pairs or key not in groups:
+            raise ValueError(f"Duplicate or out-of-scope Pearson pair: {pair_key}")
+        seen_pairs.add(pair_key)
+        field1, field2 = FIELDS[row["feature_1"]], FIELDS[row["feature_2"]]
+        pair = groups[key][[field1, field2]].dropna()
+        n = len(pair)
+        if n != int(row["pairwise_non_null"]):
+            raise ValueError(f"Pairwise denominator differs from Pearson: {pair_key}")
+        if n < 2:
+            spearman = None
+        else:
+            ranks = pair.rank(method="average")
+            value = ranks[field1].corr(ranks[field2], method="pearson")
+            spearman = float(value) if pd.notna(value) else None
+        pearson = float(row["pearson_r"]) if row["pearson_r"] else None
+        output_rows.append({"region": key[0], "category": key[1],
+                            "feature_1": row["feature_1"], "feature_2": row["feature_2"],
+                            "pairwise_non_null": n, "pairwise_pct_of_valid": row["pairwise_pct_of_valid"],
+                            "pearson_r": row["pearson_r"],
+                            "spearman_r": round(spearman, 6) if spearman is not None else "",
+                            "spearman_minus_pearson": round(spearman - pearson, 6)
+                            if spearman is not None and pearson is not None else ""})
+    args.output.mkdir(parents=True, exist_ok=True)
+    with output_csv.open("x", encoding="utf-8", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(output_rows[0]))
+        writer.writeheader()
+        writer.writerows(output_rows)
+    manifest = {"run": "CHECK_02_SPEARMAN_SUPPLEMENT", "input_ledger": str(args.ledger.resolve()),
+                "input_ledger_sha256": ledger_hash, "pearson_table": str(args.pearson.resolve()),
+                "pearson_table_sha256": pearson_hash, "script_sha256": sha256(Path(__file__)),
+                "strata": 11, "feature_pairs_per_stratum": 28, "rows": len(output_rows),
+                "method": "Pairwise non-NULL values; average ranks for ties; Pearson correlation of ranks; no p-values",
+                "scope_hold": "US and CA dairies", "output_sha256": sha256(output_csv)}
+    with output_manifest.open("x", encoding="utf-8") as stream:
+        json.dump(manifest, stream, indent=2)
+        stream.write("\n")
+    print(f"CHECK 02: {len(output_rows)} Spearman rows across {len(groups)} strata; saved {output_csv}")
+
+
+if __name__ == "__main__":
+    main()

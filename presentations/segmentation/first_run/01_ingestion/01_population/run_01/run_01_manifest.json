@@ -1,0 +1,90 @@
+{
+  "run": "RUN_01",
+  "source_database": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\06_brand_governance_outputs\\incremental_ingestion_trials\\release_real_proxy_20261018_v1\\release_work.db",
+  "source_database_sha256": "3989135c74287cbfead63f258bc4c9e8978a7aee32051e229f77911b1e52c999",
+  "source_release": {
+    "wave_id": "real_off_20261017_proxy_20260929",
+    "reporting_date": "2026-09-29",
+    "retrieved_at": "2026-10-17T15:35:30.380864+00:00",
+    "source_sha256": "cc940d54c7a1c65acf40a9ed468bba26bb4e12a51fc1b4c2cba9d37c4203e63d",
+    "status": "complete"
+  },
+  "country_mapping_file": "C:\\Users\\julia\\food-beverage-positioning-radar\\data\\01_reference_inputs\\01_country_region_mapping.csv",
+  "country_mapping_sha256": "283249c006b002cdebbf54c16fb10764dcd91b0c70ae2ce291369ea2d82f9e5a",
+  "script_sha256": "62c4eda07918e214f6834bbec0d1351ca9077a363f1b1596b2367eccd297e34b",
+  "source_product_rows": 522432,
+  "products_with_launch_country": 522432,
+  "total_country_category_assignments": 535129,
+  "physically_valid_assignments": 528355,
+  "physically_invalid_assignments": 6774,
+  "physically_valid_unique_barcodes": 516053,
+  "physically_valid_with_image_assignments": 343869,
+  "unique_warning_flagged_barcodes": 25072,
+  "ocr_status_limitations_by_product": {},
+  "quality_exceptions_by_product_or_assignment": {},
+  "field_definitions": {
+    "assignment_key": [
+      "barcode",
+      "country",
+      "category"
+    ],
+    "countries": {
+      "en:france": "FR",
+      "en:united-kingdom": "UK",
+      "en:ireland": "IE",
+      "en:united-states": "US",
+      "en:canada": "CA"
+    },
+    "category": "Governed products.query_category; one category per barcode in this release",
+    "physically_valid": "Stored include_in_product_table=1, consistent with nutrition_quality_status != data_quality_error",
+    "nutrition_complete": "Physically valid with all eight working nutrition fields non-NULL; zero is present",
+    "nutrition_incomplete": "Physically valid with at least one of eight working nutrition fields NULL",
+    "nutrition_warning_present": "Physically valid with warning_flag or nonempty warning_types; warnings do not exclude",
+    "image_available": "Stage 09 structural HTTP(S) URL check, excluding missing and /invalid/ placeholders; no network preflight",
+    "historical_ocr_status": "Derived from claim_freshness.prior_analysis_json saved before current-release masking; not a claim-freshness certification",
+    "claim_freshness_status": "Release audit link to extraction evidence; does not by itself determine prior processing",
+    "nutrition_fields": {
+      "energy": "energy_kcal",
+      "protein": "protein_100g",
+      "total_fat": "fat_100g",
+      "saturated_fat": "saturated_fat_100g",
+      "carbohydrates": "carbs_100g",
+      "sugars": "sugars_100g",
+      "fibre": "fiber_100g",
+      "salt": "salt_100g"
+    }
+  },
+  "validation_rules": [
+    "Completed October 18 release with September 29 cutoff and October 17 retrieval",
+    "Retained deployment scope, not release_population or legacy MAX(ingested_at)",
+    "Locked Stage 03 hard gate reused from stored governed fields; no new physical thresholds",
+    "No complete-nutrition, warning, image, or claim-status exclusion from candidate_population",
+    "No image downloads, HTTP checks, OCR/LLM, imputation, clustering or source writes"
+  ],
+  "output_files": {
+    "eligibility_ledger.csv": {
+      "sha256": "5297dd0bf4c5a88f288d2f41548c5bea5ee734220228f574f52c69c87585d60f",
+      "bytes": 183869185
+    },
+    "candidate_population.csv": {
+      "sha256": "2fbf76b525acd5b483e67be644a3d04b6bcd12c5149d20aff6c7684c9bb222c7",
+      "bytes": 180764848
+    },
+    "check_01_country_category.csv": {
+      "sha256": "199266ed99dc6fd8076f8fb0bf2268fa983e2b26f1e259cbc557b9faa8baca38",
+      "bytes": 1867
+    },
+    "check_01_nutrient_completeness.csv": {
+      "sha256": "0bf58b6f1778097f588009728dd0e377e17e584832cd1067c8ef4775ec1b164a",
+      "bytes": 5995
+    },
+    "check_01_warning_breakdown.csv": {
+      "sha256": "915e0308f59350596c4da752ea1274f018d6a89d72ad5e64fc28ba221037dfb8",
+      "bytes": 3261
+    },
+    "check_01_ocr_coverage.csv": {
+      "sha256": "3a00e721bf1fe0569bfb95835f2bda830368854d85b3dde5f4e88935f060c086",
+      "bytes": 4739
+    }
+  }
+}

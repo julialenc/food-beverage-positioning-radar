@@ -1,0 +1,128 @@
+{
+  "check": "CHECK 05",
+  "status": "Approved and closed",
+  "title": "Sampling coverage baseline",
+  "decision_date": "2026-10-21",
+  "approved_by": "Julia",
+  "authorization": "Explicit user IMPLEMENT instruction approving CHECK 05 documentation closure only.",
+  "baseline_manifest": {
+    "path": "presentations/segmentation/run_05_v1/run_05_manifest.json",
+    "sha256": "3ffc1a88603a491de11e242b864de04884ae806f7026bed919ff9a0efaa1511d",
+    "preserved_unchanged": true
+  },
+  "baseline_outputs": {
+    "candidate_ledger.csv": {
+      "rows": 476626,
+      "sha256": "9b101d94a0f611e8f7e6a5f10cd59a3bc859ce556d52a8b349f167e9b6f67ac7"
+    },
+    "check_05_remaining_coverage.csv": {
+      "rows": 24,
+      "sha256": "83d776a9ca502a7295b0fbc75d1d2d77f978555be20bb94e629e173f8a09347f"
+    },
+    "check_05_missing_m1_population.csv": {
+      "rows": 11,
+      "sha256": "4b435a76eb48e991b9b711203a60ea45f68b9830cfd711b6fb0aa783dc4b58b8"
+    },
+    "check_05_region_category.csv": {
+      "rows": 11,
+      "sha256": "241fe3f108b35269ec270c301c10f490f29b1399672dbae6425a33149c19a94f"
+    },
+    "check_05_candidate_status_counts.csv": {
+      "rows": 97,
+      "sha256": "9c1f14e6707988e6d5507d54a793bf3ad12523a7682b52e4464caeff18200952"
+    },
+    "check_05_country_composition.csv": {
+      "rows": 59,
+      "sha256": "e8904080a315245780b73249549786d7b79f92dc73201df682bcc2803dafb4b8"
+    },
+    "check_05_beverage_populations.csv": {
+      "rows": 6,
+      "sha256": "525f70b4d38a71b13630966cc704b2dd6b85c32a4b0897d028c403bddd62cf90"
+    },
+    "check_05_beverage_form_coverage.csv": {
+      "rows": 74,
+      "sha256": "b21e0ebba8dedaa5b8f6cf2865347d681f7cca0be355108dd4d0cfb4601cba5c"
+    },
+    "check_05_history_reconciliation.csv": {
+      "rows": 7,
+      "sha256": "fc3e3769cebee0777678739bc13e25f495c29d04e9ea224e0d428b83b6966b89"
+    },
+    "check_05_history_by_region_category.csv": {
+      "rows": 11,
+      "sha256": "84cd4077aa3c050901e843201bb35c86d59f079139acc5bd2ea329f029db4ffb"
+    },
+    "history_observations.csv": {
+      "rows": 52274,
+      "sha256": "e2d3bdbbff49956f1189725d38149d21413cfec24f721ebce5154888fc087037"
+    },
+    "history_source_inventory.csv": {
+      "rows": 22,
+      "sha256": "f5575c9d94e92c0f9230af29728479fb3ce75e2e83e8fec2732e95ea8b93336b"
+    },
+    "manual_review_register.csv": {
+      "rows": 50,
+      "sha256": "f354620013421495a46294cde2c85c41e61e866c421d0107e286171881314fa3"
+    },
+    "manual_review_counts_by_reason.csv": {
+      "rows": 28,
+      "sha256": "257301805a597bab5100a7b502c28c3ec9eb499e2dc2aeab8d1c114c60d05d03"
+    }
+  },
+  "pre_approval_report": {
+    "path": "presentations/segmentation/run_05_v1/source_snapshots/RUN 05_no US_before_CHECK05_approval.md",
+    "sha256": "7884c77ce0531d6da19f45b85773883520875fefd8a8e06503b001a2fa8fdb57",
+    "matches_original_manifest_report": true
+  },
+  "approved_report": {
+    "path": "presentations/segmentation/RUN 05_no US.md",
+    "sha256": "1f14709913adc7e61cfebebc246edeacb0314a02b9b38c5865294a1ed8218cf8"
+  },
+  "supersedes": "Generation-time CHECK 05 pending status only; analytical outputs and original manifest are unchanged.",
+  "approved_counts": {
+    "physically_valid_regional_products": 476626,
+    "strata": 11,
+    "m1_complete_products": 218115,
+    "approved_sampling_groups": 24,
+    "missing_m1_unallocated_products": 258511,
+    "historical_successes_including_no_claim": 18642,
+    "m1_group_first_attempt_candidates": 194895,
+    "missing_m1_first_attempt_candidates_inclusion_undecided": 108882,
+    "potential_retries_not_authorized": 988,
+    "manual_hold_products": 45
+  },
+  "ledger": {
+    "path": "presentations/segmentation/run_05_v1/candidate_ledger.csv",
+    "sha256": "9b101d94a0f611e8f7e6a5f10cd59a3bc859ce556d52a8b349f167e9b6f67ac7",
+    "local_only": true,
+    "selection_requires_exact_local_file_and_preserved_source_hashes": true
+  },
+  "us_ca_dairy_excluded": true,
+  "deferred_to_run_06": [
+    "Total attempt budget, desired successful results and cost ceiling.",
+    "Allocation across regions, categories and approved sampling groups.",
+    "Random versus targeted sampling, including higher-fibre and specialist beverage coverage.",
+    "Whether to include missing-M1 products or retries.",
+    "Country representation within merged regions, replacement rules and sampling-quality criteria."
+  ],
+  "execution_safeguards": [
+    "Refresh historical processing before finalizing executable manifest and again before paid execution.",
+    "Structural image availability is not image usability; perform preflight checks.",
+    "Deduplicate paid work and validate evidence-version-aware checkpoint/merge process.",
+    "Review held products before selection."
+  ],
+  "next_step": "RUN 06A allocation proposal, then approval, then RUN 06B reproducible local selection and preflight.",
+  "authorized_now": {
+    "documentation_closure": true,
+    "run_06_actions": false,
+    "sampling_quotas": false,
+    "selected_barcodes": false,
+    "paid_ocr_llm_processing": false
+  },
+  "validation": {
+    "baseline_output_hashes_verified": 14,
+    "original_manifest_unchanged": true,
+    "pre_approval_report_preserved": true,
+    "no_analysis_rerun": true,
+    "ocr_llm_calls": 0
+  }
+}

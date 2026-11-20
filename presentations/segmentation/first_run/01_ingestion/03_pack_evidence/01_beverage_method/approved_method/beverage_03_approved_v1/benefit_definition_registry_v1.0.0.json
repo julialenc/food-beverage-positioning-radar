@@ -1,0 +1,53 @@
+{
+  "registry_id": "independent_beverage_positioning",
+  "definition_version": "1.0.0",
+  "status": "Approved and frozen",
+  "decision_date": "2026-10-23",
+  "decision_timezone": "Europe/Berlin",
+  "approved_by": "Julia",
+  "scope": "Definitions and human-reviewed evidence only; no production implementation approval",
+  "propositions_independent_and_additive": true,
+  "hydration": {
+    "positive": "Explicit hydration/rehydration communication, clearly presented hydration product/range descriptors, and REPLENISHER when clearly presented as a beverage replenishment positioning descriptor.",
+    "descriptor_context": "Accept the reviewed Ultima Replenisher presentations under the descriptor policy. Do not treat every occurrence of replenish/replenisher in any context as hydration.",
+    "non_evidence": "Water, coconut-water or sports-drink category, powder/tablet/sachet format, individual minerals, electrolytes alone and water/fruit graphics alone do not establish hydration positioning.",
+    "examples_en": [
+      "HYDRATION DRINK",
+      "HYDRATE",
+      "hydration by nature.",
+      "PLANT-BASED HYDRATION",
+      "REPLENISHER in a clearly presented beverage replenishment positioning descriptor"
+    ],
+    "examples_fr_illustrative_not_new_gold": [
+      "hydratation",
+      "réhydratation",
+      "boisson hydratante"
+    ]
+  },
+  "electrolyte": {
+    "positive": "Explicit consumer-facing electrolyte(s) wording or its language equivalent attributed to the reviewed product.",
+    "non_evidence": "Magnesium, potassium, sodium or other individual minerals, nutrition values, ingredient-only mentions, sports category and powder format alone are insufficient.",
+    "taste": "Explicit electrolytes advertised for taste qualify as an electrolyte feature; preserve stated purpose separately and infer no hydration.",
+    "examples_en": [
+      "WITH ELECTROLYTES",
+      "natural electrolytes",
+      "ELECTROLYTE SPORTS DRINK",
+      "electrolytes added for taste"
+    ],
+    "examples_fr_illustrative_not_new_gold": [
+      "avec électrolytes",
+      "électrolytes ajoutés pour le goût"
+    ]
+  },
+  "attribution_and_scope": {
+    "front": "Front-of-pack positioning labels refer to the target product and approved reviewed front evidence.",
+    "back": "Preserve back-panel ingredient and promotional mentions separately; a back-panel feature is not a front-pack positive.",
+    "background": "Words on unrelated products in a photograph are excluded as evidence for the target product, even when present in saved OCR.",
+    "purpose": "Store exact wording, stated/derived purpose, evidence scope and rationale separately from the two labels.",
+    "negative": "not_detected means no qualifying proposition in the approved reviewed scope, not a universal statement about every pack version.",
+    "uncertainty": "Retain detected / not_detected / ambiguous / unassessable. Approved ambiguity is valid reviewed evidence. No assessment must never be coerced to a negative."
+  },
+  "taxonomy_compatibility": "Fortification is already tracked. Preserve fortification and all 34 legacy flags, successful no-claim results and priority taxonomy unchanged. Create no mineral-fortification category. Emerging propositions are independent additive evidence.",
+  "image_review_attribution": "Julia and ChatGPT, as explicitly confirmed by Julia. Codex independently inspected no images.",
+  "provenance_limitations_do_not_reopen_definitions": true
+}

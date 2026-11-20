@@ -1,0 +1,518 @@
+"""RUN 03: prepare M1-M4 regional nutrition matrices; do not cluster.
+
+The verified RUN 01 assignment ledger is the sole product input. A barcode
+observed in both countries of a merged region is represented once per
+region-category, with every country assignment preserved in a bridge table.
+No image or warning gate is applied to matrix membership.
+"""
+
+import argparse
+import csv
+import hashlib
+import json
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+
+ROOT = Path(__file__).resolve().parents[2]
+RUN01 = ROOT / "presentations/segmentation/run_01"
+MAIN = ROOT / "presentations/segmentation/main_scope_followup"
+CHECK02 = ROOT / "presentations/segmentation/check_02"
+EXCLUSION_LEDGER = ROOT / "presentations/segmentation/run_03_exclusions_v1.csv"
+DEFAULT_OUTPUT = ROOT / "presentations/segmentation/run_03_corrected_v1"
+COUNTRY_REGION = {"FR": "FR", "UK": "UK+IE", "IE": "UK+IE", "US": "US+CA", "CA": "US+CA"}
+REGIONS = ("FR", "UK+IE", "US+CA")
+CATEGORIES = ("snacks", "cereals", "dairies", "beverages")
+FIELDS = {"energy": "energy_kcal", "protein": "protein_100g", "total_fat": "fat_100g",
+          "saturated_fat": "saturated_fat_100g", "carbohydrates": "carbs_100g",
+          "sugars": "sugars_100g", "fibre": "fiber_100g", "salt": "salt_100g"}
+MODELS = {"M1": ("protein", "total_fat", "carbohydrates", "sugars", "salt"),
+          "M2": ("protein", "total_fat", "carbohydrates", "sugars", "fibre", "salt"),
+          "M3": ("protein", "total_fat", "sugars", "salt"),
+          "M4": ("protein", "total_fat", "carbohydrates", "salt")}
+KEY = ["barcode", "region", "category"]
+MATRIX_META = ["barcode", "region", "category", "countries", "country_assignment_count",
+               "image_available", "nutrition_warning_present", "historical_ocr_status"]
+
+
+def sha256(path):
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def pct(n, d):
+    return round(100 * n / d, 2) if d else 0.0
+
+
+def write_csv(path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        raise FileExistsError(f"Refusing to overwrite {path}")
+    data.to_csv(path, index=False, encoding="utf-8", float_format="%.12g")
+
+
+def load_source(ledger, run01_manifest, main_manifest):
+    columns = ["barcode", "country", "category", "physically_valid", "image_available",
+               "nutrition_warning_present", "historical_ocr_status", *FIELDS.values()]
+    dtype = {name: str for name in ("barcode", "country", "category", "physically_valid",
+                                    "image_available", "nutrition_warning_present", "historical_ocr_status")}
+    frame = pd.read_csv(ledger, usecols=columns, dtype=dtype, keep_default_na=False, low_memory=False)
+    if len(frame) != run01_manifest["total_country_category_assignments"]:
+        raise ValueError("RUN 01 ledger assignment count mismatch")
+    if frame[["barcode", "country", "category"]].duplicated().any():
+        raise ValueError("Duplicate barcode-country-category assignment in RUN 01 ledger")
+    if frame["barcode"].eq("").any() or not frame["country"].isin(COUNTRY_REGION).all():
+        raise ValueError("Missing barcode or unexpected country")
+    if not frame["category"].isin(CATEGORIES).all():
+        raise ValueError("Unexpected governed category")
+    for flag in ("physically_valid", "image_available", "nutrition_warning_present"):
+        if not frame[flag].isin(["0", "1"]).all():
+            raise ValueError(f"Unexpected {flag} value")
+    for field in FIELDS.values():
+        frame[field] = pd.to_numeric(frame[field].replace("", np.nan), errors="raise")
+        if not np.isfinite(frame[field].dropna().to_numpy()).all():
+            raise ValueError(f"Nonfinite nutrient value in {field}")
+    frame = frame.loc[~(frame["country"].isin(["US", "CA"]) & frame["category"].eq("dairies"))].copy()
+    if len(frame) != main_manifest["main_scope_assignments"]:
+        raise ValueError("Main-scope assignment count mismatch")
+    frame["region"] = frame["country"].map(COUNTRY_REGION)
+    valid = frame.loc[frame["physically_valid"].eq("1")].copy()
+    if len(valid) != main_manifest["main_scope_physically_valid"]:
+        raise ValueError("Main-scope physically valid assignment count mismatch")
+    return valid
+
+
+def load_exclusions(path, valid):
+    required = [*KEY, "decision", "reason", "supporting_evidence"]
+    exclusions = pd.read_csv(path, dtype={column: str for column in required},
+                             keep_default_na=False, low_memory=False)
+    if list(exclusions.columns) != required:
+        raise ValueError(f"Segmentation exclusion columns must be exactly: {required}")
+    if exclusions[required].eq("").any().any():
+        raise ValueError("Segmentation exclusion ledger contains an empty required field")
+    allowed = {"exclude_confirmed_category_contamination",
+               "hold_pending_nutrition_verification", "review_only_keep"}
+    if not exclusions["decision"].isin(allowed).all():
+        raise ValueError("Unexpected exclusion decision")
+    if exclusions.duplicated(KEY).any():
+        raise ValueError("Duplicate regional key in segmentation exclusion ledger")
+    if not exclusions["category"].isin(CATEGORIES).all() or not exclusions["region"].isin(REGIONS).all():
+        raise ValueError("Exclusion ledger contains an out-of-scope category or region")
+    valid_keys = set(map(tuple, valid[KEY].drop_duplicates().itertuples(index=False, name=None)))
+    listed_keys = set(map(tuple, exclusions[KEY].itertuples(index=False, name=None)))
+    missing = listed_keys - valid_keys
+    if missing:
+        raise ValueError(f"Exclusion or review key not found in physically valid RUN 01 scope: {sorted(missing)}")
+    return exclusions
+
+
+def deduplicate(valid):
+    duplicate = valid.loc[valid.duplicated(KEY, keep=False)].copy()
+    if not duplicate.empty:
+        compare = ["image_available", "nutrition_warning_present", "historical_ocr_status", *FIELDS.values()]
+        variation = duplicate.groupby(KEY, sort=False, dropna=False)[compare].nunique(dropna=False)
+        if variation.gt(1).any(axis=None):
+            bad = variation.index[variation.gt(1).any(axis=1)][0]
+            raise ValueError(f"Conflicting evidence for repeated regional barcode: {bad}")
+        details = (duplicate.groupby(KEY, sort=False)
+                   .agg(country_assignment_count=("country", "size"),
+                        countries=("country", lambda values: "|".join(sorted(set(values))))))
+        if (details["country_assignment_count"] > 2).any():
+            raise ValueError("A regional barcode has more than two country assignments")
+        details = details.reset_index()
+    else:
+        details = pd.DataFrame(columns=[*KEY, "country_assignment_count", "countries"])
+    products = valid.drop_duplicates(KEY).copy()
+    products["countries"] = products["country"]
+    products["country_assignment_count"] = 1
+    if not details.empty:
+        lookup = details.set_index(KEY)
+        product_keys = pd.MultiIndex.from_frame(products[KEY])
+        matched = product_keys.isin(lookup.index)
+        if matched.any():
+            products.loc[matched, "countries"] = lookup.loc[product_keys[matched], "countries"].to_numpy()
+            products.loc[matched, "country_assignment_count"] = lookup.loc[product_keys[matched], "country_assignment_count"].to_numpy()
+    if int(products["country_assignment_count"].sum()) != len(valid):
+        raise ValueError("Regional product bridge does not balance to assignment count")
+    products["image_available"] = products["image_available"].astype(int)
+    products["nutrition_warning_present"] = products["nutrition_warning_present"].astype(int)
+    products["country_assignment_count"] = products["country_assignment_count"].astype(int)
+    products = products.sort_values(["region", "category", "barcode"]).reset_index(drop=True)
+    bridge = valid[["barcode", "country", "region", "category"]].sort_values(
+        ["region", "category", "barcode", "country"]).reset_index(drop=True)
+    return products, bridge, details.sort_values(KEY).reset_index(drop=True)
+
+
+def model_mask(frame, model):
+    return frame[[FIELDS[name] for name in MODELS[model]]].notna().all(axis=1)
+
+
+def check_original_counts(valid, original_check):
+    expected = {(row["region"], row["category"]): row for row in original_check}
+    for (region, category), group in valid.groupby(["region", "category"]):
+        source = expected[(region, category)]
+        if len(group) != int(source["physically_valid"]):
+            raise ValueError(f"Physical assignment count differs from CHECK 01: {region}, {category}")
+        for model, column in (("M1", "complete_5"), ("M2", "complete_6")):
+            if int(model_mask(group, model).sum()) != int(source[column]):
+                raise ValueError(f"{model} assignment count differs from CHECK 01: {region}, {category}")
+
+
+def make_matrix(frame, model, means, scales):
+    matrix = frame[MATRIX_META].copy()
+    for feature in MODELS[model]:
+        field = FIELDS[feature]
+        matrix[f"{feature}_z"] = (frame[field] - means[feature]) / scales[feature]
+    if matrix.filter(regex="_z$").isna().any().any():
+        raise ValueError(f"NULL in prepared {model} matrix")
+    return matrix
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--ledger", type=Path, default=RUN01 / "eligibility_ledger.csv")
+    parser.add_argument("--run01-manifest", type=Path, default=RUN01 / "run_01_manifest.json")
+    parser.add_argument("--main-manifest", type=Path, default=MAIN / "main_scope_manifest.json")
+    parser.add_argument("--original-check", type=Path, default=MAIN / "check_01_main_scope.csv")
+    parser.add_argument("--spearman-manifest", type=Path, default=CHECK02 / "check_02_manifest.json")
+    parser.add_argument("--exclusions", type=Path, default=EXCLUSION_LEDGER)
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    args = parser.parse_args()
+    if args.output.exists() and any(args.output.iterdir()):
+        raise FileExistsError(f"Refusing to overwrite RUN 03 output: {args.output}")
+    run01_manifest = json.loads(args.run01_manifest.read_text(encoding="utf-8"))
+    main_manifest = json.loads(args.main_manifest.read_text(encoding="utf-8"))
+    spearman_manifest = json.loads(args.spearman_manifest.read_text(encoding="utf-8"))
+    ledger_hash = sha256(args.ledger)
+    original_check_hash = sha256(args.original_check)
+    if ledger_hash != run01_manifest["output_files"]["eligibility_ledger.csv"]["sha256"]:
+        raise ValueError("RUN 01 ledger checksum mismatch")
+    if original_check_hash != main_manifest["outputs"]["check_01_main_scope.csv"]["sha256"]:
+        raise ValueError("Original main-scope CHECK 01 checksum mismatch")
+    if spearman_manifest["input_ledger_sha256"] != ledger_hash or spearman_manifest["rows"] != 308:
+        raise ValueError("CHECK 02 supplement is missing or uses a different ledger")
+    with args.original_check.open(encoding="utf-8", newline="") as stream:
+        original_check = list(csv.DictReader(stream))
+    valid = load_source(args.ledger, run01_manifest, main_manifest)
+    check_original_counts(valid, original_check)
+    exclusions = load_exclusions(args.exclusions, valid)
+    exclusion_keys = set(map(tuple, exclusions.loc[
+        exclusions["decision"].str.startswith(("exclude_", "hold_")), KEY
+    ].itertuples(index=False, name=None)))
+    valid_keys = pd.MultiIndex.from_frame(valid[KEY])
+    excluded_assignment_mask = valid_keys.isin(exclusion_keys)
+    excluded_assignments = valid.loc[excluded_assignment_mask].copy()
+    remaining_valid = valid.loc[~excluded_assignment_mask].copy()
+    if len(excluded_assignments) != int(exclusions.loc[
+        exclusions["decision"].str.startswith(("exclude_", "hold_")), KEY
+    ].merge(valid.groupby(KEY, as_index=False).size(), on=KEY, how="left")["size"].sum()):
+        raise ValueError("Applied exclusion assignment count does not match exclusion ledger keys")
+    products, bridge, details = deduplicate(remaining_valid)
+    expected_strata = [(region, category) for region in REGIONS for category in CATEGORIES
+                       if not (region == "US+CA" and category == "dairies")]
+    if set(zip(products["region"], products["category"])) != set(expected_strata):
+        raise ValueError("Expected exactly 11 regional strata")
+
+    args.output.mkdir(parents=True, exist_ok=True)
+    for model in MODELS:
+        products[f"eligible_{model}"] = model_mask(products, model).astype(int)
+    base_columns = [*KEY, "countries", "country_assignment_count", "image_available",
+                    "nutrition_warning_present", "historical_ocr_status", *FIELDS.values(),
+                    *(f"eligible_{model}" for model in MODELS)]
+    base_path = args.output / "regional_product_base.csv"
+    bridge_path = args.output / "assignment_bridge.csv"
+    details_path = args.output / "duplicate_regional_barcodes.csv"
+    exclusion_path = args.output / "segmentation_exclusion_ledger.csv"
+    exclusion_counts_path = args.output / "check_03_exclusion_counts.csv"
+    write_csv(base_path, products[base_columns])
+    write_csv(bridge_path, bridge)
+    write_csv(details_path, details)
+    excluded_by_key = (excluded_assignments.groupby(KEY, as_index=False).agg(
+        excluded_country_assignments=("country", "size")))
+    exclusion_audit = exclusions.merge(excluded_by_key, on=KEY, how="left")
+    exclusion_audit["excluded_country_assignments"] = exclusion_audit["excluded_country_assignments"].fillna(0).astype(int)
+    exclusion_audit["excluded_regional_products"] = exclusion_audit["decision"].str.startswith(
+        ("exclude_", "hold_")).astype(int)
+    if (exclusion_audit.loc[exclusion_audit["decision"].eq("review_only_keep"),
+                           "excluded_country_assignments"] != 0).any():
+        raise ValueError("Review-only records must remain in the model population")
+    write_csv(exclusion_path, exclusion_audit)
+    exclusion_counts = (exclusion_audit.groupby(["region", "decision", "reason"], as_index=False)
+                        .agg(listed_regional_products=("barcode", "size"),
+                             excluded_regional_products=("excluded_regional_products", "sum"),
+                             excluded_country_assignments=("excluded_country_assignments", "sum")))
+    write_csv(exclusion_counts_path, exclusion_counts)
+
+    check_rows = []
+    duplicate_rows = []
+    scaling_rows = []
+    extreme_rows = []
+    zero_rows = []
+    beverage_top_rows = []
+    matrix_index = []
+    for region, category in expected_strata:
+        stratum = products.loc[products["region"].eq(region) & products["category"].eq(category)].copy()
+        stratum = stratum.sort_values("barcode")
+        source_assignments = len(bridge.loc[bridge["region"].eq(region) & bridge["category"].eq(category)])
+        duplicate_count = int(stratum["country_assignment_count"].gt(1).sum())
+        duplicate_rows.append({"region": region, "category": category,
+                               "physically_valid_assignments": source_assignments,
+                               "regional_unique_products": len(stratum),
+                               "repeated_barcodes": duplicate_count,
+                               "collapsed_assignments": source_assignments - len(stratum)})
+        masks = {model: model_mask(stratum, model) for model in MODELS}
+        m1_clean = stratum.loc[masks["M1"] & stratum["nutrition_warning_present"].eq(0)]
+        m2_clean = stratum.loc[masks["M2"] & stratum["nutrition_warning_present"].eq(0)]
+        means, scales = {}, {}
+        for feature in MODELS["M2"]:
+            reference = m2_clean if feature == "fibre" else m1_clean
+            if len(reference) < 2:
+                raise ValueError(f"Too few clean reference products for {region}, {category}, {feature}")
+            field = FIELDS[feature]
+            mean = float(reference[field].mean())
+            scale = float(reference[field].std(ddof=0))
+            if not np.isfinite(mean) or not np.isfinite(scale) or scale <= 0:
+                raise ValueError(f"Zero/nonfinite scaling spread: {region}, {category}, {feature}")
+            means[feature], scales[feature] = mean, scale
+            scaling_rows.append({"region": region, "category": category, "feature": feature,
+                                 "source_field": field, "reference_population": "clean_M2" if feature == "fibre" else "clean_M1",
+                                 "reference_n": len(reference), "mean": mean, "population_std": scale,
+                                 "method": "z_score_no_clipping"})
+        for feature, field in FIELDS.items():
+            values = stratum[field]
+            observed = values.dropna()
+            zero_rows.append({"region": region, "category": category, "feature": feature,
+                              "physically_valid_regional_products": len(stratum),
+                              "observed_non_null": len(observed),
+                              "missing_count": int(values.isna().sum()),
+                              "missing_pct_of_physically_valid": pct(int(values.isna().sum()), len(stratum)),
+                              "exact_zero_count": int(observed.eq(0).sum()),
+                              "exact_zero_pct_of_non_null": pct(int(observed.eq(0).sum()), len(observed))})
+            if category == "beverages" and feature in means and len(observed):
+                top = stratum.loc[values.notna(), ["barcode", "countries", "nutrition_warning_present"]].copy()
+                top["raw_value"] = values.loc[values.notna()].to_numpy()
+                top["z_score"] = (top["raw_value"] - means[feature]) / scales[feature]
+                top = top.assign(abs_z=top["z_score"].abs()).sort_values(
+                    ["abs_z", "barcode"], ascending=[False, True], kind="mergesort").head(10)
+                for rank, row in enumerate(top.itertuples(index=False), start=1):
+                    beverage_top_rows.append({"region": region, "feature": feature, "rank": rank,
+                                              "barcode": row.barcode, "raw_value": row.raw_value,
+                                              "z_score": row.z_score,
+                                              "nutrition_warning_present": row.nutrition_warning_present,
+                                              "ranking_population": "physically_valid_with_feature_non_null",
+                                              "models_using_feature": "|".join(
+                                                  model for model, features in MODELS.items()
+                                                  if feature in features),
+                                              "reference_population": "clean_M2" if feature == "fibre" else "clean_M1"})
+        m1_count = int(masks["M1"].sum())
+        for model in MODELS:
+            eligible = stratum.loc[masks[model]].copy()
+            warning_count = int(eligible["nutrition_warning_present"].sum())
+            common_n = int(masks["M2"].sum())
+            check_rows.append({"region": region, "category": category, "model": model,
+                               "physically_valid_regional_products": len(stratum),
+                               "eligible_records": len(eligible),
+                               "with_image": int(eligible["image_available"].sum()),
+                               "with_image_pct": pct(int(eligible["image_available"].sum()), len(eligible)),
+                               "clean_records": len(eligible) - warning_count,
+                               "warning_records": warning_count,
+                               "warning_pct": pct(warning_count, len(eligible)),
+                               "net_eligible_change_vs_M1": len(eligible) - m1_count,
+                               "common_comparison_records": common_n,
+                               "pairwise_comparison_with_M1_records": common_n if model == "M2" else m1_count})
+            region_slug = region.replace("+", "_")
+            path = args.output / "matrices" / region_slug / category / f"{model}_broad.csv"
+            matrix = make_matrix(eligible, model, means, scales)
+            write_csv(path, matrix)
+            matrix_index.append({"region": region, "category": category, "model": model,
+                                 "cohort": "broad_eligible", "relative_path": path.relative_to(args.output).as_posix(),
+                                 "rows": len(matrix), "warning_records": warning_count,
+                                 "with_image": int(matrix["image_available"].sum()), "sha256": sha256(path)})
+            for feature in MODELS[model]:
+                z = matrix[f"{feature}_z"].abs()
+                extreme_rows.append({"region": region, "category": category, "model": model,
+                                     "feature": feature, "eligible_records": len(matrix),
+                                     "p95_absolute_z": float(z.quantile(.95)),
+                                     "p99_absolute_z": float(z.quantile(.99)),
+                                     "maximum_absolute_z": float(z.max()),
+                                     "minimum_z": float(matrix[f"{feature}_z"].min()),
+                                     "maximum_z": float(matrix[f"{feature}_z"].max()),
+                                     "records_absolute_z_over_3": int(z.gt(3).sum()),
+                                     "records_absolute_z_over_5": int(z.gt(5).sum()),
+                                     "records_absolute_z_over_10": int(z.gt(10).sum()),
+                                     "clean_records_absolute_z_over_5": int((z.gt(5) & matrix["nutrition_warning_present"].eq(0)).sum()),
+                                     "warning_records_absolute_z_over_5": int((z.gt(5) & matrix["nutrition_warning_present"].eq(1)).sum()),
+                                     "clipped_records": 0})
+        comparison_specs = tuple((model, "M2", f"{model}_all_models_common") for model in MODELS) + (
+            ("M3", "M1", "M3_on_M1_common"),
+            ("M4", "M1", "M4_on_M1_common"))
+        for model, cohort_model, label in comparison_specs:
+            pair_frame = stratum.loc[masks[cohort_model]].copy()
+            if not model_mask(pair_frame, model).all():
+                raise ValueError(f"Paired cohort is incomplete for {label}: {region}, {category}")
+            path = args.output / "matrices" / region.replace("+", "_") / category / f"{label}.csv"
+            matrix = make_matrix(pair_frame, model, means, scales)
+            write_csv(path, matrix)
+            matrix_index.append({"region": region, "category": category, "model": model,
+                                 "cohort": label, "relative_path": path.relative_to(args.output).as_posix(),
+                                 "rows": len(matrix), "warning_records": int(matrix["nutrition_warning_present"].sum()),
+                                 "with_image": int(matrix["image_available"].sum()), "sha256": sha256(path)})
+
+    if len(check_rows) != 44 or len(matrix_index) != 110 or len(scaling_rows) != 66:
+        raise ValueError("RUN 03 row count validation failed")
+    if sum(row["regional_unique_products"] for row in duplicate_rows) != len(products):
+        raise ValueError("Regional product count does not balance")
+    check_path = args.output / "check_03_model_population.csv"
+    duplicate_path = args.output / "check_03_duplicate_audit.csv"
+    scaling_path = args.output / "check_03_scaling_parameters.csv"
+    extreme_path = args.output / "check_03_extreme_influence.csv"
+    zero_path = args.output / "check_03_zero_missingness.csv"
+    beverage_top_path = args.output / "check_03_beverage_top_extremes.csv"
+    index_path = args.output / "matrix_index.csv"
+    for path, rows in ((check_path, check_rows), (duplicate_path, duplicate_rows),
+                       (scaling_path, scaling_rows), (extreme_path, extreme_rows),
+                       (zero_path, zero_rows), (beverage_top_path, beverage_top_rows),
+                       (index_path, matrix_index)):
+        write_csv(path, pd.DataFrame(rows))
+    total_collapsed = len(remaining_valid) - len(products)
+    excluded_products_count = int(exclusion_audit["excluded_regional_products"].sum())
+    confirmed_count = int(exclusion_audit["decision"].eq("exclude_confirmed_category_contamination").sum())
+    nutrition_hold_count = int(exclusion_audit["decision"].eq("hold_pending_nutrition_verification").sum())
+    review_only_count = int(exclusion_audit["decision"].eq("review_only_keep").sum())
+    report = ["# RUN 03 — Feature preparation and CHECK 03 (corrected v1)", "",
+              "**Date:** 21 October 2026", "",
+              "**Decision: Pending review.** M1–M4 remain the approved experimental feature sets; this run does not select a final set.", "",
+              "**Scope:** FR, UK+IE, and US+CA across 11 region-category strata. US/CA dairy remains held out. "
+              "Source: verified RUN 01 ledger from the 17 October ingestion / 29 September reporting cutoff.", "",
+              "## Segmentation-only exclusions", "",
+              f"From {len(valid):,} physically valid main-scope country assignments, {len(excluded_assignments):,} assignment rows "
+              f"({excluded_products_count:,} unique regional product keys) were held out by the versioned exact-key ledger. "
+              f"This comprises {confirmed_count} confirmed category-contamination keys and {nutrition_hold_count} records held "
+              f"pending nutrition verification. {review_only_count} additional records are flagged for review and remain in scope. "
+              "No records were excluded because of z-score size or an existing warning flag.", "",
+              "| Region | Decision | Reason | Listed regional keys | Excluded keys | Excluded country assignments |",
+              "|---|---|---|---:|---:|---:|"]
+    for row in exclusion_counts.to_dict("records"):
+        report.append(f"| {row['region']} | {row['decision']} | {row['reason']} | "
+                      f"{row['listed_regional_products']:,} | {row['excluded_regional_products']:,} | "
+                      f"{row['excluded_country_assignments']:,} |")
+    report += ["", "Full exact barcodes, evidence, dispositions and applied assignment counts are in "
+               "[the segmentation exclusion ledger](run_03_corrected_v1/segmentation_exclusion_ledger.csv). "
+               "Review-only records remain in the matrices. The Wave 3 action note is [For Wave 3.md](For%20Wave%203.md).", "",
+               "## CHECK 03 — Remaining eligible populations", "",
+               "Image availability and warning flags are reported without acting as gates. `Common M2 cohort` is the six-feature-complete "
+               "population used to compare all four models; M3/M4 also have M1-complete paired comparison files. Percentages and counts "
+              "are at the unique `(barcode, region, category)` level. The full 44-row table is "
+              "[check_03_model_population.csv](run_03_corrected_v1/check_03_model_population.csv).", "",
+               "| Region | Category | Model | Eligible | With image | Warning-flagged | Warning % | Common M2 cohort |",
+               "|---|---|---|---:|---:|---:|---:|---:|"]
+    for row in check_rows:
+        report.append(f"| {row['region']} | {row['category']} | {row['model']} | {row['eligible_records']:,} | "
+                      f"{row['with_image']:,} | {row['warning_records']:,} | {row['warning_pct']:.2f}% | "
+                      f"{row['common_comparison_records']:,} |")
+    report += ["", "## CHECK 03 — Beverage zeros, missingness and scaling", "",
+               "Exact-zero percentages use observed non-NULL values as the denominator. Missing percentages use all remaining physically valid "
+               "regional beverage products. Z-scores use the previously approved within-stratum, clean-reference z-score rules without clipping; "
+               "parameters are recalculated after the segmentation-only exclusions.", "",
+               "| Region | Feature | Observed | Exact zeros | Zero % | Missing | Missing % | Mean | SD | Reference | P99 abs z | Max abs z | Count abs z > 5 |",
+               "|---|---|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|---:|"]
+    zero_lookup = {(row["region"], row["category"], row["feature"]): row for row in zero_rows}
+    scaling_lookup = {(row["region"], row["category"], row["feature"]): row for row in scaling_rows}
+    extreme_lookup = {(row["region"], row["category"], row["model"], row["feature"]): row for row in extreme_rows}
+    for region in REGIONS:
+        for feature in FIELDS:
+            zrow = zero_lookup[(region, "beverages", feature)]
+            srow = scaling_lookup.get((region, "beverages", feature))
+            erow = extreme_lookup.get((region, "beverages", "M2" if feature == "fibre" else "M1", feature))
+            mean_text = f"{srow['mean']:.4g}" if srow else "—"
+            std_text = f"{srow['population_std']:.4g}" if srow else "—"
+            reference_text = srow["reference_population"] if srow else "profiling only"
+            p99_text = f"{erow['p99_absolute_z']:.2f}" if erow else "—"
+            max_text = f"{erow['maximum_absolute_z']:.2f}" if erow else "—"
+            over5_text = f"{erow['records_absolute_z_over_5']:,}" if erow else "—"
+            report.append(f"| {region} | {feature} | {zrow['observed_non_null']:,} | {zrow['exact_zero_count']:,} | "
+                          f"{zrow['exact_zero_pct_of_non_null']:.2f}% | {zrow['missing_count']:,} | "
+                          f"{zrow['missing_pct_of_physically_valid']:.2f}% | "
+                          f"{mean_text} | {std_text} | {reference_text} | "
+                          f"{p99_text} | {max_text} | {over5_text} |")
+    report += ["", "The [beverage top-extremes CSV](run_03_corrected_v1/check_03_beverage_top_extremes.csv) lists ten distinct regional barcode keys per modeled feature among physically valid products with that "
+               "nutrient observed. It includes the raw value, z-score, warning flag, and model feature membership. Extreme values are diagnostics; "
+               "the exclusion ledger is the only membership change.", "",
+               "## Deduplication and comparison checks", "",
+               f"After exclusions, {len(remaining_valid):,} country-category assignment rows map to {len(products):,} regional products; "
+               f"{total_collapsed:,} repeated UK/IE or US/CA country assignments are collapsed for modeling and retained in `assignment_bridge.csv`. "
+               "The 11 strata and M1–M4 feature definitions are unchanged. The four common-cohort matrices in each stratum use the same M2-complete "
+               "product keys; M3/M4 M1-paired comparisons are also retained.", "",
+               "## Remaining issues for review", "",
+               "- UK+IE fizzy beverage barcode `6186000806126` has no product name and 45 g salt/100 g. It is flagged for identity review and remains in scope.",
+               "- US+CA `Apple Soda` (`0012000017513`) has 100 g sugars/100 g; its product or concentrate form is unverified, so it remains in scope for review.",
+               "- US+CA beverage nutrient missingness remains very high (about 93% for the baseline nutrients). This limits representativeness and may materially affect the population available to cluster.",
+               "- The product-label facts for held records have not been independently checked against pack images; those records are held pending review, not source-corrected.", "",
+               "## Supporting outputs", "",
+               "All supporting tables, the exclusion ledger, the assignment bridge, the matrix index and 110 matrices are in "
+               "`presentations/segmentation/run_03_corrected_v1/`. The [exclusion counts](run_03_corrected_v1/check_03_exclusion_counts.csv), "
+               "[zero and missingness table](run_03_corrected_v1/check_03_zero_missingness.csv), "
+               "[scaling parameters](run_03_corrected_v1/check_03_scaling_parameters.csv), "
+               "[extreme influence summary](run_03_corrected_v1/check_03_extreme_influence.csv), "
+               "[duplicate audit](run_03_corrected_v1/check_03_duplicate_audit.csv), and "
+               "[manifest](run_03_corrected_v1/run_03_manifest.json) provide the supporting detail and hashes.", "",
+               "**CHECK 03 recommendation: Pending review.** Review the exclusions, population table, beverage diagnostics, and unresolved issues before RUN 04. "
+               "No clustering, OCR/LLM processing, imputation, or clipping was run.", ""]
+    report_path = ROOT / "presentations/segmentation/RUN 03_no US.md"
+    report_path.write_text("\n".join(report), encoding="utf-8")
+    output_files = [base_path, bridge_path, details_path, exclusion_path, exclusion_counts_path,
+                    check_path, duplicate_path, scaling_path, extreme_path, zero_path,
+                    beverage_top_path, index_path, report_path]
+    manifest = {"run": "RUN_03_FEATURE_PREPARATION", "input_ledger": str(args.ledger.resolve()),
+                "input_ledger_sha256": ledger_hash, "input_main_manifest_sha256": sha256(args.main_manifest),
+                "input_check_02_manifest_sha256": sha256(args.spearman_manifest),
+                "input_check_01_table_sha256": original_check_hash,
+                "input_exclusion_ledger": str(args.exclusions.resolve()),
+                "input_exclusion_ledger_sha256": sha256(args.exclusions),
+                "source_release": run01_manifest["source_release"], "script_sha256": sha256(Path(__file__)),
+                "scope_hold": {"countries": ["US", "CA"], "category": "dairies"},
+                "assignment_key": ["barcode", "country", "category"],
+                "regional_model_key": KEY, "models": MODELS,
+                "input_physically_valid_assignments": len(valid),
+                "excluded_country_assignment_rows": len(excluded_assignments),
+                "excluded_regional_product_keys": excluded_products_count,
+                "review_only_keys_retained": review_only_count,
+                "remaining_physically_valid_assignments": len(remaining_valid),
+                "regional_unique_products": len(products), "collapsed_country_assignments": total_collapsed,
+                "strata": 11, "broad_matrices": 44, "all_model_common_matrices": 44,
+                "additional_m1_paired_matrices": 22,
+                "preprocessing": {"missing": "exclude only when model-required feature is NULL",
+                                  "declared_zero": "retained", "image_gate": False, "warning_gate": False,
+                                  "scaling": "within-stratum z-score; population standard deviation; no clipping",
+                                  "shared_feature_reference": "clean M1 complete products",
+                                  "fibre_reference": "clean M2 complete products",
+                                  "same_parameters_reused_across_model_and_comparison_matrices": True,
+                                  "zero_or_nonfinite_scale": "fail for review",
+                                  "energy_saturated_fat": "raw profiling values only",
+                                  "nova_nutri_score": "not joined or used in RUN 03; available for later profiling from existing source"},
+                "outputs": {path.resolve().relative_to(ROOT).as_posix(): {"sha256": sha256(path),
+                                                                    "bytes": path.stat().st_size}
+                            for path in output_files},
+                "matrix_index": "matrix_index.csv"}
+    manifest_path = args.output / "run_03_manifest.json"
+    with manifest_path.open("x", encoding="utf-8") as stream:
+        json.dump(manifest, stream, indent=2)
+        stream.write("\n")
+    print(json.dumps({"physically_valid_assignments_before_exclusions": len(valid),
+                      "excluded_country_assignment_rows": len(excluded_assignments),
+                      "excluded_regional_product_keys": excluded_products_count,
+                      "review_only_keys_retained": review_only_count,
+                      "remaining_physically_valid_assignments": len(remaining_valid),
+                      "regional_unique_products": len(products),
+                      "collapsed_assignments": total_collapsed, "strata": 11, "models": list(MODELS),
+                      "matrix_files": len(matrix_index), "check_03_rows": len(check_rows),
+                      "output": str(args.output)}, indent=2))
+
+
+if __name__ == "__main__":
+    main()

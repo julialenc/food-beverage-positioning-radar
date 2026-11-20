@@ -1,0 +1,355 @@
+"""Main segmentation scope follow-up and RUN 02 diagnostics from the RUN 01 ledger.
+
+US and CA dairy assignments remain in the source ledger but are held out of all
+derived main-scope tables. No product data, OCR, or segmentation is changed.
+"""
+
+import argparse
+import csv
+import hashlib
+import json
+import math
+import re
+from collections import Counter, defaultdict
+from itertools import combinations
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[2]
+RUN01 = ROOT / "presentations/segmentation/run_01"
+OUTPUT = ROOT / "presentations/segmentation/main_scope_followup"
+REGION = {"FR": "FR", "UK": "UK+IE", "IE": "UK+IE", "US": "US+CA", "CA": "US+CA"}
+REGIONS = ("FR", "UK+IE", "US+CA")
+CATEGORIES = ("snacks", "cereals", "dairies", "beverages")
+FEATURES = {
+    "energy": "energy_kcal", "protein": "protein_100g", "total_fat": "fat_100g",
+    "saturated_fat": "saturated_fat_100g", "carbohydrates": "carbs_100g",
+    "sugars": "sugars_100g", "fibre": "fiber_100g", "salt": "salt_100g",
+}
+SIX = ("protein_100g", "fat_100g", "carbs_100g", "sugars_100g", "fiber_100g", "salt_100g")
+FIVE = tuple(field for field in SIX if field != "fiber_100g")
+OCR_STATUSES = ("success_with_claims", "success_no_claims", "attempted_failed_or_unusable",
+                "not_processed", "status_unclassifiable")
+COMPLETED_OCR = set(OCR_STATUSES[:2])
+FILES = ("check_01_main_scope.csv", "check_01_physical_exclusions.csv", "check_01_warning_types.csv", "check_01_ocr_coverage.csv",
+         "run_02_missingness.csv", "run_02_distributions.csv", "run_02_correlations.csv",
+         "main_scope_report.md", "main_scope_manifest.json")
+
+
+def sha256(path):
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def pct(numerator, denominator):
+    return round(100 * numerator / denominator, 2) if denominator else 0.0
+
+
+def percentile(sorted_values, fraction):
+    if not sorted_values:
+        return ""
+    position = (len(sorted_values) - 1) * fraction
+    lower = math.floor(position)
+    upper = math.ceil(position)
+    return round(sorted_values[lower] + (sorted_values[upper] - sorted_values[lower]) * (position - lower), 6)
+
+
+def write_csv(path, rows):
+    if not rows:
+        raise ValueError(f"No rows for {path.name}")
+    with path.open("x", encoding="utf-8", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def calculate(ledger, manifest):
+    if sha256(ledger) != manifest["output_files"]["eligibility_ledger.csv"]["sha256"]:
+        raise ValueError("RUN 01 ledger checksum differs from its manifest")
+    counts = defaultdict(Counter)
+    warnings = defaultdict(Counter)
+    physical_reasons = defaultdict(set)
+    invalid_barcodes = defaultdict(set)
+    ocr = defaultdict(Counter)
+    values = defaultdict(list)
+    pairs = defaultdict(lambda: [0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    seen = set()
+    all_assignments = held_out = 0
+    held_out_valid = 0
+    feature_names = tuple(FEATURES)
+    with ledger.open(encoding="utf-8", newline="") as stream:
+        reader = csv.DictReader(stream)
+        required = {"barcode", "country", "category", "physically_valid", "image_available",
+                    "nutrition_complete", "nutrition_warning_present", "warning_types", "nutrition_quality_reason",
+                    "historical_ocr_status", *FEATURES.values()}
+        if not required.issubset(reader.fieldnames or []):
+            raise ValueError("RUN 01 ledger lacks required fields")
+        for row in reader:
+            assignment = (row["barcode"], row["country"], row["category"])
+            if assignment in seen:
+                raise ValueError(f"Duplicate RUN 01 assignment: {assignment}")
+            seen.add(assignment)
+            all_assignments += 1
+            country, category = assignment[1:]
+            if country not in REGION or category not in CATEGORIES:
+                raise ValueError(f"Unexpected scope assignment: {assignment}")
+            if row["physically_valid"] not in {"0", "1"}:
+                raise ValueError(f"Invalid physical flag: {assignment}")
+            if country in {"US", "CA"} and category == "dairies":
+                held_out += 1
+                held_out_valid += row["physically_valid"] == "1"
+                continue
+            key = (REGION[country], category)
+            bucket = counts[key]
+            bucket["total"] += 1
+            if row["physically_valid"] == "0":
+                bucket["physically_invalid"] += 1
+                invalid_barcodes[key].add(row["barcode"])
+                reasons = {part.strip() for part in re.split(r"[;|]", row["nutrition_quality_reason"]) if part.strip()}
+                for reason in reasons or {"unspecified_quality_reason"}:
+                    physical_reasons[(key, reason)].add(assignment)
+                continue
+            for flag in ("image_available", "nutrition_complete", "nutrition_warning_present"):
+                if row[flag] not in {"0", "1"}:
+                    raise ValueError(f"Invalid {flag} flag: {assignment}")
+            bucket["physically_valid"] += 1
+            image = row["image_available"] == "1"
+            warning = row["nutrition_warning_present"] == "1"
+            complete8 = row["nutrition_complete"] == "1"
+            complete6 = all(row[field] != "" for field in SIX)
+            complete5 = all(row[field] != "" for field in FIVE)
+            if image:
+                bucket["image"] += 1
+                status = row["historical_ocr_status"]
+                if status not in OCR_STATUSES:
+                    raise ValueError(f"Unexpected OCR status: {assignment}")
+                ocr[key][status] += 1
+            if warning:
+                bucket["warning"] += 1
+                types = {part.strip() for part in row["warning_types"].split("|") if part.strip()}
+                for warning_type in types or {"unspecified_warning_type"}:
+                    warnings[(key, warning_type)]["assignments"] += 1
+            if complete8:
+                bucket["complete8"] += 1
+            if complete6:
+                bucket["complete6"] += 1
+            if complete5:
+                bucket["complete5"] += 1
+            for length, complete in ((6, complete6), (5, complete5)):
+                if image and complete:
+                    bucket[f"image_complete{length}"] += 1
+                    if warning:
+                        bucket[f"image_complete{length}_warning"] += 1
+                    if row["historical_ocr_status"] in COMPLETED_OCR:
+                        bucket[f"image_complete{length}_ocr"] += 1
+            numeric = {}
+            for name, field in FEATURES.items():
+                raw = row[field]
+                if raw != "":
+                    value = float(raw)
+                    if not math.isfinite(value):
+                        raise ValueError(f"Nonfinite {field}: {assignment}")
+                    numeric[name] = value
+                    values[(key, name)].append(value)
+            if complete8 != (len(numeric) == len(FEATURES)):
+                raise ValueError(f"Eight-feature completeness flag mismatch: {assignment}")
+            for first, second in combinations(numeric, 2):
+                x, y = numeric[first], numeric[second]
+                sums = pairs[(key, first, second)]
+                sums[0] += 1
+                sums[1] += x
+                sums[2] += y
+                sums[3] += x * x
+                sums[4] += y * y
+                sums[5] += x * y
+    if all_assignments != manifest["total_country_category_assignments"]:
+        raise ValueError("RUN 01 assignment total mismatch")
+    if sum(c["physically_valid"] for c in counts.values()) + held_out_valid != manifest["physically_valid_assignments"]:
+        raise ValueError("RUN 01 physically valid total mismatch")
+    expected_keys = [(region, category) for region in REGIONS for category in CATEGORIES
+                     if not (region == "US+CA" and category == "dairies")]
+    if set(counts) != set(expected_keys):
+        raise ValueError("Expected exactly 11 region-category strata")
+    check, physical_rows, missing, distributions, correlations, warning_rows, ocr_rows = [], [], [], [], [], [], []
+    for key in expected_keys:
+        region, category = key
+        bucket = counts[key]
+        valid = bucket["physically_valid"]
+        if bucket["total"] != valid + bucket["physically_invalid"]:
+            raise ValueError(f"Physical balance failed: {key}")
+        if not (bucket["image_complete6"] <= bucket["complete6"] <= bucket["complete5"] <= valid):
+            raise ValueError(f"Nutrition balance failed: {key}")
+        if bucket["complete8"] > bucket["complete6"]:
+            raise ValueError(f"Eight-feature balance failed: {key}")
+        if sum(ocr[key].values()) != bucket["image"]:
+            raise ValueError(f"OCR status balance failed: {key}")
+        summary = {"region": region, "category": category,
+                   "countries": "+".join(c for c in REGION if REGION[c] == region),
+                   "total_assignments": bucket["total"], "physically_valid": valid,
+                   "physically_invalid": bucket["physically_invalid"],
+                   "physical_exclusion_pct_of_total": pct(bucket["physically_invalid"], bucket["total"]),
+                   "with_image": bucket["image"], "with_image_pct_of_valid": pct(bucket["image"], valid),
+                   "without_image": valid - bucket["image"],
+                   "complete_8": bucket["complete8"], "complete_8_pct_of_valid": pct(bucket["complete8"], valid),
+                   "complete_6": bucket["complete6"], "complete_6_pct_of_valid": pct(bucket["complete6"], valid),
+                   "complete_5": bucket["complete5"], "complete_5_pct_of_valid": pct(bucket["complete5"], valid),
+                   "with_warning": bucket["warning"], "with_warning_pct_of_valid": pct(bucket["warning"], valid),
+                   "without_warning": valid - bucket["warning"]}
+        for length in (6, 5):
+            overlap = bucket[f"image_complete{length}"]
+            summary[f"image_complete_{length}"] = overlap
+            summary[f"image_complete_{length}_pct_of_valid"] = pct(overlap, valid)
+            summary[f"complete_{length}_with_image_pct"] = pct(overlap, bucket[f"complete{length}"])
+            summary[f"image_complete_{length}_with_warning"] = bucket[f"image_complete{length}_warning"]
+            summary[f"image_complete_{length}_successful_ocr"] = bucket[f"image_complete{length}_ocr"]
+        check.append(summary)
+        physical_rows.append({"region": region, "category": category, "source_quality_reason_token": "ANY_PHYSICAL_EXCLUSION",
+                              "total_assignments": bucket["total"], "excluded_assignments": bucket["physically_invalid"],
+                              "excluded_unique_barcodes": len(invalid_barcodes[key]),
+                              "excluded_pct_of_total": pct(bucket["physically_invalid"], bucket["total"])})
+        for (reason_key, reason), affected_assignments in sorted(physical_reasons.items()):
+            if reason_key == key:
+                physical_rows.append({"region": region, "category": category, "source_quality_reason_token": reason,
+                                      "total_assignments": bucket["total"],
+                                      "excluded_assignments": len(affected_assignments),
+                                      "excluded_unique_barcodes": len({a[0] for a in affected_assignments}),
+                                      "excluded_pct_of_total": pct(len(affected_assignments), bucket["total"])})
+        warning_rows.append({"region": region, "category": category, "warning_type": "ANY_WARNING",
+                             "physically_valid": valid, "affected_assignments": bucket["warning"],
+                             "affected_pct_of_valid": pct(bucket["warning"], valid)})
+        for (warning_key, warning_type), warning_count in sorted(warnings.items()):
+            if warning_key == key:
+                affected = warning_count["assignments"]
+                warning_rows.append({"region": region, "category": category, "warning_type": warning_type,
+                                     "physically_valid": valid, "affected_assignments": affected,
+                                     "affected_pct_of_valid": pct(affected, valid)})
+        for status in OCR_STATUSES:
+            affected = ocr[key][status]
+            ocr_rows.append({"region": region, "category": category, "historical_ocr_status": status,
+                             "physically_valid_with_image": bucket["image"], "assignments": affected,
+                             "pct_of_valid_with_image": pct(affected, bucket["image"])})
+        for name, field in FEATURES.items():
+            feature_values = values[(key, name)]
+            count = len(feature_values)
+            missing.append({"region": region, "category": category, "feature": name, "source_field": field,
+                            "physically_valid": valid, "non_null": count, "missing": valid - count,
+                            "non_null_pct_of_valid": pct(count, valid), "missing_pct_of_valid": pct(valid - count, valid),
+                            "declared_zero": sum(value == 0 for value in feature_values)})
+            feature_values.sort()
+            distributions.append({"region": region, "category": category, "feature": name,
+                                  "unit": "kcal/100g_or_ml" if name == "energy" else "g/100g_or_ml",
+                                  "non_null": count, "minimum": percentile(feature_values, 0),
+                                  "p05": percentile(feature_values, .05), "p25": percentile(feature_values, .25),
+                                  "median": percentile(feature_values, .5), "p75": percentile(feature_values, .75),
+                                  "p95": percentile(feature_values, .95), "maximum": percentile(feature_values, 1)})
+        region_pairs = []
+        for first, second in combinations(feature_names, 2):
+            n, sx, sy, sxx, syy, sxy = pairs[(key, first, second)]
+            covariance = n * sxy - sx * sy
+            varx = n * sxx - sx * sx
+            vary = n * syy - sy * sy
+            coefficient = max(-1.0, min(1.0, covariance / math.sqrt(varx * vary))) if n >= 2 and varx > 0 and vary > 0 else None
+            region_pairs.append({"region": region, "category": category, "feature_1": first, "feature_2": second,
+                                 "pairwise_non_null": n, "pairwise_pct_of_valid": pct(n, valid),
+                                 "pearson_r": round(coefficient, 6) if coefficient is not None else "",
+                                 "absolute_r": round(abs(coefficient), 6) if coefficient is not None else ""})
+        region_pairs.sort(key=lambda row: (-row["absolute_r"] if row["absolute_r"] != "" else float("inf"),
+                                           row["feature_1"], row["feature_2"]))
+        for rank, row in enumerate(region_pairs, 1):
+            correlations.append({**row, "absolute_correlation_rank": rank})
+    return {"check_01_main_scope.csv": check, "check_01_physical_exclusions.csv": physical_rows,
+            "check_01_warning_types.csv": warning_rows,
+            "check_01_ocr_coverage.csv": ocr_rows, "run_02_missingness.csv": missing,
+            "run_02_distributions.csv": distributions, "run_02_correlations.csv": correlations}, held_out, held_out_valid
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--ledger", type=Path, default=RUN01 / "eligibility_ledger.csv")
+    parser.add_argument("--manifest", type=Path, default=RUN01 / "run_01_manifest.json")
+    parser.add_argument("--output", type=Path, default=OUTPUT)
+    args = parser.parse_args()
+    if any((args.output / name).exists() for name in FILES):
+        raise FileExistsError(f"Refusing to overwrite existing main-scope output in {args.output}")
+    source_manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    tables, held_out, held_out_valid = calculate(args.ledger, source_manifest)
+    args.output.mkdir(parents=True, exist_ok=True)
+    for name, rows in tables.items():
+        write_csv(args.output / name, rows)
+    summary = tables["check_01_main_scope.csv"]
+    report = ["# RUN 01 main scope follow-up and RUN 02 diagnostics", "",
+              "US and CA dairy assignments are held out of these derived tables pending separate review. The RUN 01 ledger is unchanged.", "",
+              f"Input: {source_manifest['total_country_category_assignments']:,} unique barcode-country-category assignments. "
+              f"Held out: {held_out:,} US/CA dairy assignments ({held_out_valid:,} physically valid). "
+              f"Main scope: {sum(r['total_assignments'] for r in summary):,} assignments across 11 region-category strata; "
+              f"{sum(r['physically_valid'] for r in summary):,} physically valid.", "",
+              "## CHECK 01", "",
+              "| Region | Category | Total | Physically valid | Invalid | Image % | Complete 8 % | Complete 6 % | Complete 5 % | 6 complete with image % | Warnings % |",
+              "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
+    for row in summary:
+        report.append(f"| {row['region']} | {row['category']} | {row['total_assignments']:,} | {row['physically_valid']:,} | "
+                      f"{row['physically_invalid']:,} | {row['with_image_pct_of_valid']:.2f} | "
+                      f"{row['complete_8_pct_of_valid']:.2f} | {row['complete_6_pct_of_valid']:.2f} | "
+                      f"{row['complete_5_pct_of_valid']:.2f} | {row['complete_6_with_image_pct']:.2f} | "
+                      f"{row['with_warning_pct_of_valid']:.2f} |")
+    report += ["", "The percentages above use physically valid assignments except the last image-overlap column, which uses complete-six assignments. "
+               "Warnings remain included. Image availability is the saved structural URL flag, not an image usability or network check.", "",
+               "## Blocker review", "",
+               f"Physical exclusions range from {min(r['physical_exclusion_pct_of_total'] for r in summary):.2f}% to "
+               f"{max(r['physical_exclusion_pct_of_total'] for r in summary):.2f}% of each stratum. "
+               "No new physical gate was applied; source quality-reason tokens and unique excluded-barcode counts are in check_01_physical_exclusions.csv. "
+               "Reason tokens may overlap, and an accepted-exception token can coexist with a hard error; the ANY_PHYSICAL_EXCLUSION row is the deduplicated count. "
+               "Warnings are counted separately and retained; the highest warning share is "
+               f"{max(r['with_warning_pct_of_valid'] for r in summary):.2f}% (UK+IE cereals).", "",
+               f"Among products with all six nutrients, the image overlap ranges from "
+               f"{min(r['complete_6_with_image_pct'] for r in summary):.2f}% to "
+               f"{max(r['complete_6_with_image_pct'] for r in summary):.2f}%. "
+               "The US/CA dairy overlap collapse does not recur in these 11 strata. However, nutrition completeness and "
+               "image availability remain broad-population limitations in US+CA snacks and beverages: six-feature completeness "
+               "is 8.52% and 4.51%, and image availability is 32.35% and 40.63%, respectively. "
+               "Their image-and-six-feature intersections contain 10,215 and 3,478 assignments. "
+               "These counts do not establish sample representativeness or justify a new exclusion.", "",
+               "## RUN 02 diagnostic method", "",
+               "The eight previously agreed fields are energy, protein, total fat, saturated fat, carbohydrates, sugars, fibre and salt. "
+               "Missingness and distributions use each non-NULL field among physically valid assignments; declared zero remains a value. "
+               "Percentiles use linear interpolation between sorted observations. Correlations are pairwise-complete Pearson coefficients, "
+               "ranked within each stratum by absolute value for redundancy review. No feature was removed, scaled or imputed.", "",
+               "## Highest absolute pairwise correlation in each stratum", "",
+               "| Region | Category | Feature pair | Pearson r | Pairwise non-NULL |",
+               "|---|---|---|---:|---:|"]
+    for row in tables["run_02_correlations.csv"]:
+        if row["absolute_correlation_rank"] == 1:
+            report.append(f"| {row['region']} | {row['category']} | {row['feature_1']} / {row['feature_2']} | "
+                          f"{row['pearson_r']:.3f} | {row['pairwise_non_null']:,} |")
+    report += ["", "This ranking is diagnostic only; it does not designate any feature for removal.", "",
+               "## Recommendation", "",
+               "Adjust: review the main-scope coverage and redundancy diagnostics before deciding RUN 02 feature treatment. "
+               "The US/CA dairy hold remains in force; this report does not approve its reintegration or launch segmentation.", ""]
+    (args.output / "main_scope_report.md").write_text("\n".join(report), encoding="utf-8")
+    manifest = {"run": "RUN_01_FOLLOWUP_MAIN_AND_RUN_02_DIAGNOSTICS",
+                "input_ledger": str(args.ledger.resolve()), "input_ledger_sha256": sha256(args.ledger),
+                "input_manifest": str(args.manifest.resolve()), "input_manifest_sha256": sha256(args.manifest),
+                "script_sha256": sha256(Path(__file__)),
+                "assignment_key": ["barcode", "country", "category"],
+                "scope_hold": {"countries": ["US", "CA"], "category": "dairies", "assignments": held_out,
+                               "physically_valid_assignments": held_out_valid, "status": "temporary_derived_scope_hold"},
+                "main_scope_assignments": sum(r["total_assignments"] for r in summary),
+                "main_scope_physically_valid": sum(r["physically_valid"] for r in summary),
+                "strata": 11, "candidate_features": FEATURES,
+                "method": "Existing RUN 01 flags; non-NULL feature values; pairwise-complete Pearson; no imputation or new gate",
+                "outputs": {name: {"sha256": sha256(args.output / name), "bytes": (args.output / name).stat().st_size,
+                                   "rows": len(rows)} for name, rows in tables.items()}}
+    with (args.output / "main_scope_manifest.json").open("x", encoding="utf-8") as stream:
+        json.dump(manifest, stream, indent=2)
+        stream.write("\n")
+    print(json.dumps({"main_scope_assignments": manifest["main_scope_assignments"],
+                      "main_scope_physically_valid": manifest["main_scope_physically_valid"],
+                      "held_out_assignments": held_out, "held_out_physically_valid": held_out_valid,
+                      "output_rows": {name: len(rows) for name, rows in tables.items()}}, indent=2))
+
+
+if __name__ == "__main__":
+    main()

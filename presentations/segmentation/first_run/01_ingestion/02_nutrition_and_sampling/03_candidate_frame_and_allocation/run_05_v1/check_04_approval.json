@@ -1,0 +1,16 @@
+{
+  "status": "CHECK04_sampling_groupings_approved",
+  "approved_by": "Julia, explicit instruction in this conversation",
+  "designs": 11,
+  "groups": 24,
+  "regional_grouped_products": 218115,
+  "decision_table": "presentations/segmentation/check_04_followup_v1/sampling_grouping_decisions.csv",
+  "decision_table_sha256": "71de54f8aa5b1292f1d10e9d2e68ae1b22d80751987a19ed9c3b051bc614f2ca",
+  "memberships": "presentations/segmentation/check_04_followup_v1/proposed_group_membership.csv",
+  "memberships_sha256": "e42651f9782678adcf45f0fd2f32ccb726379c85c57565f47e5f77a9fe2a1965",
+  "scope": "sampling groups only; no final nutritional/market segments, quotas or sample approved",
+  "original_consolidated_report_snapshot": "presentations/segmentation/run_05_v1/source_snapshots/RUN 04_no US_before_grouping_approval.md",
+  "original_report_sha256": "f27aedfd349db19ed9f0e6095c160a7bea148c4ee4521fceaf0ca3af93fe3061",
+  "updated_consolidated_report": "presentations/segmentation/RUN 04_no US.md",
+  "updated_report_sha256": "d0ca41861160262c59a7e0653baa6645144b9cc93297b41cd0e45268708c6cd9"
+}
