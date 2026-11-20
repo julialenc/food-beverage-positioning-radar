@@ -1,0 +1,2 @@
+# Audited shared-EDA artifacts retain exact bytes across platforms.
+/presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/* -text
