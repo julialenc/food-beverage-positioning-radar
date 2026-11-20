@@ -1,6 +1,6 @@
 # Wave 2 segmentation — first-run navigation
 
-**Accepted analytical package frozen on 19 November 2026. Folder publications completed on 20 November; the final isolated pipeline smoke test and broader working-file cleanup remain pending.** Retrieval: 17 October 2026. Reporting cutoff: 29 September 2026. No Wave 3 data belongs to this release.
+**Accepted analytical package frozen on 19 November 2026. Folder publications completed on 20 November; the isolated rerun smoke test passed under the configuration below. Physical working-file cleanup remains pending approval.** Retrieval: 17 October 2026. Reporting cutoff: 29 September 2026. No Wave 3 data belongs to this release.
 
 [Permanent methodology](../SEGMENTATION.md) · [Accepted research findings](03_lenses/AUDIT_v1.md) · [Decision register](03_lenses/FORMULATION_DECISIONS_v1.csv) · [Release contract](04_analytical_package/ARTIFACT_INDEX.md)
 
@@ -45,6 +45,56 @@ The three canonical package code dependencies are [shared rules](04_analytical_p
 
 Historical inputs and source indexes retain their original identities. Resolve recorded paths through the [ingestion path map](01_ingestion/historical_paths.json) and documented archive mapping before checking hashes. Never delete or rewrite locked evidence to make a check pass. A future rebuild uses an approved new destination/version.
 
-## Next checkpoint
+<a id="smoke-test"></a>
+## Isolated rerun smoke test · PASS, 20 November 2026
 
-The navigation publication changes documentation only. The next separately authorized step is the isolated full-pipeline smoke test with restored inputs and new output destinations. It must establish executable dependency closure and equivalence without altering the accepted release. No additional source ingestion, provider calls, models, data deletion or automatic future-wave processing is implied. Lovable layout/integration remains separate from the accepted analytical package.
+Tested published commit: `df6d57eb45c6e25f5af5b0e01f64833b053d7826`. Code was exported from Git and local inputs were restored separately by SHA-256. All 24 executed project source files matched published Git identities, accounting for ordinary Windows text checkout line endings. This closure publication updates documentation only; pipeline code is unchanged from the tested commit.
+
+| Stage | Verified result |
+|---|---|
+| Frozen integrity | 17 canonical files plus 34 pinned references pass; the additional receipt remains unchanged. |
+| Corrected master | 374,840 products / 382,527 regional assignments; regenerated Parquet is byte-identical, including four existing category relinks. |
+| Inventory and cereals | 213 fields; 17,180 cereal assignments; cereal Parquet byte-identical. |
+| Shared baseline/features | All three baseline CSVs byte-identical; 376,845 eligible rows, 292,302 named peers and four approved ratio definitions pass. |
+| H1–H12/control | Saved-result validator passes; H8 descriptive, H10 US/Canada granola, selected k=5 unchanged. No hypothesis statistics or models were refitted. |
+| Fresh package equivalence | 393 exact cohort key sets, 96 nutrient-validity cells, 15 profile cells, 13,602 coverage cells, 377 organic/NOVA cells, 12 human observations and 32,336 boundary annotations pass. |
+| Output comparison | Four Parquets match values, schemas and metadata; two CSVs are byte-identical; findings JSON differs only in accepted versus test-candidate status. |
+| Original evidence | All 74 declared original input/package hashes, eight locked-output digests and 35 archived source digests remain unchanged. |
+
+The package was regenerated in a new sibling test destination using three unchanged published canonical code files and the freshly regenerated master. The accepted receipt stayed in place. Full independent numerical/key verification ran; this was not only the frozen hash-check fast path. Workers blocked networking, provider SDK imports and subprocess dispatch. No actual provider/network attempts, source changes or evidence deletions occurred. Existing-output refusal was respected when resuming an already completed test checkpoint.
+
+### Required alias register
+
+Restore `data/06_brand_governance_outputs/wave2_identity_fix_v1/barcode_aliases.csv` **as well as** the corrected `release_work.db` and `manifest.json`. The alias file must match `manifest.json` → `identity_correction.aliases_sha256`:
+
+`53de69e28d8c4d4cb4a7fda1f1ff3335086064654045fea3d9c5bd4e4323e254`
+
+The first isolated master attempt refused category linkage while this register was missing. Restoring the existing approved register resolved the dependency; no mapping, padding policy or reviewed decision changed. GitHub contains the executable identity code; the register is an intentionally local governed input.
+
+### Tested low-memory settings
+
+The default Arrow mimalloc attempt exhausted memory on the approximately 5.85-GiB-RAM test machine. A bounded retry passed with these settings applied before loading the package data:
+
+```python
+import pyarrow as pa
+pa.set_memory_pool(pa.system_memory_pool())
+pa.set_cpu_count(1)
+pa.set_io_thread_count(1)
+```
+
+The same published code, preprocessing rules and numerical comparisons were used. The PASS is qualified by this runtime configuration; default parallel execution is not certified under the same memory pressure. These settings do not disable the overwrite guard or authorize changing the accepted release. A new rerun uses a fresh approved destination and restored inputs; the installed analytical environment was reused, not reinstalled from scratch.
+
+### Retained test evidence and limits
+
+The compact test CHECK, harness, results, code provenance, restoration/hash manifests and stage/failure logs remain local under `outputs/first_run_smoke_v1/` at the repository root. Detailed `results.json` SHA-256: `bfecf0d5f3e52e24d303607c86fc88a3aa535f59a9afb237a407e1fbd9ecb50f`.
+
+The larger exported checkout and regenerated datasets are reproducible test copies proposed for removal after approval. Their original source/evidence files remain at canonical paths. Removing those copies ends resume capability for that completed workspace; another test starts in a fresh isolated directory. The public results above remain independent of those disposable copies.
+
+This smoke test covers the accepted rerun from governed data and saved decisions. Historical provider work, control fitting, future-wave operators, fresh dependency installation, remote-backup recovery and live Streamlit/Lovable deployment were not tested.
+
+## Remaining housekeeping
+
+Public code, reviewed decisions, navigation and the local restoration contract are established and the accepted rerun is tested. One approved physical-cleanup pass remains. Exact candidates and reference-update prerequisites are recorded in the local `logs.md`; no removal is authorized by this documentation update. Keep original locked evidence, canonical outputs, required reference tables and the compact smoke-test evidence. Follow cleanup with frozen/input integrity and reference checks; another full numerical rerun is unnecessary when only non-runtime copies and retired maintenance files are removed.
+
+Lovable layout/integration remains separate from analytical housekeeping. Repository-wide reporting edits and future-wave operations remain outside this scoped closure.
+

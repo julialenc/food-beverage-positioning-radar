@@ -170,3 +170,6 @@ docs/ONBOARDING.md
 /presentations/segmentation/first_run/housekeeping_inventory_v1.csv
 /presentations/segmentation/first_run/housekeeping_inventory_v1.py
 /presentations/segmentation/production/README.md
+
+# Completed offline smoke test: detailed inputs, generated copies and logs stay local.
+/outputs/first_run_smoke_v1/

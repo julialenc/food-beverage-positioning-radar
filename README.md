@@ -1,8 +1,8 @@
 # Food & Beverage Positioning Radar
 
-**Wave 2 segmentation: accepted analytical package frozen; final pipeline smoke test pending.** The source was retrieved on 17 October 2026 with a 29 September reporting cutoff. [Segmentation methodology](presentations/segmentation/SEGMENTATION.md) · [First-run navigation](presentations/segmentation/first_run/README.md) · [Accepted findings](presentations/segmentation/first_run/03_lenses/AUDIT_v1.md) · [Release contract](presentations/segmentation/first_run/04_analytical_package/ARTIFACT_INDEX.md)
+**Wave 2 segmentation: accepted analytical package frozen; isolated rerun smoke test PASS under the documented low-memory settings.** The source was retrieved on 17 October 2026 with a 29 September reporting cutoff. [Segmentation methodology](presentations/segmentation/SEGMENTATION.md) · [First-run navigation](presentations/segmentation/first_run/README.md) · [Accepted findings](presentations/segmentation/first_run/03_lenses/AUDIT_v1.md) · [Release contract](presentations/segmentation/first_run/04_analytical_package/ARTIFACT_INDEX.md)
 
-Public code, reviewed rules, aggregate evidence and release hashes are on GitHub. The master Parquet, detailed pack evidence and keyed presentation outputs remain local; a checkout needs those declared inputs restored to reproduce the analysis. The standalone segmentation package is separate from the Streamlit reporting application.
+Public code, reviewed rules, aggregate evidence and release hashes are on GitHub. The master Parquet, detailed pack evidence and keyed presentation outputs remain local; a checkout needs those declared inputs restored to reproduce the analysis. The standalone segmentation package is separate from the Streamlit reporting application. [Smoke-test results, alias-register requirement and runtime settings](presentations/segmentation/first_run/README.md#smoke-test).
 
 **An open-data market-intelligence project combining an interactive Streamlit
 board with standalone business analyses of how packaged foods and beverages
