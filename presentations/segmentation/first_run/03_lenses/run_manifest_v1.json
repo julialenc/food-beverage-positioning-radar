@@ -1,0 +1,602 @@
+{
+  "version": 1,
+  "master_sha256": "ff6de2e3ef6752abbd5335a352a413940a8e6c12962bb6c85101f52ea86af912",
+  "locked_claims_sha256": "cd79f402e21b574710194e0cd741aee5d12e00677cd3ef37651d537747d23cda",
+  "cutoff": "2026-09-29",
+  "retrieved_at": "2026-10-17T15:35:30.380864+00:00",
+  "governed_assignments": 376845,
+  "named_peers": 292302,
+  "selected_k": 5,
+  "assignment_column": "k5",
+  "primary_rows_by_hypothesis": {
+    "H1": 168,
+    "H10": 1,
+    "H11": 166,
+    "H12": 388,
+    "H2": 36,
+    "H3": 659,
+    "H4": 659,
+    "H5": 651,
+    "H6": 504,
+    "H7": 279,
+    "H8": 653,
+    "H9": 252
+  },
+  "python": "3.12.4",
+  "packages": {
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "scipy": "1.18.0",
+    "scikit-learn": "1.9.0",
+    "pyarrow": "24.0.0"
+  },
+  "sha256": {
+    "03_lenses/01_nutritional_composition/hypothesis_results_v1.csv": "aa4d5bd0eb6eff27d1dd74a970cb12ce08aa1d8bce2256d9f1ae33169286353c",
+    "03_lenses/02_nutrient_density/hypothesis_results_v1.csv": "399fde3a3c8ee287b87186f233189af35e5f73ae1eb07c80e184dfccc9dcc37d",
+    "03_lenses/03_claims_composition_and_ingredients/hypothesis_results_v1.csv": "0517f3f65392666dfc2d6a120857985b5b7d7ac62bc40394f3b8979b3d6a0ba2",
+    "03_lenses/04_positioning_tradeoffs/hypothesis_results_v1.csv": "24468713d5a5b357aebc9a530bfe82e2247e3297df772a4c67b7d6de69f0b42f",
+    "03_lenses/05_unsupervised_control/control_assignments_v1.parquet": "ea4ff6736ea12c33cdca4f2be0e6c514769fba1e117184cd8b9623cf76dce321",
+    "03_lenses/05_unsupervised_control/control_comparison_v1.csv": "1150fe9af757b9e9b5eac772d223fc3508bb52484c18842d1fad5f69cc086637",
+    "03_lenses/03_claims_composition_and_ingredients/ingredient_validation_v1.csv": "981a4c66da1fd01abc574ea81c0aa35988402598ab558e7737858b1e4ce945ac",
+    "03_lenses/03_claims_composition_and_ingredients/ingredient_validation_v1.py": "cda782184496a551e4c1a893e5f8485ad71daa32e058bcbb0e1ffd18fafa917a",
+    "03_lenses/control_comparison_v1.py": "049aa071d8921686333fd99339501965999abb85c44ff4be3f56a03017b36ea6",
+    "03_lenses/hypothesis_run_v1.py": "25a763f748d25e438800d2c875f0458bae42cc8b6805e2e1b397e332950f8887",
+    "03_lenses/validate_run_v1.py": "8d8d9b8c862e765a315c3996a50b1bd721e2c25588f4364e18578e101a93ff81",
+    "02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+    "02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/H1_H12_ANALYTICAL_PLAN.md": "f8b21b050dff121f1d077d891afbd0c56196fd2ffd641761c7c096394d67f382",
+    "02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/subtype_assignments.csv": "1b12d8b87e72a77a423aabfe95ffd47eaa02469223ef39b32cdd3c4485ffb67f"
+  },
+  "documentation_revision": 1,
+  "documentation_revisions": [
+    {
+      "date": "2026-11-20",
+      "reason": "Approved folder publication: links and publication note only; analytical protocol unchanged",
+      "path": "02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/H1_H12_ANALYTICAL_PLAN.md",
+      "previous_sha256": "179ee58b3ffe18f2036694ae0453a32929fa0c73fcaed1334ae312d072d29730",
+      "current_sha256": "f8b21b050dff121f1d077d891afbd0c56196fd2ffd641761c7c096394d67f382",
+      "previous_manifest_sha256": "13228a9b76ac89ff1320822f14c9f0a3511e067e8d00eb19c9a2d5b54a778e4f",
+      "previous_text": "# Wave 2 analytical design · H1–H12 and one unsupervised control\r\n\r\n**Decision status.** Feature feasibility is measured. Julia approved the methods, practical effect sizes and decision rules on 15 November 2026, with the bounded control comparison recorded below. This document preserves the pre-run design. The twelve business hypotheses and the exploratory control retain their original meanings. [Research hypotheses](../../../../SEGMENTATION_HYPOTHESES_NEXT_PHASE.md) · [Learning plan](../../../../learning_plan.md) · [Executive CHECK](CHECK.md)\r\n\r\n## Common population and measurement rules\r\n\r\nUse the corrected 17 October 2026 retrieval with the 29 September reporting cutoff. Start from 376,845 product-scope-eligible barcode–region–category assignments. Keep barcode as text. The master supplies the key, product scope, working nutrients, OFF source observations, missing flags, locked claims and ingredient evidence. The existing classification supplies membership, subtype, confidence, cereal bar flag and comparison basis. Join all three key fields exactly once. The full outer join reconciled every assignment. The shared implementation verifies the source hash and the baseline valid counts for all eight nutrients in each region and category. [Corrected master manifest](../../../01_ingestion/05_master_parquet/output/manifest.json) · [Baseline CHECK](BASELINE_CHECK.md) · [Shared diagnostic script](shared_feature_diagnostics_v1.py)\r\n\r\n**Peer** means membership YES, a named subtype, a comparable food or liquid basis and no existing cereal bar-review flag. There are 292,302 such assignments. Analyse within region × category × subtype × basis unless a row explicitly specifies pooling. Keep OTHER, unresolved membership, unresolved subtype, possible category contamination, preparation and unverified basis in the governed population and its coverage denominators. Use the existing food per 100 g and liquid per 100 ml conventions, including liquid dairy. Pack-level units are not independently verified. Preparations may contribute format and communication evidence as a separate stratum. Never convert them to ready-to-drink equivalents. Repeat supported contrasts without LOW-confidence assignments as a classification sensitivity, keeping original unrated assignments identifiable.\r\n\r\n**Valid** means the baseline working value is present, matches the OFF observation, has a clear missing flag and passes its finite governed range. Keep observed zero. There is no imputation. Energy is kcal and the seven other measurements are grams per applicable 100-unit basis. Core four means protein, total fat, total sugars and salt. All four are existing measurements. Densities, component shares, ranks, match indicators, quartile flags and ingredient cues are analytical derivations. The four numeric ratios and the ingredient cue were constructed provisionally in memory for the diagnostics. The other analytical features described below would be constructed after approval. [Raw fields, formulas and retention](FEATURE_DECISIONS.csv)\r\n\r\n**Claim comparison** means a matched, analytically eligible assessment of the exact proposition, with no source-market limitation for the regional contrasts. Compare a locked positive against documented non-detection. Keep human-confirmed negatives separate for sensitivity. Keep uncertain, unassessed, unmatched and inapplicable observations distinguishable in the source and outside that contrast. Report original core states and evidence cohort. Use the derived energy-positioning indicator and independent usable front hydration and electrolyte assessments with their own denominators. Exclude a salt-specific QA hold only when using salt. Identify historical dairy reuse and the US dairy population note in sensitivity results. Ingredient eligibility is independent of nutrition eligibility.\r\n\r\n**Evidence rules proposed for the test run.** Publish starting, measurable, assessed and retained counts by cell; report percentages with explicit denominators. Use France and UK/Ireland as primary replication opportunities, and US/Canada as selected exploratory observations. For nutritional estimates require at least 30 valid records per cell; for claim contrasts require at least 20 positives and 20 documented non-detections in the same cell before matching. Recheck sizes after matching. These are reporting floors, not power calculations. Keep smaller cells descriptive. Use barcode-level block bootstrap 95% intervals for effects and proportions, preserving repeated regional assignments. Where multiple prespecified contrasts are tested, report Benjamini–Hochberg adjusted p-values within each hypothesis alongside practical effects. Lack of support, imprecision and inadequate sample size are separate outcomes. No causal, compliance, sales or consumer-prevalence interpretation.\r\n\r\n## Consolidated design matrix\r\n\r\n| Lens and business question | Required evidence and proposed derivation | Population and remaining diagnostics | Proposed method and output | Proposed success criterion |\r\n|---|---|---|---|---|\r\n| <a id=\"h1\"></a>**1 · H1** Do formulations recur within a commercial format? | Core four. Derive within-peer high and low quartile indicators. Prespecify high protein with low sugars and high fat with high salt. Profile fibre and saturated fat where observed. | Four categories, named peers with valid core four. Check ties, zero IQR and replication across regions within the same subtype. | Descriptive formulation profiles and a within-cell permutation of one constituent for each association. Compare observed joint frequency with the independence expectation. Report constituents in grams. | At least one profile exceeds expectation by 5 percentage points in two primary-region cells of the same format, with adjusted evidence at 0.05. Tied boundaries that cannot distinguish high and low are uninformative. |\r\n| <a id=\"h2\"></a>**1 · H2** How often does similar energy hide a material sugars difference? | Energy and total sugars. Derive absolute within-pair differences. Optional sugars/carbohydrate share only on its own valid subset. | Primary comparison granola and flakes separately within each region, valid energy and sugars, 4,230 assignments. Check final pair coverage, energy overlap, LOW confidence and ties. | Sort by energy then text GTIN, pair adjacent unused products from lowest energy upward when within 10 kcal/100 g, otherwise advance one. No reuse or self-match. Report median sugar gap and fraction ≥5 g/100 g. Repeat at 5 and 20 kcal and with reverse-direction pairing. | In the same subtype in FR and UK/IE, at least 25% of pairs differ by ≥5 g sugars, with lower 95% bound above 15% and consistent direction across matching sensitivities. Other categories remain context. |\r\n| <a id=\"h3\"></a>**2 · H3** Does changing the denominator reorder products? | Protein or fibre, separately, plus energy. Compare observed concentration to 100 × nutrient / energy on identical rows. Derive within-cell percentile ranks with average ties. | Named peers with the individual nutrient and energy ≥10. Repeat for energy >0, ≥5 and ≥20. Report tied zeros and rankable sample size. | Paired rank comparison by format and region. Show Spearman correlation and proportion moving ≥25 percentile points. Keep solids and liquids separate. | At least 15% move ≥25 points for one nutrient in a format replicated in both primary regions; show interval and threshold sensitivity. Do not infer fibre results from protein completeness. |\r\n| <a id=\"h4\"></a>**2 · H4** Can high concentration coincide with high energy and a weaker per-calorie position? | Same individual nutrient and energy as H3. Derive concentration, energy and density quartiles on identical rows. | Same H3 population per nutrient and denominator sensitivity. Check ties, nonzero group sizes and extreme density ratios. | Paired cross-tab. Among upper-quartile concentration products, count those also in the upper energy quartile but at/below median density. Separately show lower-half concentration and upper-quartile density. | Primary trade-off occurs in ≥10% of the upper-concentration group with ≥30 such group members, replicated in the same format in FR and UK/IE. Report both directions separately. |\r\n| <a id=\"h5\"></a>**3 · H5** Does a nutrient proposition distinguish products on the corresponding measurement? | Locked protein, fibre, reduced-sugar, sugar-free or reduced-fat proposition plus its own measured protein, fibre, total sugars or total fat. Optional per-calorie sensitivity requires energy. | Claim comparison within the same peer cell. Check each proposition's arm size, subtype mix and source cohort. Reduced sugar and sugar-free stay separate. | Observational difference in medians between assessed arms, with uncertainty; compare named formats where enough arms exist. | Prespecified directional separation ≥2 g for protein, fibre or fat, or ≥3 g total sugars per applicable 100 units, with interval excluding zero. Report which tests clear the floor; interpret relative reduction language as communication only. |\r\n| <a id=\"h6\"></a>**3 · H6** Do similar formulations tell different pack stories? | Core four, plus separately assessed protein, organic, plant-based, gluten-free, natural and heritage propositions. Derive nutrition-only proximity; keep the claims out of matching. | Within a single peer cell and proposition-assessed subset. Test achievable one-to-one caliper match counts and zero-IQR dimensions; inspect actual nutrient gaps. | Pair distinct products on nearest robust-scaled nutrition, maximum 0.25 reference IQR on each dimension; require equality on zero-IQR dimensions. Stable GTIN tie-break, no reuse. Report claim discordance and matched coverage per proposition. | At least 30 pairs in a cell and ≥20% discordant, lower 95% bound >10%. Report sparse territories descriptively. The pre-match arm counts are screening diagnostics only. |\r\n| <a id=\"h7\"></a>**3 · H7** Can similar declared ingredients accompany different propositions? | Eligible ingredients_text, ingredients_lang and locked protein/plant-based/no-artificial states. Start with an explicit EN/FR pea- or soy-protein phrase. Cue missing for unusable text. | Named peers with usable non-placeholder FR/EN/BOTH ingredient text and assessment of the exact claim. Check ingredient wording, negation, synonyms, precautionary statements and language sensitivity. | Start with protein communication. Cross-tab cue detected versus no matching phrase within each assessed arm. Show actual phrase and audited error rates. Expand cue families only after validation. | Require ≥90% precision on reviewed hits and ≥80% recall against a stratified hand-labelled validation sample including non-hits. Then require ≥10 pp difference between assessed arms with interval excluding zero, or document overlap descriptively when support is insufficient. |\r\n| <a id=\"h8\"></a>**3 · H8** Do energy and hydration/electrolyte beverages communicate distinct roles at comparable composition? | Locked energy_positioning and its basis/format, usable hydration and electrolyte front statuses independently, energy and sugars for nutritional comparisons. | RTD named liquid beverage peers; require joint observability for overlap estimates and valid nutrition for composition. Separately describe registry-identified preparations. Report all incomplete panel counts. | Proposition-specific cohort profiles and 2×2 tables on jointly assessed products. Marginal counts from different extraction layers cannot estimate overlap. | A comparative contrast would require ≥20 in each distinct territory arm in a common format. Present wave supports descriptive counts only. A sparse or empty intersection cannot establish that the territories are mutually exclusive. |\r\n| <a id=\"h9\"></a>**4 · H9** Does positive positioning coexist with a less-visible trade-off? | Protein claim × salt, fibre claim × total sugars, reduced-fat claim × total sugars. Derive upper-quartile attribute indicator from all valid nutritional peers, independently of claim sampling. | Exact proposition and single trade-off attribute per contrast. Apply salt-specific QA. Check peer threshold, zero inflation and assessed arms. | Calculate coexistence counts and peer-adjusted percentage-point difference between positive and documented non-detection arms. No composite score. | Identify a material coexistence pattern if ≥25% of positives exceed peer Q3 and the rate exceeds the comparison arm by ≥10 pp with interval excluding zero. Report coexistence even if there is no between-arm distinction. |\r\n| <a id=\"h10\"></a>**4 · H10** Does the same trade-off differ between positioning territories? | Locked organic, plant-based and protein propositions plus sugars. Use the same peer-defined high-sugars indicator as H9; preserve multiple positive flags. | Restrict to common peer cells and products with both compared territories assessable. Check overlapping positives, exclusive-arm sizes and common threshold. | Compare organic-only and protein-only first. Report dual positives and neither separately. Add plant-based only with common support. Standardize across shared cells using equal cell weights. | ≥20 in each exclusive arm per retained cell, ≥10 pp difference in upper-quartile sugars with interval excluding zero. A pooled difference driven solely by category mix is insufficient. |\r\n| <a id=\"h11\"></a>**4 · H11** How often is a measurable nutrient advantage undetected on assessed packs? | Protein or fibre density with its corresponding exact claim. Derive advantage as strictly above peer Q3 based on valid composition before intersecting assessed evidence. | Same H3 primary density gate. Require ≥30 measurable reference products and known same-proposition status. Report uncertain and unmatched counts separately; check ties at Q3 and the source cohort. | Among high-density assessed products, report documented non-detection fraction and interval. List human-confirmed negatives separately. Compare both nutrients individually. | ≥30 informative high-density assessments in a peer cell and lower 95% bound for documented non-detection above 10%. Describe potential undercommunication on the assessed evidence only. |\r\n| <a id=\"h12\"></a>**Cross-lens · H12** Do the same formulations recur across geographies with different observed frequencies or communication? | Text GTIN, region, category, subtype and basis, plus exactly the H1 profile features or one H5 proposition and matched nutrient. Reuse H1/H5 derivations. | Common subtype and basis with adequate per-region support. Apply FR reference cut points unchanged to comparators for frequency comparisons. Examine GTIN overlap, regional coverage and sensitivity to shared barcodes. | Show cell-specific differences and direct standardization with equal shared-cell weights. Separate observed-assortment composition from selected pack assessments. Compare FR and UK/IE primarily; show conditional US/CA estimates only. | Report a geographic difference if ≥10 pp with interval excluding zero and direction stable to excluding shared GTINs and reweighting. If common support fails, restrict to a named contrast or report counts. No US segment prevalence estimate. |\r\n| <a id=\"control\"></a>**5 · One unsupervised control** What structure emerges without using business hypotheses or claims? | Core four only. Map each to its empirical percentile in the FR/UK reference using midranks for ties. Preserve unscaled original grams for interpretation. | One row per distinct GTIN in named, comparable **solid** foods from FR and UK/IE; deterministic first sort by barcode, region, category. Require all four valid. Hold US foods for exploratory assignment and flag previously seen GTINs. | One k-means control on the four percentiles, initial reference k=4. Compare k=3–5 on identical inputs, seed 42, 20 initializations, bootstrap samples and evaluation records. Expand only for a documented reason. Select k on stability, interpretability and analytical usefulness. Compute stability under product bootstrap using the same specification. Profile original measurements, format, category, region and assessed claims after fitting. | Propose median adjusted Rand index ≥0.70 across resamples, silhouette ≥0.25 and each group ≥5%. Report adjusted mutual information with format; if ≥0.50 or groups mainly reproduce obvious categories, describe a format-dominated control. Weak stability is a valid result. |\r\n\r\n## Feature and implementation decisions\r\n\r\n- **Protein claim provenance.** Of 385 H5 protein positives with comparable measured protein, 191 have direct OCR wording, 169 a saved model assessment, 24 an approved existing rule and one a historical saved assessment. Compare the primary estimate with a direct-wording estimate. Report rule-supported positives separately because an existing numeric protein implication can contribute to the classification. The locked proposition records communicated positioning; the nutritional outcome comes from the separate OFF measurement.\r\n- **Shared nutrition basis.** Retain total fat and sugars in the core matrix. Saturated fat remains a meaningful absolute measure for targeted profiling. Total carbohydrates supplies the context for sugars. Adding both parents and components to a distance would give some nutritional axes extra weight. The pooled food reference gives fat/saturated-fat Pearson 0.871 and Spearman 0.845, and carbohydrates/sugars 0.736 and 0.762. Relationships differ by format. Interpret correlations on their printed paired counts. Energy is a matching or denominator variable where the question requires it. The all-eight matrix has energy VIF 118, fat 99 and carbohydrates 67. The four core VIFs range from 1.09 to 1.44. [Pair counts and both correlation matrices](FEATURE_CORRELATIONS.csv)\r\n- **Ratios.** Missing numerator, missing denominator and observed zero denominator yield undefined ratios. A measured zero numerator with a valid positive denominator yields zero. Keep primary density rankings at ≥10 kcal per 100 units and show alternatives. Review tail leverage and rank displacement before interpreting an extreme. Use component shares as secondary descriptors only; flag values above one and parent amounts below 1 g, report sensitivities restricted to coherent pairs and parents ≥1 g. Do not cap, repair or delete the source. Ratio extremes can reflect rounding, small denominators or discordant inputs; diagnostics cannot identify the cause for an individual product.\r\n- **Scaling and ties.** Report nutritional contrasts in original units. Use peer ranks for H3/H4 and within-cell quartiles for specific comparisons. For high/low H1 use strict above Q3/below Q1; flag cells where either indicator is empty. For H4 report tie counts and use inclusive concentration and energy quartiles only when boundaries distinguish groups. A strict H9/H10 threshold excludes ties exactly at Q3. Reserve robust IQR calipers for H6 and reference-percentile scaling for the one control. Percentiles bound numerical leverage but discard absolute distance, so report original-unit medians/IQRs and tails for every control group. No global log transform, outlier filter, normalization or imputation.\r\n- **Execution and interpretation.** Group resamples by barcode and preserve the analysis unit in uncertainty estimates; for H2/H6 resample whole matched pairs within a cell. For H12 use a shared-barcode sensitivity in addition to block resampling. Recalculate study-specific peer thresholds within resamples when population-estimated. Lock pairing tolerances, tails, reporting floors and practical thresholds together before the run. The thresholds are commercial research conventions proposed for this wave; they are not dietary limits or independently validated materiality cutoffs.\r\n- **Deferred inputs.** Use NOVA only in an explicitly processing-related comparison with its own availability denominator. Defer rules for new ingredient families, inferred added sugar, claims outside the locked taxonomy and ingredient-list interpretations of certification. Sampling-group labels, outcomes, brand/company and OCR metadata stay outside the control distance; they may describe groups when appropriate. A recurring H1 product profile need not coincide with a control cluster.\r\n\r\n## Reproduction and scope of the diagnostics\r\n\r\nRun the repository virtual-environment Python on `shared_feature_diagnostics_v1.py` from any working directory. It reads the corrected master and the three existing baseline CSVs. It outputs the inventory and upper-triangular Pearson/Spearman tables in this directory. Correlations pool regions only within the stated category and basis, except for the explicitly labelled distinct FR/UK solid-food reference. They describe redundancy and have no between-region inferential interpretation. VIF uses a common complete-case matrix for each specified feature set. Self-correlations give univariate counts; off-diagonals use pairwise complete observations. The named-peer diagnostics count assignments unless explicitly labelled distinct GTIN.\r\n\r\nFilter the inventory by `record_kind`. `raw` separates source availability from valid observations. `joint` and `peer_retention` give set-specific denominators. `engineered` and `energy_sensitivity` describe provisional ratios. `H2_energy_only` counts candidate neighbours before matching. For `claim_comparison`, retained_n means composition/text/peer eligible from the locked layer **before** restricting to known claim states; sum the positive and documented-negative columns for the primary contrast. `cells_20_each` counts peer cells meeting the prespecified two-arm screening floor. `claim_feature` preserves the original core state counts. `H7_text_support` counts literal text hits within assessed arms. `H8_joint` measures joint evidence with nutrition. `H12_common_support` counts comparable subtype–basis cells, not products. The five lens folders link to the relevant decision rows and share this implementation.\r\n\r\n",
+      "diff": "--- 02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/H1_H12_ANALYTICAL_PLAN.md@approved\n+++ 02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/H1_H12_ANALYTICAL_PLAN.md@publication\n@@ -1,14 +1,16 @@\n # Wave 2 analytical design · H1–H12 and one unsupervised control\r\n \r\n-**Decision status.** Feature feasibility is measured. Julia approved the methods, practical effect sizes and decision rules on 15 November 2026, with the bounded control comparison recorded below. This document preserves the pre-run design. The twelve business hypotheses and the exploratory control retain their original meanings. [Research hypotheses](../../../../SEGMENTATION_HYPOTHESES_NEXT_PHASE.md) · [Learning plan](../../../../learning_plan.md) · [Executive CHECK](CHECK.md)\r\n+**Publication maintenance · 20 November 2026.** This is the approved pre-run design, not the final results. Only links and this publication note changed during housekeeping; hypotheses, populations, feature definitions, methods, success criteria and the k=3–5 amendment are unchanged. Baseline findings and reproduction instructions are now consolidated in `CHECK.md`; generated working outputs and source inputs stay local. The local research manifest records the previous document hash and exact revision.\r\n+\r\n+**Decision status.** Feature feasibility is measured. Julia approved the methods, practical effect sizes and decision rules on 15 November 2026, with the bounded control comparison recorded below. This document preserves the pre-run design. The twelve business hypotheses and the exploratory control retain their original meanings. Research hypotheses: `presentations/segmentation/SEGMENTATION_HYPOTHESES_NEXT_PHASE.md` (local planning document) · Learning plan: `presentations/segmentation/learning_plan.md` (local project document) · [Executive CHECK](CHECK.md)\r\n \r\n ## Common population and measurement rules\r\n \r\n-Use the corrected 17 October 2026 retrieval with the 29 September reporting cutoff. Start from 376,845 product-scope-eligible barcode–region–category assignments. Keep barcode as text. The master supplies the key, product scope, working nutrients, OFF source observations, missing flags, locked claims and ingredient evidence. The existing classification supplies membership, subtype, confidence, cereal bar flag and comparison basis. Join all three key fields exactly once. The full outer join reconciled every assignment. The shared implementation verifies the source hash and the baseline valid counts for all eight nutrients in each region and category. [Corrected master manifest](../../../01_ingestion/05_master_parquet/output/manifest.json) · [Baseline CHECK](BASELINE_CHECK.md) · [Shared diagnostic script](shared_feature_diagnostics_v1.py)\r\n+Use the corrected 17 October 2026 retrieval with the 29 September reporting cutoff. Start from 376,845 product-scope-eligible barcode–region–category assignments. Keep barcode as text. The master supplies the key, product scope, working nutrients, OFF source observations, missing flags, locked claims and ingredient evidence. The existing classification supplies membership, subtype, confidence, cereal bar flag and comparison basis. Join all three key fields exactly once. The full outer join reconciled every assignment. The shared implementation verifies the source hash and the baseline valid counts for all eight nutrients in each region and category. Corrected master manifest: `first_run/01_ingestion/05_master_parquet/output/manifest.json` (local frozen input) · [Baseline EDA](CHECK.md#baseline-eda) · [Shared diagnostic script](shared_feature_diagnostics_v1.py)\r\n \r\n **Peer** means membership YES, a named subtype, a comparable food or liquid basis and no existing cereal bar-review flag. There are 292,302 such assignments. Analyse within region × category × subtype × basis unless a row explicitly specifies pooling. Keep OTHER, unresolved membership, unresolved subtype, possible category contamination, preparation and unverified basis in the governed population and its coverage denominators. Use the existing food per 100 g and liquid per 100 ml conventions, including liquid dairy. Pack-level units are not independently verified. Preparations may contribute format and communication evidence as a separate stratum. Never convert them to ready-to-drink equivalents. Repeat supported contrasts without LOW-confidence assignments as a classification sensitivity, keeping original unrated assignments identifiable.\r\n \r\n-**Valid** means the baseline working value is present, matches the OFF observation, has a clear missing flag and passes its finite governed range. Keep observed zero. There is no imputation. Energy is kcal and the seven other measurements are grams per applicable 100-unit basis. Core four means protein, total fat, total sugars and salt. All four are existing measurements. Densities, component shares, ranks, match indicators, quartile flags and ingredient cues are analytical derivations. The four numeric ratios and the ingredient cue were constructed provisionally in memory for the diagnostics. The other analytical features described below would be constructed after approval. [Raw fields, formulas and retention](FEATURE_DECISIONS.csv)\r\n+**Valid** means the baseline working value is present, matches the OFF observation, has a clear missing flag and passes its finite governed range. Keep observed zero. There is no imputation. Energy is kcal and the seven other measurements are grams per applicable 100-unit basis. Core four means protein, total fat, total sugars and salt. All four are existing measurements. Densities, component shares, ranks, match indicators, quartile flags and ingredient cues are analytical derivations. The four numeric ratios and the ingredient cue were constructed provisionally in memory for the diagnostics. The other analytical features described below would be constructed after approval. Raw fields, formulas and retention: `FEATURE_DECISIONS.csv` (local working output)\r\n \r\n **Claim comparison** means a matched, analytically eligible assessment of the exact proposition, with no source-market limitation for the regional contrasts. Compare a locked positive against documented non-detection. Keep human-confirmed negatives separate for sensitivity. Keep uncertain, unassessed, unmatched and inapplicable observations distinguishable in the source and outside that contrast. Report original core states and evidence cohort. Use the derived energy-positioning indicator and independent usable front hydration and electrolyte assessments with their own denominators. Exclude a salt-specific QA hold only when using salt. Identify historical dairy reuse and the US dairy population note in sensitivity results. Ingredient eligibility is independent of nutrition eligibility.\r\n \r\n@@ -35,7 +37,7 @@\n ## Feature and implementation decisions\r\n \r\n - **Protein claim provenance.** Of 385 H5 protein positives with comparable measured protein, 191 have direct OCR wording, 169 a saved model assessment, 24 an approved existing rule and one a historical saved assessment. Compare the primary estimate with a direct-wording estimate. Report rule-supported positives separately because an existing numeric protein implication can contribute to the classification. The locked proposition records communicated positioning; the nutritional outcome comes from the separate OFF measurement.\r\n-- **Shared nutrition basis.** Retain total fat and sugars in the core matrix. Saturated fat remains a meaningful absolute measure for targeted profiling. Total carbohydrates supplies the context for sugars. Adding both parents and components to a distance would give some nutritional axes extra weight. The pooled food reference gives fat/saturated-fat Pearson 0.871 and Spearman 0.845, and carbohydrates/sugars 0.736 and 0.762. Relationships differ by format. Interpret correlations on their printed paired counts. Energy is a matching or denominator variable where the question requires it. The all-eight matrix has energy VIF 118, fat 99 and carbohydrates 67. The four core VIFs range from 1.09 to 1.44. [Pair counts and both correlation matrices](FEATURE_CORRELATIONS.csv)\r\n+- **Shared nutrition basis.** Retain total fat and sugars in the core matrix. Saturated fat remains a meaningful absolute measure for targeted profiling. Total carbohydrates supplies the context for sugars. Adding both parents and components to a distance would give some nutritional axes extra weight. The pooled food reference gives fat/saturated-fat Pearson 0.871 and Spearman 0.845, and carbohydrates/sugars 0.736 and 0.762. Relationships differ by format. Interpret correlations on their printed paired counts. Energy is a matching or denominator variable where the question requires it. The all-eight matrix has energy VIF 118, fat 99 and carbohydrates 67. The four core VIFs range from 1.09 to 1.44. [Correlation evidence and regeneration](CHECK.md#correlation-evidence)\r\n - **Ratios.** Missing numerator, missing denominator and observed zero denominator yield undefined ratios. A measured zero numerator with a valid positive denominator yields zero. Keep primary density rankings at ≥10 kcal per 100 units and show alternatives. Review tail leverage and rank displacement before interpreting an extreme. Use component shares as secondary descriptors only; flag values above one and parent amounts below 1 g, report sensitivities restricted to coherent pairs and parents ≥1 g. Do not cap, repair or delete the source. Ratio extremes can reflect rounding, small denominators or discordant inputs; diagnostics cannot identify the cause for an individual product.\r\n - **Scaling and ties.** Report nutritional contrasts in original units. Use peer ranks for H3/H4 and within-cell quartiles for specific comparisons. For high/low H1 use strict above Q3/below Q1; flag cells where either indicator is empty. For H4 report tie counts and use inclusive concentration and energy quartiles only when boundaries distinguish groups. A strict H9/H10 threshold excludes ties exactly at Q3. Reserve robust IQR calipers for H6 and reference-percentile scaling for the one control. Percentiles bound numerical leverage but discard absolute distance, so report original-unit medians/IQRs and tails for every control group. No global log transform, outlier filter, normalization or imputation.\r\n - **Execution and interpretation.** Group resamples by barcode and preserve the analysis unit in uncertainty estimates; for H2/H6 resample whole matched pairs within a cell. For H12 use a shared-barcode sensitivity in addition to block resampling. Recalculate study-specific peer thresholds within resamples when population-estimated. Lock pairing tolerances, tails, reporting floors and practical thresholds together before the run. The thresholds are commercial research conventions proposed for this wave; they are not dietary limits or independently validated materiality cutoffs.\r\n@@ -46,4 +48,3 @@\n Run the repository virtual-environment Python on `shared_feature_diagnostics_v1.py` from any working directory. It reads the corrected master and the three existing baseline CSVs. It outputs the inventory and upper-triangular Pearson/Spearman tables in this directory. Correlations pool regions only within the stated category and basis, except for the explicitly labelled distinct FR/UK solid-food reference. They describe redundancy and have no between-region inferential interpretation. VIF uses a common complete-case matrix for each specified feature set. Self-correlations give univariate counts; off-diagonals use pairwise complete observations. The named-peer diagnostics count assignments unless explicitly labelled distinct GTIN.\r\n \r\n Filter the inventory by `record_kind`. `raw` separates source availability from valid observations. `joint` and `peer_retention` give set-specific denominators. `engineered` and `energy_sensitivity` describe provisional ratios. `H2_energy_only` counts candidate neighbours before matching. For `claim_comparison`, retained_n means composition/text/peer eligible from the locked layer **before** restricting to known claim states; sum the positive and documented-negative columns for the primary contrast. `cells_20_each` counts peer cells meeting the prespecified two-arm screening floor. `claim_feature` preserves the original core state counts. `H7_text_support` counts literal text hits within assessed arms. `H8_joint` measures joint evidence with nutrition. `H12_common_support` counts comparable subtype–basis cells, not products. The five lens folders link to the relevant decision rows and share this implementation.\r\n-\r\n"
+    }
+  ],
+  "housekeeping_v1": {
+    "date": "2026-11-20",
+    "scope": "03_lenses public audit consolidation; no analytical rerun",
+    "predecessor_manifest_sha256": "265515eed0a3cfbcb048d54246ab145e3001ba376291a230d641b41a14946841",
+    "source_archive": {
+      "01_nutritional_composition/juice_classification_correction_v1.py": {
+        "sha256": "3a134c4decf35adcf952363e00781453f2590fe3d790ba4c1ca8830d1db46a8d",
+        "text": "\"\"\"Rebuild only juice-dependent analytical artifacts; stop before consolidation.\n\nOne validated shared master read is reused by the existing builders. Original\nlabels are reproducible via beverages_v1.refine_original, not a duplicate dataset.\n\"\"\"\nfrom pathlib import Path\nimport ast\nimport hashlib\nimport importlib.util\nimport json\nimport re\nimport sys\n\nimport numpy as np\nimport pandas as pd\nimport pyarrow.parquet as pq\n\nHERE=Path(__file__).resolve().parent\nLENSES=HERE.parent\nL3=LENSES/\"03_claims_composition_and_ingredients\"\nL4=LENSES/\"04_positioning_tradeoffs\"\nSTUDY=LENSES.parent\nEDA=STUDY/\"02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics\"\nsys.path[:0]=[str(HERE),str(EDA)]\nfrom shared_feature_diagnostics_v1 import KEY,MASTER,read_master\nfrom juice_classification_v1 import VERSION,regression_checks,NAMED\n\n\ndef digest(path):\n    with path.open(\"rb\") as f:return hashlib.file_digest(f,\"sha256\").hexdigest()\n\n\ndef load(path):\n    spec=importlib.util.spec_from_file_location(path.stem,path)\n    m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)\n    return m\n\n\ndef table(head,rows):\n    return \"\\n\".join(\"| \"+\" | \".join(str(v).replace(\"|\",\"/\") for v in row)+\" |\" for row in [head,[\"---\"]*len(head),*rows])\n\n\ndef equivalent(left,right,keys,drop=()):\n    left=left.drop(columns=list(drop),errors=\"ignore\").sort_values(keys).reset_index(drop=True)\n    right=right.drop(columns=list(drop),errors=\"ignore\").sort_values(keys).reset_index(drop=True)\n    pd.testing.assert_frame_equal(left,right,check_dtype=False,check_exact=False,rtol=1e-12,atol=1e-12)\n\n\ndef affected_coverage(x):\n    return x.cohort_family.eq(\"juice detail\") | (x.cohort_family.eq(\"accepted\") &\n        x.branch.isin([\"beverages/\"+s for s in NAMED|{\"juice family unresolved\"}]))\n\n\ndef update_notes(coverage,beverage,juice):\n    path=L3/\"communication_coverage_CHECK_v1.md\"\n    text=path.read_text(encoding=\"utf-8\")\n    text=re.sub(r\"\\*\\*[\\d,]+ proposition-specific cells\\*\\*\",f\"**{len(coverage):,} proposition-specific cells**\",text)\n    n=len(coverage[[\"cohort_family\",\"branch\"]].drop_duplicates())\n    text=re.sub(r\"\\*\\*\\d+ labelled cohort families/branches\\*\\*\",f\"**{n} labelled cohort families/branches**\",text)\n    note=\"**Juice correction · 19 November 2026.** This coverage table was rebuilt using the corrected shared juice-family classifier. Original labels, revised labels and uncertainty remain in the keyed beverage layer; juice-detail populations now use the corrected juice subset. All five retained profile denominators and Wednesday's promoted comparisons are unchanged. Use ‘sugar-related communication’ for the locked sugar_free_claim field. [Correction CHECK](../01_nutritional_composition/juice_classification_CHECK_v1.md).\"\n    text=re.sub(r\"\\n\\*\\*Juice correction · 19 November 2026\\.\\*\\*[^\\n]*\\n?\",\"\\n\",text)\n    path.write_text(text.rstrip()+\"\\n\\n\"+note+\"\\n\",encoding=\"utf-8\")\n    path=L3/\"communication_overlays_CHECK_v1.md\";text=path.read_text(encoding=\"utf-8\")\n    note=\"**Dependency refresh · 19 November 2026.** Juice-family coverage was rebuilt and the supporting overlay table now references its corrected source hash. All substantive Wednesday overlay counts, effects, intervals, provenance and the Cloudy Lemonade finding are unchanged. Original H6 remains a combined-family historical comparison, not a newly validated refined-juice result. [Correction CHECK](../01_nutritional_composition/juice_classification_CHECK_v1.md).\"\n    text=re.sub(r\"\\n\\*\\*Dependency refresh · 19 November 2026\\.\\*\\*[^\\n]*\\n?\",\"\\n\",text)\n    path.write_text(text.rstrip()+\"\\n\\n\"+note+\"\\n\",encoding=\"utf-8\")\n    path=LENSES/\"FORMULATION_SYNTHESIS_v1.md\";text=path.read_text(encoding=\"utf-8\")\n    text=text.replace(\"Juice refinement examines the existing 8,561 juice assignments, including boundary flags, and does not estimate juice recall elsewhere.\",\n        f\"Juice refinement now uses {len(juice):,} corrected juice assignments after the bounded 19 November parent/child tag correction. Original labels and unresolved boundary flags remain in the beverage layer; this is not a comprehensive recall audit of juices elsewhere.\")\n    # Make subsequent reruns update the correction count without accumulating notes.\n    text=re.sub(r\"Juice refinement now uses [\\d,]+ corrected juice assignments\",f\"Juice refinement now uses {len(juice):,} corrected juice assignments\",text)\n    path.write_text(text,encoding=\"utf-8\")\n    path=STUDY.parent/\"learning_plan.md\";text=path.read_text(encoding=\"utf-8\")\n    note=\"**Bounded juice correction completed · 19 November 2026.** [Correction CHECK](first_run/03_lenses/01_nutritional_composition/juice_classification_CHECK_v1.md). One shared name/tag classifier replaces broad-parent precedence across all three regions. Beverage/juice classifications, affected summaries, proposition-specific coverage, organic/NOVA denominators and existing register references are rebuilt. Original labels, unresolved evidence, master and locked observations are preserved. This supersedes the Thursday juice-population release hold; outside-family boundaries remain flagged rather than automatically reassigned. Friday consolidation has not started.\"\n    text=re.sub(r\"\\n\\*\\*Bounded juice correction completed · 19 November 2026\\.\\*\\*[^\\n]*\\n?\",\"\\n\",text)\n    anchor=\"Use the accepted commercial hierarchy as the foundation.\"\n    text=text.replace(anchor,note+\"\\n\\n\"+anchor)\n    path.write_text(text,encoding=\"utf-8\")\n\n\ndef main():\n    regression_checks()\n    locked=STUDY/\"01_ingestion/04_reviewed_claims/03_final_lock/wave2_ocr_llm_lock_v1\"\n    protected=[MASTER,MASTER.parent/\"manifest.json\",locked/\"claims_join.parquet\",locked/\"manifest.json\",\n               EDA/\"subtype_assignments.csv\",EDA/\"nutrient_availability.csv\",EDA/\"nutrient_distributions.csv\",\n               HERE/\"savoury_snack_assignments_v1.parquet\"]\n    protected += [L3/name for name in [\"human_claim_decisions_v1.csv\",\"human_claim_adjudications_v1.csv\",\"human_claim_review_v1.csv\",\"post_v1_evidence_gaps_v1.csv\"]]\n    manifest=json.loads((LENSES/\"run_manifest_v1.json\").read_text(encoding=\"utf-8\"))\n    protected += [LENSES.parent/p for p in manifest[\"sha256\"]]\n    frozen={str(p.resolve()):digest(p) for p in set(protected)}\n    old_beverage=pd.read_parquet(HERE/\"beverage_assignments_v1.parquet\")\n    old_coverage=pd.read_csv(L3/\"communication_coverage_v1.csv\")\n    old_overlay=pd.read_csv(L3/\"communication_overlays_v1.csv\",dtype={\"barcode\":str})\n    old_decisions=pd.read_csv(LENSES/\"FORMULATION_DECISIONS_v1.csv\")\n    old_processing=pd.read_csv(L4/\"category_boundaries_v1.csv\")\n    print(\"Reading and validating the unchanged master once...\",flush=True)\n    shared=read_master()\n    df=shared[0]\n    value_hash=pd.util.hash_pandas_object(df[KEY+[\"energy\",\"sugars\",\"fat\",\"protein\",\"salt\",\"claims_claim_organic_claim\"]],index=True).sum()\n    stages=[HERE/\"beverages_v1.py\",HERE/\"juice_formulations_v1.py\",L3/\"communication_coverage_v1.py\",\n            L3/\"communication_overlays_v1.py\",LENSES/\"formulation_synthesis_v1.py\",L4/\"processing_boundaries_v1.py\"]\n    for path in stages:\n        print(\"Rebuilding\",path.name,flush=True)\n        m=load(path)\n        if hasattr(m,\"read_master\"):m.read_master=lambda:shared\n        m.main()\n    beverage=pd.read_parquet(HERE/\"beverage_assignments_v1.parquet\")\n    juice=pd.read_parquet(HERE/\"juice_assignments_v1.parquet\")\n    coverage=pd.read_csv(L3/\"communication_coverage_v1.csv\")\n    overlay=pd.read_csv(L3/\"communication_overlays_v1.csv\",dtype={\"barcode\":str})\n    decisions=pd.read_csv(LENSES/\"FORMULATION_DECISIONS_v1.csv\")\n    processing=pd.read_csv(L4/\"category_boundaries_v1.csv\")\n    assert len(beverage)==117596 and not beverage.duplicated(KEY).any()\n    assert beverage.barcode.map(lambda x:isinstance(x,str)).all()\n    assert not juice.duplicated(KEY).any() and set(map(tuple,juice[KEY].to_numpy()))==set(map(tuple,beverage.loc[beverage.analytical_format.eq(\"juice\"),KEY].to_numpy()))\n    stable_columns=[c for c in old_beverage if c not in [\"analytical_format\",\"comparable_liquid\",\"composition_band\"] and not c.startswith((\"original_\",\"juice_\"))]\n    equivalent(old_beverage[stable_columns],beverage[stable_columns],KEY)\n    equivalent(old_beverage[~old_beverage.analytical_format.isin(NAMED|{\"juice family unresolved\"})][stable_columns],\n               beverage[~beverage.juice_family_review_scope][stable_columns],KEY)\n    before_original=old_beverage.get(\"original_analytical_format\",old_beverage.analytical_format)\n    assert beverage.original_analytical_format.equals(before_original)\n    assert not beverage.loc[~beverage.juice_family_review_scope,\"juice_correction_applied\"].any()\n    equivalent(old_coverage[~affected_coverage(old_coverage)],coverage[~affected_coverage(coverage)],\n               [\"cohort_family\",\"branch\",\"slice\",\"region\",\"proposition\"])\n    equivalent(old_overlay,overlay,[\"record_kind\",\"branch\",\"region\",\"proposition\"],drop=[\"coverage_sha256\"])\n    for data in [old_decisions,decisions]:assert len(data)==33\n    equivalent(old_decisions[old_decisions.decision.eq(\"approved descriptive profile\")],\n               decisions[decisions.decision.eq(\"approved descriptive profile\")],[\"branch\",\"region\"],drop=[\"source_sha256\"])\n    match=lambda d:d[d.record_kind.eq(\"nutrition consequence\")&d.boundary_family.eq(\"potato constructions\")]\n    equivalent(match(old_processing),match(processing),[\"region\",\"group\"])\n    assert value_hash==pd.util.hash_pandas_object(df[KEY+[\"energy\",\"sugars\",\"fat\",\"protein\",\"salt\",\"claims_claim_organic_claim\"]],index=True).sum()\n    assert frozen=={name:digest(Path(name)) for name in frozen}\n    audit=pq.read_schema(L4/\"processing_boundary_evidence_v1.parquet\").metadata\n    for name,expected in json.loads(audit[b\"input_sha256\"]).items():\n        assert digest(LENSES.parents[2]/name)==expected,(\"stale processing dependency\",name)\n    assert digest(L4/\"processing_boundaries_v1.py\")==audit[b\"script_sha256\"].decode()\n    # Existing notes are refreshed, not a new cross-category consolidation or release.\n    update_notes(coverage,beverage,juice)\n    write_check(df,beverage,juice,coverage,processing,frozen)\n    # Preserve the accepted final sensitivity and approval when this bounded rebuild is repeated.\n    load(HERE/\"juice_confidence_sensitivity_v1.py\").main()\n    for p in stages+[Path(__file__),HERE/\"juice_classification_v1.py\"]:ast.parse(p.read_text(encoding=\"utf-8\"))\n    print(\"PASS corrected populations, unaffected outputs, profiles, evidence hashes and dependencies. STOP before consolidation.\",flush=True)\n\n\ndef write_check(df,b,j,coverage,processing,frozen):\n    count=[]\n    for region in [\"FR\",\"UK-IE\",\"US-CA\"]:\n        g=b[b.region.eq(region)]\n        for form in [\"juice\",\"nectar\",\"fruit drink\",\"smoothie\",\"juice family unresolved\"]:\n            before=int(g.original_analytical_format.eq(form).sum());after=int(g.analytical_format.eq(form).sum())\n            count.append([region,form,before,after,after-before])\n    meta=pd.read_csv(EDA/\"subtype_assignments.csv\",dtype=str,keep_default_na=False,usecols=KEY+[\"off_categories\"])\n    a=df.merge(b[KEY+[\"product_name\",\"original_analytical_format\",\"analytical_format\",\"juice_classification_confidence\"]],on=KEY,validate=\"one_to_one\").merge(meta,on=KEY,validate=\"one_to_one\")\n    classifier=load(HERE/\"juice_formulations_v1.py\")\n    summary=[]\n    for region in [\"FR\",\"UK-IE\",\"US-CA\"]:\n        for label,col in [(\"Original selected juice\",\"original_analytical_format\"),(\"Corrected juice\",\"analytical_format\")]:\n            g=a[a.region.eq(region)&a[col].eq(\"juice\")].copy()\n            g[\"composition\"]=[classifier.classify(r)[0] for r in g.itertuples()]\n            low=g[g.sugars.gt(.5)&g.sugars.lt(5)];without=low[~low.composition.str.startswith(\"vegetable\")]\n            summary.append([region,label,len(g),g.sugars.count(),len(low),low.salt.count(),round(low.salt.median(),3),\n                            len(without),without.salt.count(),round(without.salt.median(),3)])\n    changed=b[b.juice_correction_applied]\n    reasons=changed.groupby([\"region\",\"analytical_format\",\"juice_classification_confidence\"]).size()\n    text=[\"# Bounded juice classification correction — CHECK v1\",\n          \"**Completed 19 November 2026. STOP before consolidation.** Corrected Wave 2, retrieved 17 October with 29 September cutoff. This corrects derived analytical commercial labels; master nutrition, governed categories and locked claim evidence are unchanged.\",\n          \"## What changed\",\n          \"The old rule treated the broad parent tag `boissons aux fruits` as a specific fruit-drink identity before checking juice evidence. One shared text-only classifier now supplies beverage labels and boundary interpretation in all three regions. Specific names/tags can resolve juice, nectar, fruit drink or smoothie. Generic parent tags alone do not. Conflicting evidence and incompatible intended-use wording stay `juice family unresolved`; a name is not automatically privileged over a specific contradictory tag. Confidence describes proposed text evidence, not human verification.\",\n          table([\"Region\",\"Commercial type\",\"Original n\",\"Corrected n\",\"Change\"],count),\n          f\"Total beverage assignments remain **{len(b):,}**; corrected juice assignments **{len(j):,}**. Exactly **{len(changed):,}** assignments changed analytical label. All original labels are retained as `original_analytical_format`, alongside corrected label, rule version `{VERSION}`, confidence, name/tag evidence, reason and change flag in beverage_assignments_v1.parquet. No duplicate old dataset was retained.\",\n          table([\"Region\",\"Revised type on changed records\",\"Confidence\",\"n\"],[[*key,int(n)] for key,n in reasons.items()]),\n          \"The correction is bounded to existing governed juice-family liquid assignments. Both original juice and neighbouring nectar/fruit-drink/smoothie sides were reconsidered. Outside-family cases remain in the two-sided boundary audit; juice mentioned in soda/tea/water is not automatically a juice product. No comprehensive reclassification was performed.\",\n          \"## Nutritional findings refreshed\",\n          table([\"Region\",\"Population\",\"n\",\"Valid sugars\",\"0.5<sugars<5 n\",\"Valid salt in band\",\"Salt median\",\"Band without vegetable evidence n\",\"Valid salt there\",\"Salt median there\"],summary),\n          \"All food identity decisions precede nutrition. Liquid figures above are per 100 ml on the inherited basis. Missing remains distinct from measured zero. The regenerated juice report contains the updated apple/orange/tomato composition summaries, nutrient distributions, ambiguity effects, very-low-sugar energy checks and the same bounded within-type cutoff sensitivities. Retain commercial composition refinements and no additional nutritional profile; thresholds and questionable zero-sugar/high-energy records do not establish a new formulation strategy.\",\n          \"**Material interpretation change:** the French low-sugar group's median salt falls from 0.30 to 0.02 g/100 ml after correcting the population. Tomato/vegetable composition remains informative, but the expanded low-sugar juice population is not generally a higher-salt group. Apple/orange/tomato remain useful commercial distinctions; a separate low-sugar nutritional segment is still unsupported.\",\n          \"The earlier French-versus-UK fruit-drink nutritional contrast is withdrawn because the old French population mixed in many juices. Original low-sugar/salt counts remain reproducible as original-population observations, but the refreshed denominators above and the regenerated juice report govern current interpretation. No inference about recipe substitution or added salt is made.\",\n          \"## Affected dependencies rebuilt\",\n          \"Rebuilt affected outputs: beverage_assignments_v1.parquet and beverage evidence tables; juice_assignments_v1.parquet and juice_formulations_v1.md; communication_coverage_v1.csv; communication_overlays_v1.csv (updated coverage hash only); existing FORMULATION_DECISIONS_v1.csv source references; organic_nova_v1.csv; category_boundaries_v1.csv and processing_boundary_evidence_v1.parquet; processing CHECK. Dynamic key-subset checks replace the obsolete 8,561-juice-row assertion. Existing coverage/synthesis notes and learning plan point to this correction. This refreshes existing outputs and references; it does not create Friday's consolidated release.\",\n          f\"Communication coverage now has {len(coverage):,} proposition-specific cells; known/non-detection/unknown states still reconcile. The processing CHECK reports supported organic/NOVA cells on corrected commercial populations. The full master and the original broad-family H1–H12 results were not rerun or changed.\",\n          \"## Validation\",\n          f\"PASS: shared classifier regression fixtures (parent tags, nested types, contradiction, missing identity, preparation wording and negative juice mentions); one verified shared master read and all 96 region/category/nutrient-valid counts; exact text-key preservation and uniqueness; corrected juice keys equal the corrected beverage juice subset; no changes outside correction scope and unchanged source metadata on every beverage row; unchanged retained profiles in all 15 region/profile cells; identical unaffected communication coverage and all Wednesday substantive overlay values/provenance; identical potato nutrition consequences; 33 existing register decisions retained; final processing input/script hashes agree with the refreshed dependencies; unchanged in-memory source measurements and original-run/protected evidence hashes ({len(frozen)} protected artifacts). No OCR, image assessment, provider calls, enrichment, imputation or clustering.\",\n          \"Master SHA-256: `\"+digest(MASTER)+\"`. All 12 human submissions and their interpreted sidecar remain unchanged qualitative examples. The processing evidence Parquet contains an updated input-hash manifest. Existing source lineage and original GTIN strings, including leading zeros, remain intact.\",\n          \"## Reproduce and stop\",\n          \"Run `.venv/Scripts/python.exe -B presentations/segmentation/first_run/03_lenses/01_nutritional_composition/juice_classification_correction_v1.py` from the repository. It reuses one validated master read across existing builders and overwrites only affected analytical outputs/notes. Rule fixtures can also run directly through juice_classification_v1.py. **Ready for review; no consolidation, release packaging or publication has started.**\"]\n    (HERE/\"juice_classification_CHECK_v1.md\").write_text(\"\\n\\n\".join(text)+\"\\n\",encoding=\"utf-8\")\n\n\nif __name__==\"__main__\":main()\n",
+        "reason": "No retained importer; reusable rules/builders remain. Exact source archived; old command superseded.",
+        "replaced_by": "AUDIT_v1.md#dependency-resolutions"
+      },
+      "03_claims_composition_and_ingredients/prepare_human_review_v1.py": {
+        "sha256": "242c2d14b3c74de4a3c0e2c7230fe8ff1ca9e630e8536ca75083bdc82716d757",
+        "text": "\"\"\"Prepare 12 human-review records and post-v1 gaps. Never infer or extract claims.\"\"\"\nfrom pathlib import Path\nfrom concurrent.futures import ThreadPoolExecutor\nimport json\nimport ssl\nimport urllib.request\nimport urllib.parse\nimport certifi\n\nimport numpy as np\nimport pandas as pd\nimport pyarrow.parquet as pq\n\nHERE=Path(__file__).resolve().parent\nimport sys\nsys.path.insert(0,str(HERE))\nfrom communication_coverage_v1 import populations, KEY, MASTER, read_master\n\nHUMAN=[\"human_reviewer\",\"human_review_date\",\"human_image_used\",\"human_identity_match\",\"human_panel_scope\",\n       \"human_image_quality\",\"human_claim_state\",\"human_exact_wording\",\"human_other_wording\",\"human_notes\"]\ndef pointer(value):\n    return isinstance(value,str) and value.startswith((\"https://\",\"http://\")) and \"/invalid/\" not in value\ndef head(url):\n    try:\n        request=urllib.request.Request(url,method=\"HEAD\",headers={\"User-Agent\":\"FBRadarEvidenceReview/1.0\"})\n        context=ssl.create_default_context(cafile=certifi.where())\n        with urllib.request.urlopen(request,timeout=12,context=context) as response:\n            return str(response.status),response.headers.get(\"Content-Type\",\"\"),response.geturl()\n    except Exception as error:return \"unverified: \"+type(error).__name__+\" \"+str(getattr(error,\"reason\",error)),\"\",url\n\ndef check_selected_images():\n    path=HERE/\"human_claim_review_v1.csv\"\n    frame=pd.read_csv(path,dtype=str,keep_default_na=False)\n    assert len(frame)<=12 and frame.review_id.is_unique\n    assert frame.image_url.map(lambda u:urllib.parse.urlparse(u).hostname==\"images.openfoodfacts.org\").all()\n    checks=list(ThreadPoolExecutor(max_workers=4).map(head,frame.image_url))\n    frame[\"image_http_status\"]=[x[0] for x in checks]\n    frame[\"image_content_type\"]=[x[1] for x in checks]\n    frame[\"resolved_image_url\"]=[x[2] for x in checks]\n    frame.to_csv(path,index=False,encoding=\"utf-8-sig\")\n    print(frame[[\"review_id\",\"image_http_status\",\"image_content_type\"]].to_string(index=False))\n\ndef main():\n    df,_=read_master()\n    fields=KEY+[\"product_name\",\"image_url\",\"claims_image_url\",\"claims_core_claim_evidence_json\",\"claims_core_assessment_quality\",\n                \"claims_original_overall_outcome\",\"claims_eligibility_reason\",\"claims_basis_reduced_fat_claim\"]\n    extras=[x for x in fields if x not in df or x in KEY]\n    raw=pq.read_table(MASTER,columns=extras).to_pandas()\n    df=df.merge(raw,on=KEY,validate=\"one_to_one\")\n    frames=populations(df.drop(columns=[\"product_name\"]))\n    cohorts={}\n    for family,branch,sl,g in frames:\n        if family==\"accepted\":\n            if \"product_name\" not in g:\n                g=g.merge(raw[KEY+[\"product_name\"]],on=KEY,validate=\"one_to_one\")\n            cohorts[branch,sl]=g\n    master_digest=json.loads((MASTER.parent/\"manifest.json\").read_text())[\"master_sha256\"]\n    selected=[];used=set()\n    for branch,prop in [(\"dessert cream/pudding\",\"protein_claim\"),(\"potato crisps\",\"reduced_fat_claim\")]:\n        for region in [\"FR\",\"UK-IE\"]:\n            for arm,n in [(\"retained profile\",2),(\"other measurable\",1)]:\n                g=cohorts[branch,arm]\n                g=g[g.region.eq(region)].copy()\n                g[\"review_image\"]=g.claims_image_url.where(g.claims_image_url.map(pointer),g.image_url)\n                g=g[g.review_image.map(pointer)]\n                if g.empty:raise ValueError(\"No existing image pointers in required cell\")\n                # Give missing assessments priority, without using names or claim predictions.\n                gate=g.assessed_layer\n                state=g[\"claims_state_\"+prop]\n                g[\"gap_rank\"]=np.select([~gate,gate&state.isin([\"UNKNOWN\",\"UNCERTAIN\"])],[0,1],default=2)\n                for slot in range(n):\n                    pool=g[~g.barcode.isin(used)].copy()\n                    if pool.empty:raise ValueError(\"Review quota exhausted\")\n                    if branch==\"dessert cream/pudding\":\n                        med=pool[[\"protein\",\"energy\"]].median()\n                        distance=(pool.protein-med.protein).abs()+(pool.energy-med.energy).abs()/10\n                        if slot==1:distance=np.minimum(pool.protein-8,(110-pool.energy)/10)\n                    else:\n                        distance=(pool.fat-pool.fat.median()).abs() if slot==0 else 20-pool.fat\n                    chosen=pool.assign(distance=distance).sort_values([\"gap_rank\",\"distance\",\"barcode\"]).iloc[0]\n                    used.add(chosen.barcode)\n                    evidence=json.loads(chosen.claims_core_claim_evidence_json) if isinstance(chosen.claims_core_claim_evidence_json,str) else {}\n                    data=dict(review_id=f\"HR{len(selected)+1:02}\",branch=branch,arm=arm,\n                        selection=\"typical available evidence-gap record\" if slot==0 else \"near profile boundary\",\n                        barcode=chosen.barcode,region=region,category=chosen.category,product_name=chosen.get(\"product_name\",\"\"),\n                        proposition=prop,product_page=\"https://world.openfoodfacts.org/product/\"+chosen.barcode,\n                        image_url=chosen.review_image,source_image_url=chosen.image_url,saved_claim_image_url=chosen.claims_image_url,\n                        energy_kcal_per100g=chosen.energy,protein_g_per100g=chosen.protein,fat_g_per100g=chosen.fat,\n                        sugars_g_per100g=chosen.sugars,saturated_fat_g_per100g=chosen.saturated_fat,\n                        fibre_g_per100g=chosen.fibre,salt_g_per100g=chosen.salt,\n                        locked_matched=bool(chosen.claims_matched==True),locked_eligible=bool(chosen.claims_analytical_eligible==True),\n                        locked_state=chosen[\"claims_state_\"+prop],locked_basis=chosen[\"claims_basis_\"+prop],\n                        saved_core_quality=chosen.claims_core_assessment_quality,saved_outcome=chosen.claims_original_overall_outcome,\n                        saved_proposition_evidence=json.dumps(evidence.get(prop,{}),ensure_ascii=False),\n                        locked_master_sha256=master_digest)\n                    data.update({field:\"\" for field in HUMAN})\n                    selected.append(data)\n    chosen=pd.DataFrame(selected)\n    assert len(chosen)==12 and chosen.barcode.nunique()==12 and not chosen.duplicated(KEY+[\"proposition\"]).any()\n    statuses=list(ThreadPoolExecutor(max_workers=4).map(head,chosen.image_url))\n    chosen[\"image_http_status\"]=[s[0] for s in statuses]\n    chosen[\"image_content_type\"]=[s[1] for s in statuses]\n    chosen[\"image_checked_date\"]=\"2026-11-18\"\n    chosen[\"resolved_image_url\"]=[s[2] for s in statuses]\n    out=HERE/\"human_claim_review_v1.csv\"\n    decisions_path=HERE/\"human_claim_decisions_v1.csv\"\n    decisions=chosen[[\"review_id\"]+KEY+[\"proposition\"]+HUMAN].copy()\n    if out.exists():\n        previous=pd.read_csv(out,dtype=str,keep_default_na=False)\n        if set(map(tuple,previous[KEY+[\"proposition\"]].to_numpy()))!=set(map(tuple,chosen[KEY+[\"proposition\"]].to_numpy())):\n            raise ValueError(\"Existing review identities differ; preserve human layer\")\n    if decisions_path.exists():\n        existing=pd.read_csv(decisions_path,dtype=str,keep_default_na=False)\n        if set(map(tuple,existing[KEY+[\"proposition\"]].to_numpy()))!=set(map(tuple,decisions[KEY+[\"proposition\"]].to_numpy())):\n            raise ValueError(\"Existing human-decision keys differ\")\n        # Existing human decisions are never rewritten by this preparation.\n    else:\n        decisions.to_csv(decisions_path,index=False,encoding=\"utf-8-sig\")\n    chosen.drop(columns=HUMAN).to_csv(out,index=False,encoding=\"utf-8-sig\")\n    plans=[\n        (1,\"dessert cream/pudding\",\"protein_claim\",\"Does the measured protein-pudding profile also communicate protein versus ordinary comparable creams/puddings?\",\n         \"Aim for all 27 FR and 15 UK/IE qualifiers, plus prespecified same-form regional comparison products. UK profile census remains <20 and descriptive.\",\n         \"Confirm variant, panel visibility and specific pudding/cream form. Provider execution requires a new authorized protocol.\"),\n        (1,\"potato crisps\",\"reduced_fat_claim\",\"Does the lower-fat profile communicate fat reduction, construction wording, or neither on the inspected panel?\",\n         \"At least 30 proposition-known records in each formulation arm per region as a reporting target; design power after expected rates. Include >20g fat comparators.\",\n         \"Capture baked/roasted/popped wording separately. Better images needed where label or panel is unreadable.\"),\n        (2,\"energy drink\",\"sugar_free_claim\",\"Does sugar-related communication distinguish very-low-sugar and other energy drinks within the commercial format?\",\n         \"At least 30 known per formulation arm per primary region; preserve separate energy versus sports formats and preparations.\",\n         \"Clarify literal sugar-free versus no-added-sugar wording before reprocessing. Keep independent functional assessments.\"),\n        (2,\"soda\",\"sugar_free_claim\",\"Can the UK association replicate in France, and which exact sugar-related wording is used?\",\n         \"At least 30 known per formulation arm in FR; retain UK evidence as a comparator and audit ambiguous wordings.\",\n         \"Taxonomy clarification first: the locked field groups different wordings. Keep v1 display label sugar-related communication.\"),\n        (3,\"granola\",\"protein_claim\",\"Does protein communication recur with the retained granola profile across primary regions?\",\n         \"At least 30 known per formulation arm per region; include other measurable granola. Distinguish direct wording from existing-rule positives.\",\n         \"Prioritize unassessed comparators and qualifiers together; do not infer claims from the profile.\"),\n        (3,\"granola\",\"fibre_claim\",\"Is fibre communication actually different between the granola profile and its comparable alternatives?\",\n         \"At least 30 known per formulation arm per region, then assess precision/power; current 25-known profile arms are descriptive.\",\n         \"Preserve fibre measurement availability for any composition contrast and claim-specific unknowns.\")\n    ]\n    rows=[]\n    for priority,branch,prop,question,target,precondition in plans:\n        for arm in [\"retained profile\",\"other measurable\"]:\n            for region in [\"FR\",\"UK-IE\"]:\n                g=cohorts[branch,arm];g=g[g.region.eq(region)]\n                gate=g.assessed_layer\n                flag=g[\"claims_claim_\"+prop];state=g[\"claims_state_\"+prop]\n                known=gate&(flag.eq(True)|(flag.eq(False)&state.eq(\"DOCUMENTED_NOT_DETECTED\")))\n                unknown=gate&~known\n                image=g.claims_image_url.map(pointer)|g.image_url.map(pointer)\n                rows.append(dict(priority=priority,execution_status=\"POST_V1_ONLY_NOT_AUTHORIZED\",branch=branch,proposition=prop,\n                    region=region,arm=arm,population_n=len(g),matched_eligible_n=int(gate.sum()),\n                    positive_n=int((gate&flag.eq(True)).sum()),documented_non_detection_n=int((gate&state.eq(\"DOCUMENTED_NOT_DETECTED\")).sum()),\n                    known_n=int(known.sum()),proposition_unknown_matched_n=int(unknown.sum()),unassessed_n=int((~gate).sum()),\n                    image_pointer_n=int(image.sum()),unassessed_with_image_pointer_n=int((~gate&image).sum()),\n                    unknown_with_image_pointer_n=int((unknown&image).sum()),poor_quality_unknown_n=int((unknown&g.claims_core_assessment_quality.eq(\"poor\")).sum()),\n                    cohort_image_check=\"pointer audit only; HTTP verified only for 12 human-review records\",analytical_decision=question,\n                    denominator_requirement=target,preprocessing_or_image_precondition=precondition,\n                    v1_treatment=\"retain insufficient-evidence status where applicable; no sample expansion or provider execution before release\"))\n    pd.DataFrame(rows).to_csv(HERE/\"post_v1_evidence_gaps_v1.csv\",index=False,encoding=\"utf-8-sig\")\n    print(chosen[[\"review_id\",\"branch\",\"region\",\"arm\",\"barcode\",\"image_http_status\"]].to_string(index=False))\n    print(\"Prepared 12 records and\",len(rows),\"backlog arms; human fields are separate from locked evidence.\")\nif __name__==\"__main__\":\n    if \"--check-images-only\" in sys.argv:\n        check_selected_images()\n    else:\n        main()\n",
+        "reason": "No retained importer; exact source archived, original review manifest/submission retained.",
+        "replaced_by": "AUDIT_v1.md#dependency-resolutions"
+      },
+      "03_claims_composition_and_ingredients/communication_coverage_CHECK_v1.md": {
+        "sha256": "51928647d4517e145601b968372b80de89ef8a03c549e2067e4a38dcb6de7ebe",
+        "text": "# Tuesday communication coverage CHECK · 17 November 2026\r\n\r\n**PROCEED with a reduced positioning scope.** The accepted formulation profiles reproduce correctly, but pack-evidence coverage differs sharply between them. Granola supports descriptive communication overlays in both primary regions. UK/Irish soda supports a specific sugar-free comparison. Cream/pudding, lower-fat potato crisps and the energy-drink formulation split have insufficient primary-region evidence for comparable claim contrasts.\r\n\r\n## Delivery scope and documentation\r\n\r\nThe [segmentation methodology](../../../SEGMENTATION.md) establishes the accepted hierarchy, feature-specific eligibility, current analytical code locations and the Lovable analytical package due Saturday 21 November. The completed k=5 control remains contextual evidence. The dated learning plan allocates communication work to Wednesday, bounded NOVA/boundary work to Thursday, package consolidation to Friday, and acceptance/corrections to Saturday. Julia starts layout work Sunday 22 November. Historical RUNs and original hypotheses remain provenance.\r\n\r\n## Evidence available on the five retained profiles\r\n\r\nEach entry below gives **positive / documented non-detection**, with known count divided by the full nutritional-profile population. Unknown and unassessed records are outside the known denominator.\r\n\r\n| Retained nutritional profile | Exact proposition | France | UK/Ireland | Decision |\r\n|---|---|---|---|---|\r\n| Granola | Fibre | 8 / 17; 25/251 known (10.0%) | 16 / 9; 25/94 known (26.6%) | Descriptive overlay in both regions. |\r\n| Granola | Protein | 0 / 25; 25/251 known | 7 / 19; 26/94 known | UK/IE exploratory; French zeros concern assessed evidence only. |\r\n| Cream/pudding | Protein | 0 / 0; 0/27 known | 1 / 0; 1/15 known | No supported comparison. |\r\n| Lower-fat potato crisps | Reduced fat | 0 / 0; 0/100 known | 3 / 0; 3/90 known | No supported comparison. |\r\n| Very-low-sugars soda | Sugar-free | 6 / 1; 7/713 known (1.0%) | 28 / 15; 43/255 known (16.9%) | UK/IE supported for comparison; France descriptive only. |\r\n| Very-low-sugars energy drinks | Sugar-free | 1 / 1; 2/153 known (1.3%) | 6 / 3; 9/88 known (10.2%) | Too sparse for a formulation contrast. |\r\n\r\nMatched, eligible assessments themselves number 35 FR/30 UK/IE in the granola profile, 0/1 in cream/pudding, 0/6 in potato crisps, 13/59 in soda, and 3/11 in energy drinks. An assessment match does not make every proposition known. In UK/Irish potato crisps, six matches supply three known reduced-fat propositions. Missing nutrition was not imputed to gain evidence coverage.\r\n\r\n## Proposed Wednesday scope\r\n\r\n1. **Granola communication within the accepted hierarchy.** Show protein, fibre and organic on the retained profile versus other measurable granola. For fibre, the comparison groups contain 24 positives and 78 documented non-detections in France, and 48/26 in UK/IE. The profile arms themselves each have 25 known assessments. Use counts, effect sizes and uncertainty; treat regional agreement as exploratory given the small selected arms. The UK/Irish protein comparison is 7/26 known profile assessments versus 3/74 in other measurable granola. Avoid interpreting this as population prevalence.\r\n2. **UK/Irish soda, measured sugars and sugar-free communication.** In the retained profile, 28/43 known assessments are positive; in other measurable sodas, 1/43 is positive and 42 have documented non-detection. This provides a supported exact-proposition comparison. “Other measurable” includes intermediate sugars; keep measured amounts visible. Use the existing H5 soda result as related evidence.\r\n3. **Reuse supported commercial-format findings.** At the full commercial level, fibre has at least 20 positives and 20 documented non-detections in granola and flakes in both primary regions. French granola organic and UK/Irish granola plant-based also pass that same-proposition screening floor. Reuse completed findings before adding a test. The screening flag is a sample-size check, with additional nutrient availability required for a composition contrast.\r\n4. **Record evidence gaps explicitly.** Keep the measured cream/pudding and potato profiles even though their communication evidence is sparse. Present energy-positioning counts and beverage functional evidence descriptively. H8 remains descriptive. Source-market limitations, human exceptions and claim provenance need their existing treatment during interpretation.\r\n\r\nNone of the five profile arms supports a within-arm positive-versus-documented-non-detection contrast at the earlier 20-in-each-state floor in FR or UK/IE. This differs from comparing proposition rates across two formulation arms: UK/Irish soda has 43 known records in each formulation arm. Small granola arms can supply descriptive overlays with uncertainty. These criteria answer different questions.\r\n\r\n## Reading the coverage table\r\n\r\nThe [consolidated table](communication_coverage_v1.csv) has **13,602 proposition-specific cells**, covering **121 labelled cohort families/branches** across three regions. It evaluates all 33 locked core propositions except the source energy-claim flag, plus the approved derived energy positioning and independent hydration/electrolyte propositions for beverages. It retains the locked taxonomy and makes no new claim assessments.\r\n\r\n- `baseline` cohorts supply named-subtype context, including branches without a completed within-format follow-up. They do not establish new approved profiles.\r\n- `accepted` cohorts use the follow-up hierarchy, including explicitly unresolved and scope-caution branches. `juice detail` refines the existing juice cohort. The cohort-family label denotes which existing classification is reused; it does not verify every product's identity.\r\n- `commercial population` is the starting branch. The five profile branches are also partitioned into retained profile, other measurable and required-measurement-unknown slices. The latter includes records failing the approved energy floor for cream/pudding. Empty slices have no row.\r\n- Coverage uses the original barcode–region–category assignment unit. Parent/child, baseline/refined and profile/comparison rows overlap. Do not sum these rows to produce a unique-product or claim-evidence total.\r\n- The primary known denominator is positive plus documented non-detection for the specific proposition. Human-confirmed negatives remain separate. Uncertain, other unknown assessed, unassessed and market-limited states remain distinct and reconcile to the population.\r\n- Exact source-market limitations exclude a record from primary regional claim comparisons while retaining it in the population and its own count. Historical reuse and the US dairy population QA note have separate count columns for later sensitivity. No source QA note is treated as human verification.\r\n- Preparations have communication coverage in their separate commercial population; this supplies no approval for nutritional comparison on an unverified basis. Explicit alcohol branches are omitted. Remaining unresolved identities retain uncertainty.\r\n\r\n## Validation and audit\r\n\r\nThe [versioned coverage pass](communication_coverage_v1.py) reuses the shared corrected-master reader and approved cereal/dairy classifiers and snack/beverage/juice keys. It verifies the Wave 2 digest, original regional nutrient-valid totals, one-to-one joins, all 15 accepted regional profile counts, cell uniqueness and complete state reconciliation. All core and derived proposition fields are read from locked evidence. Profile rules are applied without requiring unrelated nutrients. The source and historical outputs remain unchanged.\r\n\r\nThis pass measures feasibility and coverage. It runs no hypothesis tests, extraction or additional clustering. US/Canada remains a selected exploratory population. Communicated protein positives can include approved existing rules; subsequent interpretation should use the stored basis to distinguish direct wording from rule-supported evidence.\r\n\r\n**Tuesday scope complete.** The material finding is the mismatch between the broad nutritional population and the smaller assessed-communication population. Wednesday can produce useful, bounded findings while retaining explicit evidence gaps.\r\n\r\n**Juice correction · 19 November 2026.** This coverage table was rebuilt using the corrected shared juice-family classifier. Original labels, revised labels and uncertainty remain in the keyed beverage layer; juice-detail populations now use the corrected juice subset. All five retained profile denominators and Wednesday's promoted comparisons are unchanged. Use ‘sugar-related communication’ for the locked sugar_free_claim field. [Correction CHECK](../01_nutritional_composition/juice_classification_CHECK_v1.md).\r\n",
+        "reason": "Unpinned superseded note: consolidate denominators, archive text, remove live copy.",
+        "replaced_by": "AUDIT_v1.md#dependency-resolutions"
+      }
+    },
+    "source_changes": {
+      "03_lenses/validate_run_v1.py": {
+        "previous_sha256": "f0a11c1095d780cdffd58388674e2dc453e4b263970de4d90fcc22b76da739ba",
+        "current_sha256": "8d8d9b8c862e765a315c3996a50b1bd721e2c25588f4364e18578e101a93ff81",
+        "previous_text": "\"\"\"Verify cross-lens population reconciliation and record the reviewed control selection.\"\"\"\r\nfrom pathlib import Path\r\nimport hashlib\r\nimport json\r\nimport platform\r\nfrom importlib.metadata import version\r\nimport numpy as np\r\nimport pandas as pd\r\n\r\nROOT=Path(__file__).resolve().parent\r\nEDA=ROOT.parent/\"02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics\"\r\nMASTER=ROOT.parent/\"01_ingestion/05_master_parquet/output\"\r\nSELECTED_K=5\r\n\r\ndef digest(path):\r\n    with path.open(\"rb\") as stream:\r\n        return hashlib.file_digest(stream,\"sha256\").hexdigest()\r\n\r\ndef main():\r\n    files=sorted(ROOT.glob(\"*/hypothesis_results_v1.csv\"))\r\n    assert len(files)==4\r\n    all_rows=pd.concat([pd.read_csv(p) for p in files],ignore_index=True)\r\n    primary=all_rows[all_rows.variant.eq(\"primary\")]\r\n    assert set(primary.h)=={f\"H{i}\" for i in range(1,13)}\r\n    pairs=primary[(primary.h==\"H2\") & (primary.tol==10) & (primary.direction==\"forward\")]\r\n    assert len(pairs)==6 and pairs.n.sum()==4230 and pairs.pairs.sum()==2095\r\n    assert (pairs.pairs*2<=pairs.n).all() and (pairs.max_energy_gap<=10).all()\r\n    assert np.allclose(pairs.success_n/pairs.pairs,pairs.effect)\r\n    for _,g in primary[(primary.h==\"H8\") & primary.test.str.startswith(\"joint\")].groupby(\"test\"):\r\n        assert g.state_n.sum()==1866 and g[g.state.isin([\"True/True\",\"False/False\",\"True/False\",\"False/True\"])].state_n.sum()==45\r\n        assert g[g.state==\"True/True\"].state_n.sum()==0\r\n    assert all_rows[all_rows.h==\"H8\"].p.isna().all()\r\n    h10=all_rows[all_rows.h==\"H10\"]\r\n    assert len(h10)==1 and (h10.iloc[0][[\"region\",\"category\",\"subtype\"]].tolist()==[\"US-CA\",\"cereal\",\"GRANOLA\"])\r\n    assert h10.iloc[0].pos==42 and h10.iloc[0].neg==38\r\n    assert np.isclose(h10.iloc[0].effect,8/42-1/38)\r\n    control=next(ROOT.glob(\"*/control_assignments_v1.parquet\"))\r\n    labels=pd.read_parquet(control)\r\n    assert labels.barcode.map(lambda s:isinstance(s,str)).all() and labels.barcode.str.startswith(\"0\").any()\r\n    assert not labels.duplicated([\"barcode\",\"region\",\"category\"]).any()\r\n    assert labels.groupby(\"population\").size().to_dict()=={\"reference\":114146,\"US seen\":1875,\"US unseen\":12036}\r\n    ref=labels[labels.population.eq(\"reference\")]\r\n    assert ref.barcode.is_unique\r\n    assert not set(ref.barcode).intersection(labels.loc[labels.population.eq(\"US unseen\"),\"barcode\"])\r\n    metrics=pd.read_csv(control.parent/\"control_comparison_v1.csv\")\r\n    for k in [3,4,5]:\r\n        profiles=metrics[(metrics.kind==\"profile\") & (metrics.population==\"reference\") & (metrics.k==k)]\r\n        assert profiles.set_index(\"group\").n.sort_index().tolist()==ref[f\"k{k}\"].value_counts().sort_index().tolist()\r\n        assert len(profiles)==k\r\n    diag=pd.read_csv(EDA/\"FEATURE_DECISIONS.csv\")\r\n    for h,n in [(\"H5\",14),(\"H9\",13)]:\r\n        a=primary[primary.h.eq(h) & primary.effect.notna()]\r\n        if h==\"H5\": a=a[a.provenance==\"all\"]\r\n        else: a=a[a.supported==True]\r\n        assert len(a)==n==int(diag[diag.scope.str.startswith(h+\" \") & diag.record_kind.eq(\"claim_comparison\")].cells_20_each.sum())\r\n    high=primary[(primary.h==\"H11\")&(primary.known_n>=30)]\r\n    assert high.groupby(\"test\").size().to_dict()=={\"fibre_claim\":12,\"protein_claim\":15}\r\n    assert set(all_rows[all_rows.variant==\"ingredient language FR\"].h)=={\"H7\"}\r\n    assert len(all_rows[(all_rows.variant==\"exclude LOW\")&(all_rows.h==\"H12\")])>0\r\n    review=next(ROOT.glob(\"*/ingredient_validation_v1.csv\"))\r\n    audit=pd.read_csv(review,dtype={\"barcode\":str})\r\n    assert len(audit)==72 and len(audit[audit.review_label==\"unassessable\"])==6\r\n    assert (audit.loc[audit.review_label!=\"unassessable\",\"pea_soy_text_cue\"].to_numpy()==\r\n            audit.loc[audit.review_label!=\"unassessable\",\"review_label\"].eq(\"present\").to_numpy()).all()\r\n    frozen=json.loads((MASTER/\"manifest.json\").read_text(encoding=\"utf8\"))\r\n    assert digest(MASTER/\"master_products.parquet\")==frozen[\"master_sha256\"]\r\n    outputs=files+[control,control.parent/\"control_comparison_v1.csv\",review]\r\n    paths=outputs+sorted(ROOT.rglob(\"*.py\"))+[EDA/\"shared_feature_diagnostics_v1.py\",EDA/\"H1_H12_ANALYTICAL_PLAN.md\",\r\n                                             EDA/\"subtype_assignments.csv\"]\r\n    first=ROOT.parent\r\n    manifest=dict(version=1,master_sha256=frozen[\"master_sha256\"],locked_claims_sha256=frozen[\"claims_sha256\"],\r\n                  cutoff=frozen[\"release\"][\"reporting_date\"],retrieved_at=frozen[\"release\"][\"retrieved_at\"],\r\n                  governed_assignments=376845,named_peers=292302,selected_k=SELECTED_K,assignment_column=\"k5\",\r\n                  primary_rows_by_hypothesis=primary.groupby(\"h\").size().to_dict(),python=platform.python_version(),\r\n                  packages={pkg:version(pkg) for pkg in [\"numpy\",\"pandas\",\"scipy\",\"scikit-learn\",\"pyarrow\"]},\r\n                  sha256={str(p.relative_to(first).as_posix()):digest(p) for p in paths})\r\n    (ROOT/\"run_manifest_v1.json\").write_text(json.dumps(manifest,indent=2)+\"\\n\",encoding=\"utf8\")\r\n    print(\"PASS: 12 hypotheses, H8 joint and unknown states, H10 scope, all 3 control candidates, GTIN and population checks, source hash, sensitivities and validation sample.\")\r\n\r\nif __name__==\"__main__\":\r\n    main()\r\n",
+        "reason": "Preserve existing manifest history and support --check-only; hypothesis checks unchanged."
+      }
+    },
+    "file_dispositions": {
+      "CHECK.md": {
+        "purpose": "Completed H1-H12 findings, uncertainty and bounded k selection.",
+        "decision": "MERGE",
+        "reason": "Frozen evidence: consolidate public narrative, preserve exact local original.",
+        "sha256": "2a24de5d23476a346c5364a2d843896653bdb282ca40688d8b2595ad834527ce",
+        "bytes": 12240,
+        "frozen_roles": [
+          "evidence_references:HYPOTHESIS_CHECK"
+        ]
+      },
+      "control_comparison_v1.py": {
+        "purpose": "Fits and evaluates the single bounded k=3-5 control.",
+        "decision": "GITHUB",
+        "reason": "Source for stability, transformation and format-dominance evidence; no new fit authorized.",
+        "sha256": "049aa071d8921686333fd99339501965999abb85c44ff4be3f56a03017b36ea6",
+        "bytes": 4263,
+        "frozen_roles": []
+      },
+      "FORMULATION_DECISIONS_v1.csv": {
+        "purpose": "33 accepted commercial/formulation decisions with rules and lineage.",
+        "decision": "GITHUB",
+        "reason": "Small governed decision register, not a disposable exploratory export.",
+        "sha256": "93ddaab1f55299081c0fbaec0ef362cc27506b25bf750a88e6ec5796db6595d3",
+        "bytes": 9336,
+        "frozen_roles": [
+          "inputs:FORMULATION_DECISIONS"
+        ]
+      },
+      "FORMULATION_SYNTHESIS_v1.md": {
+        "purpose": "Closed formulation chapter, hierarchy and accepted limitations.",
+        "decision": "MERGE",
+        "reason": "Frozen decision evidence: consolidate public narrative, preserve exact local original.",
+        "sha256": "5740a4c1ff08a27778daa503ffc95586617738f38f309a9a4fa43331268fc012",
+        "bytes": 15486,
+        "frozen_roles": [
+          "evidence_references:FORMULATION_SYNTHESIS"
+        ]
+      },
+      "formulation_synthesis_v1.py": {
+        "purpose": "Reconciles accepted profiles, populations and register lineage.",
+        "decision": "GITHUB",
+        "reason": "Necessary reproducible decision-register construction.",
+        "sha256": "bbbb857431d2370e65b86519269219c97233c485bf45bba14d427996ddc971bb",
+        "bytes": 9485,
+        "frozen_roles": []
+      },
+      "hypothesis_run_v1.py": {
+        "purpose": "Runs H1-H12 and approved sensitivities on the shared foundation.",
+        "decision": "GITHUB",
+        "reason": "Primary effect/uncertainty source; H8 descriptive, H10 US/Canada granola only.",
+        "sha256": "25a763f748d25e438800d2c875f0458bae42cc8b6805e2e1b397e332950f8887",
+        "bytes": 19709,
+        "frozen_roles": []
+      },
+      "run_manifest_v1.json": {
+        "purpose": "Research identities, environment and housekeeping source archive.",
+        "decision": "GITHUB",
+        "reason": "Public provenance and reconstructible retired sources; product datasets stay local.",
+        "sha256": "265515eed0a3cfbcb048d54246ab145e3001ba376291a230d641b41a14946841",
+        "bytes": 44748,
+        "frozen_roles": [],
+        "identity_role": "pre-housekeeping manifest, recoverable by removing housekeeping_v1 and reverting validator identity"
+      },
+      "validate_run_v1.py": {
+        "purpose": "Checks saved results, population contracts and hashes.",
+        "decision": "GITHUB",
+        "reason": "Independent checks; preserves history and supports read-only --check-only.",
+        "sha256": "8d8d9b8c862e765a315c3996a50b1bd721e2c25588f4364e18578e101a93ff81",
+        "bytes": 6054,
+        "frozen_roles": []
+      },
+      "01_nutritional_composition/beverage_assignments_v1.parquet": {
+        "purpose": "Keyed RTD/preparation identities, original/corrected juice labels and profiles.",
+        "decision": "LOCAL",
+        "reason": "Frozen input; narrower juice layer has a different role.",
+        "sha256": "d3d0effad50f92a68ea0780f6a9ad758ef3a990494461b5128165eabf6fc5039",
+        "bytes": 3057884,
+        "frozen_roles": [
+          "inputs:BEVERAGE_DECISIONS"
+        ]
+      },
+      "01_nutritional_composition/beverages_CHECK_v1.md": {
+        "purpose": "Comparable beverage-format evidence and decisions.",
+        "decision": "MERGE",
+        "reason": "Frozen evidence: conclusions consolidated publicly, original retained locally.",
+        "sha256": "ca4b9adea9319e0acb779a99c3bd2ecb781a51131ae0ff856e7d2b92042eb3ab",
+        "bytes": 90315,
+        "frozen_roles": [
+          "evidence_references:BEVERAGE_REPORT"
+        ]
+      },
+      "01_nutritional_composition/beverages_v1.py": {
+        "purpose": "Derives beverage formats from reporting split and corrected juice rules.",
+        "decision": "GITHUB",
+        "reason": "Processing-Parquet embedded input hash; retain exact source bytes.",
+        "sha256": "432bf05b7da225fc0e12cd9ca0d6c7713f52f9ad2f4cc07a7846a3a123072ca5",
+        "bytes": 13793,
+        "frozen_roles": []
+      },
+      "01_nutritional_composition/biscuits_and_wafers_CHECK_v1.md": {
+        "purpose": "Evidence against additional biscuit/wafer formulation segmentation.",
+        "decision": "MERGE",
+        "reason": "Frozen evidence: preserve negative/insufficient outcomes publicly.",
+        "sha256": "4bd3d66e8baf687c572da0bcd1dc8cd0e6922d9c5ce6498e6e63605b734b7f86",
+        "bytes": 12492,
+        "frozen_roles": [
+          "evidence_references:BISCUIT_REPORT"
+        ]
+      },
+      "01_nutritional_composition/biscuits_and_wafers_v1.py": {
+        "purpose": "Classifies biscuits/wafers and tests nutrients at similar sugars.",
+        "decision": "GITHUB",
+        "reason": "Frozen classifier and processing-metadata dependency.",
+        "sha256": "23b69d27be65b052b2bc6213053e25b9a03de61b2b81a2c8b463ff9616735af1",
+        "bytes": 8918,
+        "frozen_roles": [
+          "validation_references:RESEARCH_BISCUIT_CLASSIFIER"
+        ]
+      },
+      "01_nutritional_composition/cereal_formulations_v1.md": {
+        "purpose": "Matched pairs, granola profile and no further flakes profile.",
+        "decision": "MERGE",
+        "reason": "Frozen evidence: preserve rules, coverage and continuous-gradient conclusion publicly.",
+        "sha256": "557ee53fb813ac3373d5cbaeab0ff6318d0b817d0ee2876659a6e44c11f1f807",
+        "bytes": 14196,
+        "frozen_roles": [
+          "evidence_references:CEREAL_REPORT"
+        ]
+      },
+      "01_nutritional_composition/cereal_formulations_v1.py": {
+        "purpose": "Reproduces cereal pairs, screens and sensitivity evidence.",
+        "decision": "GITHUB",
+        "reason": "H2 follow-up source; reads reviewed cereal master and saved H2 results.",
+        "sha256": "ae491c4d207cdb5fb3ee27ca9cb3b50420255a83e3609c556f7735b12636ef5b",
+        "bytes": 8668,
+        "frozen_roles": []
+      },
+      "01_nutritional_composition/hypothesis_results_v1.csv": {
+        "purpose": "Detailed H1/H2/H12 statistics and sensitivities.",
+        "decision": "LOCAL",
+        "reason": "Read by cereal validation and original run checks.",
+        "sha256": "aa4d5bd0eb6eff27d1dd74a970cb12ce08aa1d8bce2256d9f1ae33169286353c",
+        "bytes": 160295,
+        "frozen_roles": []
+      },
+      "01_nutritional_composition/juice_assignments_v1.parquet": {
+        "purpose": "Refined keyed juice composition and valid measurements.",
+        "decision": "LOCAL",
+        "reason": "Frozen input; refinements extend its beverage parent.",
+        "sha256": "ed13142c21da536c408b2fe210afa124fbf7844c69677dd1ab501f55473833ef",
+        "bytes": 412010,
+        "frozen_roles": [
+          "inputs:JUICE_DECISIONS"
+        ]
+      },
+      "01_nutritional_composition/juice_classification_CHECK_v1.md": {
+        "purpose": "Parent-tag correction, recalculated impacts and final sensitivity closure.",
+        "decision": "MERGE",
+        "reason": "Frozen evidence: correction and superseded interpretation explained publicly.",
+        "sha256": "4923974f66e2dec82642749763664565b85f984eb0b00eadaff8f50f3a8bace4",
+        "bytes": 11864,
+        "frozen_roles": [
+          "evidence_references:JUICE_CORRECTION_CHECK"
+        ]
+      },
+      "01_nutritional_composition/juice_classification_correction_v1.py": {
+        "purpose": "Completed one-time orchestration of the juice correction.",
+        "decision": "REMOVE",
+        "reason": "No retained importer; reusable rules/builders remain. Exact source archived; old command superseded.",
+        "sha256": "3a134c4decf35adcf952363e00781453f2590fe3d790ba4c1ca8830d1db46a8d",
+        "bytes": 18676,
+        "frozen_roles": []
+      },
+      "01_nutritional_composition/juice_classification_v1.py": {
+        "purpose": "Independent name/tag juice-family rules and regression fixtures.",
+        "decision": "GITHUB",
+        "reason": "Active commercial classifier and embedded processing input hash.",
+        "sha256": "c8fbd4b3858217565d0dc5d1038686d1829770838cdb1904a1e4a79516c28eeb",
+        "bytes": 5024,
+        "frozen_roles": []
+      },
+      "01_nutritional_composition/juice_confidence_sensitivity_v1.csv": {
+        "purpose": "54 saved rows for the final French confidence sensitivity.",
+        "decision": "LOCAL",
+        "reason": "Frozen input; publish conclusion and exact exclusion predicate.",
+        "sha256": "71bc965a06b2ad76e8f9070841a3988eb342bc8532efb4aaa4d973aa1d61a242",
+        "bytes": 19110,
+        "frozen_roles": [
+          "inputs:FINAL_JUICE_SENSITIVITY"
+        ]
+      },
+      "01_nutritional_composition/juice_confidence_sensitivity_v1.py": {
+        "purpose": "Reproduces closed French sensitivity and verifies input hashes.",
+        "decision": "GITHUB",
+        "reason": "Source for accepted robustness evidence without changing identities.",
+        "sha256": "11f763be779db220b83b22621fcc72f898c4f0bd8f4267ee8327a80acbe4771d",
+        "bytes": 12031,
+        "frozen_roles": []
+      },
+      "01_nutritional_composition/juice_formulations_v1.md": {
+        "purpose": "Juice composition evidence and no additional nutritional profile.",
+        "decision": "MERGE",
+        "reason": "Frozen evidence: commercial distinctions and discordant nutrition retained publicly.",
+        "sha256": "b6f3644a1646b2843df5518f9ac2a946c98294e9bf1f237ce1c6a23301daf01a",
+        "bytes": 49142,
+        "frozen_roles": [
+          "evidence_references:JUICE_REPORT"
+        ]
+      },
+      "01_nutritional_composition/juice_formulations_v1.py": {
+        "purpose": "Derives fruit/vegetable descriptors and compares like products.",
+        "decision": "GITHUB",
+        "reason": "Active rule source and embedded processing input hash.",
+        "sha256": "51ff5604e68ddb1a307836d1c9f698ab80114de513c0f0b85deacbab88c6306a",
+        "bytes": 14847,
+        "frozen_roles": []
+      },
+      "01_nutritional_composition/savoury_snack_assignments_v1.parquet": {
+        "purpose": "Keyed snack format, construction/base and lower-fat crisp decisions.",
+        "decision": "LOCAL",
+        "reason": "Frozen input for coverage, formulation and processing views.",
+        "sha256": "fef7241e658284457b07c70b29df398e6d5d949c734fb2e81ee450512395a6b5",
+        "bytes": 3638219,
+        "frozen_roles": [
+          "inputs:SAVOURY_DECISIONS"
+        ]
+      },
+      "01_nutritional_composition/savoury_snacks_CHECK_v1.md": {
+        "purpose": "Crisp profile, continuous tortilla variation and puff-base distinctions.",
+        "decision": "MERGE",
+        "reason": "Frozen evidence: all three distinct decisions retained publicly.",
+        "sha256": "e6a9a5664aeb96a5fe63d5e6d8037d47b348cf06c48a2cd0f71211ae17a2137b",
+        "bytes": 28911,
+        "frozen_roles": [
+          "evidence_references:SAVOURY_REPORT"
+        ]
+      },
+      "01_nutritional_composition/savoury_snacks_v1.py": {
+        "purpose": "Identifies commercial snack forms and tests within-format formulations.",
+        "decision": "GITHUB",
+        "reason": "Embedded processing input hash; identities independent of nutrition.",
+        "sha256": "24aa405ccfcce690481a92a046c921cf45a675caf4c7576a192e93fe465eff16",
+        "bytes": 11961,
+        "frozen_roles": []
+      },
+      "02_nutrient_density/dairy_dessert_formulations_v1.md": {
+        "purpose": "Within-dessert formats, protein density and pudding profile.",
+        "decision": "MERGE",
+        "reason": "Frozen evidence: retain denominator, format and unresolved-population caveats.",
+        "sha256": "4db7b7db308ea49994a0651252f7db22e4c41a29b232147cf2c8d7acdd7cefff",
+        "bytes": 18397,
+        "frozen_roles": [
+          "evidence_references:DAIRY_REPORT"
+        ]
+      },
+      "02_nutrient_density/dairy_dessert_formulations_v1.py": {
+        "purpose": "Independent dessert classifier and concentration/density follow-up.",
+        "decision": "GITHUB",
+        "reason": "Frozen classifier imported by coverage/processing; retain exact source.",
+        "sha256": "4282e5453b5abd5da15398b744a20120422ac34973ebacf721ee2d24589e9ebe",
+        "bytes": 7790,
+        "frozen_roles": [
+          "validation_references:RESEARCH_DAIRY_CLASSIFIER"
+        ]
+      },
+      "02_nutrient_density/hypothesis_results_v1.csv": {
+        "purpose": "Detailed H3/H4 density ranks, floors and sensitivities.",
+        "decision": "LOCAL",
+        "reason": "Dairy validation and original run checks consume it.",
+        "sha256": "399fde3a3c8ee287b87186f233189af35e5f73ae1eb07c80e184dfccc9dcc37d",
+        "bytes": 133592,
+        "frozen_roles": []
+      },
+      "03_claims_composition_and_ingredients/communication_coverage_CHECK_v1.md": {
+        "purpose": "Tuesday coverage findings and the then-proposed Wednesday scope.",
+        "decision": "MERGE",
+        "reason": "Unpinned superseded note: consolidate denominators, archive text, remove live copy.",
+        "sha256": "51928647d4517e145601b968372b80de89ef8a03c549e2067e4a38dcb6de7ebe",
+        "bytes": 8830,
+        "frozen_roles": []
+      },
+      "03_claims_composition_and_ingredients/communication_coverage_v1.csv": {
+        "purpose": "13,602 proposition-specific population/evidence denominator cells.",
+        "decision": "LOCAL",
+        "reason": "Frozen independent validation reference; package copy has a different contract role.",
+        "sha256": "ca88e92400a0dbdd951e9c801eb07902a8b5c10f3ebd875244a154338bcf14b3",
+        "bytes": 1859186,
+        "frozen_roles": [
+          "validation_references:ACCEPTED_COMMUNICATION_COUNTS"
+        ]
+      },
+      "03_claims_composition_and_ingredients/communication_coverage_v1.py": {
+        "purpose": "Builds comparable cohorts with exact-proposition known/unknown states.",
+        "decision": "GITHUB",
+        "reason": "Frozen cohort verifier and embedded processing dependency.",
+        "sha256": "d41230baab05a0e1f305da5cf0535f8ac1cc19167d9a00f311702ce6ad111e65",
+        "bytes": 7719,
+        "frozen_roles": [
+          "validation_references:RESEARCH_COVERAGE_COHORTS"
+        ]
+      },
+      "03_claims_composition_and_ingredients/communication_overlays_CHECK_v1.md": {
+        "purpose": "Supported soda contrast, descriptive overlays and unresolved profiles.",
+        "decision": "MERGE",
+        "reason": "Frozen evidence: combine public communication findings/provenance here.",
+        "sha256": "d9edb07ee2af240c6e545997bd7209b756ef990e784b1d2bda292f5f70f5b192",
+        "bytes": 13355,
+        "frozen_roles": [
+          "evidence_references:COMMUNICATION_CHECK"
+        ]
+      },
+      "03_claims_composition_and_ingredients/communication_overlays_v1.csv": {
+        "purpose": "Saved supported/descriptive contrasts and source provenance.",
+        "decision": "LOCAL",
+        "reason": "Frozen input; reuse statistical output without refitting.",
+        "sha256": "d28e3b827158b5c8cc5ad1ddad06e07017be224b51b6cee166e25a5d9d13c441",
+        "bytes": 69068,
+        "frozen_roles": [
+          "inputs:COMMUNICATION_RESULTS"
+        ]
+      },
+      "03_claims_composition_and_ingredients/communication_overlays_v1.py": {
+        "purpose": "Constructs overlays and selectively reuses H5-H11 evidence.",
+        "decision": "GITHUB",
+        "reason": "Embedded processing hash; interval and supported-comparison logic.",
+        "sha256": "2396f3e04db3c95392fdda978299a51d0eaa370a6b8f0f00bc9a5c4df2e90107",
+        "bytes": 10545,
+        "frozen_roles": []
+      },
+      "03_claims_composition_and_ingredients/human_claim_adjudications_v1.csv": {
+        "purpose": "12 interpreted human observations with restored keys/uncertainty.",
+        "decision": "LOCAL",
+        "reason": "Frozen separate input; qualitative examples, no locked-field overwrite.",
+        "sha256": "debc7a3296a112dceb7dac49e0dee2fd2afd4addd1819ee5b7ab0c034295b9cf",
+        "bytes": 10526,
+        "frozen_roles": [
+          "inputs:HUMAN_DECISIONS"
+        ]
+      },
+      "03_claims_composition_and_ingredients/human_claim_decisions_v1.csv": {
+        "purpose": "Julia's original 12 observations and recorded wording.",
+        "decision": "LOCAL",
+        "reason": "Irreplaceable reviewed source, not a regenerable export.",
+        "sha256": "df98236abe148b916fe44175625d6880ffb3b8756fd3d5d01fa3ac233eee97eb",
+        "bytes": 3321,
+        "frozen_roles": [
+          "inputs:HUMAN_SOURCE"
+        ]
+      },
+      "03_claims_composition_and_ingredients/human_claim_review_v1.csv": {
+        "purpose": "Exact review keys, images, selection arms and saved evidence.",
+        "decision": "LOCAL",
+        "reason": "Interpreter and embedded processing hash require it; preserves exact leading-zero keys.",
+        "sha256": "18f8e39412a80d843d118a152da62de48e2ec6d2d5d9342788918d80a7fb744a",
+        "bytes": 7767,
+        "frozen_roles": []
+      },
+      "03_claims_composition_and_ingredients/human_review_preparation_CHECK_v1.md": {
+        "purpose": "Review rationale, qualitative interpretation and deferred-evidence limits.",
+        "decision": "MERGE",
+        "reason": "Frozen evidence: publish method/limits, keep product-level examples local.",
+        "sha256": "ef2a4dbd24b9ba9430b504361a8886a893a205cae8cb7f06ed2c85b314bd579f",
+        "bytes": 15322,
+        "frozen_roles": [
+          "evidence_references:HUMAN_REVIEW_CHECK"
+        ]
+      },
+      "03_claims_composition_and_ingredients/hypothesis_results_v1.csv": {
+        "purpose": "Detailed H5-H8 effects, matched pairs and ingredient/functional intersections.",
+        "decision": "LOCAL",
+        "reason": "Read by overlays and run validation.",
+        "sha256": "0517f3f65392666dfc2d6a120857985b5b7d7ac62bc40394f3b8979b3d6a0ba2",
+        "bytes": 349488,
+        "frozen_roles": []
+      },
+      "03_claims_composition_and_ingredients/ingredient_validation_v1.csv": {
+        "purpose": "72 ingredient texts, strata and reviewed cue labels.",
+        "decision": "LOCAL",
+        "reason": "Reviewed H7 evidence; retain unassessable-language states and labels.",
+        "sha256": "981a4c66da1fd01abc574ea81c0aa35988402598ab558e7737858b1e4ce945ac",
+        "bytes": 33611,
+        "frozen_roles": []
+      },
+      "03_claims_composition_and_ingredients/ingredient_validation_v1.py": {
+        "purpose": "Reconstructs fixed stratified ingredient sample and labels.",
+        "decision": "GITHUB",
+        "reason": "Auditable H7 validation source and limited agent-labelled design.",
+        "sha256": "cda782184496a551e4c1a893e5f8485ad71daa32e058bcbb0e1ffd18fafa917a",
+        "bytes": 2186,
+        "frozen_roles": []
+      },
+      "03_claims_composition_and_ingredients/post_v1_evidence_gaps_v1.csv": {
+        "purpose": "24 prioritized gap arms and image/taxonomy prerequisites.",
+        "decision": "LOCAL",
+        "reason": "Frozen backlog input; execution remains deferred.",
+        "sha256": "ce5000e89e5bf9506ca12e003dcbaa5fed695e783bdf15da16bde948aeef2b8c",
+        "bytes": 15788,
+        "frozen_roles": [
+          "inputs:POST_V1_BACKLOG"
+        ]
+      },
+      "03_claims_composition_and_ingredients/prepare_human_review_v1.py": {
+        "purpose": "Completed review selection and image-availability preparation.",
+        "decision": "REMOVE",
+        "reason": "No retained importer; exact source archived, original review manifest/submission retained.",
+        "sha256": "242c2d14b3c74de4a3c0e2c7230fe8ff1ca9e630e8536ca75083bdc82716d757",
+        "bytes": 12295,
+        "frozen_roles": []
+      },
+      "03_claims_composition_and_ingredients/use_human_review_v1.py": {
+        "purpose": "Interprets the human submission without changing locked claims.",
+        "decision": "GITHUB",
+        "reason": "Reproduces sidecar interpretation, exact-key and date limitations.",
+        "sha256": "a6a143955b150663bfd535087736a0c933ca616cb46309b488df9c2ba220b764",
+        "bytes": 5156,
+        "frozen_roles": []
+      },
+      "04_positioning_tradeoffs/category_boundaries_v1.csv": {
+        "purpose": "Saved two-sided boundary populations and nutritional consequences.",
+        "decision": "LOCAL",
+        "reason": "Frozen input; not canonical category reassignment.",
+        "sha256": "70a34685c0cbe079b62ab07c38b9c208c687074bdaf157c9309d61ad8cd78279",
+        "bytes": 64171,
+        "frozen_roles": [
+          "inputs:BOUNDARY_RESULTS"
+        ]
+      },
+      "04_positioning_tradeoffs/hypothesis_results_v1.csv": {
+        "purpose": "Detailed H9-H11 coexistence, territory and non-detection results.",
+        "decision": "LOCAL",
+        "reason": "Read by run validation; public conclusions retain narrow scope.",
+        "sha256": "24468713d5a5b357aebc9a530bfe82e2247e3297df772a4c67b7d6de69f0b42f",
+        "bytes": 56652,
+        "frozen_roles": []
+      },
+      "04_positioning_tradeoffs/organic_nova_v1.csv": {
+        "purpose": "377 joint-evidence cells for organic status and recorded NOVA.",
+        "decision": "LOCAL",
+        "reason": "Frozen input; preserves known/unknown/NOVA-missing denominators.",
+        "sha256": "85f860ab717fffd561ab49e93e853a0500bda4d8883474a73b4e8d204989a149",
+        "bytes": 64446,
+        "frozen_roles": [
+          "inputs:PROCESSING_RESULTS"
+        ]
+      },
+      "04_positioning_tradeoffs/processing_boundaries_CHECK_v1.md": {
+        "purpose": "Accepted organic/NOVA and bidirectional boundary findings.",
+        "decision": "MERGE",
+        "reason": "Frozen evidence: consolidate conclusions and metadata exception publicly.",
+        "sha256": "14477550c0f82f2ec33a0fcbbfac5cf8566c94ed677a5dd1736383ab7d5c9828",
+        "bytes": 16537,
+        "frozen_roles": [
+          "evidence_references:PROCESSING_CHECK"
+        ]
+      },
+      "04_positioning_tradeoffs/processing_boundaries_v1.py": {
+        "purpose": "Builds organic/NOVA comparisons and two independent boundary audits.",
+        "decision": "GITHUB",
+        "reason": "Own SHA and 21 input hashes embedded in evidence Parquet; retain exact bytes.",
+        "sha256": "926fa629e9282c8a6af0ecf4b7f20d6625158c407bda54d34cb716adb1fab10d",
+        "bytes": 40518,
+        "frozen_roles": []
+      },
+      "04_positioning_tradeoffs/processing_boundary_evidence_v1.parquet": {
+        "purpose": "Keyed processing/boundary observations with embedded lineage.",
+        "decision": "LOCAL",
+        "reason": "Frozen input; feeds separate canonical boundary annotations.",
+        "sha256": "f627f960ca8aa8fc195e6602b901a8fb3dd548dc5b01a6e7bfa38bb57f9a0ffe",
+        "bytes": 3100992,
+        "frozen_roles": [
+          "inputs:BOUNDARY_EVIDENCE"
+        ]
+      },
+      "05_unsupervised_control/control_assignments_v1.parquet": {
+        "purpose": "128,057 keyed control assignments for reference/shared/unseen products.",
+        "decision": "LOCAL",
+        "reason": "Biscuit/control validation input; selected exploratory populations only.",
+        "sha256": "ea4ff6736ea12c33cdca4f2be0e6c514769fba1e117184cd8b9623cf76dce321",
+        "bytes": 1196288,
+        "frozen_roles": []
+      },
+      "05_unsupervised_control/control_comparison_v1.csv": {
+        "purpose": "982 aggregate k evaluations, nutrient profiles, format/claim summaries.",
+        "decision": "GITHUB",
+        "reason": "One numeric control audit for all k candidates, without product keys or raw pack evidence.",
+        "sha256": "1150fe9af757b9e9b5eac772d223fc3508bb52484c18842d1fad5f69cc086637",
+        "bytes": 85617,
+        "frozen_roles": []
+      }
+    },
+    "public_audit": "AUDIT_v1.md",
+    "retained_local_original_reports": [
+      "CHECK.md",
+      "FORMULATION_SYNTHESIS_v1.md",
+      "01_nutritional_composition/beverages_CHECK_v1.md",
+      "01_nutritional_composition/biscuits_and_wafers_CHECK_v1.md",
+      "01_nutritional_composition/cereal_formulations_v1.md",
+      "01_nutritional_composition/juice_classification_CHECK_v1.md",
+      "01_nutritional_composition/juice_formulations_v1.md",
+      "01_nutritional_composition/savoury_snacks_CHECK_v1.md",
+      "02_nutrient_density/dairy_dessert_formulations_v1.md",
+      "03_claims_composition_and_ingredients/communication_overlays_CHECK_v1.md",
+      "03_claims_composition_and_ingredients/human_review_preparation_CHECK_v1.md",
+      "04_positioning_tradeoffs/processing_boundaries_CHECK_v1.md"
+    ],
+    "inventory_identity_semantics": "Review-time identities, not self-referential current manifest hashes; archive and source_changes record retired/changed sources. The manifest row identifies the pre-housekeeping predecessor."
+  }
+}

@@ -72,3 +72,10 @@ docs/ONBOARDING.md
 /presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/nutrient_distributions.csv
 /presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/subtype_assignments.csv
 /presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/FEATURE_CORRELATIONS.csv
+
+# Reviewed lens publication: detailed frozen reports and working evidence stay local.
+/presentations/segmentation/first_run/03_lenses/**/*.md
+!/presentations/segmentation/first_run/03_lenses/AUDIT_v1.md
+/presentations/segmentation/first_run/03_lenses/**/*.csv
+!/presentations/segmentation/first_run/03_lenses/FORMULATION_DECISIONS_v1.csv
+!/presentations/segmentation/first_run/03_lenses/05_unsupervised_control/control_comparison_v1.csv
