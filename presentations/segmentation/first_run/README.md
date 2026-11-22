@@ -1,5 +1,7 @@
 # Wave 2 segmentation — first-run navigation
 
+**v1.0.0 release preparation · 22 November 2026.** Required inputs and keyed outputs are now included in the local release scope, with the large database supplied as compressed parts. [Replay instructions](../audit_replay/release/README.md) · [Exact scope](../audit_replay/release/SCOPE.md) · [Validation](../audit_replay/release/CHECK.md). The table below records the earlier public/local split; the v1.0.0 scope supersedes that split for its explicitly listed files. The analytical definitions and frozen evidence remain unchanged.
+
 **Accepted analytical package frozen on 19 November 2026. Folder publications, the resource-qualified isolated smoke test and approved first-run housekeeping are complete as of 20 November.** Retrieval: 17 October 2026. Reporting cutoff: 29 September 2026. No Wave 3 data belongs to this release.
 
 [Permanent methodology](../SEGMENTATION.md) · [Accepted research findings](03_lenses/AUDIT_v1.md) · [Decision register](03_lenses/FORMULATION_DECISIONS_v1.csv) · [Release contract](04_analytical_package/ARTIFACT_INDEX.md)

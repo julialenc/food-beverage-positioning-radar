@@ -1,0 +1,378 @@
+﻿category,commercial_type,region,full_commercial_n,organic_positive_n,organic_documented_non_detection_n,organic_known_n,organic_unknown_n,nova_known_n,nova_missing_n,nova_invalid_n,organic_positive_nova_missing_or_invalid_n,organic_non_detection_nova_missing_or_invalid_n,jointly_known_n,joint_organic_positive_n,joint_non_detection_n,organic_positive_nova4_n,non_detection_nova4_n,organic_positive_nova4_pct,non_detection_nova4_pct,joint_unknown_organic_nova_known_n,comparable_type,two_arm_floor,decision,type_source,risk_difference_pp,ci_low_pp,ci_high_pp,p,q,organic_unassessed_n,organic_market_limited_n,organic_other_unknown_assessed_n,organic_uncertain_n,organic_human_negative_separate_n
+beverages,alcohol: beer,FR,4986,0,5,5,4981,3057,1929,0,0,0,5,0,5,0,4,,80.0,3052,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,4965,0,16,0,0
+beverages,alcohol: beer,UK-IE,523,1,5,6,517,295,228,0,0,2,4,1,3,1,0,100.0,0.0,291,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,494,0,23,0,0
+beverages,alcohol: beer,US-CA,454,0,2,2,452,112,342,0,0,1,1,0,1,0,1,,100.0,111,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,450,0,2,0,0
+beverages,alcohol: cider,FR,871,1,2,3,868,281,590,0,0,0,3,1,2,0,0,0.0,0.0,278,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,867,0,1,0,0
+beverages,alcohol: cider,UK-IE,102,0,2,2,100,42,60,0,0,0,2,0,2,0,1,,50.0,40,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,94,0,6,0,0
+beverages,alcohol: cider,US-CA,331,1,0,1,330,234,97,0,0,0,1,1,0,1,0,100.0,,233,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,329,0,1,0,0
+beverages,alcohol: cocktail/alcohol-style,FR,33,0,1,1,32,21,12,0,0,0,1,0,1,0,1,,100.0,20,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,32,0,0,0,0
+beverages,alcohol: cocktail/alcohol-style,UK-IE,5,0,0,0,5,4,1,0,0,0,0,0,0,0,0,,,4,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,4,0,1,0,0
+beverages,alcohol: cocktail/alcohol-style,US-CA,128,0,0,0,128,117,11,0,0,0,0,0,0,0,0,,,117,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,127,0,1,0,0
+beverages,alcohol: spirits/liqueurs,FR,1083,0,0,0,1083,332,751,0,0,0,0,0,0,0,0,,,332,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,1081,0,2,0,0
+beverages,alcohol: spirits/liqueurs,UK-IE,120,0,0,0,120,34,86,0,0,0,0,0,0,0,0,,,34,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,116,0,4,0,0
+beverages,alcohol: spirits/liqueurs,US-CA,252,0,0,0,252,21,231,0,0,0,0,0,0,0,0,,,21,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,249,0,3,0,0
+beverages,alcohol: unresolved/conflicting,FR,1010,0,2,2,1008,371,639,0,0,1,1,0,1,0,0,,0.0,370,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,1002,0,6,0,0
+beverages,alcohol: unresolved/conflicting,UK-IE,83,0,3,3,80,35,48,0,0,2,1,0,1,0,1,,100.0,34,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,76,0,4,0,0
+beverages,alcohol: unresolved/conflicting,US-CA,887,0,1,1,886,466,421,0,0,0,1,0,1,0,1,,100.0,465,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,881,0,5,0,0
+beverages,alcohol: wine,FR,7985,1,7,8,7977,1811,6174,0,0,1,7,1,6,0,2,0.0,33.333333333333336,1804,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,7962,0,15,0,0
+beverages,alcohol: wine,UK-IE,419,1,4,5,414,121,298,0,1,1,3,0,3,0,0,,0.0,118,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,405,0,9,0,0
+beverages,alcohol: wine,US-CA,356,1,0,1,355,64,292,0,0,0,1,1,0,1,0,100.0,,63,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,355,0,0,0,0
+beverages,ambiguous composition,FR,54,0,0,0,54,33,21,0,0,0,0,0,0,0,0,,,33,True,False,insufficient evidence,saved juice refinements,,,,,,52,0,2,0,0
+beverages,ambiguous composition,UK-IE,2,0,0,0,2,0,2,0,0,0,0,0,0,0,0,,,0,True,False,insufficient evidence,saved juice refinements,,,,,,2,0,0,0,0
+beverages,ambiguous composition,US-CA,7,0,0,0,7,7,0,0,0,0,0,0,0,0,0,,,7,True,False,insufficient evidence,saved juice refinements,,,,,,6,0,1,0,0
+beverages,basis/form unresolved,FR,14730,19,119,138,14592,8067,6663,0,6,47,85,13,72,8,44,61.53846153846154,61.111111111111114,7982,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,14437,0,155,0,0
+beverages,basis/form unresolved,UK-IE,1190,9,103,112,1078,766,424,0,3,21,88,6,82,2,62,33.333333333333336,75.60975609756098,678,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,992,0,86,0,0
+beverages,basis/form unresolved,US-CA,13822,13,149,162,13660,7644,6178,0,2,8,152,11,141,7,126,63.63636363636363,89.36170212765957,7492,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,13523,0,137,0,0
+beverages,boundary concern,FR,16,0,0,0,16,13,3,0,0,0,0,0,0,0,0,,,13,False,False,descriptive only: heterogeneous or unresolved parent,saved juice refinements,,,,,,16,0,0,0,0
+beverages,boundary concern,UK-IE,17,0,1,1,16,11,6,0,0,1,0,0,0,0,0,,,11,False,False,descriptive only: heterogeneous or unresolved parent,saved juice refinements,,,,,,15,0,1,0,0
+beverages,boundary concern,US-CA,7,0,1,1,6,6,1,0,0,0,1,0,1,0,1,,100.0,5,False,False,descriptive only: heterogeneous or unresolved parent,saved juice refinements,,,,,,6,0,0,0,0
+beverages,chocolate preparation,FR,752,3,15,18,734,584,168,0,2,3,13,1,12,0,11,0.0,91.66666666666667,571,True,False,insufficient evidence,saved beverage assignments,,,,,,708,0,26,0,0
+beverages,chocolate preparation,UK-IE,51,0,20,20,31,46,5,0,0,2,18,0,18,0,17,,94.44444444444444,28,True,False,insufficient evidence,saved beverage assignments,,,,,,12,0,19,0,0
+beverages,chocolate preparation,US-CA,685,2,15,17,668,666,19,0,0,0,17,2,15,0,14,0.0,93.33333333333333,649,True,False,insufficient evidence,saved beverage assignments,,,,,,650,0,18,0,0
+beverages,coconut water,FR,218,0,2,2,216,113,105,0,0,0,2,0,2,0,0,,0.0,111,True,False,insufficient evidence,saved beverage assignments,,,,,,213,0,3,0,0
+beverages,coconut water,UK-IE,32,2,7,9,23,19,13,0,1,4,4,1,3,0,1,0.0,33.333333333333336,15,True,False,insufficient evidence,saved beverage assignments,,,,,,18,0,5,0,0
+beverages,coconut water,US-CA,570,6,14,20,550,479,91,0,0,1,19,6,13,0,3,0.0,23.076923076923077,460,True,False,insufficient evidence,saved beverage assignments,,,,,,543,0,7,0,0
+beverages,coffee preparation,FR,1617,2,11,13,1604,754,863,0,2,4,7,0,7,0,2,,28.571428571428573,747,True,False,insufficient evidence,saved beverage assignments,,,,,,1581,0,23,0,0
+beverages,coffee preparation,UK-IE,101,1,13,14,87,59,42,0,1,2,11,0,11,0,6,,54.54545454545455,48,True,False,insufficient evidence,saved beverage assignments,,,,,,74,0,13,0,0
+beverages,coffee preparation,US-CA,221,0,5,5,216,141,80,0,0,3,2,0,2,0,1,,50.0,139,True,False,insufficient evidence,saved beverage assignments,,,,,,207,0,9,0,0
+beverages,composition unresolved,FR,1573,5,13,18,1555,902,671,0,2,3,13,3,10,0,4,0.0,40.0,889,False,False,descriptive only: heterogeneous or unresolved parent,saved juice refinements,,,,,,1536,0,19,0,0
+beverages,composition unresolved,UK-IE,104,0,14,14,90,55,49,0,0,7,7,0,7,0,1,,14.285714285714286,48,False,False,descriptive only: heterogeneous or unresolved parent,saved juice refinements,,,,,,73,0,17,0,0
+beverages,composition unresolved,US-CA,1154,3,9,12,1142,1030,124,0,0,0,12,3,9,0,5,0.0,55.55555555555556,1018,False,False,descriptive only: heterogeneous or unresolved parent,saved juice refinements,,,,,,1129,0,13,0,0
+beverages,energy drink,FR,740,0,7,7,733,410,330,0,0,3,4,0,4,0,4,,100.0,406,True,False,insufficient evidence,saved beverage assignments,,,,,,729,0,4,0,0
+beverages,energy drink,UK-IE,278,0,27,27,251,175,103,0,0,10,17,0,17,0,17,,100.0,158,True,False,insufficient evidence,saved beverage assignments,,,,,,240,0,11,0,0
+beverages,energy drink,US-CA,629,1,27,28,601,513,116,0,0,1,27,1,26,1,25,100.0,96.15384615384616,486,True,False,insufficient evidence,saved beverage assignments,,,,,,578,0,23,0,0
+beverages,energy/sports unresolved,FR,29,0,1,1,28,21,8,0,0,0,1,0,1,0,1,,100.0,20,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,28,0,0,0,0
+beverages,energy/sports unresolved,US-CA,11,0,4,4,7,8,3,0,0,0,4,0,4,0,4,,100.0,4,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,4,0,3,0,0
+beverages,fermented soft drink,FR,688,3,5,8,680,235,453,0,2,3,3,1,2,1,1,100.0,50.0,232,True,False,insufficient evidence,saved beverage assignments,,,,,,674,0,6,0,0
+beverages,fermented soft drink,UK-IE,158,15,14,29,129,84,74,0,7,6,16,8,8,7,6,87.5,75.0,68,True,False,insufficient evidence,saved beverage assignments,,,,,,124,0,5,0,0
+beverages,fermented soft drink,US-CA,926,3,9,12,914,512,414,0,0,2,10,3,7,1,2,33.333333333333336,28.571428571428573,502,True,False,insufficient evidence,saved beverage assignments,,,,,,912,0,2,0,0
+beverages,flavoured water,FR,388,0,5,5,383,290,98,0,0,2,3,0,3,0,3,,100.0,287,True,False,insufficient evidence,saved beverage assignments,,,,,,379,0,4,0,0
+beverages,flavoured water,UK-IE,250,0,19,19,231,195,55,0,0,3,16,0,16,0,10,,62.5,179,True,False,insufficient evidence,saved beverage assignments,,,,,,217,0,14,0,0
+beverages,flavoured water,US-CA,1939,0,3,3,1936,1747,192,0,0,0,3,0,3,0,2,,66.66666666666667,1744,True,False,insufficient evidence,saved beverage assignments,,,,,,1915,0,21,0,0
+beverages,fruit blend,FR,746,5,6,11,735,416,330,0,1,3,7,4,3,0,1,0.0,33.333333333333336,409,True,False,insufficient evidence,saved juice refinements,,,,,,725,0,10,0,0
+beverages,fruit blend,UK-IE,62,0,7,7,55,43,19,0,0,0,7,0,7,0,2,,28.571428571428573,36,True,False,insufficient evidence,saved juice refinements,,,,,,43,0,12,0,0
+beverages,fruit blend,US-CA,347,2,1,3,344,318,29,0,2,0,1,0,1,0,1,,100.0,317,True,False,insufficient evidence,saved juice refinements,,,,,,339,0,5,0,0
+beverages,fruit drink,FR,102,0,3,3,99,82,20,0,0,0,3,0,3,0,3,,100.0,79,True,False,insufficient evidence,saved beverage assignments,,,,,,99,0,0,0,0
+beverages,fruit drink,UK-IE,40,0,4,4,36,29,11,0,0,1,3,0,3,0,3,,100.0,26,True,False,insufficient evidence,saved beverage assignments,,,,,,32,0,4,0,0
+beverages,fruit drink,US-CA,805,2,8,10,795,774,31,0,0,0,10,2,8,1,6,50.0,75.0,764,True,False,insufficient evidence,saved beverage assignments,,,,,,788,0,7,0,0
+beverages,fruit: apple,FR,1928,4,22,26,1902,837,1091,0,1,9,16,3,13,0,3,0.0,23.076923076923077,821,True,False,insufficient evidence,saved juice refinements,,,,,,1869,0,33,0,0
+beverages,fruit: apple,UK-IE,220,5,9,14,206,83,137,0,4,5,5,1,4,0,0,0.0,0.0,78,True,False,insufficient evidence,saved juice refinements,,,,,,185,0,21,0,0
+beverages,fruit: apple,US-CA,700,0,6,6,694,452,248,0,0,1,5,0,5,0,0,,0.0,447,True,False,insufficient evidence,saved juice refinements,,,,,,689,0,5,0,0
+beverages,fruit: apricot,FR,6,0,0,0,6,3,3,0,0,0,0,0,0,0,0,,,3,True,False,insufficient evidence,saved juice refinements,,,,,,6,0,0,0,0
+beverages,fruit: berry,FR,77,0,0,0,77,48,29,0,0,0,0,0,0,0,0,,,48,True,False,insufficient evidence,saved juice refinements,,,,,,75,0,2,0,0
+beverages,fruit: berry,UK-IE,8,0,2,2,6,6,2,0,0,1,1,0,1,0,1,,100.0,5,True,False,insufficient evidence,saved juice refinements,,,,,,6,0,0,0,0
+beverages,fruit: berry,US-CA,52,1,0,1,51,49,3,0,0,0,1,1,0,1,0,100.0,,48,True,False,insufficient evidence,saved juice refinements,,,,,,50,0,1,0,0
+beverages,fruit: cherry,FR,11,0,0,0,11,3,8,0,0,0,0,0,0,0,0,,,3,True,False,insufficient evidence,saved juice refinements,,,,,,11,0,0,0,0
+beverages,fruit: cherry,UK-IE,4,1,0,1,3,4,0,0,0,0,1,1,0,0,0,0.0,,3,True,False,insufficient evidence,saved juice refinements,,,,,,3,0,0,0,0
+beverages,fruit: cherry,US-CA,51,0,1,1,50,32,19,0,0,1,0,0,0,0,0,,,32,True,False,insufficient evidence,saved juice refinements,,,,,,47,0,3,0,0
+beverages,fruit: cranberry,FR,72,0,0,0,72,40,32,0,0,0,0,0,0,0,0,,,40,True,False,insufficient evidence,saved juice refinements,,,,,,72,0,0,0,0
+beverages,fruit: cranberry,UK-IE,11,1,0,1,10,7,4,0,0,0,1,1,0,0,0,0.0,,6,True,False,insufficient evidence,saved juice refinements,,,,,,10,0,0,0,0
+beverages,fruit: cranberry,US-CA,78,0,0,0,78,63,15,0,0,0,0,0,0,0,0,,,63,True,False,insufficient evidence,saved juice refinements,,,,,,77,0,1,0,0
+beverages,fruit: grape,FR,402,0,4,4,398,173,229,0,0,1,3,0,3,0,0,,0.0,170,True,False,insufficient evidence,saved juice refinements,,,,,,391,0,7,0,0
+beverages,fruit: grape,UK-IE,19,1,1,2,17,4,15,0,1,1,0,0,0,0,0,,,4,True,False,insufficient evidence,saved juice refinements,,,,,,16,0,1,0,0
+beverages,fruit: grape,US-CA,214,1,1,2,212,192,22,0,1,0,1,0,1,0,0,,0.0,191,True,False,insufficient evidence,saved juice refinements,,,,,,212,0,0,0,0
+beverages,fruit: grapefruit,FR,200,0,1,1,199,95,105,0,0,1,0,0,0,0,0,,,95,True,False,insufficient evidence,saved juice refinements,,,,,,197,0,2,0,0
+beverages,fruit: grapefruit,UK-IE,9,0,0,0,9,5,4,0,0,0,0,0,0,0,0,,,5,True,False,insufficient evidence,saved juice refinements,,,,,,8,0,1,0,0
+beverages,fruit: grapefruit,US-CA,99,1,2,3,96,75,24,0,0,0,3,1,2,0,0,0.0,0.0,72,True,False,insufficient evidence,saved juice refinements,,,,,,95,0,1,0,0
+beverages,fruit: lemon,FR,328,0,2,2,326,168,160,0,0,0,2,0,2,0,0,,0.0,166,True,False,insufficient evidence,saved juice refinements,,,,,,322,0,4,0,0
+beverages,fruit: lemon,UK-IE,21,0,1,1,20,16,5,0,0,0,1,0,1,0,0,,0.0,15,True,False,insufficient evidence,saved juice refinements,,,,,,18,0,2,0,0
+beverages,fruit: lemon,US-CA,107,1,0,1,106,98,9,0,0,0,1,1,0,0,0,0.0,,97,True,False,insufficient evidence,saved juice refinements,,,,,,106,0,0,0,0
+beverages,fruit: lime,FR,17,0,1,1,16,8,9,0,0,0,1,0,1,0,0,,0.0,7,True,False,insufficient evidence,saved juice refinements,,,,,,16,0,0,0,0
+beverages,fruit: lime,UK-IE,5,0,0,0,5,5,0,0,0,0,0,0,0,0,0,,,5,True,False,insufficient evidence,saved juice refinements,,,,,,5,0,0,0,0
+beverages,fruit: lime,US-CA,84,0,0,0,84,52,32,0,0,0,0,0,0,0,0,,,52,True,False,insufficient evidence,saved juice refinements,,,,,,83,0,1,0,0
+beverages,fruit: mango,FR,59,0,0,0,59,35,24,0,0,0,0,0,0,0,0,,,35,True,False,insufficient evidence,saved juice refinements,,,,,,58,0,1,0,0
+beverages,fruit: mango,UK-IE,3,0,0,0,3,2,1,0,0,0,0,0,0,0,0,,,2,True,False,insufficient evidence,saved juice refinements,,,,,,2,0,1,0,0
+beverages,fruit: mango,US-CA,29,0,0,0,29,27,2,0,0,0,0,0,0,0,0,,,27,True,False,insufficient evidence,saved juice refinements,,,,,,27,0,2,0,0
+beverages,fruit: orange,FR,1652,6,13,19,1633,845,807,0,2,2,15,4,11,0,0,0.0,0.0,830,True,False,insufficient evidence,saved juice refinements,,,,,,1606,0,27,0,0
+beverages,fruit: orange,UK-IE,221,1,19,20,201,114,107,0,0,4,16,1,15,0,2,0.0,13.333333333333334,98,True,False,insufficient evidence,saved juice refinements,,,,,,174,0,27,0,0
+beverages,fruit: orange,US-CA,906,4,12,16,890,689,217,0,1,1,14,3,11,0,2,0.0,18.181818181818183,675,True,False,insufficient evidence,saved juice refinements,,,,,,865,0,25,0,0
+beverages,fruit: peach,FR,26,0,0,0,26,17,9,0,0,0,0,0,0,0,0,,,17,True,False,insufficient evidence,saved juice refinements,,,,,,25,0,1,0,0
+beverages,fruit: peach,UK-IE,2,0,0,0,2,1,1,0,0,0,0,0,0,0,0,,,1,True,False,insufficient evidence,saved juice refinements,,,,,,2,0,0,0,0
+beverages,fruit: peach,US-CA,8,0,0,0,8,8,0,0,0,0,0,0,0,0,0,,,8,True,False,insufficient evidence,saved juice refinements,,,,,,8,0,0,0,0
+beverages,fruit: pear,FR,173,0,3,3,170,67,106,0,0,1,2,0,2,0,0,,0.0,65,True,False,insufficient evidence,saved juice refinements,,,,,,167,0,3,0,0
+beverages,fruit: pear,UK-IE,4,0,1,1,3,3,1,0,0,0,1,0,1,0,0,,0.0,2,True,False,insufficient evidence,saved juice refinements,,,,,,3,0,0,0,0
+beverages,fruit: pear,US-CA,14,0,0,0,14,13,1,0,0,0,0,0,0,0,0,,,13,True,False,insufficient evidence,saved juice refinements,,,,,,14,0,0,0,0
+beverages,fruit: pineapple,FR,307,0,4,4,303,145,162,0,0,4,0,0,0,0,0,,,145,True,False,insufficient evidence,saved juice refinements,,,,,,301,0,2,0,0
+beverages,fruit: pineapple,UK-IE,22,0,0,0,22,9,13,0,0,0,0,0,0,0,0,,,9,True,False,insufficient evidence,saved juice refinements,,,,,,20,0,2,0,0
+beverages,fruit: pineapple,US-CA,79,0,0,0,79,69,10,0,0,0,0,0,0,0,0,,,69,True,False,insufficient evidence,saved juice refinements,,,,,,78,0,1,0,0
+beverages,fruit: pomegranate,FR,136,2,0,2,134,68,68,0,0,0,2,2,0,0,0,0.0,,66,True,False,insufficient evidence,saved juice refinements,,,,,,133,0,1,0,0
+beverages,fruit: pomegranate,UK-IE,4,1,0,1,3,2,2,0,1,0,0,0,0,0,0,,,2,True,False,insufficient evidence,saved juice refinements,,,,,,3,0,0,0,0
+beverages,fruit: pomegranate,US-CA,51,0,2,2,49,42,9,0,0,1,1,0,1,0,0,,0.0,41,True,False,insufficient evidence,saved juice refinements,,,,,,47,0,2,0,0
+beverages,fruit: prune,FR,41,0,1,1,40,9,32,0,0,1,0,0,0,0,0,,,9,True,False,insufficient evidence,saved juice refinements,,,,,,39,0,1,0,0
+beverages,fruit: prune,UK-IE,5,0,0,0,5,1,4,0,0,0,0,0,0,0,0,,,1,True,False,insufficient evidence,saved juice refinements,,,,,,3,0,2,0,0
+beverages,fruit: prune,US-CA,53,0,0,0,53,49,4,0,0,0,0,0,0,0,0,,,49,True,False,insufficient evidence,saved juice refinements,,,,,,53,0,0,0,0
+beverages,iced coffee,FR,14,0,0,0,14,6,8,0,0,0,0,0,0,0,0,,,6,True,False,insufficient evidence,saved beverage assignments,,,,,,13,0,1,0,0
+beverages,iced coffee,UK-IE,25,0,3,3,22,21,4,0,0,0,3,0,3,0,2,,66.66666666666667,18,True,False,insufficient evidence,saved beverage assignments,,,,,,20,0,2,0,0
+beverages,iced coffee,US-CA,583,0,2,2,581,436,147,0,0,1,1,0,1,0,1,,100.0,435,True,False,insufficient evidence,saved beverage assignments,,,,,,574,0,7,0,0
+beverages,iced tea,FR,704,0,14,14,690,414,290,0,0,7,7,0,7,0,6,,85.71428571428571,407,True,False,insufficient evidence,saved beverage assignments,,,,,,685,0,5,0,0
+beverages,iced tea,UK-IE,26,0,7,7,19,22,4,0,0,0,7,0,7,0,6,,85.71428571428571,15,True,False,insufficient evidence,saved beverage assignments,,,,,,15,0,4,0,0
+beverages,iced tea,US-CA,1114,0,7,7,1107,802,312,0,0,0,7,0,7,0,6,,85.71428571428571,795,True,False,insufficient evidence,saved beverage assignments,,,,,,1096,0,11,0,0
+beverages,juice family unresolved,FR,452,0,10,10,442,300,152,0,0,1,9,0,9,0,4,,44.44444444444444,291,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,436,0,6,0,0
+beverages,juice family unresolved,UK-IE,92,2,8,10,82,63,29,0,1,1,8,1,7,0,6,0.0,85.71428571428571,55,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,75,0,7,0,0
+beverages,juice family unresolved,US-CA,357,4,7,11,346,332,25,0,0,0,11,4,7,2,6,50.0,85.71428571428571,321,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,335,0,11,0,0
+beverages,mixed fruit/vegetable,FR,98,0,0,0,98,66,32,0,0,0,0,0,0,0,0,,,66,True,False,insufficient evidence,saved juice refinements,,,,,,98,0,0,0,0
+beverages,mixed fruit/vegetable,UK-IE,11,0,1,1,10,4,7,0,0,0,1,0,1,0,0,,0.0,3,True,False,insufficient evidence,saved juice refinements,,,,,,9,0,1,0,0
+beverages,mixed fruit/vegetable,US-CA,74,0,0,0,74,72,2,0,0,0,0,0,0,0,0,,,72,True,False,insufficient evidence,saved juice refinements,,,,,,74,0,0,0,0
+beverages,nectar,FR,1930,5,13,18,1912,1035,895,0,3,5,10,2,8,0,1,0.0,12.5,1025,True,False,insufficient evidence,saved beverage assignments,,,,,,1879,0,33,0,0
+beverages,nectar,UK-IE,14,0,1,1,13,9,5,0,0,0,1,0,1,0,1,,100.0,8,True,False,insufficient evidence,saved beverage assignments,,,,,,12,0,1,0,0
+beverages,nectar,US-CA,252,1,4,5,247,187,65,0,0,0,5,1,4,1,4,100.0,100.0,182,True,False,insufficient evidence,saved beverage assignments,,,,,,240,0,7,0,0
+beverages,other botanical juice,FR,117,0,0,0,117,52,65,0,0,0,0,0,0,0,0,,,52,False,False,descriptive only: heterogeneous or unresolved parent,saved juice refinements,,,,,,115,0,2,0,0
+beverages,other botanical juice,UK-IE,13,0,3,3,10,9,4,0,0,1,2,0,2,0,0,,0.0,7,False,False,descriptive only: heterogeneous or unresolved parent,saved juice refinements,,,,,,10,0,0,0,0
+beverages,other botanical juice,US-CA,30,0,0,0,30,24,6,0,0,0,0,0,0,0,0,,,24,False,False,descriptive only: heterogeneous or unresolved parent,saved juice refinements,,,,,,30,0,0,0,0
+beverages,other preparation,FR,2236,2,10,12,2224,1098,1138,0,0,5,7,2,5,0,3,0.0,60.0,1091,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,2208,0,16,0,0
+beverages,other preparation,UK-IE,42,3,7,10,32,28,14,0,1,1,8,2,6,1,4,50.0,66.66666666666667,20,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,32,0,0,0,0
+beverages,other preparation,US-CA,1632,5,35,40,1592,1507,125,0,1,1,38,4,34,4,32,100.0,94.11764705882354,1469,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,1561,0,31,0,0
+beverages,plant drink: almond,FR,307,5,1,6,301,218,89,0,1,0,5,4,1,2,1,50.0,100.0,213,True,False,insufficient evidence,saved beverage assignments,,,,,,301,0,0,0,0
+beverages,plant drink: almond,UK-IE,56,2,4,6,50,41,15,0,0,2,4,2,2,1,2,50.0,100.0,37,True,False,insufficient evidence,saved beverage assignments,,,,,,48,0,1,0,1
+beverages,plant drink: almond,US-CA,413,5,10,15,398,273,140,0,0,1,14,5,9,4,6,80.0,66.66666666666667,259,True,False,insufficient evidence,saved beverage assignments,,,,,,390,0,8,0,0
+beverages,plant drink: coconut,FR,31,0,0,0,31,26,5,0,0,0,0,0,0,0,0,,,26,True,False,insufficient evidence,saved beverage assignments,,,,,,31,0,0,0,0
+beverages,plant drink: coconut,UK-IE,13,1,0,1,12,8,5,0,1,0,0,0,0,0,0,,,8,True,False,insufficient evidence,saved beverage assignments,,,,,,11,0,1,0,0
+beverages,plant drink: coconut,US-CA,38,3,0,3,35,26,12,0,0,0,3,3,0,3,0,100.0,,23,True,False,insufficient evidence,saved beverage assignments,,,,,,35,0,0,0,0
+beverages,plant drink: mixed/unresolved,FR,67,0,0,0,67,54,13,0,0,0,0,0,0,0,0,,,54,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,67,0,0,0,0
+beverages,plant drink: mixed/unresolved,UK-IE,41,2,3,5,36,30,11,0,1,3,1,1,0,0,0,0.0,,29,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,36,0,0,0,0
+beverages,plant drink: mixed/unresolved,US-CA,439,1,2,3,436,432,7,0,0,0,3,1,2,1,1,100.0,50.0,429,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,434,0,2,0,0
+beverages,plant drink: oat,FR,10,0,0,0,10,5,5,0,0,0,0,0,0,0,0,,,5,True,False,insufficient evidence,saved beverage assignments,,,,,,10,0,0,0,0
+beverages,plant drink: oat,UK-IE,5,0,1,1,4,3,2,0,0,0,1,0,1,0,0,,0.0,2,True,False,insufficient evidence,saved beverage assignments,,,,,,4,0,0,0,0
+beverages,plant drink: oat,US-CA,31,0,1,1,30,27,4,0,0,0,1,0,1,0,1,,100.0,26,True,False,insufficient evidence,saved beverage assignments,,,,,,30,0,0,0,0
+beverages,plant drink: rice,FR,9,1,0,1,8,5,4,0,0,0,1,1,0,0,0,0.0,,4,True,False,insufficient evidence,saved beverage assignments,,,,,,8,0,0,0,0
+beverages,plant drink: rice,UK-IE,1,1,0,1,0,0,1,0,1,0,0,0,0,0,0,,,0,True,False,insufficient evidence,saved beverage assignments,,,,,,0,0,0,0,0
+beverages,plant drink: rice,US-CA,19,0,0,0,19,18,1,0,0,0,0,0,0,0,0,,,18,True,False,insufficient evidence,saved beverage assignments,,,,,,19,0,0,0,0
+beverages,plant drink: soy,FR,282,3,1,4,278,213,69,0,0,1,3,3,0,1,0,33.333333333333336,,210,True,False,insufficient evidence,saved beverage assignments,,,,,,277,0,1,0,0
+beverages,plant drink: soy,UK-IE,80,0,2,2,78,70,10,0,0,0,2,0,2,0,1,,50.0,68,True,False,insufficient evidence,saved beverage assignments,,,,,,77,0,1,0,0
+beverages,plant drink: soy,US-CA,112,2,2,4,108,82,30,0,0,0,4,2,2,2,2,100.0,100.0,78,True,False,insufficient evidence,saved beverage assignments,,,,,,106,0,2,0,0
+beverages,scope unresolved,FR,2296,4,14,18,2278,1048,1248,0,1,5,12,3,9,1,9,33.333333333333336,100.0,1036,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,2257,0,21,0,0
+beverages,scope unresolved,UK-IE,186,1,10,11,175,88,98,0,1,2,8,0,8,0,6,,75.0,80,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,168,0,7,0,0
+beverages,scope unresolved,US-CA,192,3,6,9,183,123,69,0,0,2,7,3,4,0,2,0.0,50.0,116,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,178,0,5,0,0
+beverages,smoothie,FR,544,0,6,6,538,238,306,0,0,3,3,0,3,0,1,,33.333333333333336,235,True,False,insufficient evidence,saved beverage assignments,,,,,,528,0,10,0,0
+beverages,smoothie,UK-IE,171,2,20,22,149,97,74,0,0,10,12,2,10,1,2,50.0,20.0,85,True,False,insufficient evidence,saved beverage assignments,,,,,,141,0,8,0,0
+beverages,smoothie,US-CA,586,1,9,10,576,256,330,0,0,1,9,1,8,0,7,0.0,87.5,247,True,False,insufficient evidence,saved beverage assignments,,,,,,569,0,7,0,0
+beverages,soda,FR,3837,5,40,45,3792,2568,1269,0,0,9,36,5,31,1,31,20.0,100.0,2532,True,False,insufficient evidence,saved beverage assignments,,,,,,3742,0,50,0,0
+beverages,soda,UK-IE,728,2,84,86,642,507,221,0,0,24,62,2,60,1,58,50.0,96.66666666666667,445,True,False,insufficient evidence,saved beverage assignments,,,,,,574,0,68,0,0
+beverages,soda,US-CA,6406,2,63,65,6341,5164,1242,0,0,3,62,2,60,1,59,50.0,98.33333333333333,5102,True,False,insufficient evidence,saved beverage assignments,,,,,,6247,0,94,0,0
+beverages,sports powder/tablet preparation,FR,11,0,0,0,11,7,4,0,0,0,0,0,0,0,0,,,7,True,False,insufficient evidence,saved beverage assignments,,,,,,10,0,1,0,0
+beverages,sports powder/tablet preparation,US-CA,93,1,7,8,85,80,13,0,0,0,8,1,7,1,7,100.0,100.0,72,True,False,insufficient evidence,saved beverage assignments,,,,,,77,0,8,0,0
+beverages,sports/electrolyte drink,FR,36,0,0,0,36,25,11,0,0,0,0,0,0,0,0,,,25,True,False,insufficient evidence,saved beverage assignments,,,,,,35,0,1,0,0
+beverages,sports/electrolyte drink,UK-IE,9,0,2,2,7,7,2,0,0,0,2,0,2,0,2,,100.0,5,True,False,insufficient evidence,saved beverage assignments,,,,,,4,0,3,0,0
+beverages,sports/electrolyte drink,US-CA,255,0,7,7,248,194,61,0,0,0,7,0,7,0,7,,100.0,187,True,False,insufficient evidence,saved beverage assignments,,,,,,241,0,7,0,0
+beverages,syrup/concentrate,FR,3439,18,56,74,3365,1804,1635,0,7,21,46,11,35,9,34,81.81818181818181,97.14285714285714,1758,True,False,insufficient evidence,saved beverage assignments,,,,,,3258,0,107,0,0
+beverages,syrup/concentrate,UK-IE,134,1,36,37,97,103,31,0,0,7,30,1,29,0,21,0.0,72.41379310344827,73,True,False,insufficient evidence,saved beverage assignments,,,,,,73,0,24,0,0
+beverages,syrup/concentrate,US-CA,288,0,6,6,282,229,59,0,0,1,5,0,5,0,3,,60.0,224,True,False,insufficient evidence,saved beverage assignments,,,,,,278,0,4,0,0
+beverages,tea/coffee RTD unresolved,FR,9,0,0,0,9,5,4,0,0,0,0,0,0,0,0,,,5,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,9,0,0,0,0
+beverages,tea/coffee RTD unresolved,UK-IE,2,0,0,0,2,1,1,0,0,0,0,0,0,0,0,,,1,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,2,0,0,0,0
+beverages,tea/coffee RTD unresolved,US-CA,10,0,1,1,9,7,3,0,0,0,1,0,1,0,1,,100.0,6,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,8,0,1,0,0
+beverages,tea/infusion preparation,FR,4027,20,22,42,3985,1758,2269,0,10,7,25,10,15,4,5,40.0,33.333333333333336,1733,True,False,insufficient evidence,saved beverage assignments,,,,,,3942,0,43,0,0
+beverages,tea/infusion preparation,UK-IE,305,9,38,47,258,176,129,0,3,8,36,6,30,0,14,0.0,46.666666666666664,140,True,False,insufficient evidence,saved beverage assignments,,,,,,209,0,49,0,0
+beverages,tea/infusion preparation,US-CA,2004,4,18,22,1982,1155,849,0,1,2,19,3,16,2,6,66.66666666666667,37.5,1136,True,False,insufficient evidence,saved beverage assignments,,,,,,1961,0,21,0,0
+beverages,vegetable blend,FR,7,0,0,0,7,5,2,0,0,0,0,0,0,0,0,,,5,True,False,insufficient evidence,saved juice refinements,,,,,,7,0,0,0,0
+beverages,vegetable blend,UK-IE,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,,,1,True,False,insufficient evidence,saved juice refinements,,,,,,1,0,0,0,0
+beverages,vegetable blend,US-CA,13,0,0,0,13,12,1,0,0,0,0,0,0,0,0,,,12,True,False,insufficient evidence,saved juice refinements,,,,,,13,0,0,0,0
+beverages,vegetable unspecified,FR,23,0,0,0,23,16,7,0,0,0,0,0,0,0,0,,,16,False,False,descriptive only: heterogeneous or unresolved parent,saved juice refinements,,,,,,22,0,1,0,0
+beverages,vegetable unspecified,US-CA,147,0,1,1,146,145,2,0,0,0,1,0,1,0,1,,100.0,144,False,False,descriptive only: heterogeneous or unresolved parent,saved juice refinements,,,,,,142,0,4,0,0
+beverages,vegetable: beetroot,FR,37,0,0,0,37,21,16,0,0,0,0,0,0,0,0,,,21,True,False,insufficient evidence,saved juice refinements,,,,,,37,0,0,0,0
+beverages,vegetable: beetroot,UK-IE,6,1,0,1,5,5,1,0,0,0,1,1,0,0,0,0.0,,4,True,False,insufficient evidence,saved juice refinements,,,,,,4,0,1,0,0
+beverages,vegetable: beetroot,US-CA,23,1,0,1,22,23,0,0,0,0,1,1,0,0,0,0.0,,22,True,False,insufficient evidence,saved juice refinements,,,,,,22,0,0,0,0
+beverages,vegetable: carrot,FR,139,0,3,3,136,69,70,0,0,3,0,0,0,0,0,,,69,True,False,insufficient evidence,saved juice refinements,,,,,,134,0,2,0,0
+beverages,vegetable: carrot,UK-IE,4,1,1,2,2,2,2,0,0,0,2,1,1,0,0,0.0,0.0,0,True,False,insufficient evidence,saved juice refinements,,,,,,2,0,0,0,0
+beverages,vegetable: carrot,US-CA,24,0,0,0,24,18,6,0,0,0,0,0,0,0,0,,,18,True,False,insufficient evidence,saved juice refinements,,,,,,22,0,2,0,0
+beverages,vegetable: celery,FR,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,,,0,True,False,insufficient evidence,saved juice refinements,,,,,,1,0,0,0,0
+beverages,vegetable: celery,US-CA,6,0,0,0,6,3,3,0,0,0,0,0,0,0,0,,,3,True,False,insufficient evidence,saved juice refinements,,,,,,6,0,0,0,0
+beverages,vegetable: cucumber,US-CA,3,0,0,0,3,3,0,0,0,0,0,0,0,0,0,,,3,True,False,insufficient evidence,saved juice refinements,,,,,,3,0,0,0,0
+beverages,vegetable: kale,FR,2,0,0,0,2,1,1,0,0,0,0,0,0,0,0,,,1,True,False,insufficient evidence,saved juice refinements,,,,,,2,0,0,0,0
+beverages,vegetable: kale,US-CA,3,0,0,0,3,3,0,0,0,0,0,0,0,0,0,,,3,True,False,insufficient evidence,saved juice refinements,,,,,,3,0,0,0,0
+beverages,vegetable: spinach,US-CA,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,,,1,True,False,insufficient evidence,saved juice refinements,,,,,,1,0,0,0,0
+beverages,vegetable: tomato,FR,310,3,4,7,303,122,188,0,3,2,2,0,2,0,0,,0.0,120,True,False,insufficient evidence,saved juice refinements,,,,,,300,0,3,0,0
+beverages,vegetable: tomato,UK-IE,20,0,3,3,17,10,10,0,0,2,1,0,1,0,0,,0.0,9,True,False,insufficient evidence,saved juice refinements,,,,,,13,0,4,0,0
+beverages,vegetable: tomato,US-CA,141,0,0,0,141,107,34,0,0,0,0,0,0,0,0,,,107,True,False,insufficient evidence,saved juice refinements,,,,,,141,0,0,0,0
+beverages,water: unspecified flavour,FR,2628,0,23,23,2605,1961,667,0,0,4,19,0,19,0,5,,26.31578947368421,1942,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,2573,0,32,0,0
+beverages,water: unspecified flavour,UK-IE,282,1,32,33,249,222,60,0,1,4,28,0,28,0,12,,42.857142857142854,194,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,235,0,14,0,0
+beverages,water: unspecified flavour,US-CA,3230,1,23,24,3206,2887,343,0,0,1,23,1,22,0,17,0.0,77.27272727272727,2864,False,False,descriptive only: heterogeneous or unresolved parent,saved beverage assignments,,,,,,3159,0,47,0,0
+cereal,FILLED,FR,412,3,32,35,377,322,90,0,0,8,27,3,24,1,24,33.333333333333336,100.0,295,True,False,insufficient evidence,shared baseline,,,,,,352,0,25,0,0
+cereal,FILLED,UK-IE,50,1,16,17,33,36,14,0,0,3,14,1,13,1,13,100.0,100.0,22,True,False,insufficient evidence,shared baseline,,,,,,29,0,4,0,0
+cereal,FILLED,US-CA,20,0,1,1,19,16,4,0,0,0,1,0,1,0,1,,100.0,15,True,False,insufficient evidence,shared baseline,,,,,,19,0,0,0,0
+cereal,FLAKES,FR,902,13,74,87,815,628,274,0,4,17,66,9,57,1,36,11.11111111111111,63.1578947368421,562,True,False,insufficient evidence,shared baseline,,,,,,773,0,42,0,0
+cereal,FLAKES,UK-IE,228,6,46,52,176,185,43,0,1,4,47,5,42,0,19,0.0,45.23809523809524,138,True,False,insufficient evidence,shared baseline,,,,,,157,0,19,0,0
+cereal,FLAKES,US-CA,743,13,49,62,681,592,151,0,1,13,48,12,36,5,19,41.666666666666664,52.77777777777778,544,True,False,insufficient evidence,shared baseline,,,,,,624,0,57,0,0
+cereal,GRANOLA,FR,1552,26,101,127,1425,1131,421,0,7,25,95,19,76,6,46,31.57894736842105,60.526315789473685,1036,True,False,insufficient evidence,shared baseline,,,,,,1369,0,56,0,0
+cereal,GRANOLA,UK-IE,395,6,92,98,297,308,87,0,2,19,77,4,73,1,55,25.0,75.34246575342466,231,True,False,insufficient evidence,shared baseline,,,,,,255,0,42,0,0
+cereal,GRANOLA,US-CA,2009,50,150,200,1809,1555,454,0,20,56,124,30,94,13,67,43.333333333333336,71.27659574468085,1431,True,True,descriptive only: exploratory US-CA comparison,shared baseline,-27.943262411347515,-45.86872872604474,-7.893334839705204,0.0081240417092967,,1702,0,107,0,0
+cereal,MUESLI,FR,1222,37,70,107,1115,738,484,0,13,22,72,24,48,6,25,25.0,52.083333333333336,666,True,True,retain selected-evidence comparison,shared baseline,-27.083333333333336,-45.78611195709608,-2.8931872639635565,0.04291595613350638,0.04291595613350638,1074,0,41,0,0
+cereal,MUESLI,UK-IE,167,12,50,62,105,127,40,0,3,12,47,9,38,0,13,0.0,34.21052631578947,80,True,False,insufficient evidence,shared baseline,,,,,,83,0,22,0,0
+cereal,MUESLI,US-CA,150,3,9,12,138,106,44,0,1,2,9,2,7,0,4,0.0,57.142857142857146,97,True,False,insufficient evidence,shared baseline,,,,,,132,0,6,0,0
+cereal,PUFFED,FR,581,5,40,45,536,453,128,0,1,8,36,4,32,2,30,50.0,93.75,417,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,508,0,28,0,0
+cereal,PUFFED,UK-IE,142,5,45,50,92,122,20,0,0,9,41,5,36,1,29,20.0,80.55555555555556,81,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,77,0,15,0,0
+cereal,PUFFED,US-CA,601,12,79,91,510,485,116,0,2,27,62,10,52,3,38,30.0,73.07692307692308,423,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,466,0,44,0,0
+cereal,WHEAT,FR,53,0,11,11,42,45,8,0,0,2,9,0,9,0,7,,77.77777777777777,36,True,False,insufficient evidence,shared baseline,,,,,,38,0,4,0,0
+cereal,WHEAT,UK-IE,60,0,27,27,33,51,9,0,0,4,23,0,23,0,10,,43.47826086956522,28,True,False,insufficient evidence,shared baseline,,,,,,20,0,13,0,0
+cereal,WHEAT,US-CA,150,0,15,15,135,132,18,0,0,3,12,0,12,0,8,,66.66666666666667,120,True,False,insufficient evidence,shared baseline,,,,,,131,0,4,0,0
+cereal,unresolved: CATEGORY_UNKNOWN,FR,196,4,11,15,181,122,74,0,3,4,8,1,7,0,3,0.0,42.857142857142854,114,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,169,0,12,0,0
+cereal,unresolved: CATEGORY_UNKNOWN,UK-IE,28,1,10,11,17,20,8,0,0,5,6,1,5,0,1,0.0,20.0,14,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,16,0,1,0,0
+cereal,unresolved: CATEGORY_UNKNOWN,US-CA,26,1,0,1,25,24,2,0,0,0,1,1,0,0,0,0.0,,23,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,25,0,0,0,0
+cereal,unresolved: MUESLI,FR,2,0,0,0,2,2,0,0,0,0,0,0,0,0,0,,,2,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,2,0,0,0,0
+cereal,unresolved: OATS,FR,931,25,52,77,854,483,448,0,16,18,43,9,34,1,12,11.11111111111111,35.294117647058826,440,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,803,0,51,0,0
+cereal,unresolved: OATS,UK-IE,382,17,96,113,269,265,117,0,7,31,75,10,65,2,30,20.0,46.15384615384615,190,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,234,0,35,0,0
+cereal,unresolved: OATS,US-CA,1869,39,97,136,1733,1586,283,0,7,17,112,32,80,7,42,21.875,52.5,1474,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1666,0,67,0,0
+cereal,unresolved: OTHER,FR,290,6,25,31,259,222,68,0,1,6,24,5,19,5,14,100.0,73.6842105263158,198,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,229,0,30,0,0
+cereal,unresolved: OTHER,UK-IE,91,4,37,41,50,74,17,0,1,7,33,3,30,2,23,66.66666666666667,76.66666666666667,41,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,46,0,4,0,0
+cereal,unresolved: OTHER,US-CA,310,3,31,34,276,264,46,0,1,3,30,2,28,2,22,100.0,78.57142857142857,234,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,233,0,43,0,0
+cereal,unresolved: OUT,FR,30,2,2,4,26,21,9,0,1,0,3,1,2,1,1,100.0,50.0,18,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,25,0,1,0,0
+cereal,unresolved: OUT,UK-IE,8,0,0,0,8,6,2,0,0,0,0,0,0,0,0,,,6,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,8,0,0,0,0
+cereal,unresolved: OUT,US-CA,59,1,0,1,58,54,5,0,1,0,0,0,0,0,0,,,54,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,56,0,2,0,0
+cereal,unresolved: PUFFED,US-CA,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,,,1,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1,0,0,0,0
+cereal,unresolved: UNRESOLVED,FR,1190,29,72,101,1089,840,350,0,9,16,76,20,56,4,40,20.0,71.42857142857143,764,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1019,0,70,0,0
+cereal,unresolved: UNRESOLVED,UK-IE,188,9,44,53,135,133,55,0,3,18,32,6,26,2,15,33.333333333333336,57.69230769230769,101,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,118,0,17,0,0
+cereal,unresolved: UNRESOLVED,US-CA,2142,33,93,126,2016,1996,146,0,6,19,101,27,74,18,61,66.66666666666667,82.43243243243244,1895,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1949,0,67,0,0
+dairy,BUTTER,FR,2197,5,7,12,2185,2057,140,0,0,1,11,5,6,0,0,0.0,0.0,2046,True,False,insufficient evidence,shared baseline,,,,,,2172,0,13,0,0
+dairy,BUTTER,UK-IE,287,1,28,29,258,270,17,0,1,2,26,0,26,0,3,,11.538461538461538,244,True,False,insufficient evidence,shared baseline,,,,,,236,0,22,0,0
+dairy,BUTTER,US-CA,476,0,5,5,471,459,17,0,0,0,5,0,5,0,3,,60.0,454,True,False,insufficient evidence,shared baseline,,,,,,464,0,7,0,0
+dairy,CHEESE,FR,30972,31,228,259,30713,11093,19879,0,16,135,108,15,93,3,30,20.0,32.25806451612903,10985,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,30403,0,310,0,0
+dairy,CHEESE,UK-IE,1924,10,181,191,1733,1061,863,0,5,75,111,5,106,0,28,0.0,26.41509433962264,950,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1550,0,183,0,0
+dairy,CHEESE,US-CA,13396,5,18,23,13373,11866,1530,0,0,1,22,5,17,2,12,40.0,70.58823529411765,11844,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,13321,0,52,0,0
+dairy,CULTURED_DAIRY_DRINK,FR,1233,4,16,20,1213,805,428,0,2,3,15,2,13,2,10,100.0,76.92307692307692,790,True,False,insufficient evidence,shared baseline,,,,,,1199,0,14,0,0
+dairy,CULTURED_DAIRY_DRINK,UK-IE,264,2,24,26,238,169,95,0,1,10,15,1,14,0,12,0.0,85.71428571428571,154,True,False,insufficient evidence,shared baseline,,,,,,235,0,3,0,0
+dairy,CULTURED_DAIRY_DRINK,US-CA,479,2,4,6,473,420,59,0,0,1,5,2,3,0,3,0.0,100.0,415,True,False,insufficient evidence,shared baseline,,,,,,470,0,3,0,0
+dairy,MILK,FR,4192,10,36,46,4146,2315,1877,0,7,12,27,3,24,1,12,33.333333333333336,50.0,2288,True,False,insufficient evidence,shared baseline,,,,,,4094,0,52,0,0
+dairy,MILK,UK-IE,740,8,72,80,660,332,408,0,6,34,40,2,38,0,17,0.0,44.73684210526316,292,True,False,insufficient evidence,shared baseline,,,,,,628,0,32,0,0
+dairy,MILK,US-CA,3747,7,10,17,3730,2940,807,0,2,2,13,5,8,1,3,20.0,37.5,2927,True,False,insufficient evidence,shared baseline,,,,,,3719,1,10,0,0
+dairy,YOGURT_CULTURED_FRESH,FR,10573,23,108,131,10442,6480,4093,0,10,44,77,13,64,7,37,53.84615384615385,57.8125,6403,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,10340,0,102,0,0
+dairy,YOGURT_CULTURED_FRESH,UK-IE,1194,20,117,137,1057,819,375,0,4,35,98,16,82,10,56,62.5,68.29268292682927,721,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1008,0,49,0,0
+dairy,YOGURT_CULTURED_FRESH,US-CA,5674,15,46,61,5613,5235,439,0,3,12,46,12,34,8,25,66.66666666666667,73.52941176470588,5189,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,5563,0,50,0,0
+dairy,conflicting cues,FR,80,0,0,0,80,76,4,0,0,0,0,0,0,0,0,,,76,False,False,descriptive only: heterogeneous or unresolved parent,accepted dairy classifier,,,,,,78,0,2,0,0
+dairy,conflicting cues,UK-IE,24,0,0,0,24,21,3,0,0,0,0,0,0,0,0,,,21,False,False,descriptive only: heterogeneous or unresolved parent,accepted dairy classifier,,,,,,19,0,5,0,0
+dairy,conflicting cues,US-CA,6,0,0,0,6,6,0,0,0,0,0,0,0,0,0,,,6,False,False,descriptive only: heterogeneous or unresolved parent,accepted dairy classifier,,,,,,6,0,0,0,0
+dairy,creme brulee,FR,91,0,0,0,91,58,33,0,0,0,0,0,0,0,0,,,58,True,False,insufficient evidence,accepted dairy classifier,,,,,,90,0,1,0,0
+dairy,creme brulee,UK-IE,4,0,1,1,3,3,1,0,0,0,1,0,1,0,1,,100.0,2,True,False,insufficient evidence,accepted dairy classifier,,,,,,3,0,0,0,0
+dairy,creme brulee,US-CA,2,0,0,0,2,2,0,0,0,0,0,0,0,0,0,,,2,True,False,insufficient evidence,accepted dairy classifier,,,,,,2,0,0,0,0
+dairy,custard,FR,2,0,0,0,2,2,0,0,0,0,0,0,0,0,0,,,2,True,False,insufficient evidence,accepted dairy classifier,,,,,,2,0,0,0,0
+dairy,custard,UK-IE,19,0,5,5,14,17,2,0,0,0,5,0,5,0,5,,100.0,12,True,False,insufficient evidence,accepted dairy classifier,,,,,,12,0,2,0,0
+dairy,custard,US-CA,2,0,0,0,2,2,0,0,0,0,0,0,0,0,0,,,2,True,False,insufficient evidence,accepted dairy classifier,,,,,,2,0,0,0,0
+dairy,dessert cream / pudding,FR,1129,3,7,10,1119,827,302,0,0,1,9,3,6,2,6,66.66666666666667,100.0,818,True,False,insufficient evidence,accepted dairy classifier,,,,,,1098,0,21,0,0
+dairy,dessert cream / pudding,UK-IE,38,0,4,4,34,34,4,0,0,1,3,0,3,0,3,,100.0,31,True,False,insufficient evidence,accepted dairy classifier,,,,,,32,0,2,0,0
+dairy,dessert cream / pudding,US-CA,18,0,0,0,18,15,3,0,0,0,0,0,0,0,0,,,15,True,False,insufficient evidence,accepted dairy classifier,,,,,,18,0,0,0,0
+dairy,flan,FR,305,0,2,2,303,176,129,0,0,1,1,0,1,0,1,,100.0,175,True,False,insufficient evidence,accepted dairy classifier,,,,,,298,0,5,0,0
+dairy,flan,US-CA,6,0,0,0,6,5,1,0,0,0,0,0,0,0,0,,,5,True,False,insufficient evidence,accepted dairy classifier,,,,,,6,0,0,0,0
+dairy,mousse,FR,552,0,10,10,542,377,175,0,0,3,7,0,7,0,7,,100.0,370,True,False,insufficient evidence,accepted dairy classifier,,,,,,531,0,11,0,0
+dairy,mousse,UK-IE,32,0,3,3,29,24,8,0,0,0,3,0,3,0,3,,100.0,21,True,False,insufficient evidence,accepted dairy classifier,,,,,,22,0,7,0,0
+dairy,mousse,US-CA,9,0,0,0,9,8,1,0,0,0,0,0,0,0,0,,,8,True,False,insufficient evidence,accepted dairy classifier,,,,,,9,0,0,0,0
+dairy,panna cotta,FR,149,0,0,0,149,91,58,0,0,0,0,0,0,0,0,,,91,True,False,insufficient evidence,accepted dairy classifier,,,,,,142,0,7,0,0
+dairy,panna cotta,UK-IE,4,0,0,0,4,3,1,0,0,0,0,0,0,0,0,,,3,True,False,insufficient evidence,accepted dairy classifier,,,,,,3,0,1,0,0
+dairy,panna cotta,US-CA,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,,,1,True,False,insufficient evidence,accepted dairy classifier,,,,,,1,0,0,0,0
+dairy,rice pudding,FR,79,0,0,0,79,74,5,0,0,0,0,0,0,0,0,,,74,True,False,insufficient evidence,accepted dairy classifier,,,,,,78,0,1,0,0
+dairy,rice pudding,UK-IE,4,0,0,0,4,4,0,0,0,0,0,0,0,0,0,,,4,True,False,insufficient evidence,accepted dairy classifier,,,,,,4,0,0,0,0
+dairy,rice pudding,US-CA,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,,,1,True,False,insufficient evidence,accepted dairy classifier,,,,,,1,0,0,0,0
+dairy,scope caution,FR,28,0,0,0,28,24,4,0,0,0,0,0,0,0,0,,,24,False,False,descriptive only: heterogeneous or unresolved parent,accepted dairy classifier,,,,,,26,0,2,0,0
+dairy,scope caution,UK-IE,43,0,5,5,38,36,7,0,0,2,3,0,3,0,3,,100.0,33,False,False,descriptive only: heterogeneous or unresolved parent,accepted dairy classifier,,,,,,34,0,4,0,0
+dairy,scope caution,US-CA,6,0,0,0,6,6,0,0,0,0,0,0,0,0,0,,,6,False,False,descriptive only: heterogeneous or unresolved parent,accepted dairy classifier,,,,,,6,0,0,0,0
+dairy,semolina,FR,38,0,0,0,38,31,7,0,0,0,0,0,0,0,0,,,31,True,False,insufficient evidence,accepted dairy classifier,,,,,,38,0,0,0,0
+dairy,semolina,UK-IE,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,,,1,True,False,insufficient evidence,accepted dairy classifier,,,,,,1,0,0,0,0
+dairy,tiramisu,FR,211,0,1,1,210,146,65,0,0,0,1,0,1,0,1,,100.0,145,True,False,insufficient evidence,accepted dairy classifier,,,,,,207,0,3,0,0
+dairy,tiramisu,UK-IE,19,0,2,2,17,11,8,0,0,0,2,0,2,0,2,,100.0,9,True,False,insufficient evidence,accepted dairy classifier,,,,,,8,0,9,0,0
+dairy,tiramisu,US-CA,3,0,0,0,3,3,0,0,0,0,0,0,0,0,0,,,3,True,False,insufficient evidence,accepted dairy classifier,,,,,,3,0,0,0,0
+dairy,unresolved: CATEGORY_UNKNOWN,FR,1449,5,9,14,1435,596,853,0,3,6,5,2,3,1,2,50.0,66.66666666666667,591,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1423,0,12,0,0
+dairy,unresolved: CATEGORY_UNKNOWN,UK-IE,77,2,6,8,69,48,29,0,0,4,4,2,2,0,2,0.0,100.0,44,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,65,0,4,0,0
+dairy,unresolved: CATEGORY_UNKNOWN,US-CA,117,0,0,0,117,86,31,0,0,0,0,0,0,0,0,,,86,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,117,0,0,0,0
+dairy,unresolved: CREAM,FR,1994,2,17,19,1975,1301,693,0,1,7,11,1,10,0,8,0.0,80.0,1290,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1954,0,21,0,0
+dairy,unresolved: CREAM,UK-IE,161,0,13,13,148,100,61,0,0,5,8,0,8,0,3,,37.5,92,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,136,0,12,0,0
+dairy,unresolved: CREAM,US-CA,1172,4,4,8,1164,935,237,0,2,1,5,2,3,0,1,0.0,33.333333333333336,930,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1157,0,7,0,0
+dairy,unresolved: MILK_PREPARATIONS,FR,243,1,0,1,242,144,99,0,0,0,1,1,0,1,0,100.0,,143,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,237,0,5,0,0
+dairy,unresolved: MILK_PREPARATIONS,UK-IE,41,0,6,6,35,32,9,0,0,2,4,0,4,0,1,,25.0,28,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,33,0,2,0,0
+dairy,unresolved: MILK_PREPARATIONS,US-CA,202,0,0,0,202,182,20,0,0,0,0,0,0,0,0,,,182,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,202,0,0,0,0
+dairy,unresolved: OTHER,FR,37,0,0,0,37,18,19,0,0,0,0,0,0,0,0,,,18,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,36,0,1,0,0
+dairy,unresolved: OTHER,UK-IE,26,0,2,2,24,19,7,0,0,0,2,0,2,0,2,,100.0,17,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,22,0,2,0,0
+dairy,unresolved: OTHER,US-CA,30,0,0,0,30,16,14,0,0,0,0,0,0,0,0,,,16,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,30,0,0,0,0
+dairy,unresolved: OUT,FR,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,,,1,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1,0,0,0,0
+dairy,unresolved: OUT,UK-IE,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,,,1,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,0,0,1,0,0
+dairy,unresolved: OUT,US-CA,2,0,0,0,2,2,0,0,0,0,0,0,0,0,0,,,2,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,2,0,0,0,0
+dairy,unresolved: UNRESOLVED,FR,2782,3,27,30,2752,1860,922,0,0,9,21,3,18,1,9,33.333333333333336,50.0,1839,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,2726,0,26,0,0
+dairy,unresolved: UNRESOLVED,UK-IE,186,3,18,21,165,129,57,0,1,6,14,2,12,0,11,0.0,91.66666666666667,115,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,152,0,13,0,0
+dairy,unresolved: UNRESOLVED,US-CA,478,2,3,5,473,380,98,0,0,1,4,2,2,1,1,50.0,50.0,376,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,471,0,2,0,0
+dairy,unspecified,FR,1263,2,16,18,1245,945,318,0,0,3,15,2,13,0,8,0.0,61.53846153846154,930,False,False,descriptive only: heterogeneous or unresolved parent,accepted dairy classifier,,,,,,1228,0,17,0,0
+dairy,unspecified,UK-IE,69,0,6,6,63,52,17,0,0,1,5,0,5,0,5,,100.0,47,False,False,descriptive only: heterogeneous or unresolved parent,accepted dairy classifier,,,,,,55,0,8,0,0
+dairy,unspecified,US-CA,23,0,0,0,23,15,8,0,0,0,0,0,0,0,0,,,15,False,False,descriptive only: heterogeneous or unresolved parent,accepted dairy classifier,,,,,,23,0,0,0,0
+snacks,CEREAL_PROTEIN_SNACK_BAR,FR,2028,6,29,35,1993,1441,587,0,0,5,30,6,24,4,24,66.66666666666667,100.0,1411,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1981,0,12,0,0
+snacks,CEREAL_PROTEIN_SNACK_BAR,UK-IE,614,5,41,46,568,506,108,0,0,8,38,5,33,3,22,60.0,66.66666666666667,468,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,557,0,11,0,0
+snacks,CEREAL_PROTEIN_SNACK_BAR,US-CA,3787,19,109,128,3659,3612,175,0,0,5,123,19,104,18,99,94.73684210526316,95.1923076923077,3489,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,3609,0,50,0,0
+snacks,CHIPS_CRISPS_PUFFS,FR,11,0,0,0,11,9,2,0,0,0,0,0,0,0,0,,,9,True,False,insufficient evidence,shared baseline,,,,,,11,0,0,0,0
+snacks,CHIPS_CRISPS_PUFFS,UK-IE,4,0,0,0,4,2,2,0,0,0,0,0,0,0,0,,,2,True,False,insufficient evidence,shared baseline,,,,,,4,0,0,0,0
+snacks,CHIPS_CRISPS_PUFFS,US-CA,24,2,2,4,20,24,0,0,0,0,4,2,2,1,2,50.0,100.0,20,True,False,insufficient evidence,shared baseline,,,,,,18,0,2,0,0
+snacks,CHOCOLATE_CONFECTIONERY,FR,14248,19,88,107,14141,8825,5423,0,7,24,76,12,64,5,56,41.666666666666664,87.5,8749,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,14016,0,125,0,0
+snacks,CHOCOLATE_CONFECTIONERY,UK-IE,1891,19,70,89,1802,1422,469,0,5,15,69,14,55,7,44,50.0,80.0,1353,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1719,0,83,0,0
+snacks,CHOCOLATE_CONFECTIONERY,US-CA,8123,16,55,71,8052,7499,624,0,1,6,64,15,49,3,41,20.0,83.6734693877551,7435,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,7956,0,96,0,0
+snacks,CRACKERS_PRETZELS,FR,14,0,0,0,14,11,3,0,0,0,0,0,0,0,0,,,11,True,False,insufficient evidence,shared baseline,,,,,,14,0,0,0,0
+snacks,CRACKERS_PRETZELS,UK-IE,7,0,0,0,7,7,0,0,0,0,0,0,0,0,0,,,7,True,False,insufficient evidence,shared baseline,,,,,,5,0,2,0,0
+snacks,CRACKERS_PRETZELS,US-CA,81,0,0,0,81,78,3,0,0,0,0,0,0,0,0,,,78,True,False,insufficient evidence,shared baseline,,,,,,80,0,1,0,0
+snacks,FROZEN_DESSERT,FR,114,0,0,0,114,77,37,0,0,0,0,0,0,0,0,,,77,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,112,0,2,0,0
+snacks,FROZEN_DESSERT,UK-IE,23,0,0,0,23,16,7,0,0,0,0,0,0,0,0,,,16,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,21,0,2,0,0
+snacks,FROZEN_DESSERT,US-CA,90,0,0,0,90,84,6,0,0,0,0,0,0,0,0,,,84,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,88,0,2,0,0
+snacks,FRUIT_SNACKS,FR,10,0,0,0,10,10,0,0,0,0,0,0,0,0,0,,,10,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,10,0,0,0,0
+snacks,FRUIT_SNACKS,UK-IE,4,0,0,0,4,3,1,0,0,0,0,0,0,0,0,,,3,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,4,0,0,0,0
+snacks,FRUIT_SNACKS,US-CA,163,0,0,0,163,156,7,0,0,0,0,0,0,0,0,,,156,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,162,0,1,0,0
+snacks,NUTS_SEEDS_SNACK_MIX,US-CA,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,,,1,True,False,insufficient evidence,shared baseline,,,,,,1,0,0,0,0
+snacks,POPCORN,FR,242,0,4,4,238,114,128,0,0,3,1,0,1,0,1,,100.0,113,True,False,insufficient evidence,shared baseline,,,,,,236,0,2,0,0
+snacks,POPCORN,UK-IE,4,0,1,1,3,1,3,0,0,0,1,0,1,0,1,,100.0,0,True,False,insufficient evidence,shared baseline,,,,,,3,0,0,0,0
+snacks,POPCORN,US-CA,169,0,1,1,168,152,17,0,0,0,1,0,1,0,0,,0.0,151,True,False,insufficient evidence,shared baseline,,,,,,167,0,1,0,0
+snacks,SUGAR_CONFECTIONERY,FR,10439,10,104,114,10325,5535,4904,0,3,39,72,7,65,7,65,100.0,100.0,5463,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,10170,0,155,0,0
+snacks,SUGAR_CONFECTIONERY,UK-IE,1848,2,90,92,1756,1156,692,0,0,32,60,2,58,2,55,100.0,94.82758620689656,1096,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1672,0,84,0,0
+snacks,SUGAR_CONFECTIONERY,US-CA,10720,3,30,33,10687,9368,1352,0,0,7,26,3,23,3,22,100.0,95.65217391304348,9342,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,10646,0,41,0,0
+snacks,SWEET_BAKERY,FR,15032,7,50,57,14975,7072,7960,0,2,23,32,5,27,5,25,100.0,92.5925925925926,7040,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,14855,0,120,0,0
+snacks,SWEET_BAKERY,UK-IE,768,2,23,25,743,490,278,0,1,5,19,1,18,1,18,100.0,100.0,471,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,716,0,27,0,0
+snacks,SWEET_BAKERY,US-CA,4390,0,24,24,4366,3904,486,0,0,3,21,0,21,0,20,,95.23809523809524,3883,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,4323,0,43,0,0
+snacks,biscuit,FR,15864,25,106,131,15733,10084,5780,0,6,28,97,19,78,15,66,78.94736842105263,84.61538461538461,9987,True,False,insufficient evidence,accepted biscuit/wafer classifier,,,,,,15591,0,142,0,0
+snacks,biscuit,UK-IE,1731,4,78,82,1649,1246,485,0,0,20,62,4,58,1,48,25.0,82.75862068965517,1184,True,False,insufficient evidence,accepted biscuit/wafer classifier,,,,,,1580,0,69,0,0
+snacks,biscuit,US-CA,9471,7,68,75,9396,8692,779,0,0,1,74,7,67,6,57,85.71428571428571,85.07462686567165,8618,True,False,insufficient evidence,accepted biscuit/wafer classifier,,,,,,9307,0,89,0,0
+snacks,breadsticks,FR,6,0,0,0,6,2,4,0,0,0,0,0,0,0,0,,,2,True,False,insufficient evidence,saved savoury assignments,,,,,,6,0,0,0,0
+snacks,breadsticks,US-CA,8,0,0,0,8,8,0,0,0,0,0,0,0,0,0,,,8,True,False,insufficient evidence,saved savoury assignments,,,,,,8,0,0,0,0
+snacks,conflicting,FR,372,0,2,2,370,318,54,0,0,0,2,0,2,0,2,,100.0,316,False,False,descriptive only: heterogeneous or unresolved parent,accepted biscuit/wafer classifier; saved savoury assignments,,,,,,364,0,6,0,0
+snacks,conflicting,UK-IE,165,1,12,13,152,131,34,0,0,2,11,1,10,0,8,0.0,80.0,120,False,False,descriptive only: heterogeneous or unresolved parent,accepted biscuit/wafer classifier; saved savoury assignments,,,,,,148,0,4,0,0
+snacks,conflicting,US-CA,725,1,12,13,712,583,142,0,0,0,13,1,12,0,9,0.0,75.0,570,False,False,descriptive only: heterogeneous or unresolved parent,accepted biscuit/wafer classifier; saved savoury assignments,,,,,,697,0,15,0,0
+snacks,nuts/seeds,FR,22,0,0,0,22,13,9,0,0,0,0,0,0,0,0,,,13,True,False,insufficient evidence,saved savoury assignments,,,,,,22,0,0,0,0
+snacks,nuts/seeds,UK-IE,5,0,1,1,4,4,1,0,0,0,1,0,1,0,0,,0.0,3,True,False,insufficient evidence,saved savoury assignments,,,,,,4,0,0,0,0
+snacks,nuts/seeds,US-CA,53,0,0,0,53,51,2,0,0,0,0,0,0,0,0,,,51,True,False,insufficient evidence,saved savoury assignments,,,,,,53,0,0,0,0
+snacks,other chips,FR,328,0,6,6,322,168,160,0,0,2,4,0,4,0,2,,50.0,164,False,False,descriptive only: heterogeneous or unresolved parent,saved savoury assignments,,,,,,320,0,2,0,0
+snacks,other chips,UK-IE,117,0,11,11,106,83,34,0,0,3,8,0,8,0,3,,37.5,75,False,False,descriptive only: heterogeneous or unresolved parent,saved savoury assignments,,,,,,105,0,1,0,0
+snacks,other chips,US-CA,921,1,9,10,911,830,91,0,0,0,10,1,9,1,4,100.0,44.44444444444444,820,False,False,descriptive only: heterogeneous or unresolved parent,saved savoury assignments,,,,,,904,0,7,0,0
+snacks,other savoury,FR,35,0,0,0,35,34,1,0,0,0,0,0,0,0,0,,,34,False,False,descriptive only: heterogeneous or unresolved parent,saved savoury assignments,,,,,,35,0,0,0,0
+snacks,other savoury,UK-IE,7,0,1,1,6,6,1,0,0,0,1,0,1,0,1,,100.0,5,False,False,descriptive only: heterogeneous or unresolved parent,saved savoury assignments,,,,,,5,0,1,0,0
+snacks,other savoury,US-CA,826,1,15,16,810,820,6,0,0,1,15,1,14,0,12,0.0,85.71428571428571,805,False,False,descriptive only: heterogeneous or unresolved parent,saved savoury assignments,,,,,,800,0,10,0,0
+snacks,popcorn,FR,462,2,7,9,453,253,209,0,1,4,4,1,3,0,2,0.0,66.66666666666667,249,True,False,insufficient evidence,saved savoury assignments,,,,,,447,0,6,0,0
+snacks,popcorn,UK-IE,184,1,10,11,173,130,54,0,0,3,8,1,7,0,4,0.0,57.142857142857146,122,True,False,insufficient evidence,saved savoury assignments,,,,,,159,0,14,0,0
+snacks,popcorn,US-CA,2133,6,16,22,2111,1895,238,0,1,1,20,5,15,2,12,40.0,80.0,1875,True,False,insufficient evidence,saved savoury assignments,,,,,,2092,0,19,0,0
+snacks,potato crisps,FR,2932,3,22,25,2907,1860,1072,0,1,8,16,2,14,0,10,0.0,71.42857142857143,1844,True,False,insufficient evidence,saved savoury assignments,,,,,,2887,0,20,0,0
+snacks,potato crisps,UK-IE,825,0,30,30,795,673,152,0,0,4,26,0,26,0,20,,76.92307692307692,647,True,False,insufficient evidence,saved savoury assignments,,,,,,766,0,29,0,0
+snacks,potato crisps,US-CA,4273,0,36,36,4237,3632,641,0,0,6,30,0,30,0,15,,50.0,3602,True,False,insufficient evidence,saved savoury assignments,,,,,,4204,0,33,0,0
+snacks,pretzels,FR,82,0,2,2,80,59,23,0,0,0,2,0,2,0,2,,100.0,57,True,False,insufficient evidence,saved savoury assignments,,,,,,78,0,2,0,0
+snacks,pretzels,UK-IE,36,0,0,0,36,26,10,0,0,0,0,0,0,0,0,,,26,True,False,insufficient evidence,saved savoury assignments,,,,,,36,0,0,0,0
+snacks,pretzels,US-CA,1660,0,6,6,1654,1581,79,0,0,0,6,0,6,0,4,,66.66666666666667,1575,True,False,insufficient evidence,saved savoury assignments,,,,,,1651,0,3,0,0
+snacks,puffed/extruded,FR,409,0,2,2,407,275,134,0,0,1,1,0,1,0,1,,100.0,274,True,False,insufficient evidence,saved savoury assignments,,,,,,407,0,0,0,0
+snacks,puffed/extruded,UK-IE,128,0,5,5,123,85,43,0,0,2,3,0,3,0,3,,100.0,82,True,False,insufficient evidence,saved savoury assignments,,,,,,117,0,6,0,0
+snacks,puffed/extruded,US-CA,300,0,4,4,296,275,25,0,0,0,4,0,4,0,4,,100.0,271,True,False,insufficient evidence,saved savoury assignments,,,,,,291,0,5,0,0
+snacks,rice cakes,FR,83,2,0,2,81,22,61,0,0,0,2,2,0,0,0,0.0,,20,True,False,insufficient evidence,saved savoury assignments,,,,,,81,0,0,0,0
+snacks,rice cakes,UK-IE,18,0,2,2,16,9,9,0,0,1,1,0,1,0,1,,100.0,8,True,False,insufficient evidence,saved savoury assignments,,,,,,16,0,0,0,0
+snacks,rice cakes,US-CA,75,0,1,1,74,71,4,0,0,0,1,0,1,0,1,,100.0,70,True,False,insufficient evidence,saved savoury assignments,,,,,,73,0,1,0,0
+snacks,savoury crackers,FR,1770,2,17,19,1751,1315,455,0,0,1,18,2,16,0,10,0.0,62.5,1297,True,False,insufficient evidence,saved savoury assignments,,,,,,1737,0,14,0,0
+snacks,savoury crackers,UK-IE,328,0,15,15,313,277,51,0,0,2,13,0,13,0,6,,46.15384615384615,264,True,False,insufficient evidence,saved savoury assignments,,,,,,303,0,10,0,0
+snacks,savoury crackers,US-CA,3894,9,25,34,3860,3318,576,0,1,1,32,8,24,3,19,37.5,79.16666666666667,3286,True,False,insufficient evidence,saved savoury assignments,,,,,,3820,0,40,0,0
+snacks,savoury mix,FR,15,1,0,1,14,9,6,0,0,0,1,1,0,0,0,0.0,,8,True,False,insufficient evidence,saved savoury assignments,,,,,,14,0,0,0,0
+snacks,savoury mix,UK-IE,7,0,0,0,7,5,2,0,0,0,0,0,0,0,0,,,5,True,False,insufficient evidence,saved savoury assignments,,,,,,7,0,0,0,0
+snacks,savoury mix,US-CA,397,1,1,2,395,391,6,0,0,0,2,1,1,1,1,100.0,100.0,389,True,False,insufficient evidence,saved savoury assignments,,,,,,392,0,3,0,0
+snacks,scope caution,FR,1216,1,5,6,1210,531,685,0,0,1,5,1,4,1,3,100.0,75.0,526,False,False,descriptive only: heterogeneous or unresolved parent,accepted biscuit/wafer classifier,,,,,,1201,0,9,0,0
+snacks,scope caution,UK-IE,34,1,1,2,32,23,11,0,0,0,2,1,1,0,1,0.0,100.0,21,False,False,descriptive only: heterogeneous or unresolved parent,accepted biscuit/wafer classifier,,,,,,31,0,1,0,0
+snacks,scope caution,US-CA,353,0,4,4,349,297,56,0,0,0,4,0,4,0,3,,75.0,293,False,False,descriptive only: heterogeneous or unresolved parent,accepted biscuit/wafer classifier,,,,,,346,0,3,0,0
+snacks,tortilla/corn chips,FR,621,0,0,0,621,410,211,0,0,0,0,0,0,0,0,,,410,True,False,insufficient evidence,saved savoury assignments,,,,,,614,0,7,0,0
+snacks,tortilla/corn chips,UK-IE,190,1,8,9,181,161,29,0,0,0,9,1,8,1,5,100.0,62.5,152,True,False,insufficient evidence,saved savoury assignments,,,,,,176,0,5,0,0
+snacks,tortilla/corn chips,US-CA,2418,6,18,24,2394,1846,572,0,0,0,24,6,18,0,6,0.0,33.333333333333336,1822,True,False,insufficient evidence,saved savoury assignments,,,,,,2360,0,34,0,0
+snacks,unresolved,FR,1631,3,11,14,1617,986,645,0,1,5,8,2,6,0,4,0.0,66.66666666666667,978,False,False,descriptive only: heterogeneous or unresolved parent,accepted biscuit/wafer classifier; saved savoury assignments,,,,,,1603,0,14,0,0
+snacks,unresolved,UK-IE,560,1,24,25,535,421,139,0,0,5,20,1,19,0,15,0.0,78.94736842105263,401,False,False,descriptive only: heterogeneous or unresolved parent,accepted biscuit/wafer classifier; saved savoury assignments,,,,,,514,0,21,0,0
+snacks,unresolved,US-CA,1646,3,20,23,1623,1487,159,0,0,1,22,3,19,2,16,66.66666666666667,84.21052631578948,1465,False,False,descriptive only: heterogeneous or unresolved parent,accepted biscuit/wafer classifier; saved savoury assignments,,,,,,1601,0,22,0,0
+snacks,unresolved: CATEGORY_UNKNOWN,FR,1430,0,5,5,1425,507,923,0,0,1,4,0,4,0,3,,75.0,503,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,1411,0,14,0,0
+snacks,unresolved: CATEGORY_UNKNOWN,UK-IE,200,0,6,6,194,135,65,0,0,1,5,0,5,0,4,,80.0,130,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,186,0,8,0,0
+snacks,unresolved: CATEGORY_UNKNOWN,US-CA,775,3,19,22,753,698,77,0,0,1,21,3,18,3,16,100.0,88.88888888888889,677,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,738,0,15,0,0
+snacks,unresolved: OTHER,US-CA,14,0,0,0,14,14,0,0,0,0,0,0,0,0,0,,,14,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,14,0,0,0,0
+snacks,unresolved: OUT,FR,29,0,0,0,29,13,16,0,0,0,0,0,0,0,0,,,13,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,29,0,0,0,0
+snacks,unresolved: OUT,UK-IE,14,0,0,0,14,9,5,0,0,0,0,0,0,0,0,,,9,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,13,0,1,0,0
+snacks,unresolved: OUT,US-CA,475,0,5,5,470,443,32,0,0,0,5,0,5,0,4,,80.0,438,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,467,0,3,0,0
+snacks,unresolved: UNRESOLVED,FR,4887,3,38,41,4846,3174,1713,0,0,8,33,3,30,2,29,66.66666666666667,96.66666666666667,3141,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,4804,0,42,0,0
+snacks,unresolved: UNRESOLVED,UK-IE,699,2,20,22,677,516,183,0,0,4,18,2,16,0,15,0.0,93.75,498,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,650,0,27,0,0
+snacks,unresolved: UNRESOLVED,US-CA,6977,11,81,92,6885,6593,384,0,0,5,87,11,76,7,63,63.63636363636363,82.89473684210526,6506,False,False,descriptive only: heterogeneous or unresolved parent,shared baseline,,,,,,6801,0,84,0,0
+snacks,wafer,FR,950,2,10,12,938,639,311,0,0,3,9,2,7,2,7,100.0,100.0,630,True,False,insufficient evidence,accepted biscuit/wafer classifier,,,,,,926,0,12,0,0
+snacks,wafer,UK-IE,89,0,4,4,85,67,22,0,0,0,4,0,4,0,4,,100.0,63,True,False,insufficient evidence,accepted biscuit/wafer classifier,,,,,,83,0,2,0,0
+snacks,wafer,US-CA,737,1,10,11,726,650,87,0,1,2,8,0,8,0,8,,100.0,642,True,False,insufficient evidence,accepted biscuit/wafer classifier,,,,,,715,0,11,0,0

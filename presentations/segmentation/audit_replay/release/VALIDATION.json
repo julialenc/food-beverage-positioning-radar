@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "stages": 25,
+  "candidate_manifest_sha256": "6876448c0659e8873553fd96b0aedaab6e4c733e52ed51207bd8a22cf9587ab9",
+  "candidate_file_hashes": 340,
+  "original_files_unchanged": 72,
+  "final_tables_byte_identical": 6,
+  "report_table_instances": 63,
+  "actual_guard_denials": {
+    "network": 0,
+    "providers": 0,
+    "subprocess": 0,
+    "outside_write": 0,
+    "source_read": 0
+  },
+  "environment": "Existing declared Python 3.12.4 environment reused; no fresh installation test",
+  "fresh_computations": true,
+  "source_commit": "015f3a6d329a30cd7e562140137243111fb8d719"
+}

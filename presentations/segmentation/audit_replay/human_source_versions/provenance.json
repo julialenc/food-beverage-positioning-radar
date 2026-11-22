@@ -1,0 +1,116 @@
+{
+  "original_sha256": "002a1df55b94f778ab300bfd375836bdc98f16f2a879a62ce8f1730ca410ce0d",
+  "frozen_sha256": "df98236abe148b916fe44175625d6880ffb3b8756fd3d5d01fa3ac233eee97eb",
+  "accepted_sidecar_sha256": "debc7a3296a112dceb7dac49e0dee2fd2afd4addd1819ee5b7ab0c034295b9cf",
+  "recovery": "Exact reconstruction from preserved sidecar fields, verified against historical source hash; not a new human submission",
+  "differences": [
+    {
+      "review_id": "HR01",
+      "field": "barcode",
+      "frozen": "4.00297E+12",
+      "original": "4002971243802"
+    },
+    {
+      "review_id": "HR02",
+      "field": "human_review_date",
+      "frozen": "18.11.2026",
+      "original": "18.11.2027"
+    },
+    {
+      "review_id": "HR03",
+      "field": "barcode",
+      "frozen": "3.03349E+12",
+      "original": "3033491214585"
+    },
+    {
+      "review_id": "HR03",
+      "field": "human_review_date",
+      "frozen": "18.11.2026",
+      "original": "18.11.2028"
+    },
+    {
+      "review_id": "HR04",
+      "field": "barcode",
+      "frozen": "4.0255E+12",
+      "original": "4025500294786"
+    },
+    {
+      "review_id": "HR04",
+      "field": "human_review_date",
+      "frozen": "18.11.2026",
+      "original": "18.11.2029"
+    },
+    {
+      "review_id": "HR05",
+      "field": "barcode",
+      "frozen": "3.02329E+12",
+      "original": "3023290064214"
+    },
+    {
+      "review_id": "HR05",
+      "field": "human_review_date",
+      "frozen": "18.11.2026",
+      "original": "18.11.2030"
+    },
+    {
+      "review_id": "HR06",
+      "field": "barcode",
+      "frozen": "5.06025E+12",
+      "original": "5060253702705"
+    },
+    {
+      "review_id": "HR06",
+      "field": "human_review_date",
+      "frozen": "18.11.2026",
+      "original": "18.11.2031"
+    },
+    {
+      "review_id": "HR07",
+      "field": "barcode",
+      "frozen": "3.16893E+12",
+      "original": "3168930002970"
+    },
+    {
+      "review_id": "HR07",
+      "field": "human_review_date",
+      "frozen": "18.11.2026",
+      "original": "18.11.2032"
+    },
+    {
+      "review_id": "HR08",
+      "field": "human_review_date",
+      "frozen": "18.11.2026",
+      "original": "18.11.2033"
+    },
+    {
+      "review_id": "HR09",
+      "field": "human_review_date",
+      "frozen": "18.11.2026",
+      "original": "18.11.2034"
+    },
+    {
+      "review_id": "HR10",
+      "field": "barcode",
+      "frozen": "5.00024E+12",
+      "original": "5000237139394"
+    },
+    {
+      "review_id": "HR10",
+      "field": "human_review_date",
+      "frozen": "18.11.2026",
+      "original": "18.11.2035"
+    },
+    {
+      "review_id": "HR11",
+      "field": "human_review_date",
+      "frozen": "18.11.2026",
+      "original": "18.11.2036"
+    },
+    {
+      "review_id": "HR12",
+      "field": "human_review_date",
+      "frozen": "18.11.2026",
+      "original": "18.11.2037"
+    }
+  ]
+}

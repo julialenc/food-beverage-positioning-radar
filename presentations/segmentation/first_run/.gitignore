@@ -1,0 +1,24 @@
+**/*.parquet
+**/*.sqlite*
+**/*.db
+**/image_evidence/
+**/node_modules/
+01_ingestion/05_master_parquet/output/
+/02_shared_preprocessing_and_eda/01_preprocessing/us_ca_nutrient_coverage_v1.csv
+
+# Exact v1.0.0 replay data exceptions.
+!01_ingestion/05_master_parquet/output/
+01_ingestion/05_master_parquet/output/*
+!01_ingestion/05_master_parquet/output/manifest.json
+!/01_ingestion/04_reviewed_claims/03_final_lock/wave2_ocr_llm_lock_v1/claims_join.parquet
+!/01_ingestion/05_master_parquet/output/master_products.parquet
+!/02_shared_preprocessing_and_eda/02_eda/01_nutritional_composition/lens1_cereal_master_v1.parquet
+!/03_lenses/01_nutritional_composition/beverage_assignments_v1.parquet
+!/03_lenses/01_nutritional_composition/juice_assignments_v1.parquet
+!/03_lenses/01_nutritional_composition/savoury_snack_assignments_v1.parquet
+!/03_lenses/04_positioning_tradeoffs/processing_boundary_evidence_v1.parquet
+!/03_lenses/05_unsupervised_control/control_assignments_v1.parquet
+!/04_analytical_package/output/analytical_assignments_v1.parquet
+!/04_analytical_package/output/assessed_communication_v1.parquet
+!/04_analytical_package/output/boundary_annotations_v1.parquet
+!/04_analytical_package/output/human_observations_v1.parquet

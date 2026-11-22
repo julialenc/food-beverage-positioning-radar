@@ -1,0 +1,39 @@
+{
+  "status": "PASS",
+  "version": "1.0.0",
+  "planned_tag": "v1.0.0",
+  "scientific_source_files": 36,
+  "checkout_eol_only_differences": [
+    "pipeline/rules/__init__.py",
+    "pipeline/stages/__init__.py",
+    "shared/beverage_segments.py"
+  ],
+  "strict_byte_paths": 91,
+  "force_add_paths": [
+    "presentations/segmentation/first_run/04_analytical_package/output/analytical_assignments_v1.parquet",
+    "presentations/segmentation/first_run/04_analytical_package/output/approved_findings_v1.json",
+    "presentations/segmentation/first_run/04_analytical_package/output/assessed_communication_v1.parquet",
+    "presentations/segmentation/first_run/04_analytical_package/output/boundary_annotations_v1.parquet",
+    "presentations/segmentation/first_run/04_analytical_package/output/communication_coverage_v1.csv",
+    "presentations/segmentation/first_run/04_analytical_package/output/human_observations_v1.parquet"
+  ],
+  "excluded_paths": [
+    "outputs/segmentation_candidate_isolation_v1/config.json",
+    "data/06_brand_governance_outputs/wave2_identity_fix_v1/release_work.db",
+    "presentations/segmentation/audit_replay/assemble_candidate.py",
+    ".env"
+  ],
+  "full_replay": "25 stages passed before Git layout finalization; scientific source equivalent and fixed inputs unchanged",
+  "layout_verification": "outputs/segmentation_release_layout_check_v1/verification.json: PASS",
+  "not_published": true,
+  "original_files_unchanged": 72,
+  "publication_paths": 348,
+  "manifest_dependency_files": 344,
+  "publication_hashes": "PASS",
+  "file_size_limits": "PASS: each below 100 MiB",
+  "published_python_syntax": "PASS",
+  "published_json": "PASS",
+  "entry_point_links": "PASS",
+  "frozen_release_digest": "48212697d2d245e3cc543032d63699b7e83fb43ad5db8dce7cbb8714991f0557",
+  "git_index": "EMPTY"
+}

@@ -1,0 +1,9 @@
+__pycache__/
+human_source_versions/*
+!human_source_versions/original_submission.csv
+!human_source_versions/frozen_submission.csv
+!human_source_versions/provenance.json
+# Local candidate-construction helpers reference historical local workspaces.
+/assemble_candidate.py
+/finalize_candidate.py
+/verify_candidate.py

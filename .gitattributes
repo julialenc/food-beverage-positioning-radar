@@ -21,3 +21,9 @@
 # Preserve authoritative segmentation navigation bytes.
 /presentations/segmentation/SEGMENTATION.md -text
 /presentations/segmentation/first_run/README.md -text
+
+# v1.0.0 audit assets and governed database contracts retain exact SHA-256 bytes.
+/presentations/segmentation/audit_replay/** -text
+/data/06_brand_governance_outputs/wave2_identity_fix_v1/manifest.json -text
+/data/06_brand_governance_outputs/wave2_identity_fix_v1/barcode_aliases.csv -text
+/presentations/segmentation/first_run/.gitignore -text
