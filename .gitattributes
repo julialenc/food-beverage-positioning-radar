@@ -27,3 +27,6 @@
 /data/06_brand_governance_outputs/wave2_identity_fix_v1/manifest.json -text
 /data/06_brand_governance_outputs/wave2_identity_fix_v1/barcode_aliases.csv -text
 /presentations/segmentation/first_run/.gitignore -text
+
+# v1.1.0 evidence manifests, source and validation records retain exact bytes.
+/presentations/segmentation/evidence_audit/** -text

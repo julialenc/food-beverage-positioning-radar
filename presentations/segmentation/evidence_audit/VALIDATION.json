@@ -1,0 +1,2183 @@
+{
+  "status": "PASS_WITH_DOCUMENTED_LEGACY_EVIDENCE_GAPS",
+  "completed_at_utc": "2026-11-23T14:16:54.030070+00:00",
+  "replay": {
+    "status": "PASS",
+    "stages": [
+      {
+        "stage": "ledger_security",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "generated_reports": [],
+        "seconds": 169.72,
+        "source_files": {
+          "presentations/segmentation/evidence_audit/upstream_entry.py": "80d2729c7784ac66cca39c2b70c94cf5182164f31e918c5862c65a0988c9fb34"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "population_snapshot",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/01_population/replay_population/eligibility_ledger.csv",
+            "actual_sha256": "5297dd0bf4c5a88f288d2f41548c5bea5ee734220228f574f52c69c87585d60f",
+            "reference_sha256": "5297dd0bf4c5a88f288d2f41548c5bea5ee734220228f574f52c69c87585d60f",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/01_population/replay_population/candidate_population.csv",
+            "actual_sha256": "2fbf76b525acd5b483e67be644a3d04b6bcd12c5149d20aff6c7684c9bb222c7",
+            "reference_sha256": "2fbf76b525acd5b483e67be644a3d04b6bcd12c5149d20aff6c7684c9bb222c7",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/01_population/replay_population/check_01_country_category.csv",
+            "actual_sha256": "199266ed99dc6fd8076f8fb0bf2268fa983e2b26f1e259cbc557b9faa8baca38",
+            "reference_sha256": "199266ed99dc6fd8076f8fb0bf2268fa983e2b26f1e259cbc557b9faa8baca38",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/01_population/replay_population/check_01_nutrient_completeness.csv",
+            "actual_sha256": "0bf58b6f1778097f588009728dd0e377e17e584832cd1067c8ef4775ec1b164a",
+            "reference_sha256": "0bf58b6f1778097f588009728dd0e377e17e584832cd1067c8ef4775ec1b164a",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/01_population/replay_population/check_01_warning_breakdown.csv",
+            "actual_sha256": "915e0308f59350596c4da752ea1274f018d6a89d72ad5e64fc28ba221037dfb8",
+            "reference_sha256": "915e0308f59350596c4da752ea1274f018d6a89d72ad5e64fc28ba221037dfb8",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/01_population/replay_population/check_01_ocr_coverage.csv",
+            "actual_sha256": "3a00e721bf1fe0569bfb95835f2bda830368854d85b3dde5f4e88935f060c086",
+            "reference_sha256": "3a00e721bf1fe0569bfb95835f2bda830368854d85b3dde5f4e88935f060c086",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 369.36,
+        "source_files": {
+          "presentations/segmentation/evidence_audit/upstream_entry.py": "80d2729c7784ac66cca39c2b70c94cf5182164f31e918c5862c65a0988c9fb34",
+          "presentations/segmentation/first_run/01_ingestion/01_population/run_01/run_01_source_snapshot.py": "62c4eda07918e214f6834bbec0d1351ca9077a363f1b1596b2367eccd297e34b"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "historical_history",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/03_pack_evidence/02_image_selection_and_identity/replay_history/history_status_refreshed.csv",
+            "actual_sha256": "af060634d7704fdb2aaccbec69566d931c0219f4909eee53eb50c8b7d843381a",
+            "reference_sha256": "af060634d7704fdb2aaccbec69566d931c0219f4909eee53eb50c8b7d843381a",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/03_pack_evidence/02_image_selection_and_identity/replay_history/history_observations_refreshed.csv",
+            "actual_sha256": "77e1d614ab9cbd12516d52466ab9950dde6567118154c74e1aa33cfe48ed7c74",
+            "reference_sha256": "77e1d614ab9cbd12516d52466ab9950dde6567118154c74e1aa33cfe48ed7c74",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/03_pack_evidence/02_image_selection_and_identity/replay_history/history_source_inventory_refreshed.csv",
+            "actual_sha256": "0f640e2646f62e1d464833befaa92ac084d09cbef069d3dbc93d0db713b1ebd6",
+            "reference_sha256": "0f640e2646f62e1d464833befaa92ac084d09cbef069d3dbc93d0db713b1ebd6",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 55.46,
+        "source_files": {
+          "pipeline/segmentation/run_06b_prepare.py": "aa73e6ddfe251b1188ac93f5a947b05d00055b5247e6747e33a445a05c7f3858",
+          "presentations/segmentation/evidence_audit/upstream_entry.py": "80d2729c7784ac66cca39c2b70c94cf5182164f31e918c5862c65a0988c9fb34",
+          "presentations/segmentation/production/workflow/artifact_paths.py": "207a1664852c5e0df5ccb43a90031682272e6ac380ba6bab22d626f84bb96349"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "image_selection_lineage",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "generated_reports": [],
+        "seconds": 229.14,
+        "source_files": {
+          "presentations/segmentation/evidence_audit/upstream_entry.py": "80d2729c7784ac66cca39c2b70c94cf5182164f31e918c5862c65a0988c9fb34"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "main_quality",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/01_completion_reviews/run_06b_completion_quality_v1/products.csv",
+            "actual_sha256": "9cf03e2b7f42abd0645363b8a0426f96d8511e9a78ef07b1c669da8c43ec375b",
+            "reference_sha256": "9cf03e2b7f42abd0645363b8a0426f96d8511e9a78ef07b1c669da8c43ec375b",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/01_completion_reviews/run_06b_completion_quality_v1/issues.csv",
+            "actual_sha256": "b9162f6018124711b5f1a96cb20608897f94430b907370607482d4ed7feea518",
+            "reference_sha256": "b9162f6018124711b5f1a96cb20608897f94430b907370607482d4ed7feea518",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/01_completion_reviews/run_06b_completion_quality_v1/region_category_summary.csv",
+            "actual_sha256": "c07beaf005eca4708ed5399e3690b5c07b2d2bf00d77ddf43a0e9ab05ede8d3e",
+            "reference_sha256": "c07beaf005eca4708ed5399e3690b5c07b2d2bf00d77ddf43a0e9ab05ede8d3e",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/01_completion_reviews/run_06b_completion_quality_v1/reason_summary.csv",
+            "actual_sha256": "70ba0069e6e1bc47c2ca5ef7c5284717c052f51c7f57c42b7b1dd81bbb797c56",
+            "reference_sha256": "70ba0069e6e1bc47c2ca5ef7c5284717c052f51c7f57c42b7b1dd81bbb797c56",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/01_completion_reviews/run_06b_completion_quality_v1/product_evidence.jsonl",
+            "actual_sha256": "11006b543992deca01a13df592dc3590e2b7c1d74dc30882cda71bdfdb6a09a0",
+            "reference_sha256": "11006b543992deca01a13df592dc3590e2b7c1d74dc30882cda71bdfdb6a09a0",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 50.02,
+        "source_files": {
+          "pipeline/segmentation/summarize_run_06b_completion_quality.py": "217da302d3a07234010ab791112b3cd2bc30c83a3827a0678cdd8e27fa3c5581",
+          "presentations/segmentation/evidence_audit/upstream_entry.py": "80d2729c7784ac66cca39c2b70c94cf5182164f31e918c5862c65a0988c9fb34",
+          "presentations/segmentation/production/workflow/artifact_paths.py": "207a1664852c5e0df5ccb43a90031682272e6ac380ba6bab22d626f84bb96349"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "dairy_quality",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/01_completion_reviews/wave2_dairy_completion_quality_v1/products.csv",
+            "actual_sha256": "3b75677371badd78eb558143ffd7dabb88dd68fed7282ad0630380e56bc3ad5d",
+            "reference_sha256": "3b75677371badd78eb558143ffd7dabb88dd68fed7282ad0630380e56bc3ad5d",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/01_completion_reviews/wave2_dairy_completion_quality_v1/issues.csv",
+            "actual_sha256": "98035cc61774d5112d3375ce507fc6cbec2ab0aee1651c1d8600ed7c345fac62",
+            "reference_sha256": "98035cc61774d5112d3375ce507fc6cbec2ab0aee1651c1d8600ed7c345fac62",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 3.38,
+        "source_files": {
+          "pipeline/segmentation/export_wave2_dairy_review.py": "19b9eb3fd8eb7320d5d5a11656d09e83580e75518c0106d14f3b659d7b39249c",
+          "presentations/segmentation/evidence_audit/upstream_entry.py": "80d2729c7784ac66cca39c2b70c94cf5182164f31e918c5862c65a0988c9fb34",
+          "presentations/segmentation/production/workflow/artifact_paths.py": "207a1664852c5e0df5ccb43a90031682272e6ac380ba6bab22d626f84bb96349"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "combined_review",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/02_reconciliation_and_exceptions/wave2_combined_ocr_llm_review_v1/all_processed_products.csv",
+            "actual_sha256": "2c81970a6fa0510b41cb76298c997d1bf1fee97a048db832324d6ff784f77cf4",
+            "reference_sha256": "2c81970a6fa0510b41cb76298c997d1bf1fee97a048db832324d6ff784f77cf4",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 20.66,
+        "source_files": {
+          "pipeline/segmentation/export_wave2_combined_review.py": "ed912c7bdaf3c54f96713a3bccac9d4d5aec48b6c49aa69a6ed2c03225a74760",
+          "presentations/segmentation/evidence_audit/upstream_entry.py": "80d2729c7784ac66cca39c2b70c94cf5182164f31e918c5862c65a0988c9fb34",
+          "presentations/segmentation/production/workflow/artifact_paths.py": "207a1664852c5e0df5ccb43a90031682272e6ac380ba6bab22d626f84bb96349"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "claims_reconciliation",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/02_reconciliation_and_exceptions/wave2_claims_reconciliation_v1/reconciled_review.csv",
+            "actual_sha256": "ecb64c80815a3f2d708c5969dc89b853f1bbeb9cc05f51d1d067ebafbd925387",
+            "reference_sha256": "ecb64c80815a3f2d708c5969dc89b853f1bbeb9cc05f51d1d067ebafbd925387",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 41.08,
+        "source_files": {
+          "pipeline/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "pipeline/segmentation/reconcile_wave2_claims.py": "461399c694b477ae82b780174b31aa9577230a1dfe02eb58690ce6c3d2cb28b7",
+          "pipeline/stages/stage_10_extract_pack_claims.py": "57dd143d5ebeb79f6fc7b970427069cf4579713674006db723a8838202369c6a",
+          "pipeline/vision_ops/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "pipeline/vision_ops/emerging_benefits_stage.py": "11d5a8f74a81de1b3f0dbcf0c0868c47e3d8a7c82bbb7214ed8cd823509b11af",
+          "pipeline/vision_ops/emerging_benefits_v3.py": "876c4b6f33aec9e741202acbcc270192faa318e8bd224c89ba2ae7fa0139e9ac",
+          "pipeline/vision_ops/run_06b_execution_guard.py": "3d5b4c87199c5965de5576da8f7b138d9d512ba3e5fe68fc8eb41bdd7cac8bf9",
+          "pipeline/vision_ops/run_06b_rate_limit.py": "384f2db2750bfe065db5c125da208cc1944dfeb47058210c4fe3b242502f55be",
+          "pipeline/vision_ops/run_06b_runner.py": "5b5b5410e87b6d896abe443cc4d28323f0dcc85a68cac614de1409242169b563",
+          "pipeline/vision_ops/validate_emerging_benefits_v1.py": "b919a73a905c0d27b9221299693636834a0e74ba3a08aca1e5b7f59f59a05855",
+          "presentations/segmentation/evidence_audit/upstream_entry.py": "80d2729c7784ac66cca39c2b70c94cf5182164f31e918c5862c65a0988c9fb34",
+          "presentations/segmentation/production/workflow/artifact_paths.py": "207a1664852c5e0df5ccb43a90031682272e6ac380ba6bab22d626f84bb96349"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "claim_lock",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [
+          "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/03_final_lock/replay_lock_candidate/claims_join.parquet",
+          "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/03_final_lock/replay_lock_candidate/new_processed_audit.parquet",
+          "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/03_final_lock/replay_lock_candidate/historical_reuses.parquet"
+        ],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/03_final_lock/replay_lock_candidate/claims_join.parquet",
+            "actual_sha256": "cd79f402e21b574710194e0cd741aee5d12e00677cd3ef37651d537747d23cda",
+            "reference_sha256": "cd79f402e21b574710194e0cd741aee5d12e00677cd3ef37651d537747d23cda",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/03_final_lock/replay_lock_candidate/new_processed_audit.parquet",
+            "actual_sha256": "9df950ffc621f9034b8dc52a5ef5fa376ae021dc39c3149a5f5fe6e9f767f1cb",
+            "reference_sha256": "9df950ffc621f9034b8dc52a5ef5fa376ae021dc39c3149a5f5fe6e9f767f1cb",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/03_final_lock/replay_lock_candidate/historical_reuses.parquet",
+            "actual_sha256": "bab5b27304793a2334aed51d98217b1884869ecd98b2363c2feafb1d78604194",
+            "reference_sha256": "bab5b27304793a2334aed51d98217b1884869ecd98b2363c2feafb1d78604194",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/01_ingestion/04_reviewed_claims/03_final_lock/replay_lock_candidate/historical_handoff.json",
+            "actual_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "reference_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 45.26,
+        "source_files": {
+          "pipeline/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "pipeline/segmentation/lock_wave2_ocr_llm.py": "7e60ce9bcb5fe6d52777bd0f7b11cf0a678788c05c768ce1ed543b9820ae781a",
+          "pipeline/stages/stage_10_extract_pack_claims.py": "57dd143d5ebeb79f6fc7b970427069cf4579713674006db723a8838202369c6a",
+          "pipeline/vision_ops/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "pipeline/vision_ops/emerging_benefits_stage.py": "11d5a8f74a81de1b3f0dbcf0c0868c47e3d8a7c82bbb7214ed8cd823509b11af",
+          "pipeline/vision_ops/run_06b_execution_guard.py": "3d5b4c87199c5965de5576da8f7b138d9d512ba3e5fe68fc8eb41bdd7cac8bf9",
+          "pipeline/vision_ops/run_06b_rate_limit.py": "384f2db2750bfe065db5c125da208cc1944dfeb47058210c4fe3b242502f55be",
+          "pipeline/vision_ops/run_06b_runner.py": "5b5b5410e87b6d896abe443cc4d28323f0dcc85a68cac614de1409242169b563",
+          "pipeline/vision_ops/validate_emerging_benefits_v1.py": "b919a73a905c0d27b9221299693636834a0e74ba3a08aca1e5b7f59f59a05855",
+          "presentations/segmentation/evidence_audit/upstream_entry.py": "80d2729c7784ac66cca39c2b70c94cf5182164f31e918c5862c65a0988c9fb34",
+          "presentations/segmentation/production/workflow/artifact_paths.py": "207a1664852c5e0df5ccb43a90031682272e6ac380ba6bab22d626f84bb96349"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "environment",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "python": "3.12.4",
+        "packages": {
+          "numpy": "2.4.6",
+          "pandas": "3.0.3",
+          "scipy": "1.18.0",
+          "scikit-learn": "1.9.0",
+          "pyarrow": "24.0.0"
+        },
+        "generated_reports": [],
+        "seconds": 3.38,
+        "source_files": {},
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "master",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "master_sha256": "ff6de2e3ef6752abbd5335a352a413940a8e6c12962bb6c85101f52ea86af912",
+        "generated_reports": [],
+        "seconds": 228.51,
+        "source_files": {
+          "pipeline/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "pipeline/rules/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "pipeline/rules/barcode_identity.py": "99651febb3f330d980a9e80dffc29e19310d1b6894579fbaf7254f14e87a9243",
+          "pipeline/segmentation/run_01_select_eligible_products.py": "13e0557e1c032f8b23e4ab861125c062c08edccb3d2f48b222de2a38872303e4",
+          "pipeline/stages/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "pipeline/stages/stage_05_load_database.py": "d6a022ff00853621a8c39cae7282e0bec6138fb022dc217a8c034810b982cbd6",
+          "presentations/segmentation/first_run/01_ingestion/05_master_parquet/build.py": "14cb76e3ca220bff0e186a6afa84aabd474b03cc4479cce5736e5a21bacd4e17",
+          "presentations/segmentation/production/workflow/artifact_paths.py": "207a1664852c5e0df5ccb43a90031682272e6ac380ba6bab22d626f84bb96349",
+          "presentations/segmentation/production/workflow/build_master.py": "47810bd91666e576d82dc03e85ab31a6e93c797f4ac85288ef17a56fe13ee8e5",
+          "presentations/segmentation/production/workflow/evidence_index.py": "6da8f1695c4fa810d80fb3d48d87f98a04c6ba52ccbe9b6970851d17b54bf78c"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "inventory",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "generated_reports": [],
+        "seconds": 6.74,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/01_preprocessing/field_use_inventory_v1.py": "caa0530e69dbcb818ecca5b3bf726a8a98c9f0288e1da975c3929d4f467a811d"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "cereal",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/01_nutritional_composition/lens1_cereal_master_v1.parquet",
+            "actual_sha256": "2f3859a401fada540b119424a91b2a924db6c084320f175cb0c8a58119027837",
+            "reference_sha256": "2f3859a401fada540b119424a91b2a924db6c084320f175cb0c8a58119027837",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 12.69,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/01_nutritional_composition/lens1_cereal_master_v1.py": "3d1ad6118aa069fba034df4b9653ae90a4ba37b942dc2ad8d9ea24feb89bab73"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "baseline",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/subtype_assignments.csv",
+            "actual_sha256": "1b12d8b87e72a77a423aabfe95ffd47eaa02469223ef39b32cdd3c4485ffb67f",
+            "reference_sha256": "1b12d8b87e72a77a423aabfe95ffd47eaa02469223ef39b32cdd3c4485ffb67f",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/nutrient_availability.csv",
+            "actual_sha256": "9b3e59c403f72ec461b856e45a16f55c9bcdd807bdeb5469a77bd1b5db2da5f0",
+            "reference_sha256": "9b3e59c403f72ec461b856e45a16f55c9bcdd807bdeb5469a77bd1b5db2da5f0",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/nutrient_distributions.csv",
+            "actual_sha256": "1e45a7438ee4db05399bbbd15f84182f844a83d0457fe316bd3e40d6cde8cd87",
+            "reference_sha256": "1e45a7438ee4db05399bbbd15f84182f844a83d0457fe316bd3e40d6cde8cd87",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 79.13,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/h2_four_category_baseline_v1.py": "266851df2afaf07a2475423ea9d50b3e12e9b66ddfd14e07f905263436ad61c8",
+          "shared/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shared/beverage_segments.py": "b57e5fb0cce5f01adcb5f9f3d8b7a4da5d18e87fe77b6331a960fd71a4755510"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "features",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/FEATURE_DECISIONS.csv",
+            "actual_sha256": "8d7ce99915b4c44a1b264004660a5b3591fd028398f0eef3e1784f7652c3c745",
+            "reference_sha256": "8d7ce99915b4c44a1b264004660a5b3591fd028398f0eef3e1784f7652c3c745",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 56.15,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "ingredients",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/ingredient_validation_v1.csv",
+            "actual_sha256": "981a4c66da1fd01abc574ea81c0aa35988402598ab558e7737858b1e4ce945ac",
+            "reference_sha256": "981a4c66da1fd01abc574ea81c0aa35988402598ab558e7737858b1e4ce945ac",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 26.65,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/ingredient_validation_v1.py": "cda782184496a551e4c1a893e5f8485ad71daa32e058bcbb0e1ffd18fafa917a"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "hypotheses",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/hypothesis_results_v1.csv",
+            "actual_sha256": "7752728f8568382cffbc4de78f7f00fdcaad8f4fa0152085020da8ad563b8086",
+            "reference_sha256": "aa4d5bd0eb6eff27d1dd74a970cb12ce08aa1d8bce2256d9f1ae33169286353c",
+            "column_order_differs": false,
+            "row_order_differs": false,
+            "numeric_differences": {
+              "q": {
+                "cells": 40,
+                "max_absolute": 9.999999994736442e-10
+              }
+            },
+            "comparison": "NUMERICALLY_EQUIVALENT_CSV"
+          },
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/02_nutrient_density/hypothesis_results_v1.csv",
+            "actual_sha256": "399fde3a3c8ee287b87186f233189af35e5f73ae1eb07c80e184dfccc9dcc37d",
+            "reference_sha256": "399fde3a3c8ee287b87186f233189af35e5f73ae1eb07c80e184dfccc9dcc37d",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/hypothesis_results_v1.csv",
+            "actual_sha256": "3d9afd08d04d56e274618246ba94952c9a8770f0007e34ed6b43da69dd0d9ae1",
+            "reference_sha256": "0517f3f65392666dfc2d6a120857985b5b7d7ac62bc40394f3b8979b3d6a0ba2",
+            "column_order_differs": true,
+            "row_order_differs": false,
+            "numeric_differences": {
+              "q": {
+                "cells": 4,
+                "max_absolute": 9.999999717180685e-10
+              }
+            },
+            "comparison": "NUMERICALLY_EQUIVALENT_CSV"
+          },
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/04_positioning_tradeoffs/hypothesis_results_v1.csv",
+            "actual_sha256": "ff2fe301f0c917ff76a41938f20b589c4302ecc5ad14ddac94058ee47414dfed",
+            "reference_sha256": "24468713d5a5b357aebc9a530bfe82e2247e3297df772a4c67b7d6de69f0b42f",
+            "column_order_differs": true,
+            "row_order_differs": false,
+            "numeric_differences": {
+              "q": {
+                "cells": 3,
+                "max_absolute": 1.0000000272292198e-09
+              }
+            },
+            "comparison": "NUMERICALLY_EQUIVALENT_CSV"
+          }
+        ],
+        "candidate_manifest_updates": [
+          {
+            "path": "03_lenses/01_nutritional_composition/hypothesis_results_v1.csv",
+            "accepted_sha256": "aa4d5bd0eb6eff27d1dd74a970cb12ce08aa1d8bce2256d9f1ae33169286353c",
+            "replayed_sha256": "7752728f8568382cffbc4de78f7f00fdcaad8f4fa0152085020da8ad563b8086"
+          },
+          {
+            "path": "03_lenses/03_claims_composition_and_ingredients/hypothesis_results_v1.csv",
+            "accepted_sha256": "0517f3f65392666dfc2d6a120857985b5b7d7ac62bc40394f3b8979b3d6a0ba2",
+            "replayed_sha256": "3d9afd08d04d56e274618246ba94952c9a8770f0007e34ed6b43da69dd0d9ae1"
+          },
+          {
+            "path": "03_lenses/04_positioning_tradeoffs/hypothesis_results_v1.csv",
+            "accepted_sha256": "24468713d5a5b357aebc9a530bfe82e2247e3297df772a4c67b7d6de69f0b42f",
+            "replayed_sha256": "ff2fe301f0c917ff76a41938f20b589c4302ecc5ad14ddac94058ee47414dfed"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 355.96,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/00_shared_research/hypothesis_run_v1.py": "89841a7f4c1bea7ddc14073a9f5fa174a8fe0de09480874ab547b52d060ca7df"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "control",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/05_unsupervised_control/control_assignments_v1.parquet",
+            "actual_sha256": "ea4ff6736ea12c33cdca4f2be0e6c514769fba1e117184cd8b9623cf76dce321",
+            "reference_sha256": "ea4ff6736ea12c33cdca4f2be0e6c514769fba1e117184cd8b9623cf76dce321",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/05_unsupervised_control/control_comparison_v1.csv",
+            "actual_sha256": "1150fe9af757b9e9b5eac772d223fc3508bb52484c18842d1fad5f69cc086637",
+            "reference_sha256": "1150fe9af757b9e9b5eac772d223fc3508bb52484c18842d1fad5f69cc086637",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 137.13,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/05_unsupervised_control/control_comparison_v1.py": "aee44dbe7cedf35b263137e122183d2818c5b2e11be7094fd4b9c19ec2e86906"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "cereal_followup",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "generated_reports": [],
+        "seconds": 18.53,
+        "source_files": {
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/cereal_formulations_v1.py": "ae491c4d207cdb5fb3ee27ca9cb3b50420255a83e3609c556f7735b12636ef5b"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "snacks",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/savoury_snack_assignments_v1.parquet",
+            "actual_sha256": "fef7241e658284457b07c70b29df398e6d5d949c734fb2e81ee450512395a6b5",
+            "reference_sha256": "fef7241e658284457b07c70b29df398e6d5d949c734fb2e81ee450512395a6b5",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 83.71,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/savoury_snacks_v1.py": "24aa405ccfcce690481a92a046c921cf45a675caf4c7576a192e93fe465eff16"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "beverages",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/beverage_assignments_v1.parquet",
+            "actual_sha256": "d3d0effad50f92a68ea0780f6a9ad758ef3a990494461b5128165eabf6fc5039",
+            "reference_sha256": "d3d0effad50f92a68ea0780f6a9ad758ef3a990494461b5128165eabf6fc5039",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 159.21,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/beverages_v1.py": "432bf05b7da225fc0e12cd9ca0d6c7713f52f9ad2f4cc07a7846a3a123072ca5",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/juice_classification_v1.py": "c8fbd4b3858217565d0dc5d1038686d1829770838cdb1904a1e4a79516c28eeb"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "juice",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/juice_assignments_v1.parquet",
+            "actual_sha256": "ed13142c21da536c408b2fe210afa124fbf7844c69677dd1ab501f55473833ef",
+            "reference_sha256": "ed13142c21da536c408b2fe210afa124fbf7844c69677dd1ab501f55473833ef",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 42.89,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/juice_formulations_v1.py": "51ff5604e68ddb1a307836d1c9f698ab80114de513c0f0b85deacbab88c6306a"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "dairy",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "generated_reports": [],
+        "seconds": 33.32,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/02_nutrient_density/dairy_dessert_formulations_v1.py": "4282e5453b5abd5da15398b744a20120422ac34973ebacf721ee2d24589e9ebe"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "biscuits",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "generated_reports": [],
+        "seconds": 38.13,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/biscuits_and_wafers_v1.py": "23b69d27be65b052b2bc6213053e25b9a03de61b2b81a2c8b463ff9616735af1"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "human",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "original_submission_sha256": "002a1df55b94f778ab300bfd375836bdc98f16f2a879a62ce8f1730ca410ce0d",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/human_claim_adjudications_v1.csv",
+            "actual_sha256": "debc7a3296a112dceb7dac49e0dee2fd2afd4addd1819ee5b7ab0c034295b9cf",
+            "reference_sha256": "debc7a3296a112dceb7dac49e0dee2fd2afd4addd1819ee5b7ab0c034295b9cf",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 5.44,
+        "source_files": {},
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "synthesis",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/FORMULATION_DECISIONS_v1.csv",
+            "actual_sha256": "93ddaab1f55299081c0fbaec0ef362cc27506b25bf750a88e6ec5796db6595d3",
+            "reference_sha256": "93ddaab1f55299081c0fbaec0ef362cc27506b25bf750a88e6ec5796db6595d3",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 34.38,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/h2_four_category_baseline_v1.py": "266851df2afaf07a2475423ea9d50b3e12e9b66ddfd14e07f905263436ad61c8",
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/00_shared_research/formulation_synthesis_v1.py": "c0524fd03432825c736027cefd20d82ea7e2952f0ee4d11182294e58c7e674c5",
+          "presentations/segmentation/first_run/03_lenses/00_shared_research/hypothesis_run_v1.py": "89841a7f4c1bea7ddc14073a9f5fa174a8fe0de09480874ab547b52d060ca7df",
+          "presentations/segmentation/first_run/03_lenses/00_shared_research/validate_run_v1.py": "7d18b22bada381a12809f01a498d22b0401e51d37dffba61a8fbd8c3f1a43a42",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/beverages_v1.py": "432bf05b7da225fc0e12cd9ca0d6c7713f52f9ad2f4cc07a7846a3a123072ca5",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/biscuits_and_wafers_v1.py": "23b69d27be65b052b2bc6213053e25b9a03de61b2b81a2c8b463ff9616735af1",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/cereal_formulations_v1.py": "ae491c4d207cdb5fb3ee27ca9cb3b50420255a83e3609c556f7735b12636ef5b",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/juice_classification_v1.py": "c8fbd4b3858217565d0dc5d1038686d1829770838cdb1904a1e4a79516c28eeb",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/juice_confidence_sensitivity_v1.py": "11f763be779db220b83b22621fcc72f898c4f0bd8f4267ee8327a80acbe4771d",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/juice_formulations_v1.py": "51ff5604e68ddb1a307836d1c9f698ab80114de513c0f0b85deacbab88c6306a",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/savoury_snacks_v1.py": "24aa405ccfcce690481a92a046c921cf45a675caf4c7576a192e93fe465eff16",
+          "presentations/segmentation/first_run/03_lenses/02_nutrient_density/dairy_dessert_formulations_v1.py": "4282e5453b5abd5da15398b744a20120422ac34973ebacf721ee2d24589e9ebe",
+          "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/communication_coverage_v1.py": "d41230baab05a0e1f305da5cf0535f8ac1cc19167d9a00f311702ce6ad111e65",
+          "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/communication_overlays_v1.py": "2396f3e04db3c95392fdda978299a51d0eaa370a6b8f0f00bc9a5c4df2e90107",
+          "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/ingredient_validation_v1.py": "cda782184496a551e4c1a893e5f8485ad71daa32e058bcbb0e1ffd18fafa917a",
+          "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/use_human_review_v1.py": "a6a143955b150663bfd535087736a0c933ca616cb46309b488df9c2ba220b764",
+          "presentations/segmentation/first_run/03_lenses/04_positioning_tradeoffs/processing_boundaries_v1.py": "926fa629e9282c8a6af0ecf4b7f20d6625158c407bda54d34cb716adb1fab10d",
+          "presentations/segmentation/first_run/03_lenses/05_unsupervised_control/control_comparison_v1.py": "aee44dbe7cedf35b263137e122183d2818c5b2e11be7094fd4b9c19ec2e86906"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "coverage",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/communication_coverage_v1.csv",
+            "actual_sha256": "ca88e92400a0dbdd951e9c801eb07902a8b5c10f3ebd875244a154338bcf14b3",
+            "reference_sha256": "ca88e92400a0dbdd951e9c801eb07902a8b5c10f3ebd875244a154338bcf14b3",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 147.79,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/02_nutrient_density/dairy_dessert_formulations_v1.py": "4282e5453b5abd5da15398b744a20120422ac34973ebacf721ee2d24589e9ebe",
+          "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/communication_coverage_v1.py": "d41230baab05a0e1f305da5cf0535f8ac1cc19167d9a00f311702ce6ad111e65"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "overlays",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/communication_overlays_v1.csv",
+            "actual_sha256": "c547d2d8dff71addbd5f736d5aa34427529298b5adc3ada7d0e143024037e52a",
+            "reference_sha256": "d28e3b827158b5c8cc5ad1ddad06e07017be224b51b6cee166e25a5d9d13c441",
+            "column_order_differs": false,
+            "row_order_differs": false,
+            "numeric_differences": {
+              "q": {
+                "cells": 2,
+                "max_absolute": 9.9999998245167e-15
+              }
+            },
+            "comparison": "NUMERICALLY_EQUIVALENT_CSV"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 20.51,
+        "source_files": {
+          "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/communication_overlays_v1.py": "2396f3e04db3c95392fdda978299a51d0eaa370a6b8f0f00bc9a5c4df2e90107"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "backlog",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "archived_source_sha256": "242c2d14b3c74de4a3c0e2c7230fe8ff1ca9e630e8536ca75083bdc82716d757",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/post_v1_evidence_gaps_v1.csv",
+            "actual_sha256": "ce5000e89e5bf9506ca12e003dcbaa5fed695e783bdf15da16bde948aeef2b8c",
+            "reference_sha256": "ce5000e89e5bf9506ca12e003dcbaa5fed695e783bdf15da16bde948aeef2b8c",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 99.24,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/02_nutrient_density/dairy_dessert_formulations_v1.py": "4282e5453b5abd5da15398b744a20120422ac34973ebacf721ee2d24589e9ebe",
+          "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/communication_coverage_v1.py": "d41230baab05a0e1f305da5cf0535f8ac1cc19167d9a00f311702ce6ad111e65"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "processing",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [
+          "presentations/segmentation/first_run/03_lenses/04_positioning_tradeoffs/processing_boundary_evidence_v1.parquet"
+        ],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/04_positioning_tradeoffs/organic_nova_v1.csv",
+            "actual_sha256": "1fe70730c7233f04d57bc908a53926c3eaf9266e691c89acbba7b11a10c3dc5a",
+            "reference_sha256": "85f860ab717fffd561ab49e93e853a0500bda4d8883474a73b4e8d204989a149",
+            "column_order_differs": false,
+            "documented_v1_metadata_exceptions": [
+              {
+                "category": "beverages",
+                "commercial_type": "ambiguous composition",
+                "region": "FR",
+                "population": 54,
+                "fields": [
+                  "comparable_type",
+                  "decision"
+                ],
+                "basis": "Frozen CHECK.md documented comparability metadata exception; zero joint evidence and no effects"
+              },
+              {
+                "category": "beverages",
+                "commercial_type": "ambiguous composition",
+                "region": "UK-IE",
+                "population": 2,
+                "fields": [
+                  "comparable_type",
+                  "decision"
+                ],
+                "basis": "Frozen CHECK.md documented comparability metadata exception; zero joint evidence and no effects"
+              },
+              {
+                "category": "beverages",
+                "commercial_type": "ambiguous composition",
+                "region": "US-CA",
+                "population": 7,
+                "fields": [
+                  "comparable_type",
+                  "decision"
+                ],
+                "basis": "Frozen CHECK.md documented comparability metadata exception; zero joint evidence and no effects"
+              }
+            ],
+            "row_order_differs": false,
+            "numeric_differences": {},
+            "comparison": "NUMERICALLY_EQUIVALENT_CSV"
+          },
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/04_positioning_tradeoffs/category_boundaries_v1.csv",
+            "actual_sha256": "70a34685c0cbe079b62ab07c38b9c208c687074bdaf157c9309d61ad8cd78279",
+            "reference_sha256": "70a34685c0cbe079b62ab07c38b9c208c687074bdaf157c9309d61ad8cd78279",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/04_positioning_tradeoffs/processing_boundary_evidence_v1.parquet",
+            "actual_sha256": "f627f960ca8aa8fc195e6602b901a8fb3dd548dc5b01a6e7bfa38bb57f9a0ffe",
+            "reference_sha256": "f627f960ca8aa8fc195e6602b901a8fb3dd548dc5b01a6e7bfa38bb57f9a0ffe",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [
+          "presentations/segmentation/first_run/03_lenses/04_positioning_tradeoffs/processing_boundaries_CHECK_v1.md"
+        ],
+        "seconds": 120.17,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/biscuits_and_wafers_v1.py": "23b69d27be65b052b2bc6213053e25b9a03de61b2b81a2c8b463ff9616735af1",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/juice_classification_v1.py": "c8fbd4b3858217565d0dc5d1038686d1829770838cdb1904a1e4a79516c28eeb",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/juice_formulations_v1.py": "51ff5604e68ddb1a307836d1c9f698ab80114de513c0f0b85deacbab88c6306a",
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/savoury_snacks_v1.py": "24aa405ccfcce690481a92a046c921cf45a675caf4c7576a192e93fe465eff16",
+          "presentations/segmentation/first_run/03_lenses/02_nutrient_density/dairy_dessert_formulations_v1.py": "4282e5453b5abd5da15398b744a20120422ac34973ebacf721ee2d24589e9ebe",
+          "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/communication_coverage_v1.py": "d41230baab05a0e1f305da5cf0535f8ac1cc19167d9a00f311702ce6ad111e65",
+          "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/communication_overlays_v1.py": "2396f3e04db3c95392fdda978299a51d0eaa370a6b8f0f00bc9a5c4df2e90107",
+          "presentations/segmentation/first_run/03_lenses/04_positioning_tradeoffs/processing_boundaries_v1.py": "926fa629e9282c8a6af0ecf4b7f20d6625158c407bda54d34cb716adb1fab10d"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "juice_sensitivity",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "native_writes_confirmed_by_stat": [],
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/juice_confidence_sensitivity_v1.csv",
+            "actual_sha256": "71bc965a06b2ad76e8f9070841a3988eb342bc8532efb4aaa4d973aa1d61a242",
+            "reference_sha256": "71bc965a06b2ad76e8f9070841a3988eb342bc8532efb4aaa4d973aa1d61a242",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "generated_reports": [],
+        "seconds": 6.04,
+        "source_files": {
+          "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/juice_confidence_sensitivity_v1.py": "11f763be779db220b83b22621fcc72f898c4f0bd8f4267ee8327a80acbe4771d"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "research_validation",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "generated_reports": [],
+        "seconds": 5.06,
+        "source_files": {
+          "presentations/segmentation/first_run/03_lenses/00_shared_research/validate_run_v1.py": "7d18b22bada381a12809f01a498d22b0401e51d37dffba61a8fbd8c3f1a43a42"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "report_tables",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "reports": [
+          {
+            "report": "generated_reports/processing/presentations/segmentation/first_run/03_lenses/04_positioning_tradeoffs/processing_boundaries_CHECK_v1.md",
+            "compared_tables": 11
+          }
+        ],
+        "byte_identical_followup_reports": [
+          {
+            "report": "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/cereal_formulations_v1.md",
+            "comparison": "BYTE_IDENTICAL",
+            "compared_tables": 7
+          },
+          {
+            "report": "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/savoury_snacks_CHECK_v1.md",
+            "comparison": "BYTE_IDENTICAL",
+            "compared_tables": 10
+          },
+          {
+            "report": "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/beverages_CHECK_v1.md",
+            "comparison": "BYTE_IDENTICAL",
+            "compared_tables": 9
+          },
+          {
+            "report": "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/juice_formulations_v1.md",
+            "comparison": "BYTE_IDENTICAL",
+            "compared_tables": 11
+          },
+          {
+            "report": "presentations/segmentation/first_run/03_lenses/02_nutrient_density/dairy_dessert_formulations_v1.md",
+            "comparison": "BYTE_IDENTICAL",
+            "compared_tables": 9
+          },
+          {
+            "report": "presentations/segmentation/first_run/03_lenses/01_nutritional_composition/biscuits_and_wafers_CHECK_v1.md",
+            "comparison": "BYTE_IDENTICAL",
+            "compared_tables": 6
+          }
+        ],
+        "table_count": 63,
+        "generated_reports": [],
+        "seconds": 3.32,
+        "source_files": {},
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      },
+      {
+        "stage": "package",
+        "status": "PASS",
+        "runner_sha256": "ec545a0d983e45961306d0471329cda4eb09af04d9a80395e1deac7b2ed7107e",
+        "candidate_directory": "presentations/segmentation/first_run/04_replay_candidate",
+        "resource_adapter": {
+          "population_summary_columns": [
+            "region",
+            "category",
+            "product_scope_eligible",
+            "commercial_format",
+            "commercial_status",
+            "profile_family",
+            "profile_status",
+            "energy",
+            "protein",
+            "fat",
+            "saturated_fat",
+            "carbohydrates",
+            "sugars",
+            "fibre",
+            "salt"
+          ],
+          "equivalence": "Unchanged original function, projected inputs; sample equality asserted"
+        },
+        "independent_checks": {
+          "master_rows": 382527,
+          "eligible_assignments": 376845,
+          "outside_scope_retained": 5682,
+          "nutrient_validity_cells": 96,
+          "corrected_juice_keys_and_nutrition": 13861,
+          "dairy_classifier_assignments": 4261,
+          "biscuit_classifier_assignments": 30695,
+          "exact_cohort_key_sets": 393,
+          "communication_coverage_cells": 13602,
+          "approved_regional_profile_cells": 15,
+          "locked_assessments_preserved": 12161,
+          "separate_human_observations": 12,
+          "unchanged_boundary_annotations": 32336,
+          "documented_comparability_metadata_exceptions": 0,
+          "organic_nova_population_cells": 377,
+          "claim_unknown_and_zero_denominator_guards": "PASS",
+          "input_output_hashes_and_document_links": "PASS"
+        },
+        "comparisons": [
+          {
+            "path": "presentations/segmentation/first_run/04_replay_candidate/output/analytical_assignments_v1.parquet",
+            "actual_sha256": "1a40db1b41fb368d2e2a15b2179b661bdb63bf926fc5ff20eb2ab726a751a811",
+            "reference_sha256": "1a40db1b41fb368d2e2a15b2179b661bdb63bf926fc5ff20eb2ab726a751a811",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/04_replay_candidate/output/assessed_communication_v1.parquet",
+            "actual_sha256": "bfb600702b47a305fa22144c3aa4c51933c22be06fa955d68f2e7cf6c9c1505a",
+            "reference_sha256": "bfb600702b47a305fa22144c3aa4c51933c22be06fa955d68f2e7cf6c9c1505a",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/04_replay_candidate/output/human_observations_v1.parquet",
+            "actual_sha256": "ead684ae5b4c6dfa9dffbe59794b9921b75583fa0d7fbe4c27a2fada004a0fda",
+            "reference_sha256": "ead684ae5b4c6dfa9dffbe59794b9921b75583fa0d7fbe4c27a2fada004a0fda",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/04_replay_candidate/output/boundary_annotations_v1.parquet",
+            "actual_sha256": "8f02e44b947f993a575638e68fe39cf0cbe1f5c92a39ab9633db1c8cc1483cd1",
+            "reference_sha256": "8f02e44b947f993a575638e68fe39cf0cbe1f5c92a39ab9633db1c8cc1483cd1",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/04_replay_candidate/output/population_summary_v1.csv",
+            "actual_sha256": "ee84e2eb6624838762040a27f24d96f181c1a7684d66817284dbffa95cea791f",
+            "reference_sha256": "ee84e2eb6624838762040a27f24d96f181c1a7684d66817284dbffa95cea791f",
+            "comparison": "BYTE_IDENTICAL"
+          },
+          {
+            "path": "presentations/segmentation/first_run/04_replay_candidate/output/communication_coverage_v1.csv",
+            "actual_sha256": "ca88e92400a0dbdd951e9c801eb07902a8b5c10f3ebd875244a154338bcf14b3",
+            "reference_sha256": "ca88e92400a0dbdd951e9c801eb07902a8b5c10f3ebd875244a154338bcf14b3",
+            "comparison": "BYTE_IDENTICAL"
+          }
+        ],
+        "findings": {
+          "status_difference": "candidate versus accepted",
+          "numeric_differences": [
+            {
+              "path": "/communication/reused_H5/1/q",
+              "actual": 5.545321e-06,
+              "reference": 5.54532099e-06
+            },
+            {
+              "path": "/communication/reused_H5/5/q",
+              "actual": 8.87722172e-08,
+              "reference": 8.87722171e-08
+            }
+          ]
+        },
+        "generated_reports": [],
+        "seconds": 379.58,
+        "source_files": {
+          "presentations/segmentation/first_run/02_shared_preprocessing_and_eda/02_eda/00_shared_baseline_and_feature_diagnostics/shared_feature_diagnostics_v1.py": "1ef9b1cd1d02b333d42153280fa37f2e715052522c9bf3c44cbc08057c2a81c5",
+          "presentations/segmentation/first_run/03_lenses/02_nutrient_density/dairy_dessert_formulations_v1.py": "4282e5453b5abd5da15398b744a20120422ac34973ebacf721ee2d24589e9ebe",
+          "presentations/segmentation/first_run/03_lenses/03_claims_composition_and_ingredients/communication_coverage_v1.py": "d41230baab05a0e1f305da5cf0535f8ac1cc19167d9a00f311702ce6ad111e65",
+          "presentations/segmentation/first_run/04_replay_candidate/analytical_rules_v1.py": "5aac9fa8b16e38c8e12f024100d7cd94207b259f9b1488d985e261ab9b6a43a6",
+          "presentations/segmentation/first_run/04_replay_candidate/build_analytical_package_v1.py": "501540183b2b83d5dd603adfcc355d4eb511e4743d976abe01977a2a640d8ae1",
+          "presentations/segmentation/first_run/04_replay_candidate/verify_analytical_package_v1.py": "049510175aca2f84c36e666638491bd14dfc9420b73a7481d8a7faccdaafd859"
+        },
+        "guard_self_tests": {
+          "network": 1,
+          "providers": 1,
+          "subprocess": 1,
+          "outside_write": 1,
+          "source_read": 3
+        },
+        "denied_details": [
+          {
+            "event": "open",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\replay_probe",
+            "mode": "w"
+          },
+          {
+            "event": "sqlite3.connect",
+            "path": "C:\\Users\\julia\\food-beverage-positioning-radar\\sqlite_probe.db"
+          },
+          {
+            "event": "subprocess.Popen",
+            "executable": "blocked",
+            "arguments": "[]"
+          }
+        ],
+        "actual_denials": {
+          "network": 0,
+          "providers": 0,
+          "subprocess": 0,
+          "outside_write": 0,
+          "source_read": 0
+        }
+      }
+    ],
+    "limits": [
+      "35 historical raw model envelopes unavailable; retained OCR and extracted evidence preserved",
+      "No new provider calls; historical saved observations are starting evidence",
+      "Recorded installed environment reused"
+    ]
+  },
+  "restored_starting_files": 15995,
+  "security": {
+    "status": "PASS",
+    "json_cells_scanned": 293862,
+    "ledger_tables": {
+      "presentations\\segmentation\\first_run\\01_ingestion\\03_pack_evidence\\03_extraction_contracts\\run_06b_v6_confirmation_v1\\staging.sqlite": {
+        "policy": 1,
+        "policy_payload": 1,
+        "jobs": 4,
+        "calls": 4,
+        "receipts": 4,
+        "call_quotes": 4,
+        "observations": 4,
+        "circuit_breaker": 0,
+        "stage_results": 0,
+        "stage_events": 24,
+        "sqlite_sequence": 1,
+        "llm_rate_tickets": 4,
+        "llm_rate_cooldowns": 0
+      },
+      "presentations\\segmentation\\first_run\\01_ingestion\\03_pack_evidence\\03_extraction_contracts\\run_06b_v6_mini_v3\\staging.sqlite": {
+        "policy": 1,
+        "policy_payload": 1,
+        "jobs": 4,
+        "calls": 4,
+        "receipts": 4,
+        "call_quotes": 4,
+        "observations": 4,
+        "circuit_breaker": 0,
+        "stage_results": 3,
+        "stage_events": 28,
+        "sqlite_sequence": 1,
+        "llm_rate_tickets": 4,
+        "llm_rate_cooldowns": 0
+      },
+      "presentations\\segmentation\\first_run\\01_ingestion\\03_pack_evidence\\05_execution_ledgers\\run_06b_execution_staging_v1\\staging.sqlite": {
+        "policy": 2,
+        "policy_payload": 2,
+        "jobs": 27479,
+        "calls": 27479,
+        "receipts": 27463,
+        "call_quotes": 27479,
+        "observations": 27478,
+        "circuit_breaker": 1,
+        "stage_results": 27093,
+        "stage_events": 179478,
+        "sqlite_sequence": 1,
+        "llm_rate_tickets_2bee13493bc58576": 12026,
+        "llm_rate_cooldowns_2bee13493bc58576": 0,
+        "llm_rate_tickets_3e6b5dc774bf7405": 3514,
+        "llm_rate_cooldowns_3e6b5dc774bf7405": 0,
+        "circuit_breaker_resolutions": 1
+      },
+      "presentations\\segmentation\\first_run\\01_ingestion\\03_pack_evidence\\05_execution_ledgers\\wave2_dairy_execution_v1\\staging.sqlite": {
+        "policy": 1,
+        "policy_payload": 1,
+        "jobs": 460,
+        "calls": 460,
+        "receipts": 460,
+        "call_quotes": 460,
+        "observations": 460,
+        "circuit_breaker": 0,
+        "stage_results": 460,
+        "stage_events": 2946,
+        "sqlite_sequence": 1,
+        "llm_rate_tickets_2bee13493bc58576": 236,
+        "llm_rate_cooldowns_2bee13493bc58576": 0
+      }
+    },
+    "credential_findings": 0
+  },
+  "additional_helper_packages": {
+    "requests": "2.34.2",
+    "Pillow": "12.2.0",
+    "python-dotenv": "1.2.2",
+    "pydantic": "2.13.4",
+    "pydantic-core": "2.46.4"
+  },
+  "preservation": {
+    "status": "PASS",
+    "original_files_checked": 31599,
+    "differences": [],
+    "app_managed_tracking_ref_changes": [
+      ".git/refs/codex/turn-diffs/captures/1795420154681/b0a8578b-aac0-4a6e-875d-e64a8cb4dbf5/base",
+      ".git/refs/codex/turn-diffs/checkpoints/4d4e0b558136d1e28d57c56511d3ec46/3d311f2d7aeae83d39970ac94a456f2b/1795379947301/bf89fdb5-ff7f-4c0d-86fb-a297d7805f46"
+    ],
+    "tracking_ref_note": "Codex desktop maintains its own turn-diff capture/checkpoint refs; no project branches, tags or Git objects are exempted",
+    "v1_0_0_tag_object": "ba592459b4c355e94b1c2088d0d9d9b78910a320",
+    "main_readme_sha256": "78706f979d37d779b21bbca11c123770c0eee0a5a80f9d6e056a7974b2a6e502",
+    "baseline_sha256": "aec082cec41f1b37f1f85ac9281fbcbebd45143914638d03f90e2835de1825c1"
+  },
+  "frozen_release_digest": "48212697d2d245e3cc543032d63699b7e83fb43ad5db8dce7cbb8714991f0557",
+  "main_readme_unchanged": true,
+  "v1_0_0_unchanged": true,
+  "harness_revisions": [
+    {
+      "directory": "\\\\?\\C:\\Users\\julia\\food-beverage-positioning-radar\\outputs\\ocr_llm_evidence_isolation_v1\\harness_revisions\\1795439799178357600",
+      "changes": [
+        {
+          "path": "presentations/segmentation/evidence_audit/upstream_entry.py",
+          "sha256": "79c2279c2988dec48ddd422389d31a21eb4017565e48df3bbb08c231457afbfb"
+        },
+        {
+          "path": "presentations/segmentation/evidence_audit/validate.py",
+          "sha256": "c5a70728e5cef69114074adff31404fb58b20fcabbfd51ebe57ca3ae7efd6c39"
+        }
+      ]
+    },
+    {
+      "directory": "\\\\?\\C:\\Users\\julia\\food-beverage-positioning-radar\\outputs\\ocr_llm_evidence_isolation_v1\\harness_revisions\\1795440120539723800",
+      "changes": [
+        {
+          "path": "presentations/segmentation/evidence_audit/preservation.py",
+          "sha256": "b965d789af164700e8a88f54a3b0d91d769d5eb4b21fe4c7260692af012e17d5"
+        },
+        {
+          "path": "presentations/segmentation/evidence_audit/upstream_entry.py",
+          "sha256": "80d2729c7784ac66cca39c2b70c94cf5182164f31e918c5862c65a0988c9fb34"
+        }
+      ]
+    },
+    {
+      "directory": "\\\\?\\C:\\Users\\julia\\food-beverage-positioning-radar\\outputs\\ocr_llm_evidence_isolation_v1\\harness_revisions\\1795441155432592300",
+      "changes": [
+        {
+          "path": "presentations/segmentation/evidence_audit/package.py",
+          "sha256": "04921a4c258c9b3095d49777a858c7cc982c01800385937f961744a66072c007"
+        },
+        {
+          "path": "presentations/segmentation/evidence_audit/validate.py",
+          "sha256": "76495024f8ac7b061e6823f123557a978d2882a684b225e067b95d93caa39c64"
+        },
+        {
+          "path": "presentations/segmentation/evidence_audit/verify_final.py",
+          "sha256": "ccc933e47032504281e7394290bba6ab89b56840f361da0fa11753fe88691077"
+        }
+      ]
+    }
+  ],
+  "historical_gap_register_sha256": "6b53d1320f3666c1b70cb712e54a5e8ad2784ebc82935845f6aa7fe065a57a60",
+  "limits": [
+    "35 historical reused assessments lack retained original image bytes and raw model envelopes; saved OCR/extracted records remain available",
+    "Historical sampling choices and human decisions are fixed evidence inputs, not regenerated judgments",
+    "Installed recorded environment reused; fresh dependency installation not tested",
+    "Corrected path routing and disabled an unused urllib3 IPv6 loopback import probe; failed attempts and code revisions retained in isolated workspace",
+    "Final source asset refresh and binding to executed scientific-source hashes must pass verify_final.py before completion"
+  ]
+}
