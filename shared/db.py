@@ -787,6 +787,7 @@ def search_products(
             p.quantity,
             p.query_category,
             p.primary_country,
+            p.countries,
             p.observed_market_region_codes,
             p.image_url,
             p.ingredients_text,
