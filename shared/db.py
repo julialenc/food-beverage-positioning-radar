@@ -759,6 +759,7 @@ def search_products(
     nova_groups: Optional[list[int]] = None,
     nutriscore_grades: Optional[list[str]] = None,
     limit: Optional[int] = 1000,
+    barcodes: Optional[tuple[str, ...]] = None,
 ) -> pd.DataFrame:
     conn = get_connection()
     where_sql, params = _build_where(
@@ -766,6 +767,11 @@ def search_products(
         company_names, region_codes, positioning_codes, nova_groups,
         nutriscore_grades
     )
+    if barcodes is not None:
+        if not barcodes:
+            return pd.DataFrame()
+        where_sql += f" AND p.barcode IN ({_qmarks(barcodes)})"
+        params.extend(barcodes)
     if product_column_exists("warning_types"):
         warning_select = """
             p.warning_flag,
@@ -819,6 +825,41 @@ def search_products(
     return df
 
 
+@st.cache_data(show_spinner=False, ttl=600, max_entries=8)
+def _company_product_barcodes(
+    text, categories, brands, company_names, region_codes,
+    positioning_codes, nova_groups, nutriscore_grades, source_identity,
+) -> tuple[str, ...]:
+    """Resolve only identity fields once for the count and displayed table."""
+    where_sql, params = _build_where(
+        text, categories, brands, None, None, None,
+        region_codes, positioning_codes, nova_groups, nutriscore_grades,
+    )
+    join_sql = (
+        "LEFT JOIN product_analysis a ON a.barcode = p.barcode"
+        if positioning_codes else ""
+    )
+    df = pd.read_sql_query(f"""
+        SELECT p.barcode, p.primary_brand, p.normalized_brand,
+               p.countries, p.observed_market_region_codes, p.query_category
+        FROM products p
+        {join_sql}
+        {where_sql}
+    """, get_connection(), params=params)
+    df = _apply_display_brand(df)
+    resolved = add_resolved_company(df, region_codes)
+    return tuple(resolved.loc[resolved["company"].isin(company_names), "barcode"])
+
+
+def _company_filter_source_identity():
+    # Invalidate matching IDs if the database or either mapping input changes.
+    return tuple(
+        (str(path), path.stat().st_mtime_ns, path.stat().st_size)
+        if path.exists() else (str(path), None, None)
+        for path in (get_database_path(), COMPANY_MAP_PATH, PRODUCT_MAPPING_OVERRIDE_PATH)
+    )
+
+
 def count_products_resolved(
     text: str = "",
     categories: Optional[list[str]] = None,
@@ -834,13 +875,11 @@ def count_products_resolved(
             text, categories, brands, None, None, None,
             region_codes, positioning_codes, nova_groups, nutriscore_grades,
         )
-    df = search_products(
-        text, categories, brands, None, None, None,
-        region_codes, positioning_codes, nova_groups, nutriscore_grades,
-        limit=None,
-    )
-    resolved = add_resolved_company(df, region_codes)
-    return int(resolved["company"].isin(company_names).sum())
+    return len(_company_product_barcodes(
+        text, categories, brands, company_names, region_codes,
+        positioning_codes, nova_groups, nutriscore_grades,
+        _company_filter_source_identity(),
+    ))
 
 
 def search_products_resolved(
@@ -862,16 +901,21 @@ def search_products_resolved(
         )
         return df
 
+    matching = _company_product_barcodes(
+        text, categories, brands, company_names, region_codes,
+        positioning_codes, nova_groups, nutriscore_grades,
+        _company_filter_source_identity(),
+    )
+    if limit is not None:
+        matching = matching[:limit]
+    if not matching:
+        return pd.DataFrame()
     df = search_products(
         text, categories, brands, None, None, None,
         region_codes, positioning_codes, nova_groups, nutriscore_grades,
-        limit=None,
+        limit=None, barcodes=matching,
     )
-    resolved = add_resolved_company(df, region_codes)
-    filtered = resolved[resolved["company"].isin(company_names)]
-    if limit is not None:
-        filtered = filtered.head(limit)
-    return filtered
+    return add_resolved_company(df, region_codes)
 
 
 def get_market_products(
