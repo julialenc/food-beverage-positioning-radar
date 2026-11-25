@@ -366,7 +366,8 @@ def _row_scope_matches(row: dict[str, str], countries: str, region_codes: str) -
 
 
 def resolve_company_owner(brand: str, countries: str = "",
-                          region_codes: str = "") -> str:
+                          region_codes: str = "",
+                          *, _mapping_index: Optional[dict] = None) -> str:
     """Resolve brand ownership for one product row.
 
     This follows docs/01_PRODUCT_DATA_GOVERNANCE/02_BRAND_COMPANY_MAPPING.md's priority order: scoped
@@ -377,7 +378,8 @@ def resolve_company_owner(brand: str, countries: str = "",
     if not brand_norm:
         return COMPANY_OTHER_LABEL
 
-    rows = get_company_mapping_index().get(brand_norm, [])
+    mapping_index = get_company_mapping_index() if _mapping_index is None else _mapping_index
+    rows = mapping_index.get(brand_norm, [])
     if not rows:
         return COMPANY_OTHER_LABEL
 
@@ -455,11 +457,13 @@ def add_resolved_company(
 
     key_cols = ["primary_brand", "countries", "_resolution_region_context"]
     unique_keys = out[key_cols].drop_duplicates()
+    mapping_index = get_company_mapping_index()
     resolved = {
         tuple(row): resolve_company_owner(
             row[0],
             countries=row[1],
             region_codes=row[2],
+            _mapping_index=mapping_index,
         )
         for row in unique_keys.itertuples(index=False, name=None)
     }
